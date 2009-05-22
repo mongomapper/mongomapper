@@ -1,0 +1,7 @@
+= mongo_mapper
+
+Description goes here.
+
+== Copyright
+
+Copyright (c) 2009 John Nunemaker. See LICENSE for details.
