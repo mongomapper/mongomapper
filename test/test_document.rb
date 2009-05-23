@@ -23,6 +23,12 @@ class DocumentTest < Test::Unit::TestCase
       @document.keys['age'].name.should == 'age'
       @document.keys['age'].type.should == Integer
     end
+    
+    should "be able to define timestamps with timestamp shortcut" do
+      @document.timestamp
+      @document.keys.keys.should include('created_at')
+      @document.keys.keys.should include('updated_at')
+    end
   end # Document class
   
   context "An instance of a document" do
@@ -180,7 +186,6 @@ class DocumentTest < Test::Unit::TestCase
         @document.class_eval do          
           def name_and_age=(new_value)
             new_value.match(/([^\(\s]+) \((.*)\)/)
-            puts $1, $2
             write_attribute :name, $1
             write_attribute :age, $2
           end
@@ -192,5 +197,16 @@ class DocumentTest < Test::Unit::TestCase
         doc.age.should == 62
       end
     end # writing an attribute    
+    
+    context "with timestamps defined" do
+      should_eventually "set created_at and updated_at on create" do
+        
+      end
+      
+      should_eventually "set updated_at on update" do
+        
+      end
+    end
+    
   end # instance of a document
 end # DocumentTest

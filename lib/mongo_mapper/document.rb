@@ -15,6 +15,11 @@ module MongoMapper
       def keys
         @keys ||= HashWithIndifferentAccess.new
       end
+      
+      def timestamp
+        key(:created_at, DateTime)
+        key(:updated_at, DateTime)
+      end
     end
     
     ####################
@@ -26,10 +31,7 @@ module MongoMapper
     end
     
     def attributes=(attrs)
-      attrs.each_pair do |k, v|
-        setter = "#{k}="
-        send(setter, v) if writer?(k)
-      end
+      attrs.each_pair { |k, v| write_attribute(k, v) if writer?(k) }
     end
     
     def attributes
@@ -46,7 +48,8 @@ module MongoMapper
     end
     
     def writer?(name)
-      name = name.chop if name =~ /=$/
+      name = name.to_s
+      name = name.chop if name.ends_with?('=')
       reader?(name)
     end
     
