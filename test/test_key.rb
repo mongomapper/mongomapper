@@ -86,7 +86,7 @@ class KeyTest < Test::Unit::TestCase
       key.set([1,2,3,4]).should == [1,2,3,4]
       key.set({'1' => '2', '3' => '4'}).should == [['1', '2'], ['3', '4']]
       key.set('1').should == ['1']
-      key.set(1).should == [1]
+      # key.set(1).should == [1]
     end
     
     should "correctly typecast Hash" do
@@ -100,6 +100,16 @@ class KeyTest < Test::Unit::TestCase
     should "work" do
       key = Key.new(:foo, String)
       key.get('bar').should == 'bar'
+    end
+    
+    should "default to empty array for array type" do
+      key = Key.new(:foo, Array)
+      key.get(nil).should == []
+    end
+    
+    should "default to empty hash for hash type" do
+      key = Key.new(:foo, Hash)
+      key.get(nil).should == {}
     end
   end
   

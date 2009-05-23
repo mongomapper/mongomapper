@@ -19,7 +19,13 @@ module MongoMapper
     end
     
     def get(value)
-      value
+      if type == Array
+        value || []
+      elsif type == Hash
+        value || {}
+      else
+        value
+      end
     end
     
     private
