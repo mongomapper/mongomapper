@@ -5,7 +5,7 @@ class KeyTest < Test::Unit::TestCase
   
   context "The Key Class" do
     should "have the native types defined" do
-      Key::NativeTypes.should == [String, Float, Time, Date, DateTime, Integer, Boolean]
+      Key::NativeTypes.should == [String, Float, Time, Date, DateTime, Integer, Boolean, Array, Hash]
     end
   end
   
@@ -79,6 +79,20 @@ class KeyTest < Test::Unit::TestCase
       ['true', true, 't', '1', 1].each do |b|
         key.set(b).should == true
       end
+    end
+    
+    should "correctly typecast Array" do
+      key = Key.new(:foo, Array)
+      key.set([1,2,3,4]).should == [1,2,3,4]
+      key.set({'1' => '2', '3' => '4'}).should == [['1', '2'], ['3', '4']]
+      key.set('1').should == ['1']
+      key.set(1).should == [1]
+    end
+    
+    should "correctly typecast Hash" do
+      key = Key.new(:foo, Hash)
+      key.set(:foo => 'bar').should == {:foo => 'bar'}
+      key.set(:foo => {:bar => 'baz'}).should == {:foo => {:bar => 'baz'}}
     end
   end
   

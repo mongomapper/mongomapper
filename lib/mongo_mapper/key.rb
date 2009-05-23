@@ -2,7 +2,7 @@ class Boolean; end
 
 module MongoMapper
   class Key
-    NativeTypes = [String, Float, Time, Date, DateTime, Integer, Boolean]
+    NativeTypes = [String, Float, Time, Date, DateTime, Integer, Boolean, Array, Hash]
     
     attr_accessor :name, :type
     
@@ -28,6 +28,7 @@ module MongoMapper
         begin        
           if    type == String    then value.to_s
           elsif type == Float     then value.to_f
+          elsif type == Array     then value.to_a
           elsif type == Time      then Time.parse(value.to_s)
           elsif type == Date      then Date.parse(value.to_s)
           elsif type == DateTime  then DateTime.parse(value.to_s)

@@ -18,9 +18,10 @@ class DocumentTest < Test::Unit::TestCase
       @document.key(:name, String)
       @document.key(:age, Integer)
       @document.keys.size.should == 2
-      @document.keys[0].name.should == 'name'
-      @document.keys[1].name.should == 'age'
-      @document.keys[1].type.should == Integer
+      @document.keys['name'].name.should == 'name'
+      @document.keys['name'].type.should == String
+      @document.keys['age'].name.should == 'age'
+      @document.keys['age'].type.should == Integer
     end
   end # Document class
   
@@ -30,15 +31,15 @@ class DocumentTest < Test::Unit::TestCase
       @document.instance_eval do
         include MongoMapper::Document
         
-        key :string, String
-        key :integer, Integer
+        key :name, String
+        key :age, Integer
       end
     end
     
     context "when initialized" do
       should "accept a hash that sets keys and values" do
-        doc = @document.new(:string => 'John', :integer => 23)
-        doc.keys.should == {'string' => 'John', 'integer' => 23}
+        doc = @document.new(:name => 'John', :age => 23)
+        doc.keys.should == {'name' => 'John', 'age' => 23}
       end
       
       should "silently reject keys that have not been defined" do
@@ -49,23 +50,23 @@ class DocumentTest < Test::Unit::TestCase
     
     context "mass assigning keys" do
       should "update values for keys provided" do
-        doc = @document.new(:string => 'foobar', :integer => 10)
-        doc.keys = {:string => 'new value', :integer => 5}
-        doc.keys[:string].should == 'new value'
-        doc.keys[:integer].should == 5
+        doc = @document.new(:name => 'foobar', :age => 10)
+        doc.keys = {:name => 'new value', :age => 5}
+        doc.keys[:name].should == 'new value'
+        doc.keys[:age].should == 5
       end
       
       should "not update values for keys that were not provided" do
-        doc = @document.new(:string => 'foobar', :integer => 10)
-        doc.keys = {:string => 'new value'}
-        doc.keys[:string].should == 'new value'
-        doc.keys[:integer].should == 10
+        doc = @document.new(:name => 'foobar', :age => 10)
+        doc.keys = {:name => 'new value'}
+        doc.keys[:name].should == 'new value'
+        doc.keys[:age].should == 10
       end
       
       should "ignore keys that do not exist" do
-        doc = @document.new(:string => 'foobar', :integer => 10)
-        doc.keys = {:string => 'new value', :foobar => 'baz'}
-        doc.keys[:string].should == 'new value'
+        doc = @document.new(:name => 'foobar', :age => 10)
+        doc.keys = {:name => 'new value', :foobar => 'baz'}
+        doc.keys[:name].should == 'new value'
         doc.keys[:foobar].should be(nil)
       end
     end
@@ -77,29 +78,62 @@ class DocumentTest < Test::Unit::TestCase
       end
       
       should "return all keys with a value" do
-        doc = @document.new(:string => 'string')
-        doc.keys.should == {'string' => 'string'}
+        doc = @document.new(:name => 'string')
+        doc.keys.should == {'name' => 'string'}
       end
     end
     
     context "shorcuts" do
       should "be able to read key with []" do
-        doc = @document.new(:string => 'string')
-        doc[:string].should == 'string'
+        doc = @document.new(:name => 'string')
+        doc[:name].should == 'string'
       end
       
       should "be able to assign key value with []=" do
         doc = @document.new
-        doc[:string] = 'string'
-        doc[:string].should == 'string'
+        doc[:name] = 'string'
+        doc[:name].should == 'string'
       end
     end
     
     context "indifferent access" do
       should "be enabled for keys" do
-        doc = @document.new(:string => 'string')
-        doc.keys[:string].should == 'string'
-        doc.keys['string'].should == 'string'
+        doc = @document.new(:name => 'string')
+        doc.keys[:name].should == 'string'
+        doc.keys['name'].should == 'string'
+      end
+    end
+    
+    context "getters" do
+      should "work for defined keys" do
+        doc = @document.new(:name => 'string')
+        doc.name.should == 'string'
+      end
+      
+      should "raise no method error for undefined keys" do
+        doc = @document.new
+        lambda { doc.fart }.should raise_error(NoMethodError)
+      end
+    end
+    
+    context "setters" do
+      should "work for defined keys" do
+        doc = @document.new
+        doc.name = 'John'
+        doc.name.should == 'John'
+      end
+      
+      should "raise no method error for undefined keys" do
+        doc = @document.new
+        lambda { doc.fart = 'poof!' }.should raise_error(NoMethodError)
+      end
+      
+      should "typecast value" do
+        doc = @document.new
+        doc.name = 1234
+        doc.name.should == '1234'
+        doc.age = '21'
+        doc.age.should == 21
       end
     end
     
