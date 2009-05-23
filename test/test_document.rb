@@ -101,6 +101,7 @@ class DocumentTest < Test::Unit::TestCase
         doc.keys[:string].should == 'string'
         doc.keys['string'].should == 'string'
       end
-    end    
+    end
+    
   end # instance of a document
 end # DocumentTest
