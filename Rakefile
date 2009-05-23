@@ -5,11 +5,13 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "mongo_mapper"
-    gem.summary = %Q{Awesome gem for modeling your domain to be stored with MongoDB}
+    gem.summary = %Q{Awesome gem for modeling your domain and storing it in mongo}
     gem.email = "nunemaker@gmail.com"
     gem.homepage = "http://github.com/jnunemaker/mongo_mapper"
     gem.authors = ["John Nunemaker"]
     gem.rubyforge_project = "mongo_mapper"
+    gem.add_development_dependency('mocha')
+    gem.add_development_dependency('jnunemaker-matchy', '0.4.0')
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 
