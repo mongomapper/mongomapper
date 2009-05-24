@@ -3,9 +3,49 @@ module MongoMapper
     def self.included(model)
       model.extend ClassMethods
       model.extend Forwardable
+      model.class_eval { key :_id, String }
     end
     
-    module ClassMethods
+    module ClassMethods      
+      def find(id)
+        if doc = collection.find_first({:_id => id})
+          return new(doc)
+        else
+          raise DocumentNotFound, "Document with id of #{id} does not exist in collection named #{collection.name}"
+        end
+      end
+      
+      def create(*docs)
+        rows = []
+        docs.flatten.each { |attrs| rows << new(attrs).save }
+        rows.size == 1 ? rows[0] : rows
+      end
+      
+      def update(id, attrs)
+        doc = find(id)
+        doc.update_attributes(attrs)
+      end
+      
+      def database(name=nil)
+        if name.nil?
+          @database ||= MongoMapper.default_database
+        else
+          @database = MongoMapper.connection.db(name)
+        end
+        
+        @database
+      end
+      
+      def collection(name=nil)
+        if name.nil?
+          @collection ||= database.collection(self.class.to_s.tableize)
+        else
+          @collection = database.collection(name)
+        end
+        
+        @collection
+      end
+      
       def key(name, type)
         key = Key.new(name, type)
         keys[key.name] = key
@@ -28,6 +68,21 @@ module MongoMapper
     
     def initialize(attrs={})
       self.attributes = attrs
+    end
+    
+    def collection
+      self.class.collection
+    end
+    
+    def save
+      write_attribute('_id', generate_primary_key) if read_attribute('_id').blank?
+      self.attributes = collection.insert(attributes)
+      self
+    end
+    
+    def update_attributes(attrs={})
+      self.attributes = attrs
+      save
     end
     
     def attributes=(attrs)
@@ -61,6 +116,10 @@ module MongoMapper
       write_attribute(name, value)
     end
     
+    def id
+      read_attribute('_id')
+    end
+    
     def method_missing(method, *args, &block)
       attribute = method.to_s
       
@@ -74,6 +133,10 @@ module MongoMapper
     end
     
     private
+      def generate_primary_key
+        XGen::Mongo::Driver::ObjectID.new
+      end
+      
       def read_attribute(name)
         defined_key(name).get(instance_variable_get("@#{name}"))
       end

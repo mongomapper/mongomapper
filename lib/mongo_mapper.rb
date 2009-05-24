@@ -13,7 +13,9 @@ dir = Pathname(__FILE__).dirname.expand_path + 'mongo_mapper'
 require dir + 'document'
 require dir + 'key'
 
-module MongoMapper  
+module MongoMapper
+  class DocumentNotFound < StandardError; end
+  
   def self.connection
     @@connection ||= XGen::Mongo::Driver::Mongo.new
   end

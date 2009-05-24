@@ -13,11 +13,10 @@ class DocumentTest < Test::Unit::TestCase
       key.type.should == String
       key.should be_instance_of(MongoMapper::Key)
     end
-      
+    
     should "know what keys have been defined" do
       @document.key(:name, String)
       @document.key(:age, Integer)
-      @document.keys.size.should == 2
       @document.keys['name'].name.should == 'name'
       @document.keys['name'].type.should == String
       @document.keys['age'].name.should == 'age'
@@ -29,7 +28,105 @@ class DocumentTest < Test::Unit::TestCase
       @document.keys.keys.should include('created_at')
       @document.keys.keys.should include('updated_at')
     end
-  end # Document class
+    
+    should "use default database by default" do
+      @document.database.should == MongoMapper.default_database
+    end
+    
+    should "allow setting a different database without affecting the default" do
+      @document.database AlternateDatabase
+      @document.database.name.should == AlternateDatabase
+      
+      another_document = Class.new
+      another_document.instance_eval { include MongoMapper::Document }
+      another_document.database.should == MongoMapper.default_database
+    end
+    
+    should "default collection name to class name tableized" do
+      @document.collection.should be_instance_of(XGen::Mongo::Driver::Collection)
+      @document.collection.name.should == 'classes'
+    end
+    
+    should "allow setting the collection name" do
+      @document.collection('foobar')
+      @document.collection.should be_instance_of(XGen::Mongo::Driver::Collection)
+      @document.collection.name.should == 'foobar'
+    end
+  end # Document class  
+  
+  context "Database operations" do
+    setup do
+      @document = Class.new
+      @document.instance_eval do
+        include MongoMapper::Document
+        collection 'users'
+        
+        key :fname, String
+        key :lname, String
+        key :age, Integer
+      end
+      
+      @document.collection.clear
+    end
+    
+    context "Creating a single document" do
+      setup do
+        @record = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+      end
+
+      should "create a document in correct collection" do
+        @document.collection.count.should == 1
+      end
+
+      should "automatically set id" do
+        @record.id.should_not be_nil
+        @record.id.size.should == 24
+      end
+
+      should "return instance of document" do
+        @record.should be_instance_of(@document)
+        @record.fname.should == 'John'
+        @record.lname.should == 'Nunemaker'
+        @record.age.should == 27
+      end
+    end
+    
+    context "Creating multiple documents" do
+      setup do
+        @records = @document.create([
+          {:fname => 'John', :lname => 'Nunemaker', :age => '27'},
+          {:fname => 'Steve', :lname => 'Smith', :age => '28'},
+        ])
+      end
+
+      should "create multiple documents" do
+        @document.collection.count.should == 2
+      end
+      
+      should "return an array of doc instances" do
+        @records.map do |record|
+          record.should be_instance_of(@document)
+        end
+      end
+    end
+    
+    context "Updating a document" do
+      setup do
+        doc = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+        @record = @document.update(doc.id, {:age => 40})
+      end
+
+      should "update attributes provided" do
+        @record.age.should == 40
+      end
+      
+      should "not update existing attributes that were not set to update" do
+        @record.fname.should == 'John'
+        @record.lname.should == 'Nunemaker'
+      end
+    end
+    
+  end # Database operations
   
   context "An instance of a document" do
     setup do
@@ -40,6 +137,23 @@ class DocumentTest < Test::Unit::TestCase
         key :name, String
         key :age, Integer
       end
+    end
+    
+    should "have access to the class's collection" do
+      doc = @document.new
+      doc.collection.should == @document.collection
+    end
+    
+    should "automatically have an _id key" do
+      @document.keys.keys.should include('_id')
+    end
+    
+    should_eventually "have tests for save" do
+      
+    end
+    
+    should_eventually "have tests for update attributes" do
+      
     end
     
     context "when initialized" do
@@ -196,7 +310,7 @@ class DocumentTest < Test::Unit::TestCase
         doc.name.should == 'Frank'
         doc.age.should == 62
       end
-    end # writing an attribute    
+    end # writing an attribute
     
     context "with timestamps defined" do
       should_eventually "set created_at and updated_at on create" do
