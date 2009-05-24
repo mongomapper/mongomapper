@@ -13,9 +13,9 @@ class MongoMapperTest < Test::Unit::TestCase
   end
   
   should "be able to write and read default database" do
-    MongoMapper.default_database = DefaultDatabase
-    MongoMapper.default_database.should be_instance_of(XGen::Mongo::Driver::DB)
-    MongoMapper.default_database.name.should == DefaultDatabase
+    MongoMapper.database = DefaultDatabase
+    MongoMapper.database.should be_instance_of(XGen::Mongo::Driver::DB)
+    MongoMapper.database.name.should == DefaultDatabase
   end
   
   should "have record not found error" do

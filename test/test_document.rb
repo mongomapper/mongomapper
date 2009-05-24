@@ -30,7 +30,18 @@ class DocumentTest < Test::Unit::TestCase
     end
     
     should "use default database by default" do
-      @document.database.should == MongoMapper.default_database
+      @document.database.should == MongoMapper.database
+    end
+    
+    should "have a connection" do
+      @document.connection.should be_instance_of(XGen::Mongo::Driver::Mongo)
+    end
+    
+    should "allow setting different connection without affecting the default" do
+      conn = XGen::Mongo::Driver::Mongo.new
+      @document.connection conn
+      @document.connection.should == conn
+      @document.connection.should_not == MongoMapper.connection
     end
     
     should "allow setting a different database without affecting the default" do
@@ -39,7 +50,7 @@ class DocumentTest < Test::Unit::TestCase
       
       another_document = Class.new
       another_document.instance_eval { include MongoMapper::Document }
-      another_document.database.should == MongoMapper.default_database
+      another_document.database.should == MongoMapper.database
     end
     
     should "default collection name to class name tableized" do
@@ -124,6 +135,80 @@ class DocumentTest < Test::Unit::TestCase
         @record.fname.should == 'John'
         @record.lname.should == 'Nunemaker'
       end
+      
+      should "not create new record" do
+        @document.collection.count.should == 1
+      end
+    end
+    
+    should "raise error when updating single doc if not provided id and attributes" do
+      doc = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+      lambda { @document.update }.should raise_error(ArgumentError)
+      lambda { @document.update(doc.id) }.should raise_error(ArgumentError)
+      lambda { @document.update(doc.id, [1]) }.should raise_error(ArgumentError)
+    end
+    
+    context "Updating multiple documents" do
+      setup do
+        @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+        @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
+        
+        @records = @document.update({
+          @doc1.id => {:age => 30},
+          @doc2.id => {:age => 30},
+        })
+      end
+
+      should "not create any new records" do
+        @document.collection.count.should == 2
+      end
+      
+      should "should return an array of doc instances" do
+        @records.map do |record|
+          record.should be_instance_of(@document)
+        end
+      end
+      
+      should "update the records" do
+        @document.find(@doc1.id).age.should == 30
+        @document.find(@doc2.id).age.should == 30
+      end
+    end
+    
+    should "raise error when updating multiple documents if not a hash" do
+      lambda { @document.update([1, 2]) }.should raise_error(ArgumentError)
+    end
+    
+    context "Finding documents" do
+      setup do
+        @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+        @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
+      end
+
+      should "be able to find by id" do
+        @document.find(@doc1.id).should == @doc1
+        @document.find(@doc2.id).should == @doc2
+      end
+      
+      should "raise error if document not found" do
+        lambda { @document.find(1) }.should raise_error(MongoMapper::DocumentNotFound)
+      end
+    end
+    
+    context "Finding document by id" do
+      setup do
+        @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+        @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
+      end
+
+      should "be able to find by id" do
+        @document.find_by_id(@doc1.id).should == @doc1
+        @document.find_by_id(@doc2.id).should == @doc2
+      end
+      
+      should "return nil if document not found" do
+        @document.find_by_id(1234).should be(nil)
+      end
     end
     
   end # Database operations
@@ -137,6 +222,7 @@ class DocumentTest < Test::Unit::TestCase
         key :name, String
         key :age, Integer
       end
+      @document.collection.clear
     end
     
     should "have access to the class's collection" do
@@ -148,12 +234,19 @@ class DocumentTest < Test::Unit::TestCase
       @document.keys.keys.should include('_id')
     end
     
-    should_eventually "have tests for save" do
+    context "new_record?" do
+      should "be true if no id" do
+        @document.new.new_record?.should be(true)
+      end
       
-    end
-    
-    should_eventually "have tests for update attributes" do
+      should "be true if has id but id not in database" do
+        @document.new('_id' => 1).new_record?.should be(true)
+      end
       
+      should "be false if has id and id is in database" do
+        doc = @document.create(:name => 'John Nunemaker', :age => 27)
+        doc.new_record?.should be(false)
+      end
     end
     
     context "when initialized" do
@@ -311,6 +404,125 @@ class DocumentTest < Test::Unit::TestCase
         doc.age.should == 62
       end
     end # writing an attribute
+    
+    context "equality" do
+      should "be equal if id and class are the same" do
+        (@document.new('_id' => 1) == @document.new('_id' => 1)).should be(true)
+      end
+      
+      should "not be equal if class same but id different" do
+        (@document.new('_id' => 1) == @document.new('_id' => 2)).should be(false)
+      end
+      
+      should "not be equal if id same but class different" do
+        @another_document = Class.new
+        @another_document.instance_eval { include MongoMapper::Document }
+        
+        (@document.new('_id' => 1) == @another_document.new('_id' => 1)).should be(false)
+      end
+    end
+    
+    context "Saving a new document" do
+      setup do
+        @doc = @document.new(:name => 'John Nunemaker', :age => '27')
+        @doc.save
+      end
+
+      should "insert record into the collection" do
+        @document.collection.count.should == 1
+      end
+      
+      should "assign an id for the record" do
+        @doc.id.should_not be(nil)
+        @doc.id.size.should == 24
+      end
+      
+      should "save attributes" do
+        @doc.name.should == 'John Nunemaker'
+        @doc.age.should == 27
+      end
+      
+      should "update attributes in the database" do
+        from_db = @document.find(@doc.id)
+        from_db.should == @doc
+        from_db.name.should == 'John Nunemaker'
+        from_db.age.should == 27
+      end
+    end
+    
+    context "Saving an existing document" do
+      setup do
+        @doc = @document.create(:name => 'John Nunemaker', :age => '27')
+        @doc.name = 'John Doe'
+        @doc.age = 30
+        @doc.save
+      end
+
+      should "not insert record into collection" do
+        @document.collection.count.should == 1
+      end
+      
+      should "update attributes" do
+        @doc.name.should == 'John Doe'
+        @doc.age.should == 30
+      end
+      
+      should "update attributes in the database" do
+        from_db = @document.find(@doc.id)
+        from_db.name.should == 'John Doe'
+        from_db.age.should == 30
+      end
+    end
+    
+    context "Calling update attributes on a new record" do
+      setup do
+        @doc = @document.new(:name => 'John Nunemaker', :age => '27')
+        @doc.update_attributes(:name => 'John Doe', :age => 30)
+      end
+
+      should "insert record into the collection" do
+        @document.collection.count.should == 1
+      end
+      
+      should "assign an id for the record" do
+        @doc.id.should_not be(nil)
+        @doc.id.size.should == 24
+      end
+      
+      should "save attributes" do
+        @doc.name.should == 'John Doe'
+        @doc.age.should == 30
+      end
+      
+      should "update attributes in the database" do
+        from_db = @document.find(@doc.id)
+        from_db.should == @doc
+        from_db.name.should == 'John Doe'
+        from_db.age.should == 30
+      end
+    end
+    
+    context "Updating an existing record using update attributes" do
+      setup do
+        @doc = @document.create(:name => 'John Nunemaker', :age => '27')
+        @doc.update_attributes(:name => 'John Doe', :age => 30)
+      end
+
+      should "not insert record into collection" do
+        @document.collection.count.should == 1
+      end
+      
+      should "update attributes" do
+        @doc.name.should == 'John Doe'
+        @doc.age.should == 30
+      end
+      
+      should "update attributes in the database" do
+        from_db = @document.find(@doc.id)
+        from_db.name.should == 'John Doe'
+        from_db.age.should == 30
+      end
+    end
     
     context "with timestamps defined" do
       should_eventually "set created_at and updated_at on create" do

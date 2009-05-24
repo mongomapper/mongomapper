@@ -8,11 +8,12 @@ module MongoMapper
     
     module ClassMethods      
       def find(id)
-        if doc = collection.find_first({:_id => id})
-          return new(doc)
-        else
-          raise DocumentNotFound, "Document with id of #{id} does not exist in collection named #{collection.name}"
-        end
+        find_by_id(id) || raise(DocumentNotFound, "Document with id of #{id} does not exist in collection named #{collection.name}")
+      end
+      
+      def find_by_id(id)
+        doc = collection.find_first({:_id => id})
+        doc ? new(doc) : nil
       end
       
       def create(*docs)
@@ -21,16 +22,36 @@ module MongoMapper
         rows.size == 1 ? rows[0] : rows
       end
       
-      def update(id, attrs)
-        doc = find(id)
-        doc.update_attributes(attrs)
+      # For updating single record
+      #   Person.update(1, {:foo => 'bar'})
+      #
+      # For updating multiple records at once:
+      #   Person.update({'1' => {:foo => 'bar'}, '2' => {:baz => 'wick'}}) 
+      def update(*args)
+        updating_multiple = args.length == 1
+        
+        if updating_multiple
+          update_multiple(args[0])
+        else
+          update_single(args[0], args[1])
+        end
+      end
+      
+      def connection(mongo_connection=nil)
+        if mongo_connection.nil?
+          @connection ||= MongoMapper.connection
+        else
+          @connection = mongo_connection
+        end
+        
+        @connection
       end
       
       def database(name=nil)
         if name.nil?
-          @database ||= MongoMapper.default_database
+          @database ||= MongoMapper.database
         else
-          @database = MongoMapper.connection.db(name)
+          @database = connection.db(name)
         end
         
         @database
@@ -60,6 +81,24 @@ module MongoMapper
         key(:created_at, DateTime)
         key(:updated_at, DateTime)
       end
+      
+      private
+        def update_single(id, attrs)
+          if id.blank? || attrs.blank? || !attrs.is_a?(Hash)
+            raise ArgumentError, "Updating a single document requires an id and a hash of attributes"
+          end
+          doc = find(id)
+          doc.update_attributes(attrs)
+        end
+        
+        def update_multiple(docs)
+          unless docs.is_a?(Hash)
+            raise ArgumentError, "Updating multiple documents takes 1 argument and it must be hash"
+          end
+          docs.inject([]) do |rows, doc|
+            rows << update(doc[0], doc[1]); rows
+          end
+        end
     end
     
     ####################
@@ -74,9 +113,12 @@ module MongoMapper
       self.class.collection
     end
     
+    def new_record?
+      read_attribute('_id').blank? || self.class.find_by_id(id).blank?
+    end
+    
     def save
-      write_attribute('_id', generate_primary_key) if read_attribute('_id').blank?
-      self.attributes = collection.insert(attributes)
+      new_record? ? create : update
       self
     end
     
@@ -132,7 +174,22 @@ module MongoMapper
       end
     end
     
+    def ==(other)
+      id == other.id && self.class == other.class
+    end
+    
     private
+      def create
+        if read_attribute('_id').blank?
+          write_attribute('_id', generate_primary_key)
+        end
+        collection.insert(attributes)
+      end
+      
+      def update
+        collection.modify({:_id => id}, attributes)
+      end
+      
       def generate_primary_key
         XGen::Mongo::Driver::ObjectID.new
       end

@@ -24,11 +24,11 @@ module MongoMapper
     @@connection = new_connection
   end
   
-  def self.default_database=(name)
-    @@default_database = MongoMapper.connection.db(name)
+  def self.database=(name)
+    @@database = MongoMapper.connection.db(name)
   end
   
-  def self.default_database
-    @@default_database
+  def self.database
+    @@database
   end
 end

@@ -16,4 +16,4 @@ end
 DefaultDatabase = 'test'
 AlternateDatabase = 'test2'
 
-MongoMapper.default_database = DefaultDatabase
+MongoMapper.database = DefaultDatabase
