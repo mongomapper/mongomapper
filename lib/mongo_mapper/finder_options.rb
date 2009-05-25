@@ -10,7 +10,7 @@ module MongoMapper
     end
     
     def criteria
-      @conditions
+      convert_conditions(@conditions.dup)
     end
     
     def options
@@ -22,6 +22,22 @@ module MongoMapper
     end
     
     private
+      def convert_conditions(conditions)
+        criteria = {}
+        conditions.each_pair do |field, value|
+          case value
+            when Array
+              criteria[field] = {'$in' => value}
+            when Hash
+              criteria[field] = convert_conditions(value)
+            else
+              criteria[field] = value
+          end
+        end
+        
+        criteria
+      end
+      
       def convert_options(options)
         {
           :fields => convert_fields(options.delete(:fields)),

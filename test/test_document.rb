@@ -190,6 +190,17 @@ class DocumentTest < Test::Unit::TestCase
         end
       end
       
+      context "with multiple id's" do
+        should "work as arguments" do
+          @document.find(@doc1.id, @doc2.id).should == [@doc1, @doc2]
+        end
+        
+        should "work as array" do
+          @document.find([@doc1.id, @doc2.id]).should == [@doc1, @doc2]
+        end
+      end
+      
+      
       context "with :all" do
         should "find all documents" do
           @document.find(:all).should == [@doc1, @doc2, @doc3]

@@ -8,7 +8,7 @@ require 'mongo'
 dir = Pathname(__FILE__).dirname.expand_path + 'mongo_mapper'
 require dir + 'document'
 require dir + 'key'
-require dir + 'options'
+require dir + 'finder_options'
 
 module MongoMapper
   class DocumentNotFound < StandardError; end

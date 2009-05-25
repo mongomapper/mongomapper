@@ -14,8 +14,29 @@ class FinderOptionsTest < Test::Unit::TestCase
     end
   end
   
-  should "work with simple criteria" do
-    FinderOptions.new(:conditions => {:foo => 'bar'}).criteria.should == {:foo => 'bar'}
+  context "Converting conditions to criteria" do
+    should "work with simple criteria" do
+      FinderOptions.new(:conditions => {:foo => 'bar'}).criteria.should == {
+        :foo => 'bar'
+      }
+      
+      FinderOptions.new(:conditions => {:foo => 'bar', :baz => 'wick'}).criteria.should == {
+        :foo => 'bar', 
+        :baz => 'wick'
+      }
+    end
+    
+    should "use $in for arrays" do
+      FinderOptions.new(:conditions => {:foo => [1,2,3]}).criteria.should == {
+        :foo => {'$in' => [1,2,3]}
+      }
+    end
+    
+    should "work arbitrarily deep" do
+      FinderOptions.new(:conditions => {:foo => {:bar => [1,2,3]}}).criteria.should == {
+        :foo => {:bar => {'$in' => [1,2,3]}}
+      }
+    end
   end
   
   context "ordering" do

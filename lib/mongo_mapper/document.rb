@@ -122,11 +122,11 @@ module MongoMapper
         end
 
         def find_some(ids)
-          documents = collection.find('_id' => {'$in' => ids}).to_a
+          documents = find_every(:conditions => {'_id' => ids})
           if ids.size == documents.size
-            documents.map { |doc| new(doc) }
+            documents
           else
-            raise DocumentNotFound, "Couldn't find all of the ids (#{ids.to_sentence}). Found #{document.size}, but was expecting #{ids.size}"
+            raise DocumentNotFound, "Couldn't find all of the ids (#{ids.to_sentence}). Found #{documents.size}, but was expecting #{ids.size}"
           end
         end
 
@@ -241,6 +241,13 @@ module MongoMapper
     
     def ==(other)
       id == other.id && self.class == other.class
+    end
+    
+    def inspect
+      attributes_as_nice_string = defined_key_names.collect do |name|
+        "#{name}: #{read_attribute(name)}"
+      end.join(", ")
+      "#<#{self.class} #{attributes_as_nice_string}>"
     end
     
     private
