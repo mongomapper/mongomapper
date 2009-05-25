@@ -1,8 +1,4 @@
-require 'date'
-require 'time'
 require 'pathname'
-require 'forwardable'
-
 require 'rubygems'
 gem 'activesupport'
 require 'activesupport'
@@ -12,6 +8,7 @@ require 'mongo'
 dir = Pathname(__FILE__).dirname.expand_path + 'mongo_mapper'
 require dir + 'document'
 require dir + 'key'
+require dir + 'options'
 
 module MongoMapper
   class DocumentNotFound < StandardError; end

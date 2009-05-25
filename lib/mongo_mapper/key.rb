@@ -2,7 +2,8 @@ class Boolean; end
 
 module MongoMapper
   class Key
-    NativeTypes = [String, Float, Time, Date, DateTime, Integer, Boolean, Array, Hash]
+    # DateTime currently is not supported by mongo's bson so just use Time
+    NativeTypes = [String, Float, Time, Date, Integer, Boolean, Array, Hash]
     
     attr_accessor :name, :type
     
@@ -37,7 +38,6 @@ module MongoMapper
           elsif type == Array     then value.to_a
           elsif type == Time      then Time.parse(value.to_s)
           elsif type == Date      then Date.parse(value.to_s)
-          elsif type == DateTime  then DateTime.parse(value.to_s)
           elsif type == Boolean   then ['true', 't', '1'].include?(value.to_s.downcase)
           elsif type == Integer
             # ganked from datamapper

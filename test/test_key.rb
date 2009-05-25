@@ -5,7 +5,7 @@ class KeyTest < Test::Unit::TestCase
   
   context "The Key Class" do
     should "have the native types defined" do
-      Key::NativeTypes.should == [String, Float, Time, Date, DateTime, Integer, Boolean, Array, Hash]
+      Key::NativeTypes.should == [String, Float, Time, Date, Integer, Boolean, Array, Hash]
     end
   end
   
@@ -64,12 +64,7 @@ class KeyTest < Test::Unit::TestCase
       key = Key.new(:foo, Date)
       key.set('2000-01-01').should == Date.new(2000, 1, 1)
     end
-
-    should "correctly typecast DateTimes" do
-      key = Key.new(:foo, DateTime)
-      key.set('2000-01-01 00:00:00').should == DateTime.new(2000, 1, 1, 0, 0, 0)
-    end
-
+    
     should "correctly typecast Boolean" do
       key = Key.new(:foo, Boolean)
       ['false', false, 'f', '0', 0].each do |b|

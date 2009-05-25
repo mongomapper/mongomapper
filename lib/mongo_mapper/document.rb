@@ -2,18 +2,32 @@ module MongoMapper
   module Document
     def self.included(model)
       model.extend ClassMethods
-      model.extend Forwardable
-      model.class_eval { key :_id, String }
+      model.class_eval do
+        key :_id, String
+        key :created_at, Time
+        key :updated_at, Time
+      end
     end
     
-    module ClassMethods      
-      def find(id)
-        find_by_id(id) || raise(DocumentNotFound, "Document with id of #{id} does not exist in collection named #{collection.name}")
+    module ClassMethods
+      def find(*args)
+        options = args.extract_options!
+        
+        case args.first
+          when :first then find_first(options)
+          when :last  then find_last(options)
+          when :all   then find_every(options)
+          else             find_from_ids(args)
+        end
       end
       
       def find_by_id(id)
         doc = collection.find_first({:_id => id})
         doc ? new(doc) : nil
+      end
+      
+      def count(conditions={})
+        collection.count(conditions)
       end
       
       def create(*docs)
@@ -35,6 +49,22 @@ module MongoMapper
         else
           update_single(args[0], args[1])
         end
+      end
+      
+      def delete(*ids)
+        ids.flatten.each { |id| collection.remove(:_id => id) }
+      end
+      
+      def delete_all(conditions={})
+        collection.remove(conditions)
+      end
+      
+      def destroy(*ids)
+        ids.flatten.each { |id| find(id).destroy }
+      end
+      
+      def destroy_all(conditions={})
+        find(:all, :conditions => conditions).map(&:destroy)
       end
       
       def connection(mongo_connection=nil)
@@ -77,12 +107,42 @@ module MongoMapper
         @keys ||= HashWithIndifferentAccess.new
       end
       
-      def timestamp
-        key(:created_at, DateTime)
-        key(:updated_at, DateTime)
-      end
-      
-      private
+      private        
+        def find_every(options)
+          criteria, options = FinderOptions.new(options).to_a
+          collection.find(criteria, options).to_a.map { |doc| new(doc) }
+        end
+
+        def find_first(options)
+          find_every(options.merge(:limit => 1, :order => 'created_at')).first
+        end
+
+        def find_last(options)
+          find_every(options.merge(:limit => 1, :order => 'created_at desc')).first
+        end
+
+        def find_some(ids)
+          documents = collection.find('_id' => {'$in' => ids}).to_a
+          if ids.size == documents.size
+            documents.map { |doc| new(doc) }
+          else
+            raise DocumentNotFound, "Couldn't find all of the ids (#{ids.to_sentence}). Found #{document.size}, but was expecting #{ids.size}"
+          end
+        end
+
+        def find_from_ids(*ids)
+          ids = ids.flatten.compact.uniq
+
+          case ids.size
+            when 0
+              raise(DocumentNotFound, "Couldn't find without an ID")
+            when 1
+              find_by_id(ids[0]) || raise(DocumentNotFound, "Document with id of #{ids[0]} does not exist in collection named #{collection.name}")
+            else
+              find_some(ids)
+          end
+        end
+        
         def update_single(id, attrs)
           if id.blank? || attrs.blank? || !attrs.is_a?(Hash)
             raise ArgumentError, "Updating a single document requires an id and a hash of attributes"
@@ -125,6 +185,11 @@ module MongoMapper
     def update_attributes(attrs={})
       self.attributes = attrs
       save
+    end
+    
+    def destroy
+      collection.remove(:_id => id) unless new_record?
+      freeze
     end
     
     def attributes=(attrs)
@@ -183,11 +248,23 @@ module MongoMapper
         if read_attribute('_id').blank?
           write_attribute('_id', generate_primary_key)
         end
+        update_document_timestamps
         collection.insert(attributes)
       end
       
       def update
+        update_document_timestamps
         collection.modify({:_id => id}, attributes)
+      end
+      
+      def update_document_timestamps
+        if new_record? && writer?(:created_at)
+          write_attribute('created_at', Time.now.utc)
+        end
+        
+        if writer?(:updated_at)
+          write_attribute('updated_at', Time.now.utc)
+        end
       end
       
       def generate_primary_key

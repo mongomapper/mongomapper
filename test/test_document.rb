@@ -23,12 +23,6 @@ class DocumentTest < Test::Unit::TestCase
       @document.keys['age'].type.should == Integer
     end
     
-    should "be able to define timestamps with timestamp shortcut" do
-      @document.timestamp
-      @document.keys.keys.should include('created_at')
-      @document.keys.keys.should include('updated_at')
-    end
-    
     should "use default database by default" do
       @document.database.should == MongoMapper.database
     end
@@ -86,7 +80,7 @@ class DocumentTest < Test::Unit::TestCase
       end
 
       should "create a document in correct collection" do
-        @document.collection.count.should == 1
+        @document.count.should == 1
       end
 
       should "automatically set id" do
@@ -100,7 +94,7 @@ class DocumentTest < Test::Unit::TestCase
         @record.lname.should == 'Nunemaker'
         @record.age.should == 27
       end
-    end
+    end    
     
     context "Creating multiple documents" do
       setup do
@@ -111,7 +105,7 @@ class DocumentTest < Test::Unit::TestCase
       end
 
       should "create multiple documents" do
-        @document.collection.count.should == 2
+        @document.count.should == 2
       end
       
       should "return an array of doc instances" do
@@ -136,8 +130,8 @@ class DocumentTest < Test::Unit::TestCase
         @record.lname.should == 'Nunemaker'
       end
       
-      should "not create new record" do
-        @document.collection.count.should == 1
+      should "not create new document" do
+        @document.count.should == 1
       end
     end
     
@@ -159,8 +153,8 @@ class DocumentTest < Test::Unit::TestCase
         })
       end
 
-      should "not create any new records" do
-        @document.collection.count.should == 2
+      should "not create any new documents" do
+        @document.count.should == 2
       end
       
       should "should return an array of doc instances" do
@@ -169,7 +163,7 @@ class DocumentTest < Test::Unit::TestCase
         end
       end
       
-      should "update the records" do
+      should "update the documents" do
         @document.find(@doc1.id).age.should == 30
         @document.find(@doc2.id).age.should == 30
       end
@@ -183,17 +177,41 @@ class DocumentTest < Test::Unit::TestCase
       setup do
         @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
         @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
-      end
-
-      should "be able to find by id" do
-        @document.find(@doc1.id).should == @doc1
-        @document.find(@doc2.id).should == @doc2
+        @doc3 = @document.create({:fname => 'Steph', :lname => 'Nunemaker', :age => '26'})
       end
       
-      should "raise error if document not found" do
-        lambda { @document.find(1) }.should raise_error(MongoMapper::DocumentNotFound)
+      context "with a single id" do
+        should "work" do
+          @document.find(@doc1.id).should == @doc1
+        end
+        
+        should "raise error if document not found" do
+          lambda { @document.find(1) }.should raise_error(MongoMapper::DocumentNotFound)
+        end
       end
-    end
+      
+      context "with :all" do
+        should "find all documents" do
+          @document.find(:all).should == [@doc1, @doc2, @doc3]
+        end
+        
+        should "be able to add conditions" do
+          @document.find(:all, :conditions => {:fname => 'John'}).should == [@doc1]
+        end
+      end
+      
+      context "with :first" do
+        should "find first document" do
+          @document.find(:first).should == @doc1
+        end
+      end
+      
+      context "with :last" do
+        should "find last document" do
+          @document.find(:last).should == @doc3
+        end
+      end
+    end # finding documents
     
     context "Finding document by id" do
       setup do
@@ -208,6 +226,137 @@ class DocumentTest < Test::Unit::TestCase
       
       should "return nil if document not found" do
         @document.find_by_id(1234).should be(nil)
+      end
+    end
+    
+    context "Deleting a document" do
+      setup do
+        @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+        @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
+        @document.delete(@doc1.id)
+      end
+
+      should "remove document from collection" do
+        @document.count.should == 1
+      end
+      
+      should "not remove other documents" do
+        @document.find(@doc2.id).should_not be(nil)
+      end
+    end
+    
+    context "Deleting multiple documents" do
+      should "work with multiple arguments" do
+        @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+        @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
+        @doc3 = @document.create({:fname => 'Steph', :lname => 'Nunemaker', :age => '26'})
+        @document.delete(@doc1.id, @doc2.id)
+        
+        @document.count.should == 1
+      end
+      
+      should "work with array as argument" do
+        @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+        @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
+        @doc3 = @document.create({:fname => 'Steph', :lname => 'Nunemaker', :age => '26'})
+        @document.delete([@doc1.id, @doc2.id])
+        
+        @document.count.should == 1
+      end
+    end
+    
+    context "Deleting all documents" do
+      setup do
+        @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+        @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
+        @doc3 = @document.create({:fname => 'Steph', :lname => 'Nunemaker', :age => '26'})
+      end
+
+      should "remove all documents when given no conditions" do
+        @document.delete_all
+        @document.count.should == 0
+      end
+      
+      should "only remove matching documents when given conditions" do
+        @document.delete_all({:fname => 'John'})
+        @document.count.should == 2
+      end
+    end
+    
+    context "Destroying a document" do
+      setup do
+        @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+        @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
+        @document.destroy(@doc1.id)
+      end
+
+      should "remove document from collection" do
+        @document.count.should == 1
+      end
+      
+      should "not remove other documents" do
+        @document.find(@doc2.id).should_not be(nil)
+      end
+    end
+    
+    context "Destroying multiple documents" do
+      should "work with multiple arguments" do
+        @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+        @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
+        @doc3 = @document.create({:fname => 'Steph', :lname => 'Nunemaker', :age => '26'})
+        @document.destroy(@doc1.id, @doc2.id)
+        
+        @document.count.should == 1
+      end
+      
+      should "work with array as argument" do
+        @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+        @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
+        @doc3 = @document.create({:fname => 'Steph', :lname => 'Nunemaker', :age => '26'})
+        @document.destroy([@doc1.id, @doc2.id])
+        
+        @document.count.should == 1
+      end
+    end
+    
+    context "Destroying all documents" do
+      setup do
+        @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+        @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
+        @doc3 = @document.create({:fname => 'Steph', :lname => 'Nunemaker', :age => '26'})
+      end
+
+      should "remove all documents when given no conditions" do
+        @document.destroy_all
+        @document.count.should == 0
+      end
+      
+      should "only remove matching documents when given conditions" do
+        @document.destroy_all(:fname => 'John')
+        @document.count.should == 2
+        @document.destroy_all(:age => 26)
+        @document.count.should == 1
+      end
+    end
+    
+    context "Counting documents in collection" do
+      setup do
+        @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+        @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
+        @doc3 = @document.create({:fname => 'Steph', :lname => 'Nunemaker', :age => '26'})
+      end
+
+      should "count all with no arguments" do
+        @document.count.should == 3
+      end
+      
+      should "return 0 if there are no documents in the collection" do
+        @document.delete_all
+        @document.count.should == 0
+      end
+      
+      should "return count for matching documents if conditions provided" do
+        @document.count(:age => 27).should == 1
       end
     end
     
@@ -428,11 +577,11 @@ class DocumentTest < Test::Unit::TestCase
         @doc.save
       end
 
-      should "insert record into the collection" do
-        @document.collection.count.should == 1
+      should "insert document into the collection" do
+        @document.count.should == 1
       end
       
-      should "assign an id for the record" do
+      should "assign an id for the document" do
         @doc.id.should_not be(nil)
         @doc.id.size.should == 24
       end
@@ -458,8 +607,8 @@ class DocumentTest < Test::Unit::TestCase
         @doc.save
       end
 
-      should "not insert record into collection" do
-        @document.collection.count.should == 1
+      should "not insert document into collection" do
+        @document.count.should == 1
       end
       
       should "update attributes" do
@@ -474,17 +623,17 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
     
-    context "Calling update attributes on a new record" do
+    context "Calling update attributes on a new document" do
       setup do
         @doc = @document.new(:name => 'John Nunemaker', :age => '27')
         @doc.update_attributes(:name => 'John Doe', :age => 30)
       end
 
-      should "insert record into the collection" do
-        @document.collection.count.should == 1
+      should "insert document into the collection" do
+        @document.count.should == 1
       end
       
-      should "assign an id for the record" do
+      should "assign an id for the document" do
         @doc.id.should_not be(nil)
         @doc.id.size.should == 24
       end
@@ -502,14 +651,14 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
     
-    context "Updating an existing record using update attributes" do
+    context "Updating an existing document using update attributes" do
       setup do
         @doc = @document.create(:name => 'John Nunemaker', :age => '27')
         @doc.update_attributes(:name => 'John Doe', :age => 30)
       end
 
-      should "not insert record into collection" do
-        @document.collection.count.should == 1
+      should "not insert document into collection" do
+        @document.count.should == 1
       end
       
       should "update attributes" do
@@ -524,13 +673,56 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
     
-    context "with timestamps defined" do
-      should_eventually "set created_at and updated_at on create" do
-        
+    context "Destroying a document that exists" do
+      setup do
+        @doc = @document.create(:name => 'John Nunemaker', :age => '27')
+        @doc.destroy
+      end
+
+      should "remove the document from the collection" do
+        @document.count.should == 0
       end
       
-      should_eventually "set updated_at on update" do
-        
+      should "raise error if assignment is attempted" do
+        lambda { @doc.name = 'Foo' }.should raise_error(TypeError)
+      end
+    end
+    
+    context "Destroying a document that is a new record" do
+      setup do
+        setup do
+          @doc = @document.new(:name => 'John Nunemaker', :age => '27')
+          @doc.destroy
+        end
+
+        should "not affect collection count" do
+          @document.collection.count.should == 0
+        end
+
+        should "raise error if assignment is attempted" do
+          lambda { @doc.name = 'Foo' }.should raise_error(TypeError)
+        end
+      end
+    end
+    
+    context "timestamping" do
+      should "set created_at and updated_at on create" do
+        doc = @document.new(:name => 'John Nunemaker', :age => 27)
+        doc.created_at.should be(nil)
+        doc.updated_at.should be(nil)
+        doc.save
+        doc.created_at.should_not be(nil)
+        doc.updated_at.should_not be(nil)
+      end
+      
+      should "set updated_at on update but leave created_at alone" do
+        doc = @document.create(:name => 'John Nunemaker', :age => 27)
+        old_created_at = doc.created_at
+        old_updated_at = doc.updated_at
+        doc.name = 'John Doe'
+        doc.save
+        doc.created_at.should == old_created_at
+        doc.updated_at.should_not == old_updated_at
       end
     end
     
