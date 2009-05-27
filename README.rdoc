@@ -5,9 +5,3 @@ Awesome gem for modeling your domain and storing it in mongo
 == Copyright
 
 Copyright (c) 2009 John Nunemaker. See LICENSE for details.
-
-== ToDo
-
-* allow setting up connection (host and port), default connection to mongo defaults
-* allow selecting database
-* allow selecting collection
