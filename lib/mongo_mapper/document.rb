@@ -252,9 +252,7 @@ module MongoMapper
     
     private
       def create
-        if read_attribute('_id').blank?
-          write_attribute('_id', generate_primary_key)
-        end
+        write_attribute('_id', generate_id) if read_attribute('_id').blank?
         update_document_timestamps
         collection.insert(attributes)
       end
@@ -265,16 +263,11 @@ module MongoMapper
       end
       
       def update_document_timestamps
-        if new_record? && writer?(:created_at)
-          write_attribute('created_at', Time.now.utc)
-        end
-        
-        if writer?(:updated_at)
-          write_attribute('updated_at', Time.now.utc)
-        end
+        write_attribute('created_at', Time.now.utc) if new_record? && writer?(:created_at)
+        write_attribute('updated_at', Time.now.utc) if writer?(:updated_at)
       end
       
-      def generate_primary_key
+      def generate_id
         XGen::Mongo::Driver::ObjectID.new
       end
       

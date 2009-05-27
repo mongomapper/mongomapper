@@ -180,6 +180,10 @@ class DocumentTest < Test::Unit::TestCase
         @doc3 = @document.create({:fname => 'Steph', :lname => 'Nunemaker', :age => '26'})
       end
       
+      should "raise document not found if nothing provided" do
+        lambda { @document.find }.should raise_error(MongoMapper::DocumentNotFound)
+      end
+      
       context "with a single id" do
         should "work" do
           @document.find(@doc1.id).should == @doc1
@@ -199,7 +203,6 @@ class DocumentTest < Test::Unit::TestCase
           @document.find([@doc1.id, @doc2.id]).should == [@doc1, @doc2]
         end
       end
-      
       
       context "with :all" do
         should "find all documents" do
