@@ -3,8 +3,9 @@ require 'test_helper'
 class DocumentTest < Test::Unit::TestCase
   context "The Document Class" do
     setup do
-      @document = Class.new
-      @document.class_eval { include MongoMapper::Document }
+      @document = Class.new do
+        include MongoMapper::Document
+      end
     end
 
     should "should be able to define a key" do
@@ -42,8 +43,9 @@ class DocumentTest < Test::Unit::TestCase
       @document.database AlternateDatabase
       @document.database.name.should == AlternateDatabase
       
-      another_document = Class.new
-      another_document.class_eval { include MongoMapper::Document }
+      another_document = Class.new do
+        include MongoMapper::Document
+      end
       another_document.database.should == MongoMapper.database
     end
     
@@ -61,8 +63,7 @@ class DocumentTest < Test::Unit::TestCase
   
   context "Database operations" do
     setup do
-      @document = Class.new
-      @document.class_eval do
+      @document = Class.new do
         include MongoMapper::Document
         collection 'users'
         
@@ -378,8 +379,7 @@ class DocumentTest < Test::Unit::TestCase
   
   context "An instance of a document" do
     setup do
-      @document = Class.new
-      @document.class_eval do
+      @document = Class.new do
         include MongoMapper::Document
         
         key :name, String
@@ -578,8 +578,9 @@ class DocumentTest < Test::Unit::TestCase
       end
       
       should "not be equal if id same but class different" do
-        @another_document = Class.new
-        @another_document.class_eval { include MongoMapper::Document }
+        @another_document = Class.new do
+          include MongoMapper::Document
+        end
         
         (@document.new('_id' => 1) == @another_document.new('_id' => 1)).should be(false)
       end

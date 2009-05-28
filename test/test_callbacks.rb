@@ -5,8 +5,7 @@ include ActiveSupport::Callbacks
 class CallbacksTest < Test::Unit::TestCase
   context "Defining and running callbacks" do
     setup do
-      @document = Class.new
-      @document.class_eval do
+      @document = Class.new do
         include MongoMapper::Document
         
         key :name, String
