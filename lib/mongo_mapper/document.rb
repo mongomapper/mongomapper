@@ -180,7 +180,7 @@ module MongoMapper
       self.class.collection
     end
     
-    def new_record?
+    def new?
       read_attribute('_id').blank? || self.class.find_by_id(id).blank?
     end
     
@@ -190,7 +190,7 @@ module MongoMapper
     
     def save
       run_callbacks(:before_save)
-      new_record? ? create : update
+      new? ? create : update
       run_callbacks(:after_save)
       self
     end
@@ -202,7 +202,7 @@ module MongoMapper
     
     def destroy
       run_callbacks(:before_destroy)
-      collection.remove(:_id => id) unless new_record?
+      collection.remove(:_id => id) unless new?
       run_callbacks(:after_destroy)
       freeze
     end
@@ -282,7 +282,7 @@ module MongoMapper
       end
       
       def update_document_timestamps
-        write_attribute('created_at', Time.now.utc) if new_record? && writer?(:created_at)
+        write_attribute('created_at', Time.now.utc) if new? && writer?(:created_at)
         write_attribute('updated_at', Time.now.utc) if writer?(:updated_at)
       end
       

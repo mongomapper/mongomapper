@@ -397,18 +397,18 @@ class DocumentTest < Test::Unit::TestCase
       @document.keys.keys.should include('_id')
     end
     
-    context "new_record?" do
+    context "new?" do
       should "be true if no id" do
-        @document.new.new_record?.should be(true)
+        @document.new.new?.should be(true)
       end
       
       should "be true if has id but id not in database" do
-        @document.new('_id' => 1).new_record?.should be(true)
+        @document.new('_id' => 1).new?.should be(true)
       end
       
       should "be false if has id and id is in database" do
         doc = @document.create(:name => 'John Nunemaker', :age => 27)
-        doc.new_record?.should be(false)
+        doc.new?.should be(false)
       end
     end
     
