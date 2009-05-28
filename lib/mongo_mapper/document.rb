@@ -43,10 +43,10 @@ module MongoMapper
         rows.size == 1 ? rows[0] : rows
       end
       
-      # For updating single record
+      # For updating single document
       #   Person.update(1, {:foo => 'bar'})
       #
-      # For updating multiple records at once:
+      # For updating multiple documents at once:
       #   Person.update({'1' => {:foo => 'bar'}, '2' => {:baz => 'wick'}}) 
       def update(*args)
         updating_multiple = args.length == 1
@@ -183,11 +183,7 @@ module MongoMapper
     def new?
       read_attribute('_id').blank? || self.class.find_by_id(id).blank?
     end
-    
-    def valid?
-      true
-    end
-    
+        
     def save
       run_callbacks(:before_save)
       new? ? create : update

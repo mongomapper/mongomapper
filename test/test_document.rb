@@ -76,7 +76,7 @@ class DocumentTest < Test::Unit::TestCase
     
     context "Creating a single document" do
       setup do
-        @record = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
+        @doc_instance = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
       end
 
       should "create a document in correct collection" do
@@ -84,21 +84,21 @@ class DocumentTest < Test::Unit::TestCase
       end
 
       should "automatically set id" do
-        @record.id.should_not be_nil
-        @record.id.size.should == 24
+        @doc_instance.id.should_not be_nil
+        @doc_instance.id.size.should == 24
       end
 
       should "return instance of document" do
-        @record.should be_instance_of(@document)
-        @record.fname.should == 'John'
-        @record.lname.should == 'Nunemaker'
-        @record.age.should == 27
+        @doc_instance.should be_instance_of(@document)
+        @doc_instance.fname.should == 'John'
+        @doc_instance.lname.should == 'Nunemaker'
+        @doc_instance.age.should == 27
       end
     end    
     
     context "Creating multiple documents" do
       setup do
-        @records = @document.create([
+        @doc_instances = @document.create([
           {:fname => 'John', :lname => 'Nunemaker', :age => '27'},
           {:fname => 'Steve', :lname => 'Smith', :age => '28'},
         ])
@@ -109,8 +109,8 @@ class DocumentTest < Test::Unit::TestCase
       end
       
       should "return an array of doc instances" do
-        @records.map do |record|
-          record.should be_instance_of(@document)
+        @doc_instances.map do |doc_instance|
+          doc_instance.should be_instance_of(@document)
         end
       end
     end
@@ -118,16 +118,16 @@ class DocumentTest < Test::Unit::TestCase
     context "Updating a document" do
       setup do
         doc = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
-        @record = @document.update(doc.id, {:age => 40})
+        @doc_instance = @document.update(doc.id, {:age => 40})
       end
 
       should "update attributes provided" do
-        @record.age.should == 40
+        @doc_instance.age.should == 40
       end
       
       should "not update existing attributes that were not set to update" do
-        @record.fname.should == 'John'
-        @record.lname.should == 'Nunemaker'
+        @doc_instance.fname.should == 'John'
+        @doc_instance.lname.should == 'Nunemaker'
       end
       
       should "not create new document" do
@@ -147,7 +147,7 @@ class DocumentTest < Test::Unit::TestCase
         @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
         @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
         
-        @records = @document.update({
+        @doc_instances = @document.update({
           @doc1.id => {:age => 30},
           @doc2.id => {:age => 30},
         })
@@ -158,8 +158,8 @@ class DocumentTest < Test::Unit::TestCase
       end
       
       should "should return an array of doc instances" do
-        @records.map do |record|
-          record.should be_instance_of(@document)
+        @doc_instances.map do |doc_instance|
+          doc_instance.should be_instance_of(@document)
         end
       end
       
@@ -702,7 +702,7 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
     
-    context "Destroying a document that is a new record" do
+    context "Destroying a document that is a new" do
       setup do
         setup do
           @doc = @document.new(:name => 'John Nunemaker', :age => '27')

@@ -18,7 +18,7 @@ class MongoMapperTest < Test::Unit::TestCase
     MongoMapper.database.name.should == DefaultDatabase
   end
   
-  should "have record not found error" do
+  should "have document not found error" do
     lambda {
       MongoMapper::DocumentNotFound
     }.should_not raise_error
