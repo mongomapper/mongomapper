@@ -264,20 +264,20 @@ module MongoMapper
     private
       def create
         write_attribute('_id', generate_id) if read_attribute('_id').blank?
-        update_document_timestamps
+        update_timestamps
         run_callbacks(:before_create)
         collection.insert(attributes)
         run_callbacks(:after_create)
       end
       
       def update
-        update_document_timestamps
+        update_timestamps
         run_callbacks(:before_update)
         collection.modify({:_id => id}, attributes)
         run_callbacks(:after_update)
       end
       
-      def update_document_timestamps
+      def update_timestamps
         write_attribute('created_at', Time.now.utc) if new? && writer?(:created_at)
         write_attribute('updated_at', Time.now.utc) if writer?(:updated_at)
       end
