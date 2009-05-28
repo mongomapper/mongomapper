@@ -3,6 +3,13 @@ module MongoMapper
     def self.included(model)
       model.extend ClassMethods
       model.class_eval do
+        include ActiveSupport::Callbacks
+        
+        define_callbacks  :before_create, :after_create, 
+                          :before_update, :after_update,
+                          :before_save, :after_save,
+                          :before_destroy, :after_destroy
+        
         key :_id, String
         key :created_at, Time
         key :updated_at, Time
@@ -177,8 +184,14 @@ module MongoMapper
       read_attribute('_id').blank? || self.class.find_by_id(id).blank?
     end
     
+    def valid?
+      true
+    end
+    
     def save
+      run_callbacks(:before_save)
       new_record? ? create : update
+      run_callbacks(:after_save)
       self
     end
     
@@ -188,7 +201,9 @@ module MongoMapper
     end
     
     def destroy
+      run_callbacks(:before_destroy)
       collection.remove(:_id => id) unless new_record?
+      run_callbacks(:after_destroy)
       freeze
     end
     
@@ -254,12 +269,16 @@ module MongoMapper
       def create
         write_attribute('_id', generate_id) if read_attribute('_id').blank?
         update_document_timestamps
+        run_callbacks(:before_create)
         collection.insert(attributes)
+        run_callbacks(:after_create)
       end
       
       def update
         update_document_timestamps
+        run_callbacks(:before_update)
         collection.modify({:_id => id}, attributes)
+        run_callbacks(:after_update)
       end
       
       def update_document_timestamps
