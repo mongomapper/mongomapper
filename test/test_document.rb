@@ -7,7 +7,7 @@ class DocumentTest < Test::Unit::TestCase
         include MongoMapper::Document
       end
     end
-
+    
     should "should be able to define a key" do
       key = @document.key(:name, String)
       key.name.should == 'name'
