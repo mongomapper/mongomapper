@@ -24,7 +24,7 @@ module MongoMapper
       if type == Array
         value || []
       elsif type == Hash
-        value || {}
+        HashWithIndifferentAccess.new(value || {})
       else
         value
       end
@@ -32,8 +32,9 @@ module MongoMapper
     
     private
       def typecast(value)
+        return HashWithIndifferentAccess.new(value) if value.is_a?(Hash) && type == Hash
         return value if value.kind_of?(type) || value.nil?
-        begin        
+        begin
           if    type == String    then value.to_s
           elsif type == Float     then value.to_f
           elsif type == Array     then value.to_a

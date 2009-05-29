@@ -64,7 +64,7 @@ class DocumentTest < Test::Unit::TestCase
       @document.collection.should be_instance_of(XGen::Mongo::Driver::Collection)
       @document.collection.name.should == 'foobar'
     end
-  end # Document class  
+  end # Document class
   
   context "Database operations" do
     setup do
@@ -78,6 +78,37 @@ class DocumentTest < Test::Unit::TestCase
       end
       
       @document.collection.clear
+    end
+    
+    context "Using key with type Array" do
+      setup do
+        @document.key :tags, Array
+      end
+
+      should "work" do
+        doc = @document.new
+        doc.tags.should == []
+        doc.tags = %w(foo bar)
+        doc.save
+        doc.tags.should == %w(foo bar)
+        @document.find(doc.id).tags.should == %w(foo bar)
+      end
+    end
+    
+    context "Using key with type Hash" do
+      setup do
+        @document.key :foo, Hash
+      end
+
+      should "work with indifferent access" do
+        doc = @document.new
+        doc.foo = {:baz => 'bar'}
+        doc.save
+        
+        doc = @document.find(doc.id)
+        doc.foo[:baz].should == 'bar'
+        doc.foo['baz'].should == 'bar'
+      end
     end
     
     context "Creating a single document" do

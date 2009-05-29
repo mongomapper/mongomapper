@@ -89,13 +89,14 @@ class KeyTest < Test::Unit::TestCase
       key.set([1,2,3,4]).should == [1,2,3,4]
       key.set({'1' => '2', '3' => '4'}).should == [['1', '2'], ['3', '4']]
       key.set('1').should == ['1']
-      # key.set(1).should == [1]
     end
     
-    should "correctly typecast Hash" do
+    should "correctly typecast Hash using indifferent access" do
       key = Key.new(:foo, Hash)
-      key.set(:foo => 'bar').should == {:foo => 'bar'}
-      key.set(:foo => {:bar => 'baz'}).should == {:foo => {:bar => 'baz'}}
+      key.set(:foo => 'bar')[:foo].should == 'bar'
+      key.set(:foo => 'bar')['foo'].should == 'bar'
+      key.set(:foo => {:bar => 'baz'})[:foo][:bar].should == 'baz'
+      key.set(:foo => {:bar => 'baz'})['foo']['bar'].should == 'baz'
     end
   end
   
@@ -110,9 +111,20 @@ class KeyTest < Test::Unit::TestCase
       key.get(nil).should == []
     end
     
+    should "return array if array" do
+      key = Key.new(:foo, Array)
+      key.get([1,2]).should == [1,2]
+    end
+    
     should "default to empty hash for hash type" do
       key = Key.new(:foo, Hash)
       key.get(nil).should == {}
+    end
+    
+    should "use hash with indifferent access" do
+      key = Key.new(:foo, Hash)
+      key.get({:foo => 'bar'})['foo'].should == 'bar'
+      key.get({:foo => 'bar'})[:foo].should == 'bar'
     end
   end
   
