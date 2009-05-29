@@ -10,8 +10,11 @@ begin
     gem.homepage = "http://github.com/jnunemaker/mongo_mapper"
     gem.authors = ["John Nunemaker"]
     gem.rubyforge_project = "mongo_mapper"
+    gem.add_dependency('activesupport')
+    gem.add_dependency('mongodb-mongo')
     gem.add_development_dependency('mocha')
     gem.add_development_dependency('jnunemaker-matchy', '0.4.0')
+    gem.add_development_dependency('thoughtbot-quietbacktrace')
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 

@@ -15,6 +15,11 @@ class DocumentTest < Test::Unit::TestCase
       key.should be_instance_of(MongoMapper::Key)
     end
     
+    should "be able to define a key with options" do
+      key = @document.key(:name, String, :required => true)
+      key.options[:required].should be(true)
+    end
+    
     should "know what keys have been defined" do
       @document.key(:name, String)
       @document.key(:age, Integer)
@@ -507,7 +512,7 @@ class DocumentTest < Test::Unit::TestCase
         doc.reader?(:foobar).should be(false)
       end
       
-      should "be accissible for use in the model" do
+      should "be accessible for use in the model" do
         @document.class_eval do
           def name_and_age
             "#{read_attribute(:name)} (#{read_attribute(:age)})"
@@ -516,6 +521,30 @@ class DocumentTest < Test::Unit::TestCase
                 
         doc = @document.new(:name => 'John', :age => 27)
         doc.name_and_age.should == 'John (27)'
+      end
+    end
+    
+    context "reading an attribute before typcasting" do
+      should "work for defined keys" do
+        doc = @document.new(:name => 12)
+        doc.name_before_typecast.should == 12
+      end
+      
+      should "raise no method error for undefined keys" do
+        doc = @document.new
+        lambda { doc.foo_before_typecast }.should raise_error(NoMethodError)
+      end
+      
+      should "be accessible for use in a document" do
+        @document.class_eval do
+          def untypcasted_name
+            read_attribute_before_typecast(:name)
+          end
+        end
+                
+        doc = @document.new(:name => 12)
+        doc.name.should == '12'
+        doc.untypcasted_name.should == 12
       end
     end
 
@@ -567,6 +596,27 @@ class DocumentTest < Test::Unit::TestCase
         doc.age.should == 62
       end
     end # writing an attribute
+    
+    context "respond_to?" do
+      setup do
+        @doc = @document.new
+      end
+      
+      should "work for readers" do
+        @doc.respond_to?(:name).should be_true
+        @doc.respond_to?('name').should be_true
+      end
+      
+      should "work for writers" do
+        @doc.respond_to?(:name=).should be_true
+        @doc.respond_to?('name=').should be_true
+      end
+      
+      should "work for readers before typecast" do
+        @doc.respond_to?(:name_before_typecast).should be_true
+        @doc.respond_to?('name_before_typecast').should be_true
+      end
+    end
     
     context "equality" do
       should "be equal if id and class are the same" do

@@ -3,6 +3,7 @@ module MongoMapper
     def self.included(model)
       model.extend ClassMethods
       model.class_eval do
+        include Validatable
         include ActiveSupport::Callbacks
         
         define_callbacks  :before_create, :after_create, 
@@ -104,8 +105,9 @@ module MongoMapper
         @collection
       end
       
-      def key(name, type)
-        key = Key.new(name, type)
+      def key(name, type, options={})
+        key = Key.new(name, type, options)
+        apply_validations(key)        
         keys[key.name] = key
         key
       end
@@ -114,7 +116,37 @@ module MongoMapper
         @keys ||= HashWithIndifferentAccess.new
       end
       
-      private        
+      private
+        def apply_validations(key)
+          attribute = key.name.to_sym
+          
+          if key.options[:required]
+            validates_presence_of(attribute)
+          end
+          
+          if key.options[:numeric]
+            number_options = key.type == Integer ? {:only_integer => true} : {}
+            validates_numericality_of(attribute, number_options)
+          end
+          
+          if key.options[:format]
+            validates_format_of(attribute, :with => key.options[:format])
+          end
+          
+          if key.options[:length]
+            length_options = case key.options[:length]
+            when Integer
+              {:minimum => 0, :maximum => key.options[:length]}
+            when Range
+              {:within => key.options[:length]}
+            when Hash
+              key.options[:length]
+            end
+            
+            validates_length_of(attribute, length_options)
+          end
+        end
+        
         def find_every(options)
           criteria, options = FinderOptions.new(options).to_a
           collection.find(criteria, options).to_a.map { |doc| new(doc) }
@@ -226,6 +258,10 @@ module MongoMapper
       reader?(name)
     end
     
+    def before_typecast_reader?(name)
+      name.to_s.match(/^(.*)_before_typecast$/) && reader?($1)
+    end
+    
     def [](name)
       read_attribute(name)
     end
@@ -242,9 +278,11 @@ module MongoMapper
       attribute = method.to_s
       
       if reader?(attribute)
-        return read_attribute(attribute)
+        read_attribute(attribute)
       elsif writer?(attribute)
-        return write_attribute(attribute.chop, args[0])
+        write_attribute(attribute.chop, args[0])
+      elsif before_typecast_reader?(attribute)
+        read_attribute_before_typecast(attribute.gsub(/_before_typecast$/, ''))
       else
         super
       end
@@ -259,6 +297,11 @@ module MongoMapper
         "#{name}: #{read_attribute(name)}"
       end.join(", ")
       "#<#{self.class} #{attributes_as_nice_string}>"
+    end
+    
+    def respond_to?(method, include_private=false)
+      return true if reader?(method) || writer?(method) || before_typecast_reader?(method)
+      super(method, include_private)
     end
     
     private
@@ -290,7 +333,12 @@ module MongoMapper
         defined_key(name).get(instance_variable_get("@#{name}"))
       end
       
+      def read_attribute_before_typecast(name)
+        instance_variable_get("@#{name}_before_typecast")
+      end
+      
       def write_attribute(name, value)
+        instance_variable_set "@#{name}_before_typecast", value
         instance_variable_set "@#{name}", defined_key(name).set(value)
       end
     

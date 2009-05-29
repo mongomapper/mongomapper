@@ -1,9 +1,13 @@
 require 'pathname'
 require 'rubygems'
+
 gem 'activesupport'
-require 'activesupport'
 gem 'mongodb-mongo'
+gem 'jnunemaker-validatable'
+
+require 'activesupport'
 require 'mongo'
+require 'validatable'
 
 dir = Pathname(__FILE__).dirname.expand_path + 'mongo_mapper'
 require dir + 'document'

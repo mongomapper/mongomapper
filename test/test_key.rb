@@ -17,6 +17,14 @@ class KeyTest < Test::Unit::TestCase
     should "allow setting the type" do
       Key.new(:foo, Integer).type.should be(Integer)
     end
+    
+    should "allow setting options" do
+      Key.new(:foo, Integer, :required => true).options[:required].should be(true)
+    end
+    
+    should "symbolize option keys" do
+      Key.new(:foo, Integer, 'required' => true).options[:required].should be(true)
+    end
   end
   
   context "A key" do
