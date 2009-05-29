@@ -56,7 +56,7 @@ class Test::Unit::TestCase
   end
 end
 
-DefaultDatabase = 'test'
-AlternateDatabase = 'test2'
+DefaultDatabase = 'test' unless defined?(DefaultDatabase)
+AlternateDatabase = 'test2' unless defined?(AlternateDatabase)
 
 MongoMapper.database = DefaultDatabase
