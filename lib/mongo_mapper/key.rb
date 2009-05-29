@@ -33,10 +33,8 @@ module MongoMapper
         value || []
       elsif type == Hash
         HashWithIndifferentAccess.new(value || {})
-      elsif native?
-        value
       else
-        value.is_a?(type) ? value : type.new(value || {})
+        value
       end
     end
     
@@ -64,12 +62,18 @@ module MongoMapper
             else
               value_to_i
             end
+          elsif subdocument?
+            typecast_subdocument(value)
           else
             value
           end
         rescue
           value
         end
+      end
+      
+      def typecast_subdocument(value)
+        value.is_a?(type) ? value : type.new(value)
       end
   end
 end

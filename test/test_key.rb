@@ -161,9 +161,9 @@ class KeyTest < Test::Unit::TestCase
     end
     
     context "for a subdocument" do
-      should "default to new instance of subdocument" do        
+      should "default to nil" do        
         key = Key.new(:foo, Address)
-        key.get(nil).should be_instance_of(Address)
+        key.get(nil).should be_nil
       end
       
       should "return instance if instance" do
