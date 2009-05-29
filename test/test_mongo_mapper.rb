@@ -1,5 +1,7 @@
 require 'test_helper'
 
+class Address; end
+
 class MongoMapperTest < Test::Unit::TestCase  
   should "be able to write and read connection" do
     conn = XGen::Mongo::Driver::Mongo.new
@@ -22,5 +24,18 @@ class MongoMapperTest < Test::Unit::TestCase
     lambda {
       MongoMapper::DocumentNotFound
     }.should_not raise_error
+  end
+  
+  context "Adding subdocuments" do
+    should "work" do
+      MongoMapper.add_subdocument(Address)
+      MongoMapper.subdocuments.should == [Address]
+    end
+    
+    should "not ignore duplicates" do
+      MongoMapper.add_subdocument(Address)
+      MongoMapper.add_subdocument(Address)
+      MongoMapper.subdocuments.should == [Address]
+    end
   end
 end

@@ -3,11 +3,14 @@ module MongoMapper
     class NotImplemented < StandardError; end
     
     def self.included(model)
+      MongoMapper.add_subdocument model
+      
       model.class_eval do
         include MongoMapper::Document
         include InstanceMethods
         extend ClassMethods
       end
+      
       model.instance_variable_set("@keys", HashWithIndifferentAccess.new)
     end
     

@@ -110,8 +110,13 @@ module MongoMapper
       
       def key(name, type, options={})
         key = Key.new(name, type, options)
-        apply_validations(key)        
+        apply_validations(key)
         keys[key.name] = key
+        
+        if key.subdocument?
+          define_subdocument_accessors_for(key)
+        end
+        
         key
       end
       
@@ -171,6 +176,18 @@ module MongoMapper
             rows << update(doc[0], doc[1]); rows
           end
         end
+        
+        def define_subdocument_accessors_for(key)
+          instance_var = "@#{key.name}"
+          
+          define_method(key.name) do
+            key.get(instance_variable_get(instance_var))
+          end
+          
+          define_method("#{key.name}=") do |value|
+            instance_variable_set(instance_var, key.get(value))
+          end
+        end
     end
     
     ####################
@@ -209,13 +226,20 @@ module MongoMapper
     end
     
     def attributes=(attrs)
-      attrs.each_pair { |k, v| write_attribute(k, v) if writer?(k) }
+      attrs.each_pair do |key_name, value|
+        write_attribute(key_name, value) if writer?(key_name)
+      end
     end
     
     def attributes
       self.class.keys.inject(HashWithIndifferentAccess.new) do |hash, key_hash|
         name, key = key_hash
-        value = read_attribute(name)
+        value = if key.native?
+          read_attribute(name)
+        else
+          subdocument = read_attribute(name)
+          subdocument && subdocument.attributes
+        end
         hash[name] = value unless value.nil?
         hash
       end
@@ -281,7 +305,7 @@ module MongoMapper
       def create
         write_attribute('_id', generate_id) if read_attribute('_id').blank?
         update_timestamps
-        run_callbacks(:before_create)
+        run_callbacks(:before_create)        
         collection.insert(attributes)
         run_callbacks(:after_create)
       end

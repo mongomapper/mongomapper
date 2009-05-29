@@ -20,13 +20,23 @@ module MongoMapper
       typecast(value)
     end
     
+    def native?
+      @native ||= NativeTypes.include?(type)
+    end
+    
+    def subdocument?
+      MongoMapper.subdocuments.include?(type)
+    end
+    
     def get(value)
       if type == Array
         value || []
       elsif type == Hash
         HashWithIndifferentAccess.new(value || {})
-      else
+      elsif native?
         value
+      else
+        value.is_a?(type) ? value : type.new(value || {})
       end
     end
     

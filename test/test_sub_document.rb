@@ -1,6 +1,22 @@
 require 'test_helper'
 
 class SubDocumentTest < Test::Unit::TestCase
+  context "Including MongoMapper::SubDocument" do
+    setup do
+      @klass = Class.new do
+        include MongoMapper::SubDocument
+      end
+    end
+    
+    should "add class as subdocument" do  
+      MongoMapper.subdocuments.should include(@klass)
+    end
+    
+    should "clear out document default keys" do
+      @klass.keys.keys.size.should == 0
+    end
+  end
+  
   context "An instance of a sub document" do
     setup do
       @document = Class.new do

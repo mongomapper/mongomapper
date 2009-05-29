@@ -1,5 +1,11 @@
 require 'test_helper'
 
+class Address
+  include MongoMapper::SubDocument
+  key :city, String
+  key :state, String
+end
+
 class DocumentTest < Test::Unit::TestCase
   context "The Document Class" do
     setup do
@@ -108,6 +114,26 @@ class DocumentTest < Test::Unit::TestCase
         doc = @document.find(doc.id)
         doc.foo[:baz].should == 'bar'
         doc.foo['baz'].should == 'bar'
+      end
+    end
+    
+    context "Saving a document with a sub document" do
+      setup do        
+        @document.class_eval do
+          key :foo, Address
+        end
+      end
+
+      should "save embed sub document in document" do
+        subdoc = Address.new(:city => 'South Bend', :state => 'IN')
+        doc = @document.new(:foo => subdoc)        
+        doc.save
+        doc.foo.city.should == 'South Bend'
+        doc.foo.state.should == 'IN'
+        
+        from_db = @document.find(doc.id)
+        from_db.foo.city.should == 'South Bend'
+        from_db.foo.state.should == 'IN'
       end
     end
     

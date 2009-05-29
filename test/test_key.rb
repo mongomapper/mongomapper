@@ -1,5 +1,14 @@
 require 'test_helper'
 
+class Address
+  include MongoMapper::SubDocument
+  
+  key :address, String
+  key :city,    String
+  key :state,   String
+  key :zip,     Integer
+end
+
 class KeyTest < Test::Unit::TestCase
   include MongoMapper
   
@@ -38,6 +47,26 @@ class KeyTest < Test::Unit::TestCase
     
     should "not be equal to another key with different type" do
       Key.new(:name, String).should_not == Key.new(:name, Integer)
+    end
+    
+    should "know if it is native" do
+      Key.new(:name, String).native?.should be_true
+    end
+    
+    should "know if it is not native" do
+      klass = Class.new
+      Key.new(:name, klass).native?.should be_false
+    end
+    
+    should "know if it is a subdocument" do
+      klass = Class.new do
+        include MongoMapper::SubDocument
+      end
+      Key.new(:name, klass).subdocument?.should be_true
+    end
+    
+    should "know if it is not a subdocument" do
+      Key.new(:name, String).subdocument?.should be_false
     end
   end
   
@@ -106,25 +135,42 @@ class KeyTest < Test::Unit::TestCase
       key.get('bar').should == 'bar'
     end
     
-    should "default to empty array for array type" do
-      key = Key.new(:foo, Array)
-      key.get(nil).should == []
+    context "for an array" do
+      should "return array" do
+        key = Key.new(:foo, Array)
+        key.get([1,2]).should == [1,2]
+      end
+      
+      should "default to empty array" do
+        key = Key.new(:foo, Array)
+        key.get(nil).should == []
+      end
     end
     
-    should "return array if array" do
-      key = Key.new(:foo, Array)
-      key.get([1,2]).should == [1,2]
+    context "for a hash" do
+      should "default to empty hash" do
+        key = Key.new(:foo, Hash)
+        key.get(nil).should == {}
+      end
+
+      should "use hash with indifferent access" do
+        key = Key.new(:foo, Hash)
+        key.get({:foo => 'bar'})['foo'].should == 'bar'
+        key.get({:foo => 'bar'})[:foo].should == 'bar'
+      end
     end
     
-    should "default to empty hash for hash type" do
-      key = Key.new(:foo, Hash)
-      key.get(nil).should == {}
-    end
-    
-    should "use hash with indifferent access" do
-      key = Key.new(:foo, Hash)
-      key.get({:foo => 'bar'})['foo'].should == 'bar'
-      key.get({:foo => 'bar'})[:foo].should == 'bar'
+    context "for a subdocument" do
+      should "default to new instance of subdocument" do        
+        key = Key.new(:foo, Address)
+        key.get(nil).should be_instance_of(Address)
+      end
+      
+      should "return instance if instance" do
+        address = Address.new(:city => 'South Bend', :state => 'IN', :zip => 46544)
+        key = Key.new(:foo, Address)
+        key.get(address).should == address
+      end
     end
   end
   
