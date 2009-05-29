@@ -155,4 +155,52 @@ class ValidationsTest < Test::Unit::TestCase
       end
     end    
   end # Validations
+  
+  context "Saving a new document that is invalid" do
+    setup do
+      @document = Class.new do
+        include MongoMapper::Document
+        key :name, String, :required => true
+      end
+      
+      @document.collection.clear
+    end
+
+    should "not insert document" do
+      doc = @document.new
+      doc.save
+      @document.count.should == 0
+    end
+    
+    should "populate document's errors" do
+      doc = @document.new
+      doc.errors.size.should == 0
+      doc.save
+      doc.errors.full_messages.should == ["Name can't be empty"]
+    end
+  end
+  
+  context "Saving an existing document that is invalid" do
+    setup do
+      @document = Class.new do
+        include MongoMapper::Document
+        key :name, String, :required => true
+      end
+      
+      @document.collection.clear
+      @doc = @document.create(:name => 'John Nunemaker')
+    end
+
+    should "not update document" do
+      @doc.name = nil
+      @doc.save
+      @document.find(@doc.id).name.should == 'John Nunemaker'
+    end
+    
+    should "populate document's errors" do
+      @doc.name = nil
+      @doc.save
+      @doc.errors.full_messages.should == ["Name can't be empty"]
+    end
+  end
 end

@@ -10,8 +10,12 @@ class CallbacksTest < Test::Unit::TestCase
         
         key :name, String
         
-        %w(before_create after_create before_update after_update 
-           before_save after_save before_destroy after_destroy).each do |callback|
+        [ :before_validation_on_create, :before_validation_on_update,
+          :before_validation, :after_validation,
+          :before_create,     :after_create, 
+          :before_update,     :after_update,
+          :before_save,       :after_save,
+          :before_destroy,    :after_destroy].each do |callback|
           callback_method = "#{callback}_callback"
           send(callback, callback_method)
           define_method(callback_method) do
@@ -22,10 +26,34 @@ class CallbacksTest < Test::Unit::TestCase
         def history
           @history ||= []
         end
+        
+        def clear_history
+          @history = nil
+        end
       end
       @document.collection.clear
     end
-
+    
+    should "get the order right for creating documents" do
+      doc = @document.create(:name => 'John Nunemaker')
+      doc.history.should == [:before_validation_on_create, :before_validation, :after_validation, :before_save, :before_create, :after_create, :after_save]
+    end
+    
+    should "get the order right for updating documents" do
+      doc = @document.create(:name => 'John Nunemaker')
+      doc.clear_history
+      doc.name = 'John'
+      doc.save
+      doc.history.should == [:before_validation_on_update, :before_validation, :after_validation, :before_save, :before_update, :after_update, :after_save]
+    end
+    
+    should "work for before and after validation" do
+      doc = @document.new(:name => 'John Nunemaker')
+      doc.valid?
+      doc.history.should include(:before_validation)
+      doc.history.should include(:after_validation)
+    end
+    
     should "work for before and after create" do
       doc = @document.create(:name => 'John Nunemaker')
       doc.history.should include(:before_create)

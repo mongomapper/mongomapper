@@ -1,15 +1,18 @@
-module MongoMapper
+module MongoMapper  
   module Document
     def self.included(model)
       model.extend ClassMethods
       model.class_eval do
         include Validatable
+        include Validation
         include ActiveSupport::Callbacks
         
-        define_callbacks  :before_create, :after_create, 
-                          :before_update, :after_update,
-                          :before_save, :after_save,
-                          :before_destroy, :after_destroy
+        define_callbacks  :before_validation_on_create, :before_validation_on_update,
+                          :before_validation,           :after_validation,
+                          :before_create,               :after_create, 
+                          :before_update,               :after_update,
+                          :before_save,                 :after_save,
+                          :before_destroy,              :after_destroy
         
         key :_id, String
         key :created_at, Time
@@ -116,37 +119,7 @@ module MongoMapper
         @keys ||= HashWithIndifferentAccess.new
       end
       
-      private
-        def apply_validations(key)
-          attribute = key.name.to_sym
-          
-          if key.options[:required]
-            validates_presence_of(attribute)
-          end
-          
-          if key.options[:numeric]
-            number_options = key.type == Integer ? {:only_integer => true} : {}
-            validates_numericality_of(attribute, number_options)
-          end
-          
-          if key.options[:format]
-            validates_format_of(attribute, :with => key.options[:format])
-          end
-          
-          if key.options[:length]
-            length_options = case key.options[:length]
-            when Integer
-              {:minimum => 0, :maximum => key.options[:length]}
-            when Range
-              {:within => key.options[:length]}
-            when Hash
-              key.options[:length]
-            end
-            
-            validates_length_of(attribute, length_options)
-          end
-        end
-        
+      private        
         def find_every(options)
           criteria, options = FinderOptions.new(options).to_a
           collection.find(criteria, options).to_a.map { |doc| new(doc) }
