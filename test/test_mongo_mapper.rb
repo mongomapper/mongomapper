@@ -29,13 +29,13 @@ class MongoMapperTest < Test::Unit::TestCase
   context "Adding subdocuments" do
     should "work" do
       MongoMapper.add_subdocument(Address)
-      MongoMapper.subdocuments.should == [Address]
+      MongoMapper.subdocuments.should include(Address)
     end
     
     should "not ignore duplicates" do
       MongoMapper.add_subdocument(Address)
       MongoMapper.add_subdocument(Address)
-      MongoMapper.subdocuments.should == [Address]
+      MongoMapper.subdocuments.size.should == MongoMapper.subdocuments.uniq.size
     end
   end
 end
