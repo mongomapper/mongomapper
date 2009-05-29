@@ -30,7 +30,13 @@ module MongoMapper
       def update_attributes(*args); raise NotImplemented; end
       def destroy(*args);           raise NotImplemented; end
       def id(*args);                raise NotImplemented; end
-      def ==(*args); super; end
+      
+      def ==(other)
+        self.attributes.all? do |attr|
+          key, value = attr
+          value == other[key]
+        end
+      end
     end
   end
 end

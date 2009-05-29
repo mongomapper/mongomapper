@@ -230,6 +230,21 @@ class SubDocumentTest < Test::Unit::TestCase
         @doc.respond_to?(:name_before_typecast).should be_true
         @doc.respond_to?('name_before_typecast').should be_true
       end
-    end    
+    end
+    
+    context "equality" do
+      should "be true if all keys and values are equal" do
+        doc1 = @document.new(:name => 'John', :age => 27)
+        doc2 = @document.new(:name => 'John', :age => 27)
+        doc1.should == doc2
+      end
+      
+      should "be false if not all the keys and values are equal" do
+        doc1 = @document.new(:name => 'Steve', :age => 27)
+        doc2 = @document.new(:name => 'John', :age => 27)
+        doc1.should_not == doc2
+      end
+    end
+    
   end # instance of a sub document
 end
