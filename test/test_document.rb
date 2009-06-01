@@ -437,6 +437,47 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
     
+    context "Indexing" do
+      setup do
+        @document.collection.drop_indexes
+      end
+
+      should "allow creating index for a key" do
+        lambda {
+          @document.ensure_index :fname
+        }.should change { @document.collection.index_information.size }.by(1)
+        
+        index = @document.collection.index_information.last
+        index.should_not be_nil
+        index[:keys].keys.should == %w(fname)
+      end
+      
+      should "allow creating unique index for a key" do        
+        @document.collection.expects(:create_index).with('fname', true)
+        @document.ensure_index :fname, :unique => true
+      end
+      
+      should "allow creating index on multiple keys" do
+        lambda {
+          @document.ensure_index [[:fname, 1], [:lname, -1]]
+        }.should change { @document.collection.index_information.size }.by(1)
+        
+        index = @document.collection.index_information.last
+        index.should_not be_nil
+        index[:keys].keys.should == %w(fname lname)
+      end
+      
+      should "work with :index shortcut when defining key" do
+        lambda {
+          @document.key :father, String, :index => true
+        }.should change { @document.collection.index_information.size }.by(1)
+        
+        index = @document.collection.index_information.last
+        index.should_not be_nil
+        index[:keys].keys.should == %w(father)
+      end
+    end
+    
   end # Database operations
   
   context "An instance of a document" do

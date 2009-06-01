@@ -110,18 +110,25 @@ module MongoMapper
       
       def key(name, type, options={})
         key = Key.new(name, type, options)
-        apply_validations(key)
         keys[key.name] = key
-        
-        if key.subdocument?
-          define_subdocument_accessors_for(key)
-        end
-        
+        apply_validations_for(key)
+        define_subdocument_accessors_for(key)
+        create_indexes_for(key)
         key
       end
       
       def keys
         @keys ||= HashWithIndifferentAccess.new
+      end
+      
+      # TODO: remove to_s when ruby driver supports symbols (I sent patch)
+      def ensure_index(name_or_array, options={})
+        keys_to_index = if name_or_array.is_a?(Array)
+          name_or_array.map { |pair| [pair[0].to_s, pair[1]] }
+        else
+          name_or_array.to_s
+        end
+        collection.create_index(keys_to_index, options.delete(:unique))
       end
       
       private        
@@ -173,11 +180,13 @@ module MongoMapper
             raise ArgumentError, "Updating multiple documents takes 1 argument and it must be hash"
           end
           docs.inject([]) do |rows, doc|
-            rows << update(doc[0], doc[1]); rows
+            rows << update(doc[0], doc[1])
+            rows
           end
         end
         
         def define_subdocument_accessors_for(key)
+          return unless key.subdocument?
           instance_var = "@#{key.name}"
           
           define_method(key.name) do
@@ -187,6 +196,10 @@ module MongoMapper
           define_method("#{key.name}=") do |value|
             instance_variable_set(instance_var, key.get(value))
           end
+        end
+        
+        def create_indexes_for(key)
+          ensure_index key.name if key.options[:index]
         end
     end
     

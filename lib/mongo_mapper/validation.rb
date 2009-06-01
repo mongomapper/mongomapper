@@ -30,7 +30,7 @@ module MongoMapper
   end
   
   module ClassMethods
-    def apply_validations(key)
+    def apply_validations_for(key)
       attribute = key.name.to_sym
       
       if key.options[:required]
@@ -59,6 +59,6 @@ module MongoMapper
         validates_length_of(attribute, length_options)
       end
     end
-    private :apply_validations
+    private :apply_validations_for
   end
 end
