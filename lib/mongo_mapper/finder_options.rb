@@ -1,4 +1,3 @@
-# $lt, $lte, $gt, $gte, $in, regex
 module MongoMapper
   class FinderOptions
     attr_reader :options
@@ -40,7 +39,7 @@ module MongoMapper
       
       def convert_options(options)
         {
-          :fields => convert_fields(options.delete(:fields)),
+          :fields => convert_fields(options.delete(:fields) || options.delete(:select)),
           :offset => (options.delete(:offset) || 0).to_i,
           :limit  => (options.delete(:limit) || 0).to_i,
           :sort   => convert_sort(options.delete(:order))
@@ -49,10 +48,11 @@ module MongoMapper
       
       def convert_fields(fields)
         return if fields.blank?
+        
         if fields.is_a?(String)
           fields.split(',').map { |field| field.strip }
         else
-          fields
+          fields.flatten.compact
         end
       end
       
@@ -63,8 +63,8 @@ module MongoMapper
         
         hash = OrderedHash.new
         pairs.each do |pair|
-          field, direction = pair
-          hash[field] = direction
+          field, sort_direction = pair
+          hash[field] = sort_direction
         end
         hash.symbolize_keys
       end

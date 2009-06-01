@@ -110,16 +110,24 @@ class FinderOptionsTest < Test::Unit::TestCase
       FinderOptions.new({}).options[:fields].should be(nil)
     end
     
-    should "be converted to nil if {}" do
-      FinderOptions.new(:fields => {}).options[:fields].should be(nil)
+    should "be converted to nil if empty string" do
+      FinderOptions.new(:fields => '').options[:fields].should be(nil)
+    end
+    
+    should "be converted to nil if []" do
+      FinderOptions.new(:fields => []).options[:fields].should be(nil)
     end
     
     should "should work with array" do
-      FinderOptions.new({:fields => ['a', 'b']}).options[:fields].should == ['a', 'b']
+      FinderOptions.new({:fields => %w(a b)}).options[:fields].should == %w(a b)
     end
     
     should "convert comma separated list to array" do
-      FinderOptions.new({:fields => 'a, b'}).options[:fields].should == ['a', 'b']
+      FinderOptions.new({:fields => 'a, b'}).options[:fields].should == %w(a b)
+    end
+    
+    should "also work as select" do
+      FinderOptions.new(:select => %w(a b)).options[:fields].should == %w(a b)
     end
   end
 end # FinderOptionsTest
