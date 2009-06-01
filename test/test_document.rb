@@ -500,6 +500,13 @@ class DocumentTest < Test::Unit::TestCase
       @document.keys.keys.should include('_id')
     end
     
+    should "use default values if defined for keys" do
+      @document.key :active, Boolean, :default => true
+      
+      @document.new.active.should be_true
+      @document.new(:active => false).active.should be_false
+    end
+    
     context "new?" do
       should "be true if no id" do
         @document.new.new?.should be(true)

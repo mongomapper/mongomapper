@@ -5,11 +5,12 @@ module MongoMapper
     # DateTime currently is not supported by mongo's bson so just use Time
     NativeTypes = [String, Float, Time, Date, Integer, Boolean, Array, Hash]
     
-    attr_accessor :name, :type, :options
+    attr_accessor :name, :type, :options, :default_value
     
     def initialize(name, type, options={})
       @name, @type = name.to_s, type
       self.options = options.symbolize_keys
+      self.default_value = options.delete(:default)
     end
     
     def ==(other)
@@ -29,6 +30,7 @@ module MongoMapper
     end
     
     def get(value)
+      return default_value if value.nil? && !default_value.nil?
       if type == Array
         value || []
       elsif type == Hash

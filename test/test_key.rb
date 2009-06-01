@@ -135,6 +135,30 @@ class KeyTest < Test::Unit::TestCase
       key.get('bar').should == 'bar'
     end
     
+    context "for a key with a default value set" do
+      setup do
+        @key = Key.new(:foo, String, :default => 'baz')
+      end
+
+      should "return default value if value nil" do
+        @key.get(nil).should == 'baz'
+      end
+      
+      should "return value if not blank" do
+        @key.get('foobar').should == 'foobar'
+      end
+    end
+    
+    context "for a boolean key" do
+      should "allow setting default to false" do
+        Key.new(:active, Boolean, :default => false).get(nil).should be_false
+      end
+      
+      should "allow setting default to true" do
+        Key.new(:active, Boolean, :default => true).get(nil).should be_true
+      end
+    end
+    
     context "for an array" do
       should "return array" do
         key = Key.new(:foo, Array)
