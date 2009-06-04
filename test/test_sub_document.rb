@@ -7,13 +7,9 @@ class SubDocumentTest < Test::Unit::TestCase
         include MongoMapper::SubDocument
       end
     end
-    
-    should "add class as subdocument" do  
-      MongoMapper.subdocuments.should include(@klass)
-    end
-    
+        
     should "clear out document default keys" do
-      @klass.keys.keys.size.should == 0
+      @klass.keys.size.should == 0
     end
   end
   
@@ -29,22 +25,6 @@ class SubDocumentTest < Test::Unit::TestCase
     
     should "not have an _id key" do
       @document.keys.keys.should_not include('_id')
-    end
-    
-    %w(find count create update delete delete_all destroy destroy_all collection).each do |class_method|
-      should "raise error if class method #{class_method} is called" do
-        lambda { @document.send(class_method.to_sym) }.should raise_error(MongoMapper::SubDocument::NotImplemented)
-      end
-    end
-    
-    # %w(collection new? save update_attributes destroy id).each do |method|
-    %w(collection new? save update_attributes destroy id).each do |method|
-      should "raise not possible error if #{method} called" do
-        lambda {
-          doc = @document.new
-          doc.send(method.to_sym)
-        }.should raise_error(MongoMapper::SubDocument::NotImplemented)
-      end
     end
     
     context "when initialized" do

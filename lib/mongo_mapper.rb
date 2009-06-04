@@ -11,8 +11,8 @@ require 'validatable'
 
 dir = Pathname(__FILE__).dirname.expand_path + 'mongo_mapper'
 require dir + 'validation'
-require dir + 'document'
 require dir + 'sub_document'
+require dir + 'document'
 require dir + 'key'
 require dir + 'finder_options'
 
@@ -33,14 +33,5 @@ module MongoMapper
   
   def self.database
     @@database
-  end
-  
-  def self.subdocuments
-    @@subdocuments ||= []
-  end
-  
-  def self.add_subdocument(new_subdoc)
-    subdocuments << new_subdoc
-    subdocuments.uniq!
   end
 end

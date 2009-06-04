@@ -26,7 +26,7 @@ module MongoMapper
     end
     
     def subdocument?
-      MongoMapper.subdocuments.include?(type)
+      type.ancestors.include?(SubDocument) && !type.ancestors.include?(Document)
     end
     
     def get(value)
