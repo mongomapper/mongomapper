@@ -9,12 +9,11 @@ require 'activesupport'
 require 'mongo'
 require 'validatable'
 
-dir = Pathname(__FILE__).dirname.expand_path + 'mongo_mapper'
-require dir + 'validation'
-require dir + 'sub_document'
-require dir + 'document'
-require dir + 'key'
-require dir + 'finder_options'
+require 'mongo_mapper/validation'
+require 'mongo_mapper/sub_document'
+require 'mongo_mapper/document'
+require 'mongo_mapper/key'
+require 'mongo_mapper/finder_options'
 
 module MongoMapper
   class DocumentNotFound < StandardError; end
