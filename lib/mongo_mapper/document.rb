@@ -3,9 +3,9 @@ module MongoMapper
     def self.included(model)
       model.class_eval do
         include MongoMapper::EmbeddedDocument
-        extend ClassMethods
         include InstanceMethods
         include SaveWithValidation
+        extend ClassMethods
         
         key :_id, String
         key :created_at, Time
@@ -37,10 +37,8 @@ module MongoMapper
       end
       
       def create(*docs)
-        instances = docs.flatten.inject([]) do |collection, attrs|
-          collection << new(attrs).save
-        end
-        
+        instances = []
+        docs.flatten.each { |attrs| instances << new(attrs).save }
         instances.size == 1 ? instances[0] : instances
       end
       
@@ -51,7 +49,6 @@ module MongoMapper
       #   Person.update({'1' => {:foo => 'bar'}, '2' => {:baz => 'wick'}}) 
       def update(*args)
         updating_multiple = args.length == 1
-        
         if updating_multiple
           update_multiple(args[0])
         else
@@ -69,11 +66,11 @@ module MongoMapper
       end
       
       def destroy(*ids)
-        find_some(ids.flatten).map(&:destroy)
+        find_some(ids.flatten).each(&:destroy)
       end
       
       def destroy_all(conditions={})
-        find(:all, :conditions => conditions).map(&:destroy)
+        find(:all, :conditions => conditions).each(&:destroy)
       end
       
       def connection(mongo_connection=nil)
@@ -82,7 +79,6 @@ module MongoMapper
         else
           @connection = mongo_connection
         end
-        
         @connection
       end
       
@@ -92,7 +88,6 @@ module MongoMapper
         else
           @database = connection.db(name)
         end
-        
         @database
       end
       
@@ -102,7 +97,6 @@ module MongoMapper
         else
           @collection = database.collection(name)
         end
-        
         @collection
       end
       
@@ -155,10 +149,9 @@ module MongoMapper
         unless docs.is_a?(Hash)
           raise ArgumentError, "Updating multiple documents takes 1 argument and it must be hash"
         end
-        docs.inject([]) do |rows, doc|
-          id, attrs = doc
-          rows << update(id, attrs)
-        end
+        instances = []
+        docs.each_pair { |id, attrs| instances << update(id, attrs) }
+        instances
       end
     end
     
@@ -166,7 +159,6 @@ module MongoMapper
     # Instance Methods #
     ####################
     module InstanceMethods
-    
       def collection
         self.class.collection
       end
@@ -202,21 +194,21 @@ module MongoMapper
       def create
         write_attribute('_id', generate_id) if read_attribute('_id').blank?
         update_timestamps
-        run_callbacks(:before_create)        
-        collection.insert(attributes)
+        run_callbacks(:before_create)
+        collection.insert(attributes.merge!(embedded_association_attributes))
         run_callbacks(:after_create)
       end
     
       def update
         update_timestamps
         run_callbacks(:before_update)
-        collection.modify({:_id => id}, attributes)
+        collection.modify({:_id => id}, attributes.merge!(embedded_association_attributes))
         run_callbacks(:after_update)
       end
     
       def update_timestamps
-        write_attribute('created_at', Time.now.utc) if new? && writer?(:created_at)
-        write_attribute('updated_at', Time.now.utc) if writer?(:updated_at)
+        write_attribute('created_at', Time.now.utc) if new?
+        write_attribute('updated_at', Time.now.utc)
       end
     
       def generate_id

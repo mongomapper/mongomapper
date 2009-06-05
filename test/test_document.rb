@@ -231,7 +231,7 @@ class DocumentTest < Test::Unit::TestCase
         @document.find(@doc2.id).age.should == 30
       end
     end
-    
+        
     should "raise error when updating multiple documents if not a hash" do
       lambda { @document.update([1, 2]) }.should raise_error(ArgumentError)
     end

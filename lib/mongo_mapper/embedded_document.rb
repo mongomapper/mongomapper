@@ -19,6 +19,37 @@ module MongoMapper
     end
     
     module ClassMethods
+      class Association
+        attr_accessor :name
+        
+        def initialize(name)
+          @name = name.to_s
+        end
+        
+        def klass
+          @klass ||= name.classify.constantize
+        end
+        
+        def ivar
+          @ivar ||= "@#{name}"
+        end
+      end
+      
+      def many(association_name)
+        association = Association.new(association_name)
+        associations[association.name] = association
+        class_eval <<-EOS
+          def #{association.name}
+            #{association.ivar} ||= []
+            #{association.ivar}
+          end
+        EOS
+      end
+      
+      def associations
+        @associations ||= HashWithIndifferentAccess.new
+      end
+      
       def keys
         @keys ||= HashWithIndifferentAccess.new
       end
@@ -44,7 +75,6 @@ module MongoMapper
       end
       
     private
-      
       def define_embedded_document_accessors_for(key)
         return unless key.embedded_document?
         instance_var = "@#{key.name}"
@@ -87,7 +117,6 @@ module MongoMapper
           when Hash
             key.options[:length]
           end
-
           validates_length_of(attribute, length_options)
         end
       end
@@ -97,6 +126,7 @@ module MongoMapper
     module InstanceMethods
       
       def initialize(attrs={})
+        initialize_embedded_associations(attrs)
         self.attributes = attrs
       end
       
@@ -107,16 +137,11 @@ module MongoMapper
       end
     
       def attributes
-        self.class.keys.inject(HashWithIndifferentAccess.new) do |hash, key_hash|
+        self.class.keys.inject(HashWithIndifferentAccess.new) do |attributes, key_hash|
           name, key = key_hash
-          value = if key.native?
-            read_attribute(name)
-          else
-            embedded_document = read_attribute(name)
-            embedded_document && embedded_document.attributes
-          end
-          hash[name] = value unless value.nil?
-          hash
+          value = value_for_key(key)
+          attributes[name] = value unless value.nil?
+          attributes
         end
       end
     
@@ -168,7 +193,6 @@ module MongoMapper
         attributes_as_nice_string = defined_key_names.collect do |name|
           "#{name}: #{read_attribute(name)}"
         end.join(", ")
-        
         "#<#{self.class} #{attributes_as_nice_string}>"
       end
     
@@ -177,8 +201,16 @@ module MongoMapper
         super
       end
       
-    private
-    
+    private      
+      def value_for_key(key)
+        if key.native?
+          read_attribute(key.name)
+        else
+          embedded_document = read_attribute(key.name)
+          embedded_document && embedded_document.attributes
+        end
+      end
+      
       def read_attribute(name)
         defined_key(name).get(instance_variable_get("@#{name}"))
       end
@@ -186,7 +218,7 @@ module MongoMapper
       def read_attribute_before_typecast(name)
         instance_variable_get("@#{name}_before_typecast")
       end
-  
+    
       def write_attribute(name, value)
         instance_variable_set "@#{name}_before_typecast", value
         instance_variable_set "@#{name}", defined_key(name).set(value)
@@ -203,6 +235,25 @@ module MongoMapper
       def only_defined_keys(hash={})
         defined_key_names = defined_key_names()
         hash.delete_if { |k, v| !defined_key_names.include?(k.to_s) }
+      end
+      
+      def embedded_association_attributes
+        attributes = HashWithIndifferentAccess.new
+        self.class.associations.each_pair do |name, association|
+          attributes[name] = send(name).collect { |item| item.attributes }
+        end
+        attributes
+      end
+      
+      def initialize_embedded_associations(attrs={})
+        self.class.associations.each_pair do |name, association|
+          if collection = attrs.delete(name)
+            association_value = collection.collect do |item|
+              association.klass.new(item)
+            end
+            instance_variable_set(association.ivar, association_value)
+          end
+        end
       end
     end
   end
