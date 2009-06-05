@@ -1,4 +1,3 @@
-require 'pathname'
 require 'rubygems'
 
 gem 'activesupport'
