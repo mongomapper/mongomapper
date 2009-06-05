@@ -5,7 +5,7 @@ module MongoMapper
         include MongoMapper::EmbeddedDocument
         extend ClassMethods
         include InstanceMethods
-        include Validation
+        include SaveWithValidation
         
         key :_id, String
         key :created_at, Time
