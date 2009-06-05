@@ -2,7 +2,7 @@ module MongoMapper
   module Document
     def self.included(model)
       model.class_eval do
-        include MongoMapper::SubDocument
+        include MongoMapper::EmbeddedDocument
         extend ClassMethods
         include InstanceMethods
         include Validation

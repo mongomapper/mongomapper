@@ -10,7 +10,7 @@ require 'mongo'
 require 'validatable'
 
 require 'mongo_mapper/validation'
-require 'mongo_mapper/sub_document'
+require 'mongo_mapper/embedded_document'
 require 'mongo_mapper/document'
 require 'mongo_mapper/key'
 require 'mongo_mapper/finder_options'

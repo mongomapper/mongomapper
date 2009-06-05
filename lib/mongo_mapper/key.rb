@@ -25,8 +25,8 @@ module MongoMapper
       @native ||= NativeTypes.include?(type)
     end
     
-    def subdocument?
-      type.ancestors.include?(SubDocument) && !type.ancestors.include?(Document)
+    def embedded_document?
+      type.ancestors.include?(EmbeddedDocument) && !type.ancestors.include?(Document)
     end
     
     def get(value)
@@ -64,8 +64,8 @@ module MongoMapper
             else
               value_to_i
             end
-          elsif subdocument?
-            typecast_subdocument(value)
+          elsif embedded_document?
+            typecast_embedded_document(value)
           else
             value
           end
@@ -74,7 +74,7 @@ module MongoMapper
         end
       end
       
-      def typecast_subdocument(value)
+      def typecast_embedded_document(value)
         value.is_a?(type) ? value : type.new(value)
       end
   end

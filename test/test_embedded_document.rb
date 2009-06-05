@@ -1,10 +1,10 @@
 require 'test_helper'
 
-class SubDocumentTest < Test::Unit::TestCase
-  context "Including MongoMapper::SubDocument" do
+class EmbeddedDocumentTest < Test::Unit::TestCase
+  context "Including MongoMapper::EmbeddedDocument" do
     setup do
       @klass = Class.new do
-        include MongoMapper::SubDocument
+        include MongoMapper::EmbeddedDocument
       end
     end
         
@@ -13,18 +13,14 @@ class SubDocumentTest < Test::Unit::TestCase
     end
   end
   
-  context "An instance of a sub document" do
+  context "An instance of an embedded document" do
     setup do
       @document = Class.new do
-        include MongoMapper::SubDocument
+        include MongoMapper::EmbeddedDocument
         
         key :name, String
         key :age, Integer
       end
-    end
-    
-    should "not have an _id key" do
-      @document.keys.keys.should_not include('_id')
     end
     
     context "when initialized" do
@@ -242,5 +238,5 @@ class SubDocumentTest < Test::Unit::TestCase
       end
     end
     
-  end # instance of a sub document
+  end # instance of a embedded document
 end

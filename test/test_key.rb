@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class Address
-  include MongoMapper::SubDocument
+  include MongoMapper::EmbeddedDocument
   
   key :address, String
   key :city,    String
@@ -58,15 +58,15 @@ class KeyTest < Test::Unit::TestCase
       Key.new(:name, klass).native?.should be_false
     end
     
-    should "know if it is a subdocument" do
+    should "know if it is a embedded_document" do
       klass = Class.new do
-        include MongoMapper::SubDocument
+        include MongoMapper::EmbeddedDocument
       end
-      Key.new(:name, klass).subdocument?.should be_true
+      Key.new(:name, klass).embedded_document?.should be_true
     end
     
-    should "know if it is not a subdocument" do
-      Key.new(:name, String).subdocument?.should be_false
+    should "know if it is not a embedded_document" do
+      Key.new(:name, String).embedded_document?.should be_false
     end
   end
   
@@ -184,7 +184,7 @@ class KeyTest < Test::Unit::TestCase
       end
     end
     
-    context "for a subdocument" do
+    context "for a embedded_document" do
       should "default to nil" do        
         key = Key.new(:foo, Address)
         key.get(nil).should be_nil

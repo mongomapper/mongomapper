@@ -1,5 +1,5 @@
 module MongoMapper
-  module SubDocument
+  module EmbeddedDocument
     class NotImplemented < StandardError; end
     
     def self.included(model)
@@ -27,7 +27,7 @@ module MongoMapper
         key = Key.new(name, type, options)
         keys[key.name] = key
         apply_validations_for(key)
-        define_subdocument_accessors_for(key)
+        define_embedded_document_accessors_for(key)
         create_indexes_for(key)
         key
       end
@@ -44,8 +44,8 @@ module MongoMapper
       
     private
       
-      def define_subdocument_accessors_for(key)
-        return unless key.subdocument?
+      def define_embedded_document_accessors_for(key)
+        return unless key.embedded_document?
         instance_var = "@#{key.name}"
         
         define_method(key.name) do
@@ -111,8 +111,8 @@ module MongoMapper
           value = if key.native?
             read_attribute(name)
           else
-            subdocument = read_attribute(name)
-            subdocument && subdocument.attributes
+            embedded_document = read_attribute(name)
+            embedded_document && embedded_document.attributes
           end
           hash[name] = value unless value.nil?
           hash

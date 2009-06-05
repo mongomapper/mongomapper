@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class Address
-  include MongoMapper::SubDocument
+  include MongoMapper::EmbeddedDocument
   key :city, String
   key :state, String
 end
@@ -117,16 +117,16 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
     
-    context "Saving a document with a sub document" do
+    context "Saving a document with an embedded document" do
       setup do        
         @document.class_eval do
           key :foo, Address
         end
       end
 
-      should "save embed sub document in document" do
-        subdoc = Address.new(:city => 'South Bend', :state => 'IN')
-        doc = @document.new(:foo => subdoc)        
+      should "embed embedded document" do
+        address = Address.new(:city => 'South Bend', :state => 'IN')
+        doc = @document.new(:foo => address)
         doc.save
         doc.foo.city.should == 'South Bend'
         doc.foo.state.should == 'IN'
@@ -498,6 +498,14 @@ class DocumentTest < Test::Unit::TestCase
     
     should "automatically have an _id key" do
       @document.keys.keys.should include('_id')
+    end
+    
+    should "automatically have a created_at key" do
+      @document.keys.keys.should include('created_at')
+    end
+    
+    should "automatically have an updated_at key" do
+      @document.keys.keys.should include('updated_at')
     end
     
     should "use default values if defined for keys" do
