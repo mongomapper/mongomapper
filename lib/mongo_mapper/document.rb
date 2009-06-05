@@ -52,7 +52,8 @@ module MongoMapper
         if updating_multiple
           update_multiple(args[0])
         else
-          update_single(args[0], args[1])
+          id, attributes = args
+          update_single(id, attributes)
         end
       end
       
