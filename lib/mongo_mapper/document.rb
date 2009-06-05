@@ -27,8 +27,9 @@ module MongoMapper
       end
       
       def find_by_id(id)
-        doc = collection.find_first({:_id => id})
-        doc ? new(doc) : nil
+        if doc = collection.find_first({:_id => id})
+          new(doc)
+        end
       end
       
       def count(conditions={})
@@ -36,9 +37,11 @@ module MongoMapper
       end
       
       def create(*docs)
-        rows = []
-        docs.flatten.each { |attrs| rows << new(attrs).save }
-        rows.size == 1 ? rows[0] : rows
+        instances = docs.flatten.inject([]) do |collection, attrs|
+          collection << new(attrs).save
+        end
+        
+        instances.size == 1 ? instances[0] : instances
       end
       
       # For updating single document
@@ -58,7 +61,7 @@ module MongoMapper
       end
       
       def delete(*ids)
-        ids.flatten.each { |id| collection.remove(:_id => id) }
+        collection.remove(:_id => {'$in' => ids.flatten})
       end
       
       def delete_all(conditions={})
@@ -66,7 +69,7 @@ module MongoMapper
       end
       
       def destroy(*ids)
-        ids.flatten.each { |id| find(id).destroy }
+        find_some(ids.flatten).map(&:destroy)
       end
       
       def destroy_all(conditions={})
@@ -144,8 +147,8 @@ module MongoMapper
         if id.blank? || attrs.blank? || !attrs.is_a?(Hash)
           raise ArgumentError, "Updating a single document requires an id and a hash of attributes"
         end
-        doc = find(id)
-        doc.update_attributes(attrs)
+        
+        find(id).update_attributes(attrs)
       end
       
       def update_multiple(docs)
@@ -153,8 +156,8 @@ module MongoMapper
           raise ArgumentError, "Updating multiple documents takes 1 argument and it must be hash"
         end
         docs.inject([]) do |rows, doc|
-          rows << update(doc[0], doc[1])
-          rows
+          id, attrs = doc
+          rows << update(id, attrs)
         end
       end
     end
@@ -192,7 +195,7 @@ module MongoMapper
       end
     
       def ==(other)
-        id == other.id && self.class == other.class
+        other.is_a?(self.class) && id == other.id
       end
     
     private

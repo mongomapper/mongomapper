@@ -39,6 +39,7 @@ module MongoMapper
         else
           name_or_array.to_s
         end
+        
         collection.create_index(keys_to_index, options.delete(:unique))
       end
       
@@ -147,7 +148,7 @@ module MongoMapper
     
       def method_missing(method, *args, &block)
         attribute = method.to_s
-      
+        
         if reader?(attribute)
           read_attribute(attribute)
         elsif writer?(attribute)
@@ -160,22 +161,20 @@ module MongoMapper
       end
     
       def ==(other)
-        self.attributes.all? do |attr|
-          key, value = attr
-          value == other[key]
-        end
+        other.is_a?(self.class) && attributes == other.attributes
       end
       
       def inspect
         attributes_as_nice_string = defined_key_names.collect do |name|
           "#{name}: #{read_attribute(name)}"
         end.join(", ")
+        
         "#<#{self.class} #{attributes_as_nice_string}>"
       end
     
       def respond_to?(method, include_private=false)
         return true if reader?(method) || writer?(method) || before_typecast_reader?(method)
-        super(method, include_private)
+        super
       end
       
     private
@@ -205,7 +204,6 @@ module MongoMapper
         defined_key_names = defined_key_names()
         hash.delete_if { |k, v| !defined_key_names.include?(k.to_s) }
       end
-      
     end
   end
 end
