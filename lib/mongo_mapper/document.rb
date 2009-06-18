@@ -27,6 +27,18 @@ module MongoMapper
         end
       end
       
+      def first(options={})
+        find_first(options)
+      end
+      
+      def last(options={})
+        find_last(options)
+      end
+      
+      def all(options={})
+        find_every(options)
+      end
+      
       def find_by_id(id)
         if doc = collection.find_first({:_id => id})
           new(doc)

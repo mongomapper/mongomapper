@@ -278,15 +278,36 @@ class DocumentTest < Test::Unit::TestCase
         end
       end
       
+      context "with #all" do
+        should "find all documents based on criteria" do
+          @document.all.should == [@doc1, @doc2, @doc3]
+          @document.all(:conditions => {:lname => 'Nunemaker'}).should == [@doc1, @doc3]
+        end
+      end
+      
       context "with :first" do
         should "find first document" do
           @document.find(:first).should == @doc1
         end
       end
       
+      context "with #first" do
+        should "find first document based on criteria" do
+          @document.first.should == @doc1
+          @document.first(:conditions => {:age => 28}).should == @doc2
+        end
+      end
+      
       context "with :last" do
         should "find last document" do
           @document.find(:last).should == @doc3
+        end
+      end
+      
+      context "with #last" do
+        should "find last document based on criteria" do
+          @document.last.should == @doc3
+          @document.last(:conditions => {:age => 28}).should == @doc2
         end
       end
     end # finding documents
