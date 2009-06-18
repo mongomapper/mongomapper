@@ -16,4 +16,9 @@ class TestRailsCompatibility < Test::Unit::TestCase
     instance = @document.new
     instance.new_record?.should == instance.new?
   end
+  
+  should "have column names" do
+    @document.key :fname, String
+    @document.column_names.sort.should == ['_id', 'created_at', 'fname', 'updated_at']
+  end
 end
