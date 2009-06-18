@@ -39,7 +39,7 @@ class AssociationsTest < Test::Unit::TestCase
     should "be embedded in document on save" do
       sb = Address.new(:city => 'South Bend', :state => 'IN')
       chi = Address.new(:city => 'Chicago', :state => 'IL')
-      instance = @document.new(:name => 'John')
+      instance = @document.new
       instance.addresses << sb
       instance.addresses << chi
       instance.save
