@@ -180,6 +180,22 @@ class ValidationsTest < Test::Unit::TestCase
     end
   end
   
+  context "Saving a document that is invalid (destructive)" do
+    setup do
+      @document = Class.new do
+        include MongoMapper::Document
+        key :name, String, :required => true
+      end
+      
+      @document.collection.clear
+    end
+
+    should "raise error" do
+      doc = @document.new
+      lambda { doc.save! }.should raise_error(MongoMapper::DocumentNotValid)
+    end
+  end
+  
   context "Saving an existing document that is invalid" do
     setup do
       @document = Class.new do

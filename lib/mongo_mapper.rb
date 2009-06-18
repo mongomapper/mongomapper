@@ -19,6 +19,12 @@ require 'mongo_mapper/document'
 
 module MongoMapper
   class DocumentNotFound < StandardError; end
+  class DocumentNotValid < StandardError
+    def initialize(document)
+      @document = document
+      super("Validation failed: #{@document.errors.full_messages.join(", ")}")
+    end
+  end
   
   def self.connection
     @@connection ||= XGen::Mongo::Driver::Mongo.new

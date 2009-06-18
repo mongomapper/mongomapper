@@ -7,7 +7,11 @@ module MongoMapper
       end
     end
     
-    private    
+    def save!
+      save_with_validation || raise(DocumentNotValid.new(self))
+    end
+    
+    private
       def save_with_validation
         new? ? run_callbacks(:before_validation_on_create) : 
                run_callbacks(:before_validation_on_update)
