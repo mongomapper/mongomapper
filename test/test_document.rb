@@ -433,6 +433,15 @@ class DocumentTest < Test::Unit::TestCase
         @document.count.should == 0
       end
       
+      should "return 0 if the collection does not exist" do
+        klass = Class.new do
+          include MongoMapper::Document
+          collection 'foobarbazwickdoesnotexist'
+        end
+        
+        klass.count.should == 0
+      end
+      
       should "return count for matching documents if conditions provided" do
         @document.count(:age => 27).should == 1
       end

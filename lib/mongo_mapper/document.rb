@@ -32,8 +32,15 @@ module MongoMapper
         end
       end
       
+      # TODO: remove the rescuing when ruby driver works correctly
       def count(conditions={})
         collection.count(conditions)
+      rescue => exception
+        if exception.message =~ /Error with count command/
+          0
+        else
+          raise exception
+        end
       end
       
       def create(*docs)
