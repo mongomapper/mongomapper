@@ -10,6 +10,7 @@ require 'validatable'
 
 require 'mongo_mapper/key'
 require 'mongo_mapper/finder_options'
+require 'mongo_mapper/rails_compatibility'
 require 'mongo_mapper/save_with_validation'
 require 'mongo_mapper/serialization'
 require 'mongo_mapper/embedded_document'

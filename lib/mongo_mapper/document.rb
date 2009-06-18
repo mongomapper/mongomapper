@@ -5,6 +5,7 @@ module MongoMapper
         include MongoMapper::EmbeddedDocument
         include InstanceMethods
         include SaveWithValidation
+        include RailsCompatibility
         extend ClassMethods
         
         key :_id, String
