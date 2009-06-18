@@ -8,6 +8,7 @@ module MongoMapper
         extend ClassMethods
         include Validatable
         include ActiveSupport::Callbacks
+        include MongoMapper::Serialization
         
         define_callbacks  :before_validation_on_create, :before_validation_on_update,
                           :before_validation,           :after_validation,
