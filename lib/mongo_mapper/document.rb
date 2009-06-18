@@ -93,7 +93,7 @@ module MongoMapper
       
       def collection(name=nil)
         if name.nil?
-          @collection ||= database.collection(self.class.to_s.tableize)
+          @collection ||= database.collection(self.to_s.demodulize.tableize)
         else
           @collection = database.collection(name)
         end

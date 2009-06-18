@@ -60,9 +60,10 @@ class DocumentTest < Test::Unit::TestCase
       another_document.database.should == MongoMapper.database
     end
     
+    class Item; include MongoMapper::Document; end
     should "default collection name to class name tableized" do
-      @document.collection.should be_instance_of(XGen::Mongo::Driver::Collection)
-      @document.collection.name.should == 'classes'
+      Item.collection.should be_instance_of(XGen::Mongo::Driver::Collection)
+      Item.collection.name.should == 'items'
     end
     
     should "allow setting the collection name" do
