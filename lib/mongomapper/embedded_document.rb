@@ -125,7 +125,6 @@ module MongoMapper
     end                                 
                                         
     module InstanceMethods
-      
       def initialize(attrs={})
         initialize_embedded_associations(attrs)
         self.attributes = attrs

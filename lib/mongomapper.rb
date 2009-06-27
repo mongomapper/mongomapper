@@ -19,7 +19,6 @@ require dir + 'serialization'
 require dir + 'embedded_document'
 require dir + 'document'
 
-
 module MongoMapper
   class DocumentNotFound < StandardError; end
   class DocumentNotValid < StandardError

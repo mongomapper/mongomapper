@@ -83,5 +83,4 @@ class CallbacksTest < Test::Unit::TestCase
       doc.history.should include(:after_destroy)
     end
   end
-  
 end

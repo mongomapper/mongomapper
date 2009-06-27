@@ -934,6 +934,5 @@ class DocumentTest < Test::Unit::TestCase
         doc.updated_at.should_not == old_updated_at
       end
     end
-    
   end # instance of a document
 end # DocumentTest

@@ -237,6 +237,5 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc1.should_not == doc2
       end
     end
-    
   end # instance of a embedded document
 end

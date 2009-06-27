@@ -197,5 +197,4 @@ class KeyTest < Test::Unit::TestCase
       end
     end
   end
-  
 end # KeyTest

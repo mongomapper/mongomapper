@@ -15,7 +15,6 @@ module MongoMapper
     end
     
     module ClassMethods
-      
       def find(*args)
         options = args.extract_options!
         
@@ -121,7 +120,6 @@ module MongoMapper
       end
       
     private
-      
       def find_every(options)
         criteria, options = FinderOptions.new(options).to_a
         collection.find(criteria, options).to_a.map { |doc| new(doc) }
@@ -175,9 +173,6 @@ module MongoMapper
       end
     end
     
-    ####################
-    # Instance Methods #
-    ####################
     module InstanceMethods
       def collection
         self.class.collection

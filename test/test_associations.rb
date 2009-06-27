@@ -9,7 +9,6 @@ class Address
   key :zip,     Integer
 end
 
-
 class AssociationsTest < Test::Unit::TestCase
   def setup
     @document = Class.new do
