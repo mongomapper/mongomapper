@@ -1,11 +1,14 @@
+require 'pathname'
 require 'rubygems'
 require 'test/unit'
 require 'shoulda'
+
 gem 'jnunemaker-matchy', '0.4.0'
-require 'matchy'
 gem 'mocha'
-require 'mocha'
 gem 'thoughtbot-quietbacktrace'
+
+require 'matchy'
+require 'mocha'
 require 'quietbacktrace'
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
@@ -39,10 +42,9 @@ class Test::Unit::TestCase
 
   custom_matcher :have_error_on do |receiver, matcher, args|
     receiver.valid?
-
     attribute = args[0]
     expected_message = args[1]
-
+    
     if expected_message.nil?
       matcher.positive_failure_message = "#{receiver} had no errors on #{attribute}"
       matcher.negative_failure_message = "#{receiver} had errors on #{attribute} #{receiver.errors.inspect}"
