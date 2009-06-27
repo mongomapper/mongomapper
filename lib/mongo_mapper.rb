@@ -8,13 +8,15 @@ require 'activesupport'
 require 'mongo'
 require 'validatable'
 
-require 'mongo_mapper/key'
-require 'mongo_mapper/finder_options'
-require 'mongo_mapper/rails_compatibility'
-require 'mongo_mapper/save_with_validation'
-require 'mongo_mapper/serialization'
-require 'mongo_mapper/embedded_document'
-require 'mongo_mapper/document'
+dir = Pathname(__FILE__).dirname.expand_path + 'mongo_mapper'
+
+require dir + 'key'
+require dir + 'finder_options'
+require dir + 'rails_compatibility'
+require dir + 'save_with_validation'
+require dir + 'serialization'
+require dir + 'embedded_document'
+require dir + 'document'
 
 
 module MongoMapper

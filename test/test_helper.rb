@@ -8,9 +8,9 @@ require 'mocha'
 gem 'thoughtbot-quietbacktrace'
 require 'quietbacktrace'
 
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
-require 'mongo_mapper'
+dir = (Pathname(__FILE__).dirname +  '..' + 'lib').expand_path
+require dir + 'mongo_mapper'
 
 class Test::Unit::TestCase
   custom_matcher :be_nil do |receiver, matcher, args|
