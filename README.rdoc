@@ -1,6 +1,20 @@
 = MongoMapper
 
-Awesome gem for modeling your domain and storing it in mongo
+Awesome gem for modeling your domain and storing it in mongo.
+
+== Dependencies
+
+* ActiveSupport (activesupport)
+* Mongo Ruby Driver (mongodb-mongo)
+* My fork of the validatable gem (jnunemaker-validatable)
+
+== More Info
+
+You can learn more about mongo here:
+http://www.mongodb.org/
+
+You can learn more about the mongo ruby driver here:
+http://github.com/mongodb/mongo-ruby-driver/tree/master
 
 == Copyright
 
