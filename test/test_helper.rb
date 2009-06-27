@@ -13,7 +13,7 @@ require 'quietbacktrace'
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 dir = (Pathname(__FILE__).dirname +  '..' + 'lib').expand_path
-require dir + 'mongo_mapper'
+require dir + 'mongomapper'
 
 class Test::Unit::TestCase
   custom_matcher :be_nil do |receiver, matcher, args|

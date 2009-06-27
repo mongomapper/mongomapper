@@ -9,7 +9,7 @@ require 'activesupport'
 require 'mongo'
 require 'validatable'
 
-dir = Pathname(__FILE__).dirname.expand_path + 'mongo_mapper'
+dir = Pathname(__FILE__).dirname.expand_path + 'mongomapper'
 
 require dir + 'key'
 require dir + 'finder_options'
