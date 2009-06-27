@@ -8,6 +8,10 @@ Awesome gem for modeling your domain and storing it in mongo.
 * Mongo Ruby Driver (mongodb-mongo)
 * My fork of the validatable gem (jnunemaker-validatable)
 
+== Documentation
+
+http://rdoc.info/projects/jnunemaker/mongomapper
+
 == More Info
 
 You can learn more about mongo here:
