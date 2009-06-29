@@ -484,7 +484,7 @@ class DocumentTest < Test::Unit::TestCase
       end
       
       should "allow creating unique index for a key" do        
-        @document.collection.expects(:create_index).with('fname', true)
+        @document.collection.expects(:create_index).with(:fname, true)
         @document.ensure_index :fname, :unique => true
       end
       

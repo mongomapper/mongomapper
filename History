@@ -1,2 +1,6 @@
+0.1.1 6/28/2009
+* 1 minor change
+  * bumped ruby driver to 0.9 and removed hacks I had in while waiting for it
+  
 0.1.0 6/26/2009
 * Initial release

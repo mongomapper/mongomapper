@@ -64,12 +64,11 @@ module MongoMapper
         key
       end
       
-      # TODO: remove to_s when ruby driver supports symbols (I sent patch)
       def ensure_index(name_or_array, options={})
         keys_to_index = if name_or_array.is_a?(Array)
-          name_or_array.map { |pair| [pair[0].to_s, pair[1]] }
+          name_or_array.map { |pair| [pair[0], pair[1]] }
         else
-          name_or_array.to_s
+          name_or_array
         end
         
         collection.create_index(keys_to_index, options.delete(:unique))
