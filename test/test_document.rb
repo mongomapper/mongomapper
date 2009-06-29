@@ -478,9 +478,9 @@ class DocumentTest < Test::Unit::TestCase
           @document.ensure_index :fname
         }.should change { @document.collection.index_information.size }.by(1)
         
-        index = @document.collection.index_information.last
+        index = @document.collection.index_information['fname_1']
         index.should_not be_nil
-        index[:keys].keys.should == %w(fname)
+        index.should include(['fname', 1])
       end
       
       should "allow creating unique index for a key" do        
@@ -493,9 +493,10 @@ class DocumentTest < Test::Unit::TestCase
           @document.ensure_index [[:fname, 1], [:lname, -1]]
         }.should change { @document.collection.index_information.size }.by(1)
         
-        index = @document.collection.index_information.last
+        index = @document.collection.index_information['lname_-1_fname_1']
         index.should_not be_nil
-        index[:keys].keys.should == %w(fname lname)
+        index.should include(['fname', 1])
+        index.should include(['lname', -1])
       end
       
       should "work with :index shortcut when defining key" do
@@ -503,12 +504,11 @@ class DocumentTest < Test::Unit::TestCase
           @document.key :father, String, :index => true
         }.should change { @document.collection.index_information.size }.by(1)
         
-        index = @document.collection.index_information.last
+        index = @document.collection.index_information['father_1']
         index.should_not be_nil
-        index[:keys].keys.should == %w(father)
+        index.should include(['father', 1])
       end
     end
-    
   end # Database operations
   
   context "An instance of a document" do
