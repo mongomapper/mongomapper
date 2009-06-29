@@ -12,12 +12,12 @@ begin
     gem.rubyforge_project = "mongomapper"
     
     gem.add_dependency('activesupport')
-    gem.add_dependency('mongodb-mongo')
-    gem.add_dependency('jnunemaker-validatable')
+    gem.add_dependency('mongodb-mongo', '0.9')
+    gem.add_dependency('jnunemaker-validatable', '1.7.0')
     
-    gem.add_development_dependency('mocha')
+    gem.add_development_dependency('mocha', '0.9.4')
     gem.add_development_dependency('jnunemaker-matchy', '0.4.0')
-    gem.add_development_dependency('thoughtbot-quietbacktrace')
+    gem.add_development_dependency('thoughtbot-quietbacktrace', '1.1.6')
   end
 
   Jeweler::RubyforgeTasks.new
