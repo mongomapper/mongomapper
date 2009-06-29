@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mongomapper}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
-  s.date = %q{2009-06-27}
+  s.date = %q{2009-06-28}
   s.email = %q{nunemaker@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
      "lib/mongomapper/save_with_validation.rb",
      "lib/mongomapper/serialization.rb",
      "lib/mongomapper/serializers/json_serializer.rb",
+     "mongomapper.gemspec",
      "test/serializers/test_json_serializer.rb",
      "test/test_associations.rb",
      "test/test_callbacks.rb",
@@ -36,7 +37,7 @@ Gem::Specification.new do |s|
      "test/test_finder_options.rb",
      "test/test_helper.rb",
      "test/test_key.rb",
-     "test/test_mongo_mapper.rb",
+     "test/test_mongomapper.rb",
      "test/test_rails_compatibility.rb",
      "test/test_serializations.rb",
      "test/test_validations.rb"
@@ -57,7 +58,7 @@ Gem::Specification.new do |s|
      "test/test_finder_options.rb",
      "test/test_helper.rb",
      "test/test_key.rb",
-     "test/test_mongo_mapper.rb",
+     "test/test_mongomapper.rb",
      "test/test_rails_compatibility.rb",
      "test/test_serializations.rb",
      "test/test_validations.rb"
@@ -69,25 +70,22 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activesupport>, [">= 0"])
-      s.add_runtime_dependency(%q<mongodb-mongo>, [">= 0"])
-      s.add_runtime_dependency(%q<jnunemaker-validatable>, [">= 0"])
-      s.add_development_dependency(%q<mocha>, [">= 0"])
+      s.add_runtime_dependency(%q<mongodb-mongo>, ["= 0.9"])
+      s.add_runtime_dependency(%q<jnunemaker-validatable>, ["= 1.7.0"])
+      s.add_development_dependency(%q<mocha>, ["= 0.9.4"])
       s.add_development_dependency(%q<jnunemaker-matchy>, ["= 0.4.0"])
-      s.add_development_dependency(%q<thoughtbot-quietbacktrace>, [">= 0"])
     else
       s.add_dependency(%q<activesupport>, [">= 0"])
-      s.add_dependency(%q<mongodb-mongo>, [">= 0"])
-      s.add_dependency(%q<jnunemaker-validatable>, [">= 0"])
-      s.add_dependency(%q<mocha>, [">= 0"])
+      s.add_dependency(%q<mongodb-mongo>, ["= 0.9"])
+      s.add_dependency(%q<jnunemaker-validatable>, ["= 1.7.0"])
+      s.add_dependency(%q<mocha>, ["= 0.9.4"])
       s.add_dependency(%q<jnunemaker-matchy>, ["= 0.4.0"])
-      s.add_dependency(%q<thoughtbot-quietbacktrace>, [">= 0"])
     end
   else
     s.add_dependency(%q<activesupport>, [">= 0"])
-    s.add_dependency(%q<mongodb-mongo>, [">= 0"])
-    s.add_dependency(%q<jnunemaker-validatable>, [">= 0"])
-    s.add_dependency(%q<mocha>, [">= 0"])
+    s.add_dependency(%q<mongodb-mongo>, ["= 0.9"])
+    s.add_dependency(%q<jnunemaker-validatable>, ["= 1.7.0"])
+    s.add_dependency(%q<mocha>, ["= 0.9.4"])
     s.add_dependency(%q<jnunemaker-matchy>, ["= 0.4.0"])
-    s.add_dependency(%q<thoughtbot-quietbacktrace>, [">= 0"])
   end
 end
