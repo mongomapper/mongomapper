@@ -131,7 +131,12 @@ module MongoMapper
       
       def attributes=(attrs)
         attrs.each_pair do |key_name, value|
-          write_attribute(key_name, value) if writer?(key_name)
+          if writer?(key_name)
+            write_attribute(key_name, value)
+          else
+            writer_method ="#{key_name}="
+            self.send(writer_method, value) if respond_to?(writer_method)
+          end
         end
       end
     

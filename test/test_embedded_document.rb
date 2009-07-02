@@ -56,6 +56,19 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.attributes[:name].should == 'new value'
         doc.attributes[:foobar].should be(nil)
       end
+      
+      should "not ignore keys that have methods defined" do
+        @document.class_eval do
+          attr_writer :password
+          
+          def passwd
+            @password
+          end
+        end
+        
+        doc = @document.new(:name => 'foobar', :password => 'secret')
+        doc.passwd.should == 'secret'
+      end
 
       should "typecast key values" do
         doc = @document.new(:name => 1234, :age => '21')
