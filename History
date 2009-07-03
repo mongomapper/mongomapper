@@ -1,3 +1,8 @@
+0.1.2 7/3/2009
+* 2 minor changes
+  * Straightened out callbacks and added validate, validate_on_create and validate_on_update.
+  * Attributes passed into attributes= now call writer methods if they exist. This is mostly for virtual attributes.
+  
 0.1.1 6/28/2009
 * 1 minor change
   * bumped ruby driver to 0.9 and removed hacks I had in while waiting for it
