@@ -148,6 +148,15 @@ module MongoMapper
           attributes
         end
       end
+
+      def attributes_with_associations
+        self.class.associations.inject(attributes) do |associations, key_hash|
+          name, association = key_hash
+          value = self.send(name).map(&:attributes_with_associations)
+          associations[name] = value unless value.nil?
+          associations
+        end
+      end
     
       def reader?(name)
         defined_key_names.include?(name.to_s)

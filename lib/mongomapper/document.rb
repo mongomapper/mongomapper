@@ -204,14 +204,14 @@ module MongoMapper
         write_attribute('_id', generate_id) if read_attribute('_id').blank?
         update_timestamps
         run_callbacks(:before_create)
-        collection.insert(attributes.merge!(embedded_association_attributes))
+        collection.insert(attributes_with_associations)
         run_callbacks(:after_create)
       end
     
       def update
         update_timestamps
         run_callbacks(:before_update)
-        collection.modify({:_id => id}, attributes.merge!(embedded_association_attributes))
+        collection.modify({:_id => id}, attributes_with_associations)
         run_callbacks(:after_update)
       end
     
