@@ -11,6 +11,11 @@ module MongoMapper
         key :_id, String
         key :created_at, Time
         key :updated_at, Time
+        
+        define_callbacks  :before_create,  :after_create, 
+                          :before_update,  :after_update,
+                          :before_save,    :after_save,
+                          :before_destroy, :after_destroy
       end
     end
     

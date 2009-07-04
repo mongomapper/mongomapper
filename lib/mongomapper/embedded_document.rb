@@ -9,13 +9,6 @@ module MongoMapper
         include Validatable
         include ActiveSupport::Callbacks
         include MongoMapper::Serialization
-        
-        define_callbacks  :before_validation_on_create, :before_validation_on_update,
-                          :before_validation,           :after_validation,
-                          :before_create,               :after_create, 
-                          :before_update,               :after_update,
-                          :before_save,                 :after_save,
-                          :before_destroy,              :after_destroy
       end
     end
     
