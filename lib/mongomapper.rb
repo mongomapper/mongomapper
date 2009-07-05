@@ -3,7 +3,7 @@ require 'rubygems'
 
 gem 'activesupport'
 gem 'mongodb-mongo', '0.9'
-gem 'jnunemaker-validatable', '1.7.0'
+gem 'jnunemaker-validatable', '1.7.1'
 
 require 'activesupport'
 require 'mongo'
