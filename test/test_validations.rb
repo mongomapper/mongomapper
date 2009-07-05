@@ -219,4 +219,57 @@ class ValidationsTest < Test::Unit::TestCase
       @doc.errors.full_messages.should == ["Name can't be empty"]
     end
   end
+  
+  context "Adding validation errors" do
+    setup do
+      @document = Class.new do
+        include MongoMapper::Document
+        key :action, String        
+        def action_present
+          errors.add(:action, 'is invalid') if action.blank?
+        end
+      end
+    end
+    
+    should "work with validate callback" do
+      @document.validate :action_present
+      
+      doc = @document.new
+      doc.action = nil
+      doc.should have_error_on(:action)
+
+      doc.action = 'kick'
+      doc.should_not have_error_on(:action)
+    end
+    
+    should "work with validate_on_create callback" do
+      @document.validate_on_create :action_present
+      
+      doc = @document.new
+      doc.action = nil
+      doc.should have_error_on(:action)
+
+      doc.action = 'kick'
+      doc.should_not have_error_on(:action)
+      doc.save
+      
+      doc.action = nil
+      doc.should_not have_error_on(:action)
+    end
+    
+    should "work with validate_on_update callback" do
+      @document.validate_on_update :action_present
+      
+      doc = @document.new
+      doc.action = nil
+      doc.should_not have_error_on(:action)
+      doc.save
+      
+      doc.action = nil
+      doc.should have_error_on(:action)
+      
+      doc.action = 'kick'
+      doc.should_not have_error_on(:action)
+    end
+  end
 end
