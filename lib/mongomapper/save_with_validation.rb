@@ -33,17 +33,7 @@ module MongoMapper
           run_callbacks(:before_validation_on_update)
         end
         
-        run_callbacks(:validate)
-        
-        if new?
-          run_callbacks(:validate_on_create)
-        else
-          run_callbacks(:validate_on_update)
-        end
-        
-        is_valid = valid_without_callbacks?
-        run_callbacks(:after_validation) if is_valid
-        is_valid 
+        run_callbacks(:after_validation) if valid_without_callbacks?
       end
   end  
 end

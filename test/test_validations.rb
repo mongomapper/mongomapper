@@ -6,7 +6,7 @@ class ValidationsTest < Test::Unit::TestCase
       @document = Class.new do
         include MongoMapper::Document
       end
-    end
+    end    
     
     context "Validating acceptance of" do
       should "work with validates_acceptance_of macro" do
