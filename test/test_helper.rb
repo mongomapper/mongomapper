@@ -3,7 +3,7 @@ require 'rubygems'
 require 'test/unit'
 require 'shoulda'
 
-gem 'mocha', '0.9.4'
+gem 'mocha', '~> 0.9.4'
 gem 'jnunemaker-matchy', '0.4.0'
 
 require 'matchy'
