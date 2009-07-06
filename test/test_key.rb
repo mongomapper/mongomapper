@@ -14,7 +14,7 @@ class KeyTest < Test::Unit::TestCase
   
   context "The Key Class" do
     should "have the native types defined" do
-      Key::NativeTypes.should == [String, Float, Time, Integer, Boolean, Array, Hash]
+      Key::NativeTypes.should == [String, Float, Time, Integer, Boolean, Array, Hash, Ref]
     end
   end
   

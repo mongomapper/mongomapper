@@ -18,6 +18,7 @@ require dir + 'save_with_validation'
 require dir + 'serialization'
 require dir + 'callbacks'
 require dir + 'observing'
+require dir + 'validations'
 require dir + 'embedded_document'
 require dir + 'document'
 
@@ -29,19 +30,19 @@ module MongoMapper
       super("Validation failed: #{@document.errors.full_messages.join(", ")}")
     end
   end
-  
+
   def self.connection
     @@connection ||= XGen::Mongo::Driver::Mongo.new
   end
-  
+
   def self.connection=(new_connection)
     @@connection = new_connection
   end
-  
+
   def self.database=(name)
     @@database = MongoMapper.connection.db(name)
   end
-  
+
   def self.database
     @@database
   end
