@@ -6,6 +6,12 @@ class Address
   key :state, String
 end
 
+class Person
+  include MongoMapper::EmbeddedDocument
+  key :name, String
+  key :child, Person
+end
+
 class DocumentTest < Test::Unit::TestCase
   context "The Document Class" do
     setup do
@@ -135,6 +141,28 @@ class DocumentTest < Test::Unit::TestCase
         from_db = @document.find(doc.id)
         from_db.foo.city.should == 'South Bend'
         from_db.foo.state.should == 'IN'
+      end
+      
+      context "with yet another embedded document inside it" do
+        setup do
+          @document.class_eval do
+            key :person, Person
+          end
+        end
+        
+        should "embed embedded documents recursively" do
+          meg = Person.new(:name => "Meg")
+          meg.child = Person.new(:name => "Steve")
+          meg.child.child = Person.new(:name => "Linda")
+          
+          doc = @document.new(:person => meg)
+          doc.save
+          
+          from_db = @document.find(doc.id)
+          from_db.person.name.should == 'Meg'
+          from_db.person.child.name.should == 'Steve'
+          from_db.person.child.child.name.should == 'Linda'
+        end          
       end
     end
     
