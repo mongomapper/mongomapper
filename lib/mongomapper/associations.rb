@@ -5,7 +5,7 @@ module MongoMapper
         association = create_association(:many, association_name.to_s.singularize, options)
 
         class_eval <<-EOS
-          def #{association.name}
+          def #{association_name}
             #{association.ivar} ||= []
             #{association.ivar}
           end

@@ -93,7 +93,7 @@ module MongoMapper
     module InstanceMethods
       def initialize(attrs={})
         unless attrs.nil?
-          initialize_embedded_associations(attrs)
+          initialize_associations(attrs)
           self.attributes = attrs
         end
       end
@@ -211,18 +211,23 @@ module MongoMapper
       def embedded_association_attributes
         attributes = HashWithIndifferentAccess.new
         self.class.associations.each_pair do |name, association|
-          attributes[name] = send(name).collect { |item| item.attributes }
+          if association.type == :many && vals = instance_variable_get(association.ivar)
+            attributes[name] = vals.collect { |item| item.attributes }
+          end
         end
         attributes
       end
 
-      def initialize_embedded_associations(attrs={})
+      def initialize_associations(attrs={})
         self.class.associations.each_pair do |name, association|
           if collection = attrs.delete(name)
-            association_value = collection.collect do |item|
-              association.klass.new(item)
+            if association.type == :many
+              collection = collection.collect do |item|
+                association.klass.new(item)
+              end
             end
-            instance_variable_set(association.ivar, association_value)
+
+            instance_variable_set(association.ivar, collection)
           end
         end
       end
