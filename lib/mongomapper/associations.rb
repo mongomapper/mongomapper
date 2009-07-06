@@ -23,12 +23,7 @@ module MongoMapper
         end
 
         define_method(association_id) do |*params|
-          proxy = instance_variable_get(association.ivar)
-          if proxy.nil?
-            proxy = BelongsToProxy.new(self, association)
-            instance_variable_set(association.ivar, proxy)
-          end
-          proxy
+          get_proxy(association, BelongsToProxy)
         end
 
         define_method("#{association_id}=") do |value|
@@ -44,10 +39,8 @@ module MongoMapper
       def has_many(association_id, options = {})
         association = create_association(:has_many, association_id.to_s.singularize, options)
 
-        fk = options[:foreign_key] || self.name.underscore.gsub("/", "_") + "_id"
-
         define_method(association_id) do
-          association.klass.find(:all, {:conditions => {fk => self.id}})
+          get_proxy(association, HasManyProxy)
         end
       end
 
@@ -60,6 +53,18 @@ module MongoMapper
         association = Associations::Base.new(type, name, options)
         associations[association.name] = association
         association
+      end
+    end
+
+    module InstanceMethods
+      private
+      def get_proxy(association, klass)
+        proxy = instance_variable_get(association.ivar)
+        if proxy.nil?
+          proxy = klass.new(self, association)
+          instance_variable_set(association.ivar, proxy)
+        end
+        proxy
       end
     end
   end

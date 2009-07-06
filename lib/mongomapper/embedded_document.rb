@@ -8,7 +8,10 @@ module MongoMapper
       model.class_eval do
         extend ClassMethods
         include InstanceMethods
+
         extend Associations::ClassMethods
+        include Associations::InstanceMethods
+
         include Validatable
         include Serialization
       end
@@ -161,7 +164,7 @@ module MongoMapper
         end.join(", ")
         "#<#{self.class} #{attributes_as_nice_string}>"
       end
- 
+
       alias :respond_to_without_attributes? :respond_to?
 
       def respond_to?(method, include_private=false)
