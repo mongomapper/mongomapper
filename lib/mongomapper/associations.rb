@@ -2,7 +2,7 @@ module MongoMapper
   module Associations
     module ClassMethods
       def many(association_name, options = {})
-        association = Associations::Base.new(:many, association_name, options)
+        association = Associations::Base.new(:many, association_name.to_s.singularize, options)
         associations[association.name] = association
 
         class_eval <<-EOS
@@ -14,10 +14,11 @@ module MongoMapper
       end
 
       def belongs_to(association_id, options = {})
+        association = Associations::Base.new(:belongs_to, association_id, options)
+        associations[association.name] = association
+
         ref_id = "#{association_id}_id"
-        key ref_id, Ref
-        klass_name = options[:class_name] || association_id.to_s.camelize
-        klass = klass_name.constantize
+        key ref_id, String
 
         define_method("#{ref_id}=") do |value|
           write_attribute(ref_id, value)
@@ -26,7 +27,7 @@ module MongoMapper
         define_method(association_id) do |*params|
           ref = read_attribute(ref_id)
           if ref
-            klass.find(ref)
+            association.klass.find(ref)
           end
         end
 
@@ -41,12 +42,13 @@ module MongoMapper
       end
 
       def has_many(association_id, options = {})
-        klass_name = options[:class_name] || association_id.to_s.singularize.camelize
-        klass = klass_name.constantize
+        association = Associations::Base.new(:has_many, association_id.to_s.singularize, options)
+        associations[association.name] = association
+
         fk = options[:foreign_key] || self.name.underscore.gsub("/", "_") + "_id"
 
         define_method(association_id) do
-          klass.find(:all, {:conditions => {fk => self.id}})
+          association.klass.find(:all, {:conditions => {fk => self.id}})
         end
       end
 

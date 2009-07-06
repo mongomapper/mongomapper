@@ -1,7 +1,7 @@
 module MongoMapper
   module Associations
     class Base
-      attr_reader :type, :name
+      attr_reader :type, :name, :options
 
       def initialize(type, name, options = {})
         @options = options
