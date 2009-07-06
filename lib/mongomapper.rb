@@ -20,7 +20,10 @@ require dir + 'callbacks'
 require dir + 'observing'
 require dir + 'validations'
 
+require dir + 'associations/proxy'
 require dir + 'associations/base'
+
+require dir + 'associations/belongs_to_proxy'
 require dir + 'associations'
 
 require dir + 'embedded_document'

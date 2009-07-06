@@ -2,8 +2,7 @@ module MongoMapper
   module Associations
     module ClassMethods
       def many(association_name, options = {})
-        association = Associations::Base.new(:many, association_name.to_s.singularize, options)
-        associations[association.name] = association
+        association = create_association(:many, association_name.to_s.singularize, options)
 
         class_eval <<-EOS
           def #{association.name}
@@ -14,8 +13,7 @@ module MongoMapper
       end
 
       def belongs_to(association_id, options = {})
-        association = Associations::Base.new(:belongs_to, association_id, options)
-        associations[association.name] = association
+        association = create_association(:belongs_to, association_id, options)
 
         ref_id = "#{association_id}_id"
         key ref_id, String
@@ -25,10 +23,12 @@ module MongoMapper
         end
 
         define_method(association_id) do |*params|
-          ref = read_attribute(ref_id)
-          if ref
-            association.klass.find(ref)
+          proxy = instance_variable_get(association.ivar)
+          if proxy.nil?
+            proxy = BelongsToProxy.new(self, association)
+            instance_variable_set(association.ivar, proxy)
           end
+          proxy
         end
 
         define_method("#{association_id}=") do |value|
@@ -42,8 +42,7 @@ module MongoMapper
       end
 
       def has_many(association_id, options = {})
-        association = Associations::Base.new(:has_many, association_id.to_s.singularize, options)
-        associations[association.name] = association
+        association = create_association(:has_many, association_id.to_s.singularize, options)
 
         fk = options[:foreign_key] || self.name.underscore.gsub("/", "_") + "_id"
 
@@ -54,6 +53,13 @@ module MongoMapper
 
       def associations
         @associations ||= HashWithIndifferentAccess.new
+      end
+
+      private
+      def create_association(type, name, options)
+        association = Associations::Base.new(type, name, options)
+        associations[association.name] = association
+        association
       end
     end
   end
