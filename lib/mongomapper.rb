@@ -19,6 +19,10 @@ require dir + 'serialization'
 require dir + 'callbacks'
 require dir + 'observing'
 require dir + 'validations'
+
+require dir + 'associations/base'
+require dir + 'associations'
+
 require dir + 'embedded_document'
 require dir + 'document'
 
