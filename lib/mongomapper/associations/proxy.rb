@@ -33,6 +33,10 @@ module MongoMapper
         @target.send(method, *args)
       end
 
+      def replace(v)
+        raise NotImplementedError
+      end
+
       protected
       def method_missing(method, *args)
         if load_target

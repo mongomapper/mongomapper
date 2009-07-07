@@ -26,7 +26,6 @@ module MongoMapper
         key = Key.new(name, type, options)
         keys[key.name] = key
         apply_validations_for(key)
-        define_embedded_document_accessors_for(key)
         create_indexes_for(key)
         key
       end
@@ -46,19 +45,6 @@ module MongoMapper
       end
 
     private
-      def define_embedded_document_accessors_for(key)
-        return unless key.embedded_document?
-        instance_var = "@#{key.name}"
-
-        define_method(key.name) do
-          key.get(instance_variable_get(instance_var))
-        end
-
-        define_method("#{key.name}=") do |value|
-          instance_variable_set(instance_var, key.get(value))
-        end
-      end
-
       def create_indexes_for(key)
         ensure_index key.name if key.options[:index]
       end
@@ -215,17 +201,19 @@ module MongoMapper
       def embedded_association_attributes
         attributes = HashWithIndifferentAccess.new
         self.class.associations.each_pair do |name, association|
-          if association.type == :many && vals = instance_variable_get(association.ivar)
+          if association.type == :many && association.klass.embeddable?
+            vals = instance_variable_get(association.ivar)
             attributes[name] = vals.collect { |item| item.attributes }
           end
         end
+
         attributes
       end
 
       def initialize_associations(attrs={})
         self.class.associations.each_pair do |name, association|
           if collection = attrs.delete(name)
-            __send__("#{name}=", collection)
+            association.value = collection
           end
         end
       end

@@ -11,34 +11,21 @@ module MongoMapper
           write_attribute(ref_id, value)
         end
 
-        define_method(association_id) do |*params|
-          get_proxy(association, BelongsToProxy)
-        end
+        define_association_methods(association, BelongsToProxy)
 
-        define_method("#{association_id}=") do |value|
-          if value
-            write_attribute(ref_id, value.id)
-          else
-            write_attribute(ref_id, nil)
-          end
-          value
-        end
+        self
       end
 
       def many(association_id, options = {})
         association = create_association(:many, association_id, options)
-
-        define_method(association_id) do
-          if association.klass.embeddable?
-            get_proxy(association, HasManyEmbeddedProxy)
-          else
-            get_proxy(association, HasManyProxy)
-          end
+        proxy_class = HasManyProxy
+        if association.klass.embeddable?
+          proxy_class = HasManyEmbeddedProxy
         end
 
-        define_method("#{association_id}=") do |value|
-          association.value = value
-        end
+        define_association_methods(association, proxy_class)
+
+        self
       end
 
       def associations
@@ -50,6 +37,17 @@ module MongoMapper
         association = Associations::Base.new(type, name, options)
         associations[association.name] = association
         association
+      end
+
+      def define_association_methods(association, proxy_class)
+        define_method(association.name) do
+          get_proxy(association, proxy_class)
+        end
+
+        define_method("#{association.name}=") do |value|
+          get_proxy(association, proxy_class).replace(value)
+          value
+        end
       end
     end
 
