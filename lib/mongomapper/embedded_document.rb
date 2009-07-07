@@ -41,7 +41,7 @@ module MongoMapper
       end
 
       def embeddable?
-        @embbedable ||= !self.ancestors.include?(Document)
+        !self.ancestors.include?(Document)
       end
 
     private
@@ -203,7 +203,7 @@ module MongoMapper
         self.class.associations.each_pair do |name, association|
           if association.type == :many && association.klass.embeddable?
             vals = instance_variable_get(association.ivar)
-            attributes[name] = vals.collect { |item| item.attributes }
+            attributes[name] = vals.collect { |item| item.attributes } if vals
           end
         end
 
@@ -213,7 +213,6 @@ module MongoMapper
       def initialize_associations(attrs={})
         self.class.associations.each_pair do |name, association|
           if collection = attrs.delete(name)
-            association.value = collection
             __send__("#{association.name}=", collection)
           end
         end

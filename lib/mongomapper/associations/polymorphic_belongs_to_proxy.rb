@@ -15,8 +15,7 @@ module MongoMapper
         end
         @owner.save
 
-        @target = nil
-        load_target
+        reload_target
       end
 
       protected

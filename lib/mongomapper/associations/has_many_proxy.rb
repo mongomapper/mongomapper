@@ -7,11 +7,12 @@ module MongoMapper
         end
 
         v.each do |o|
+          @owner.save if @owner.new?
           o.__send__(:write_attribute, self.foreign_key, @owner.id)
           o.save
           o
         end
-        @target = nil
+        reload_target
       end
 
       protected

@@ -10,9 +10,8 @@ module MongoMapper
         else
           @owner.__send__(:write_attribute, ref_id, nil)
         end
-        @owner.save
 
-        @target = nil
+        reload_target
       end
 
       protected

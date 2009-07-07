@@ -4,7 +4,6 @@ module MongoMapper
       def belongs_to(association_id, options = {})
         association = create_association(:belongs_to, association_id, options)
 
-        proxy_class = BelongsToProxy
         ref_id = "#{association_id}_id"
         key ref_id, String
 
@@ -13,8 +12,6 @@ module MongoMapper
         end
 
         if options[:polymorphic]
-          proxy_class = PolymorphicBelongsToProxy
-
           ref_type = "#{association_id}_type"
           key ref_type, String
 
@@ -23,19 +20,14 @@ module MongoMapper
           end
         end
 
-        define_association_methods(association, proxy_class)
+        define_association_methods(association)
 
         self
       end
 
       def many(association_id, options = {})
         association = create_association(:many, association_id, options)
-        proxy_class = HasManyProxy
-        if association.klass.embeddable?
-          proxy_class = HasManyEmbeddedProxy
-        end
-
-        define_association_methods(association, proxy_class)
+        define_association_methods(association)
 
         self
       end
@@ -51,25 +43,24 @@ module MongoMapper
         association
       end
 
-      def define_association_methods(association, proxy_class)
+      def define_association_methods(association)
         define_method(association.name) do
-          get_proxy(association, proxy_class)
+          get_proxy(association)
         end
 
         define_method("#{association.name}=") do |value|
-          get_proxy(association, proxy_class).replace(value)
+          get_proxy(association).replace(value)
           value
         end
       end
     end
 
     module InstanceMethods
-      private
-      def get_proxy(association, klass)
-        proxy = instance_variable_get(association.ivar)
+      def get_proxy(association)
+        proxy = self.instance_variable_get(association.ivar)
         if proxy.nil?
-          proxy = klass.new(self, association)
-          instance_variable_set(association.ivar, proxy)
+          proxy = association.proxy_class.new(self, association)
+          self.instance_variable_set(association.ivar, proxy)
         end
         proxy
       end

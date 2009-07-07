@@ -22,7 +22,7 @@ module MongoMapper
         @target = nil
       end
 
-      def reload
+      def reload_target
         reset
         load_target
         self
