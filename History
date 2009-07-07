@@ -1,14 +1,15 @@
-0.1.3 (master)
-* 2 minor changes, 1 major addition, 1 minor fix
-  * Bumped required version of validatable so validate, validate_on_create, and validate_on_update work properly
+0.2.0 7/7/2009
+* 2 major additions (observers, associations), several minor additions, and a few bug fixes
   * Added observers
-  * More thorough use of converting find conditions and options to mongo criteria and options
-  * #attributes= no longer bombs when given nil
-  * many now supports embedded documents or documents in another collection (dcu on github)
+  * many now supports embedded docs or docs in another collection (dcu on github)
   * added belongs_to association (dcu)
   * added validates_uniqueness_of (dcu)
-  * now tracking descendants of document (dcu)
   * added :unique key shortcut to add validates_uniqueness_of automatically
+  * now tracking descendants of document (dcu)
+  * added validates_exclusion_of and validates_inclusion_of
+  * Bumped required version of validatable for callback fixes
+  * More thorough use of converting find conditions and options to mongo speak
+  * #attributes= no longer bombs when given nil
   
 0.1.2 7/3/2009
 * 2 minor changes
