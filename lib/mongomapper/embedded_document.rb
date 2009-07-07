@@ -1,14 +1,15 @@
+require 'observer'
+
 module MongoMapper
   module EmbeddedDocument
     class NotImplemented < StandardError; end
     
     def self.included(model)
       model.class_eval do
-        include InstanceMethods
         extend ClassMethods
+        include InstanceMethods
         include Validatable
-        include ActiveSupport::Callbacks
-        include MongoMapper::Serialization
+        include Serialization
       end
     end
     
@@ -164,10 +165,6 @@ module MongoMapper
         write_attribute(name, value)
       end
     
-      def id
-        read_attribute('_id')
-      end
-    
       def method_missing(method, *args, &block)
         attribute = method.to_s
         
@@ -193,6 +190,7 @@ module MongoMapper
         "#<#{self.class} #{attributes_as_nice_string}>"
       end
     
+      alias :respond_to_without_attributes? :respond_to?
       def respond_to?(method, include_private=false)
         return true if reader?(method) || writer?(method) || before_typecast_reader?(method)
         super

@@ -2,38 +2,18 @@ module MongoMapper
   module SaveWithValidation
     def self.included(base)
       base.class_eval do
-        alias_method_chain :valid?, :callbacks
         alias_method_chain :save, :validation
-        
-        define_callbacks  :before_validation_on_create,   :before_validation_on_update,
-                          :before_validation,             :after_validation,
-                          :validate, :validate_on_create, :validate_on_update
+        alias_method_chain :save!, :validation
       end
-    end
-    
-    def save!
-      save_with_validation || raise(DocumentNotValid.new(self))
     end
     
     private
-      def save_with_validation        
-        if valid?
-          save_without_validation
-        else
-          false
-        end
+      def save_with_validation
+        valid? ? save_without_validation : false
       end
-    
-      def valid_with_callbacks?
-        run_callbacks(:before_validation)
-        
-        if new?
-          run_callbacks(:before_validation_on_create)
-        else
-          run_callbacks(:before_validation_on_update)
-        end
-        
-        run_callbacks(:after_validation) if valid_without_callbacks?
+      
+      def save_with_validation!
+        valid? ? save_without_validation! : raise(DocumentNotValid.new(self))
       end
   end  
 end

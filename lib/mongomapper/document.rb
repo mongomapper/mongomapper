@@ -2,8 +2,10 @@ module MongoMapper
   module Document
     def self.included(model)
       model.class_eval do
-        include MongoMapper::EmbeddedDocument
+        include EmbeddedDocument
         include InstanceMethods
+        include Observing
+        include Callbacks
         include SaveWithValidation
         include RailsCompatibility
         extend ClassMethods
@@ -11,11 +13,6 @@ module MongoMapper
         key :_id, String
         key :created_at, Time
         key :updated_at, Time
-        
-        define_callbacks  :before_create,  :after_create, 
-                          :before_update,  :after_update,
-                          :before_save,    :after_save,
-                          :before_destroy, :after_destroy
       end
     end
     
@@ -56,7 +53,10 @@ module MongoMapper
       
       def create(*docs)
         instances = []
-        docs.flatten.each { |attrs| instances << new(attrs).save }
+        docs.flatten.each do |attrs|
+          doc = new(attrs); doc.save
+          instances << doc
+        end
         instances.size == 1 ? instances[0] : instances
       end
       
@@ -182,42 +182,47 @@ module MongoMapper
       end
         
       def save
-        run_callbacks(:before_save)
-        new? ? create : update
-        run_callbacks(:after_save)
-        self
+        create_or_update
+      end
+      
+      def save!
+        create_or_update || raise(DocumentNotValid.new(self))
       end
     
       def update_attributes(attrs={})
         self.attributes = attrs
         save
+        self
       end
     
       def destroy
-        run_callbacks(:before_destroy)
         collection.remove(:_id => id) unless new?
-        run_callbacks(:after_destroy)
         freeze
       end
     
       def ==(other)
         other.is_a?(self.class) && id == other.id
       end
+      
+      def id
+        read_attribute('_id')
+      end
     
     private
+      def create_or_update
+        result = new? ? create : update
+        result != false
+      end
+      
       def create
         write_attribute('_id', generate_id) if read_attribute('_id').blank?
         update_timestamps
-        run_callbacks(:before_create)
         save_to_collection
-        run_callbacks(:after_create)
       end
     
       def update
         update_timestamps
-        run_callbacks(:before_update)
         save_to_collection
-        run_callbacks(:after_update)
       end
       
       def save_to_collection

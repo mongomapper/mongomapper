@@ -16,6 +16,8 @@ require dir + 'finder_options'
 require dir + 'rails_compatibility'
 require dir + 'save_with_validation'
 require dir + 'serialization'
+require dir + 'callbacks'
+require dir + 'observing'
 require dir + 'embedded_document'
 require dir + 'document'
 

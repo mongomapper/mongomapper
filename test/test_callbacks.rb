@@ -1,7 +1,5 @@
 require 'test_helper'
 
-include ActiveSupport::Callbacks
-
 class CallbacksTest < Test::Unit::TestCase
   context "Defining and running callbacks" do
     setup do
