@@ -1,4 +1,4 @@
-0.1.3 7/5/2009
+0.1.3 (master)
 * 1 minor change
   * Bumped required version of validatable so validate, validate_on_create, and validate_on_update work properly
   
