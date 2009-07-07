@@ -1,3 +1,5 @@
+require 'set'
+
 module MongoMapper  
   module Document
     def self.included(model)
