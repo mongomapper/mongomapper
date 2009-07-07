@@ -2,6 +2,7 @@ module MongoMapper
   module Associations
     class Base
       attr_reader :type, :name, :options
+      attr_accessor :value
 
       def initialize(type, name, options = {})
         @options = options
@@ -10,11 +11,19 @@ module MongoMapper
       end
 
       def klass
-        klass_name.constantize
+        class_name.constantize
       end
 
-      def klass_name
-        @klass_name ||= (options[:class_name] || name.to_s.camelize)
+      def class_name
+        @class_name ||= begin
+          if cn = options[:class_name]
+            cn
+          elsif @type == :many
+            name.to_s.singularize.camelize
+          else
+            name.to_s.camelize
+          end
+        end
       end
 
       def ivar

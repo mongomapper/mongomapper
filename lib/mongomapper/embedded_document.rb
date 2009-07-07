@@ -41,6 +41,10 @@ module MongoMapper
         collection.create_index(keys_to_index, options.delete(:unique))
       end
 
+      def embeddable?
+        @embbedable ||= !self.ancestors.include?(Document)
+      end
+
     private
       def define_embedded_document_accessors_for(key)
         return unless key.embedded_document?
@@ -221,13 +225,7 @@ module MongoMapper
       def initialize_associations(attrs={})
         self.class.associations.each_pair do |name, association|
           if collection = attrs.delete(name)
-            if association.type == :many
-              collection = collection.collect do |item|
-                association.klass.new(item)
-              end
-            end
-
-            instance_variable_set(association.ivar, collection)
+            __send__("#{name}=", collection)
           end
         end
       end

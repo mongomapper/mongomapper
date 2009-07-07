@@ -24,6 +24,7 @@ require dir + 'associations/proxy'
 require dir + 'associations/base'
 
 require dir + 'associations/has_many_proxy'
+require dir + 'associations/has_many_embedded_proxy'
 require dir + 'associations/belongs_to_proxy'
 require dir + 'associations'
 

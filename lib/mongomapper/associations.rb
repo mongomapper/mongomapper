@@ -1,17 +1,6 @@
 module MongoMapper
   module Associations
     module ClassMethods
-      def many(association_name, options = {})
-        association = create_association(:many, association_name.to_s.singularize, options)
-
-        class_eval <<-EOS
-          def #{association_name}
-            #{association.ivar} ||= []
-            #{association.ivar}
-          end
-        EOS
-      end
-
       def belongs_to(association_id, options = {})
         association = create_association(:belongs_to, association_id, options)
 
@@ -36,11 +25,19 @@ module MongoMapper
         end
       end
 
-      def has_many(association_id, options = {})
-        association = create_association(:has_many, association_id.to_s.singularize, options)
+      def many(association_id, options = {})
+        association = create_association(:many, association_id, options)
 
         define_method(association_id) do
-          get_proxy(association, HasManyProxy)
+          if association.klass.embeddable?
+            get_proxy(association, HasManyEmbeddedProxy)
+          else
+            get_proxy(association, HasManyProxy)
+          end
+        end
+
+        define_method("#{association_id}=") do |value|
+          association.value = value
         end
       end
 
