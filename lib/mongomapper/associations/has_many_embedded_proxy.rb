@@ -2,7 +2,7 @@ module MongoMapper
   module Associations
     class HasManyEmbeddedProxy < ArrayProxy
       def replace(v)
-        @association.value = v.map { |e| e.attributes }
+        @association.value = v.map { |e| e.kind_of?(EmbeddedDocument) ? e.attributes : e }
         @target = nil
 
         load_target

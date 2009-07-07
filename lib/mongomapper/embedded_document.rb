@@ -214,6 +214,7 @@ module MongoMapper
         self.class.associations.each_pair do |name, association|
           if collection = attrs.delete(name)
             association.value = collection
+            __send__("#{association.name}=", collection)
           end
         end
       end
