@@ -9,13 +9,19 @@ module MongoMapper
         include SaveWithValidation
         include RailsCompatibility
         extend ClassMethods
-        
+
         key :_id, String
         key :created_at, Time
         key :updated_at, Time
       end
+
+      descendants << model
     end
-    
+
+    def self.descendants
+      @descendants ||= Set.new
+    end
+ 
     module ClassMethods
       def find(*args)
         options = args.extract_options!
@@ -117,7 +123,7 @@ module MongoMapper
         end
         @collection
       end
-      
+
     private
       def find_every(options)
         criteria, options = FinderOptions.new(options).to_a
