@@ -4,6 +4,10 @@
   * Added observers
   * More thorough use of converting find conditions and options to mongo criteria and options
   * #attributes= no longer bombs when given nil
+  * many now supports embedded documents or documents in another collection (dcu on github)
+  * added belongs_to association (dcu)
+  * added validates_uniqueness_of (dcu)
+  * added :unique key shortcut to add validates_uniqueness_of automatically
   
 0.1.2 7/3/2009
 * 2 minor changes
