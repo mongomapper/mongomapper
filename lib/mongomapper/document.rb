@@ -1,6 +1,6 @@
 require 'set'
 
-module MongoMapper  
+module MongoMapper
   module Document
     def self.included(model)
       model.class_eval do
@@ -27,7 +27,7 @@ module MongoMapper
     module ClassMethods
       def find(*args)
         options = args.extract_options!
-        
+
         case args.first
           when :first then find_first(options)
           when :last  then find_last(options)
@@ -35,30 +35,30 @@ module MongoMapper
           else             find_from_ids(args)
         end
       end
-      
+
       def first(options={})
         find_first(options)
       end
-      
+
       def last(options={})
         find_last(options)
       end
-      
+
       def all(options={})
         find_every(options)
       end
-      
+
       def find_by_id(id)
         if doc = collection.find_first({:_id => id})
           new(doc)
         end
       end
-      
+
       # TODO: remove the rescuing when ruby driver works correctly
       def count(conditions={})
-        collection.count(conditions)
+        collection.count(FinderOptions.to_mongo_criteria(conditions))
       end
-      
+
       def create(*docs)
         instances = []
         docs.flatten.each do |attrs|
@@ -67,12 +67,12 @@ module MongoMapper
         end
         instances.size == 1 ? instances[0] : instances
       end
-      
+
       # For updating single document
       #   Person.update(1, {:foo => 'bar'})
       #
       # For updating multiple documents at once:
-      #   Person.update({'1' => {:foo => 'bar'}, '2' => {:baz => 'wick'}}) 
+      #   Person.update({'1' => {:foo => 'bar'}, '2' => {:baz => 'wick'}})
       def update(*args)
         updating_multiple = args.length == 1
         if updating_multiple
@@ -82,23 +82,23 @@ module MongoMapper
           update_single(id, attributes)
         end
       end
-      
+
       def delete(*ids)
         collection.remove(:_id => {'$in' => ids.flatten})
       end
-      
+
       def delete_all(conditions={})
-        collection.remove(conditions)
+        collection.remove(FinderOptions.to_mongo_criteria(conditions))
       end
-      
+
       def destroy(*ids)
         find_some(ids.flatten).each(&:destroy)
       end
-      
+
       def destroy_all(conditions={})
         find(:all, :conditions => conditions).each(&:destroy)
       end
-      
+
       def connection(mongo_connection=nil)
         if mongo_connection.nil?
           @connection ||= MongoMapper.connection
@@ -107,7 +107,7 @@ module MongoMapper
         end
         @connection
       end
-      
+
       def database(name=nil)
         if name.nil?
           @database ||= MongoMapper.database
@@ -116,7 +116,7 @@ module MongoMapper
         end
         @database
       end
-      
+
       def collection(name=nil)
         if name.nil?
           @collection ||= database.collection(self.to_s.demodulize.tableize)
@@ -124,6 +124,10 @@ module MongoMapper
           @collection = database.collection(name)
         end
         @collection
+      end
+
+      def validates_uniqueness_of(*args)
+        add_validations(args, MongoMapper::Validations::ValidatesUniquenessOf)
       end
 
     private
@@ -161,15 +165,15 @@ module MongoMapper
             find_some(ids)
         end
       end
-      
+
       def update_single(id, attrs)
         if id.blank? || attrs.blank? || !attrs.is_a?(Hash)
           raise ArgumentError, "Updating a single document requires an id and a hash of attributes"
         end
-        
+
         find(id).update_attributes(attrs)
       end
-      
+
       def update_multiple(docs)
         unless docs.is_a?(Hash)
           raise ArgumentError, "Updating multiple documents takes 1 argument and it must be hash"
@@ -179,16 +183,16 @@ module MongoMapper
         instances
       end
     end
-    
+
     module InstanceMethods
       def collection
         self.class.collection
       end
-    
+
       def new?
         read_attribute('_id').blank? || self.class.find_by_id(id).blank?
       end
-        
+
       def save
         create_or_update
       end
@@ -196,26 +200,26 @@ module MongoMapper
       def save!
         create_or_update || raise(DocumentNotValid.new(self))
       end
-    
+
       def update_attributes(attrs={})
         self.attributes = attrs
         save
         self
       end
-    
+
       def destroy
         collection.remove(:_id => id) unless new?
         freeze
       end
-    
+
       def ==(other)
         other.is_a?(self.class) && id == other.id
       end
-      
+ 
       def id
         read_attribute('_id')
       end
-    
+
     private
       def create_or_update
         result = new? ? create : update
@@ -227,21 +231,21 @@ module MongoMapper
         update_timestamps
         save_to_collection
       end
-    
+
       def update
         update_timestamps
         save_to_collection
       end
-      
+
       def save_to_collection
         collection.save(attributes.merge!(embedded_association_attributes))
       end
-    
+
       def update_timestamps
         write_attribute('created_at', Time.now.utc) if new?
         write_attribute('updated_at', Time.now.utc)
       end
-    
+
       def generate_id
         XGen::Mongo::Driver::ObjectID.new
       end
