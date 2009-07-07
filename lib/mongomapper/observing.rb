@@ -7,38 +7,7 @@ module MongoMapper
     def self.included(model)
       model.class_eval do
         extend Observable
-        extend ClassMethods
       end      
-    end
-
-    module ClassMethods
-      def observers=(*observers)
-        @observers = observers.flatten
-      end
-
-      def observers
-        @observers ||= []
-      end
-
-      def instantiate_observers
-        return if @observers.blank?
-        @observers.each do |observer|
-          if observer.respond_to?(:to_sym) # Symbol or String
-            observer.to_s.camelize.constantize.instance
-          elsif observer.respond_to?(:instance)
-            observer.instance
-          else
-            raise ArgumentError, "#{observer} must be a lowercase, underscored class name (or an instance of the class itself) responding to the instance method. Example: Person.observers = :big_brother # calls BigBrother.instance"
-          end
-        end
-      end
-
-      protected
-        def inherited(subclass)
-          super
-          changed
-          notify_observers :observed_class_inherited, subclass
-        end
     end
   end
 
@@ -62,25 +31,16 @@ module MongoMapper
     end
 
     def initialize
-      Set.new(observed_classes + observed_subclasses).each { |klass| add_observer! klass }
+      Set.new(observed_classes).each { |klass| add_observer! klass }
     end
 
     def update(observed_method, object) #:nodoc:
       send(observed_method, object) if respond_to?(observed_method)
     end
 
-    def observed_class_inherited(subclass) #:nodoc:
-      self.class.observe(observed_classes + [subclass])
-      add_observer!(subclass)
-    end
-
     protected
       def observed_classes
         Set.new([self.class.observed_class].compact.flatten)
-      end
-      
-      def observed_subclasses
-        observed_classes.sum([]) { |klass| klass.send(:subclasses) }
       end
       
       def add_observer!(klass)
