@@ -380,6 +380,11 @@ class DocumentTest < Test::Unit::TestCase
         @document.delete_all({:fname => 'John'})
         @document.count.should == 2
       end
+      
+      should "convert the conditions to mongo criteria" do
+        @document.delete_all(:age => [26, 27])
+        @document.count.should == 1
+      end
     end
     
     context "Destroying a document" do
@@ -436,6 +441,11 @@ class DocumentTest < Test::Unit::TestCase
         @document.destroy_all(:age => 26)
         @document.count.should == 1
       end
+      
+      should "convert the conditions to mongo criteria" do
+        @document.destroy_all(:age => [26, 27])
+        @document.count.should == 1
+      end
     end
     
     context "Counting documents in collection" do
@@ -465,6 +475,10 @@ class DocumentTest < Test::Unit::TestCase
       
       should "return count for matching documents if conditions provided" do
         @document.count(:age => 27).should == 1
+      end
+      
+      should "convert the conditions to mongo criteria" do
+        @document.count(:age => [26, 27]).should == 2
       end
     end
     

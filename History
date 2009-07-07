@@ -2,6 +2,7 @@
 * 2 minor changes
   * Bumped required version of validatable so validate, validate_on_create, and validate_on_update work properly
   * Added observers
+  * More thorough use of converting find conditions and options to mongo criteria and options
   
 0.1.2 7/3/2009
 * 2 minor changes

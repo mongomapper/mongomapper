@@ -48,7 +48,7 @@ module MongoMapper
       
       # TODO: remove the rescuing when ruby driver works correctly
       def count(conditions={})
-        collection.count(conditions)
+        collection.count(FinderOptions.to_mongo_criteria(conditions))
       end
       
       def create(*docs)
@@ -80,7 +80,7 @@ module MongoMapper
       end
       
       def delete_all(conditions={})
-        collection.remove(conditions)
+        collection.remove(FinderOptions.to_mongo_criteria(conditions))
       end
       
       def destroy(*ids)
