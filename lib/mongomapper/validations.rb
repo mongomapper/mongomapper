@@ -3,12 +3,24 @@ module MongoMapper
     class ValidatesUniquenessOf < Validatable::ValidationBase
       def valid?(instance)
         # TODO: scope
-        s = instance.class.find(:first, :conditions => {self.attribute => instance[attribute]}, :limit => 1)
-        s.nil? || instance.id == s.id
+        doc = instance.class.find(:first, :conditions => {self.attribute => instance[attribute]}, :limit => 1)
+        doc.nil? || instance.id == doc.id
       end
 
       def message(instance)
-        super || "is not unique"
+        super || "has already been taken"
+      end
+    end
+    
+    class ValidatesExclusionOf < Validatable::ValidationBase
+      required_option :within
+      
+      def valid?(instance)
+        within.include?(instance[attribute])
+      end
+      
+      def message(instance)
+        super || "is reserved"
       end
     end
   end

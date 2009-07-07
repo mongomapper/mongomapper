@@ -129,6 +129,10 @@ module MongoMapper
       def validates_uniqueness_of(*args)
         add_validations(args, MongoMapper::Validations::ValidatesUniquenessOf)
       end
+      
+      def validates_exclusion_of(*args)
+        add_validations(args, MongoMapper::Validations::ValidatesExclusionOf)
+      end
 
     private
       def find_every(options)

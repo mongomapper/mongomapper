@@ -190,10 +190,27 @@ class ValidationsTest < Test::Unit::TestCase
         doc = @document.create(:name => 'John')
         doc.should_not have_error_on(:name)
         second_john = @document.create(:name => 'John')
-        second_john.should have_error_on(:name)
+        second_john.should have_error_on(:name, 'has already been taken')
       end
     end
     
+    context "validating exclusion of" do
+      should "throw error if enumerator not provided" do
+        @document.key :action, String
+        lambda {
+          @document.validates_exclusion_of :action
+        }.should raise_error(ArgumentError)
+      end
+      
+      should "work with validates_exclusion_of macro" do
+        @document.key :action, String
+        @document.validates_exclusion_of :action, :within => %w(kick run)
+        doc = @document.new
+        doc.should have_error_on(:action)
+        doc.action = 'kick'
+        doc.should_not have_error_on(:action, 'is reserved')
+      end
+    end
   end # Validations
 
   context "Saving a new document that is invalid" do
