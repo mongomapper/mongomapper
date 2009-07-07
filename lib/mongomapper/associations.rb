@@ -4,6 +4,7 @@ module MongoMapper
       def belongs_to(association_id, options = {})
         association = create_association(:belongs_to, association_id, options)
 
+        proxy_class = BelongsToProxy
         ref_id = "#{association_id}_id"
         key ref_id, String
 
@@ -11,7 +12,18 @@ module MongoMapper
           write_attribute(ref_id, value)
         end
 
-        define_association_methods(association, BelongsToProxy)
+        if options[:polymorphic]
+          proxy_class = PolymorphicBelongsToProxy
+
+          ref_type = "#{association_id}_type"
+          key ref_type, String
+
+          define_method("#{ref_type}=") do |value|
+            write_attribute(ref_type, value)
+          end
+        end
+
+        define_association_methods(association, proxy_class)
 
         self
       end
