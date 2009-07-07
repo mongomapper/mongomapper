@@ -7,6 +7,7 @@
   * many now supports embedded documents or documents in another collection (dcu on github)
   * added belongs_to association (dcu)
   * added validates_uniqueness_of (dcu)
+  * now tracking descendants of document (dcu)
   * added :unique key shortcut to add validates_uniqueness_of automatically
   
 0.1.2 7/3/2009
