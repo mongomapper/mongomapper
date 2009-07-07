@@ -134,6 +134,10 @@ module MongoMapper
         add_validations(args, MongoMapper::Validations::ValidatesExclusionOf)
       end
 
+      def validates_inclusion_of(*args)
+        add_validations(args, MongoMapper::Validations::ValidatesInclusionOf)
+      end
+
     private
       def find_every(options)
         criteria, options = FinderOptions.new(options).to_a

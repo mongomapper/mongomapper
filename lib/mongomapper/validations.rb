@@ -16,11 +16,31 @@ module MongoMapper
       required_option :within
       
       def valid?(instance)
-        within.include?(instance[attribute])
+        value = instance[attribute]
+        return true if allow_nil && value.nil?
+        return true if allow_blank && value.blank?
+        
+        !within.include?(instance[attribute])
       end
       
       def message(instance)
         super || "is reserved"
+      end
+    end
+
+    class ValidatesInclusionOf < Validatable::ValidationBase
+      required_option :within
+      
+      def valid?(instance)
+        value = instance[attribute]
+        return true if allow_nil && value.nil?
+        return true if allow_blank && value.blank?
+        
+        within.include?(value)
+      end
+      
+      def message(instance)
+        super || "is not in the list"
       end
     end
   end

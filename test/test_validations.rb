@@ -170,14 +170,14 @@ class ValidationsTest < Test::Unit::TestCase
         doc = @document.new("name" => "joe")
         doc.save
         doc.name = "joe"
-        doc.valid?.should_not be_nil
+        doc.valid?.should be_true
         doc.should_not have_error_on(:name)
       end
 
       should "fail if object name is not unique" do
         doc = @document.new("name" => "joe")
-        doc.save.should_not be_nil
-
+        doc.save.should be_true
+        sleep 0.2 # hack to avoid race condition
         doc2 = @document.new("name" => "joe")
         doc2.should have_error_on(:name)
       end
@@ -189,6 +189,7 @@ class ValidationsTest < Test::Unit::TestCase
         
         doc = @document.create(:name => 'John')
         doc.should_not have_error_on(:name)
+        sleep 0.2 # hack to avoid race condition
         second_john = @document.create(:name => 'John')
         second_john.should have_error_on(:name, 'has already been taken')
       end
@@ -205,10 +206,70 @@ class ValidationsTest < Test::Unit::TestCase
       should "work with validates_exclusion_of macro" do
         @document.key :action, String
         @document.validates_exclusion_of :action, :within => %w(kick run)
+        
         doc = @document.new
-        doc.should have_error_on(:action)
+        doc.should_not have_error_on(:action)
+        
+        doc.action = 'fart'
+        doc.should_not have_error_on(:action)
+        
         doc.action = 'kick'
-        doc.should_not have_error_on(:action, 'is reserved')
+        doc.should have_error_on(:action, 'is reserved')
+      end
+      
+      should "not have error if allow nil is true and value is nil" do
+        @document.key :action, String
+        @document.validates_exclusion_of :action, :within => %w(kick run), :allow_nil => true
+        
+        doc = @document.new
+        doc.should_not have_error_on(:action)
+      end
+
+      should "not have error if allow blank is true and value is blank" do
+        @document.key :action, String
+        @document.validates_exclusion_of :action, :within => %w(kick run), :allow_nil => true
+        
+        doc = @document.new(:action => '')
+        doc.should_not have_error_on(:action)
+      end
+    end
+
+    context "validating inclusion of" do
+      should "throw error if enumerator not provided" do
+        @document.key :action, String
+        lambda {
+          @document.validates_inclusion_of :action
+        }.should raise_error(ArgumentError)
+      end
+      
+      should "work with validates_inclusion_of macro" do
+        @document.key :action, String
+        @document.validates_inclusion_of :action, :within => %w(kick run)
+        
+        doc = @document.new
+        doc.should have_error_on(:action, 'is not in the list')
+        
+        doc.action = 'fart'
+        doc.should have_error_on(:action, 'is not in the list')
+        
+        doc.action = 'kick'
+        doc.should_not have_error_on(:action)
+      end
+      
+      should "not have error if allow nil is true and value is nil" do
+        @document.key :action, String
+        @document.validates_inclusion_of :action, :within => %w(kick run), :allow_nil => true
+        
+        doc = @document.new
+        doc.should_not have_error_on(:action)
+      end
+      
+      should "not have error if allow blank is true and value is blank" do
+        @document.key :action, String
+        @document.validates_inclusion_of :action, :within => %w(kick run), :allow_blank => true
+        
+        doc = @document.new(:action => '')
+        doc.should_not have_error_on(:action)
       end
     end
   end # Validations
