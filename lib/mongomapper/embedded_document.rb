@@ -55,6 +55,10 @@ module MongoMapper
         if key.options[:required]
           validates_presence_of(attribute)
         end
+        
+        if key.options[:unique]
+          validates_uniqueness_of(attribute)
+        end
 
         if key.options[:numeric]
           number_options = key.type == Integer ? {:only_integer => true} : {}

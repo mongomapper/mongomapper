@@ -182,6 +182,18 @@ class ValidationsTest < Test::Unit::TestCase
         doc2.should have_error_on(:name)
       end
     end
+    
+    context "validates uniqueness of with :unique shortcut" do
+      should "work" do
+        @document.key :name, String, :unique => true
+        
+        doc = @document.create(:name => 'John')
+        doc.should_not have_error_on(:name)
+        second_john = @document.create(:name => 'John')
+        second_john.should have_error_on(:name)
+      end
+    end
+    
   end # Validations
 
   context "Saving a new document that is invalid" do
