@@ -1,6 +1,6 @@
 module MongoMapper
   module Associations
-    class HasManyEmbeddedProxy < Proxy
+    class HasManyEmbeddedProxy < ArrayProxy
       def replace(v)
         @association.value = v.map { |e| e.attributes }
         @target = nil

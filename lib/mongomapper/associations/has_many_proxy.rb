@@ -1,6 +1,6 @@
 module MongoMapper
   module Associations
-    class HasManyProxy < Proxy
+    class HasManyProxy < ArrayProxy
       def replace(v)
         if load_target
           @target.map(&:destroy)

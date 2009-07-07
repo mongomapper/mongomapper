@@ -21,6 +21,7 @@ require dir + 'observing'
 require dir + 'validations'
 
 require dir + 'associations/proxy'
+require dir + 'associations/array_proxy'
 require dir + 'associations/base'
 
 require dir + 'associations/has_many_proxy'
