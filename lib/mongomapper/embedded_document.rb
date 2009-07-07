@@ -124,6 +124,7 @@ module MongoMapper
       end
       
       def attributes=(attrs)
+        return if attrs.blank?
         attrs.each_pair do |key_name, value|
           if writer?(key_name)
             write_attribute(key_name, value)

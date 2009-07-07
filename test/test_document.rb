@@ -575,18 +575,6 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
     
-    context "when initialized" do
-      should "accept a hash that sets keys and values" do
-        doc = @document.new(:name => 'John', :age => 23)
-        doc.attributes.should == {'name' => 'John', 'age' => 23}
-      end
-      
-      should "silently reject keys that have not been defined" do
-        doc = @document.new(:foobar => 'baz')
-        doc.attributes.should == {}
-      end
-    end
-    
     context "mass assigning keys" do
       should "update values for keys provided" do
         doc = @document.new(:name => 'foobar', :age => 10)

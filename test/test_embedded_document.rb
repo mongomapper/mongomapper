@@ -29,9 +29,8 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.attributes.should == {'name' => 'John', 'age' => 23}
       end
       
-      should "silently reject keys that have not been defined" do
-        doc = @document.new(:foobar => 'baz')
-        doc.attributes.should == {}
+      should "not throw error if initialized with nil" do
+        doc = @document.new(nil)
       end
     end
     
