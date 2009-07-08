@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+$:.unshift File.dirname(__FILE__)+"/../lib"
+
+require 'mongomapper'
+require 'irb'
+
+MongoMapper.database = "mmtest"
+
+IRB.setup(nil)
+irb = IRB::Irb.new
+
+IRB.conf[:MAIN_CONTEXT] = irb.context
+
+irb.context.evaluate("require 'irb/completion'", 0)
+irb.context.evaluate("include XGen::Mongo::Driver", 0)
+irb.context.evaluate("include MongoMapper", 0)
+
+trap("SIGINT") do
+  irb.signal_handle
+end
+catch(:IRB_EXIT) do
+  irb.eval_input
+end
+
