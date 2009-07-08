@@ -23,7 +23,7 @@ module MongoMapper
     def self.descendants
       @descendants ||= Set.new
     end
- 
+
     module ClassMethods
       def find(*args)
         options = args.extract_options!
@@ -34,6 +34,19 @@ module MongoMapper
           when :all   then find_every(options)
           else             find_from_ids(args)
         end
+      end
+
+      def paginate(options)
+        per_page = (options.delete(:per_page) || 25).to_i
+        page = options.delete(:page).to_i
+        page = 1 if page < 1
+
+        total = count(options)
+        total_pages = (total / per_page.to_f).ceil
+
+        options[:limit] = per_page
+        options[:skip] = (page - 1)*per_page
+        {:total => total, :total_pages => total_pages, :items => find_every(options)}
       end
 
       def first(options={})
@@ -129,7 +142,7 @@ module MongoMapper
       def validates_uniqueness_of(*args)
         add_validations(args, MongoMapper::Validations::ValidatesUniquenessOf)
       end
-      
+
       def validates_exclusion_of(*args)
         add_validations(args, MongoMapper::Validations::ValidatesExclusionOf)
       end
@@ -204,7 +217,7 @@ module MongoMapper
       def save
         create_or_update
       end
-      
+
       def save!
         create_or_update || raise(DocumentNotValid.new(self))
       end
@@ -223,7 +236,7 @@ module MongoMapper
       def ==(other)
         other.is_a?(self.class) && id == other.id
       end
- 
+
       def id
         read_attribute('_id')
       end
@@ -233,7 +246,7 @@ module MongoMapper
         result = new? ? create : update
         result != false
       end
-      
+
       def create
         write_attribute('_id', generate_id) if read_attribute('_id').blank?
         update_timestamps
