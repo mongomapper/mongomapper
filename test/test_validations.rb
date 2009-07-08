@@ -7,7 +7,7 @@ class ValidationsTest < Test::Unit::TestCase
         include MongoMapper::Document
       end
     end
-    
+
     context "Validating acceptance of" do
       should "work with validates_acceptance_of macro" do
         @document.key :terms, String
@@ -40,7 +40,7 @@ class ValidationsTest < Test::Unit::TestCase
         doc.name = 'John'
         doc.should_not have_error_on(:name)
       end
-      
+
       should "work with :format shorcut key" do
         @document.key :name, String, :format => /.+/
         doc = @document.new
@@ -49,7 +49,7 @@ class ValidationsTest < Test::Unit::TestCase
         doc.should_not have_error_on(:name)
       end
     end
-    
+
     context "validating length of" do
       should "work with validates_length_of macro" do
         @document.key :name, String
@@ -57,7 +57,7 @@ class ValidationsTest < Test::Unit::TestCase
         doc = @document.new
         doc.should have_error_on(:name)
       end
-      
+
       context "with :length => integer shortcut" do
         should "set maximum of integer provided" do
           @document.key :name, String, :length => 5
@@ -68,19 +68,19 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should_not have_error_on(:name)
         end
       end
-      
+
       context "with :length => range shortcut" do
         setup do
           @document.key :name, String, :length => 5..7
         end
-        
+
         should "set minimum of range min" do
           doc = @document.new
           doc.should have_error_on(:name)
           doc.name = '123456'
           doc.should_not have_error_on(:name)
         end
-        
+
         should "set maximum of range max" do
           doc = @document.new
           doc.should have_error_on(:name)
@@ -90,7 +90,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should_not have_error_on(:name)
         end
       end
-      
+
       context "with :length => hash shortcut" do
         should "pass options through" do
           @document.key :name, String, :length => {:minimum => 2}
@@ -101,7 +101,7 @@ class ValidationsTest < Test::Unit::TestCase
         end
       end
     end # validates_length_of
-    
+
     context "Validating numericality of" do
       should "work with validates_numericality_of macro" do
         @document.key :age, Integer
@@ -112,7 +112,7 @@ class ValidationsTest < Test::Unit::TestCase
         doc.age = 23
         doc.should_not have_error_on(:age)
       end
-      
+
       context "with :numeric shortcut" do
         should "work with integer or float" do
           @document.key :weight, Float, :numeric => true
@@ -125,7 +125,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should_not have_error_on(:weight)
         end
       end
-      
+
       context "with :numeric shortcut on Integer key" do
         should "only work with integers" do
           @document.key :age, Integer, :numeric => true
@@ -139,7 +139,7 @@ class ValidationsTest < Test::Unit::TestCase
         end
       end
     end # numericality of
-    
+
     context "validating presence of" do
       should "work with validates_presence_of macro" do
         @document.key :name, String
@@ -147,22 +147,140 @@ class ValidationsTest < Test::Unit::TestCase
         doc = @document.new
         doc.should have_error_on(:name)
       end
-      
+
       should "work with :required shortcut on key definition" do
         @document.key :name, String, :required => true
         doc = @document.new
         doc.should have_error_on(:name)
       end
-    end    
+    end
+
+    context "validating uniqueness of" do
+      setup do
+        @document.key :name, String
+        @document.validates_uniqueness_of :name
+      end
+
+      should "not fail if object is new" do
+        doc = @document.new
+        doc.should_not have_error_on(:name)
+      end
+
+      should "allow to update an object" do
+        doc = @document.new("name" => "joe")
+        doc.save
+        doc.name = "joe"
+        doc.valid?.should be_true
+        doc.should_not have_error_on(:name)
+      end
+
+      should "fail if object name is not unique" do
+        doc = @document.new("name" => "joe")
+        doc.save.should be_true
+        sleep 0.2 # hack to avoid race condition
+        doc2 = @document.new("name" => "joe")
+        doc2.should have_error_on(:name)
+      end
+    end
+    
+    context "validates uniqueness of with :unique shortcut" do
+      should "work" do
+        @document.key :name, String, :unique => true
+        
+        doc = @document.create(:name => 'John')
+        doc.should_not have_error_on(:name)
+        sleep 0.2 # hack to avoid race condition
+        second_john = @document.create(:name => 'John')
+        second_john.should have_error_on(:name, 'has already been taken')
+      end
+    end
+    
+    context "validating exclusion of" do
+      should "throw error if enumerator not provided" do
+        @document.key :action, String
+        lambda {
+          @document.validates_exclusion_of :action
+        }.should raise_error(ArgumentError)
+      end
+      
+      should "work with validates_exclusion_of macro" do
+        @document.key :action, String
+        @document.validates_exclusion_of :action, :within => %w(kick run)
+        
+        doc = @document.new
+        doc.should_not have_error_on(:action)
+        
+        doc.action = 'fart'
+        doc.should_not have_error_on(:action)
+        
+        doc.action = 'kick'
+        doc.should have_error_on(:action, 'is reserved')
+      end
+      
+      should "not have error if allow nil is true and value is nil" do
+        @document.key :action, String
+        @document.validates_exclusion_of :action, :within => %w(kick run), :allow_nil => true
+        
+        doc = @document.new
+        doc.should_not have_error_on(:action)
+      end
+
+      should "not have error if allow blank is true and value is blank" do
+        @document.key :action, String
+        @document.validates_exclusion_of :action, :within => %w(kick run), :allow_nil => true
+        
+        doc = @document.new(:action => '')
+        doc.should_not have_error_on(:action)
+      end
+    end
+
+    context "validating inclusion of" do
+      should "throw error if enumerator not provided" do
+        @document.key :action, String
+        lambda {
+          @document.validates_inclusion_of :action
+        }.should raise_error(ArgumentError)
+      end
+      
+      should "work with validates_inclusion_of macro" do
+        @document.key :action, String
+        @document.validates_inclusion_of :action, :within => %w(kick run)
+        
+        doc = @document.new
+        doc.should have_error_on(:action, 'is not in the list')
+        
+        doc.action = 'fart'
+        doc.should have_error_on(:action, 'is not in the list')
+        
+        doc.action = 'kick'
+        doc.should_not have_error_on(:action)
+      end
+      
+      should "not have error if allow nil is true and value is nil" do
+        @document.key :action, String
+        @document.validates_inclusion_of :action, :within => %w(kick run), :allow_nil => true
+        
+        doc = @document.new
+        doc.should_not have_error_on(:action)
+      end
+      
+      should "not have error if allow blank is true and value is blank" do
+        @document.key :action, String
+        @document.validates_inclusion_of :action, :within => %w(kick run), :allow_blank => true
+        
+        doc = @document.new(:action => '')
+        doc.should_not have_error_on(:action)
+      end
+    end
   end # Validations
-  
+
   context "Saving a new document that is invalid" do
     setup do
       @document = Class.new do
         include MongoMapper::Document
         key :name, String, :required => true
       end
-      
+
       @document.collection.clear
     end
 
@@ -171,7 +289,7 @@ class ValidationsTest < Test::Unit::TestCase
       doc.save
       @document.count.should == 0
     end
-    
+
     should "populate document's errors" do
       doc = @document.new
       doc.errors.size.should == 0
@@ -179,14 +297,14 @@ class ValidationsTest < Test::Unit::TestCase
       doc.errors.full_messages.should == ["Name can't be empty"]
     end
   end
-  
+
   context "Saving a document that is invalid (destructive)" do
     setup do
       @document = Class.new do
         include MongoMapper::Document
         key :name, String, :required => true
       end
-      
+
       @document.collection.clear
     end
 
@@ -195,14 +313,14 @@ class ValidationsTest < Test::Unit::TestCase
       lambda { doc.save! }.should raise_error(MongoMapper::DocumentNotValid)
     end
   end
-  
+
   context "Saving an existing document that is invalid" do
     setup do
       @document = Class.new do
         include MongoMapper::Document
         key :name, String, :required => true
       end
-      
+
       @document.collection.clear
       @doc = @document.create(:name => 'John Nunemaker')
     end
@@ -212,11 +330,64 @@ class ValidationsTest < Test::Unit::TestCase
       @doc.save
       @document.find(@doc.id).name.should == 'John Nunemaker'
     end
-    
+
     should "populate document's errors" do
       @doc.name = nil
       @doc.save
       @doc.errors.full_messages.should == ["Name can't be empty"]
+    end
+  end
+
+  context "Adding validation errors" do
+    setup do
+      @document = Class.new do
+        include MongoMapper::Document
+        key :action, String
+        def action_present
+          errors.add(:action, 'is invalid') if action.blank?
+        end
+      end
+    end
+
+    should "work with validate callback" do
+      @document.validate :action_present
+
+      doc = @document.new
+      doc.action = nil
+      doc.should have_error_on(:action)
+
+      doc.action = 'kick'
+      doc.should_not have_error_on(:action)
+    end
+
+    should "work with validate_on_create callback" do
+      @document.validate_on_create :action_present
+
+      doc = @document.new
+      doc.action = nil
+      doc.should have_error_on(:action)
+
+      doc.action = 'kick'
+      doc.should_not have_error_on(:action)
+      doc.save
+
+      doc.action = nil
+      doc.should_not have_error_on(:action)
+    end
+
+    should "work with validate_on_update callback" do
+      @document.validate_on_update :action_present
+
+      doc = @document.new
+      doc.action = nil
+      doc.should_not have_error_on(:action)
+      doc.save
+
+      doc.action = nil
+      doc.should have_error_on(:action)
+
+      doc.action = 'kick'
+      doc.should_not have_error_on(:action)
     end
   end
 end

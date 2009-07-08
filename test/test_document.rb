@@ -6,12 +6,6 @@ class Address
   key :state, String
 end
 
-class Person
-  include MongoMapper::EmbeddedDocument
-  key :name, String
-  key :child, Person
-end
-
 class DocumentTest < Test::Unit::TestCase
   context "The Document Class" do
     setup do
@@ -19,8 +13,12 @@ class DocumentTest < Test::Unit::TestCase
         include MongoMapper::Document
       end
     end
-    
-    should "should be able to define a key" do
+
+    should "track its descendants" do
+      MongoMapper::Document.descendants.should include(@document)
+    end
+
+    should "be able to define a key" do
       key = @document.key(:name, String)
       key.name.should == 'name'
       key.type.should == String
@@ -124,7 +122,7 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
     
-    context "Saving a document with an embedded document" do
+    context "Saving a document with a key that is an embedded document" do
       setup do        
         @document.class_eval do
           key :foo, Address
@@ -141,28 +139,6 @@ class DocumentTest < Test::Unit::TestCase
         from_db = @document.find(doc.id)
         from_db.foo.city.should == 'South Bend'
         from_db.foo.state.should == 'IN'
-      end
-      
-      context "with yet another embedded document inside it" do
-        setup do
-          @document.class_eval do
-            key :person, Person
-          end
-        end
-        
-        should "embed embedded documents recursively" do
-          meg = Person.new(:name => "Meg")
-          meg.child = Person.new(:name => "Steve")
-          meg.child.child = Person.new(:name => "Linda")
-          
-          doc = @document.new(:person => meg)
-          doc.save
-          
-          from_db = @document.find(doc.id)
-          from_db.person.name.should == 'Meg'
-          from_db.person.child.name.should == 'Steve'
-          from_db.person.child.child.name.should == 'Linda'
-        end          
       end
     end
     
@@ -408,6 +384,11 @@ class DocumentTest < Test::Unit::TestCase
         @document.delete_all({:fname => 'John'})
         @document.count.should == 2
       end
+      
+      should "convert the conditions to mongo criteria" do
+        @document.delete_all(:age => [26, 27])
+        @document.count.should == 1
+      end
     end
     
     context "Destroying a document" do
@@ -464,6 +445,11 @@ class DocumentTest < Test::Unit::TestCase
         @document.destroy_all(:age => 26)
         @document.count.should == 1
       end
+      
+      should "convert the conditions to mongo criteria" do
+        @document.destroy_all(:age => [26, 27])
+        @document.count.should == 1
+      end
     end
     
     context "Counting documents in collection" do
@@ -493,6 +479,10 @@ class DocumentTest < Test::Unit::TestCase
       
       should "return count for matching documents if conditions provided" do
         @document.count(:age => 27).should == 1
+      end
+      
+      should "convert the conditions to mongo criteria" do
+        @document.count(:age => [26, 27]).should == 2
       end
     end
     
@@ -586,18 +576,6 @@ class DocumentTest < Test::Unit::TestCase
       should "be false if has id and id is in database" do
         doc = @document.create(:name => 'John Nunemaker', :age => 27)
         doc.new?.should be(false)
-      end
-    end
-    
-    context "when initialized" do
-      should "accept a hash that sets keys and values" do
-        doc = @document.new(:name => 'John', :age => 23)
-        doc.attributes.should == {'name' => 'John', 'age' => 23}
-      end
-      
-      should "silently reject keys that have not been defined" do
-        doc = @document.new(:foobar => 'baz')
-        doc.attributes.should == {}
       end
     end
     
