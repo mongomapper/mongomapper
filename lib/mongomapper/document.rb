@@ -23,7 +23,7 @@ module MongoMapper
     def self.descendants
       @descendants ||= Set.new
     end
- 
+
     module ClassMethods
       def find(*args)
         options = args.extract_options!
@@ -129,7 +129,7 @@ module MongoMapper
       def validates_uniqueness_of(*args)
         add_validations(args, MongoMapper::Validations::ValidatesUniquenessOf)
       end
-      
+
       def validates_exclusion_of(*args)
         add_validations(args, MongoMapper::Validations::ValidatesExclusionOf)
       end
@@ -204,7 +204,7 @@ module MongoMapper
       def save
         create_or_update
       end
-      
+
       def save!
         create_or_update || raise(DocumentNotValid.new(self))
       end
@@ -223,7 +223,7 @@ module MongoMapper
       def ==(other)
         other.is_a?(self.class) && id == other.id
       end
- 
+
       def id
         read_attribute('_id')
       end
@@ -233,7 +233,7 @@ module MongoMapper
         result = new? ? create : update
         result != false
       end
-      
+
       def create
         write_attribute('_id', generate_id) if read_attribute('_id').blank?
         update_timestamps

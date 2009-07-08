@@ -19,7 +19,11 @@ module MongoMapper
 
     module ClassMethods
       def keys
-        @keys ||= HashWithIndifferentAccess.new
+        @keys ||= if parent = parent_model
+          parent.keys.dup
+        else
+          HashWithIndifferentAccess.new
+        end
       end
 
       def key(name, type, options={})
@@ -44,6 +48,12 @@ module MongoMapper
         !self.ancestors.include?(Document)
       end
 
+      def parent_model
+        if parent = ancestors[1]
+          parent if parent.ancestors.include?(EmbeddedDocument)
+        end
+      end
+
     private
       def create_indexes_for(key)
         ensure_index key.name if key.options[:index]
@@ -55,7 +65,7 @@ module MongoMapper
         if key.options[:required]
           validates_presence_of(attribute)
         end
-        
+
         if key.options[:unique]
           validates_uniqueness_of(attribute)
         end
