@@ -204,13 +204,42 @@ module MongoMapper
       end
       
       def embedded_association_attributes
+        #Setup a new hash for collecting values
         attributes = HashWithIndifferentAccess.new
+        
+        #Loop over each association, retrieving the name and association
         self.class.associations.each_pair do |name, association|
+          
+          #If the association is a many association, and the document is an embedded document...
           if association.type == :many && association.klass.embeddable?
+            
+            #First get the association object (array)...
             vals = instance_variable_get(association.ivar)
-            attributes[name] = vals.collect { |item| item.attributes } if vals
+            
+            if vals
+              
+              #Loop over each association object...
+              attributes[name] = vals.collect do |item|
+                
+                #Prepare a hash with the fields 
+                attributes_hash = item.attributes
+                
+                #Get the deeply embedded associations possibly from this association...
+                item.send(:embedded_association_attributes).each_pair do |association_name, association_value|
+                  #Inject the return value into the attributes hash of this one object in the association array
+                  attributes_hash[association_name] = association_value
+                end
+                
+                #Ensure that we return the attributes hash for the colect method above.
+                attributes_hash
+              end
+              
+            end
+            
           end
+          
         end
+        
         attributes
       end
 

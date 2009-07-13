@@ -1,5 +1,5 @@
 require 'test_helper'
-
+require 'ruby-debug'
 class Address
   include MongoMapper::EmbeddedDocument
 
@@ -31,6 +31,15 @@ class Person
   include MongoMapper::EmbeddedDocument
   key :name, String
   key :child, Person
+  
+  many :pets
+end
+
+class Pet
+  include MongoMapper::EmbeddedDocument
+  
+  key :name, String
+  key :species, String
 end
 
 class AssociationsTest < Test::Unit::TestCase
@@ -169,6 +178,34 @@ class AssociationsTest < Test::Unit::TestCase
       from_db.person.name.should == 'Meg'
       from_db.person.child.name.should == 'Steve'
       from_db.person.child.child.name.should == 'Linda'
+    end
+    
+    should "allow saving embedded documents in 'many' embedded documents" do
+      @document = Class.new do
+        include MongoMapper::Document
+        
+        many :people
+      end
+      
+      meg = Person.new(:name => "Meg")
+      sparky = Pet.new(:name => "Sparky", :species => "Dog")
+      koda = Pet.new(:name => "Koda", :species => "Dog")
+      
+      doc = @document.new
+      
+      meg.pets << sparky
+      meg.pets << koda
+      
+      doc.people << meg
+      doc.save
+      
+      from_db = @document.find(doc.id)
+      from_db.people.first.name.should == "Meg"
+      from_db.people.first.pets.should_not == []
+      from_db.people.first.pets.first.name.should == "Sparky"
+      from_db.people.first.pets.first.species.should == "Dog"
+      from_db.people.first.pets[1].name.should == "Koda"
+      from_db.people.first.pets[1].species.should == "Dog"
     end
   end
 end
