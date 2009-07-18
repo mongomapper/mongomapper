@@ -1,7 +1,7 @@
 require 'set'
 
 module MongoMapper
-  module Document
+  module Document    
     def self.included(model)
       model.class_eval do
         include EmbeddedDocument
@@ -37,16 +37,17 @@ module MongoMapper
       end
 
       def paginate(options)
-        per_page = (options.delete(:per_page) || 25).to_i
-        page = options.delete(:page).to_i
-        page = 1 if page < 1
-
-        total = count(options)
-        total_pages = (total / per_page.to_f).ceil
-
-        options[:limit] = per_page
-        options[:skip] = (page - 1)*per_page
-        {:total => total, :total_pages => total_pages, :items => find_every(options)}
+        per_page      = options.delete(:per_page)
+        page          = options.delete(:page)
+        total_entries = count(options)
+        
+        collection = Pagination::PaginationProxy.new(total_entries, page, per_page)
+        
+        options[:limit] = collection.limit
+        options[:skip] = collection.skip
+        
+        collection.subject = find_every(options)
+        collection
       end
 
       def first(options={})

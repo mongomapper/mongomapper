@@ -494,25 +494,29 @@ class DocumentTest < Test::Unit::TestCase
       end
 
       should "return the total pages" do
-        info = @document.paginate(:per_page => 2, :page => 1)
-        info[:total_pages].should == 2
+        result = @document.paginate(:per_page => 2, :page => 1)
+        result.total_pages.should == 2
       end
 
       should "return the total of records" do
-        info = @document.paginate(:per_page => 2, :page => 1)
-        info[:total].should == 3
+        result = @document.paginate(:per_page => 2, :page => 1)
+        result.total_entries.should == 3
       end
 
       should "return the items" do
-        info = @document.paginate(:per_page => 2, :page => 1)
-        info[:items].size.should == 2
+        result = @document.paginate(:per_page => 2, :page => 1)
+        result.size.should == 2
+        result.subject.should == [@doc1, @doc2]
       end
 
       should "accept conditions" do
-        info = @document.paginate(:per_page => 2, :page => 1,
-                                  :conditions => {:lname => 'Nunemaker'},
-                                  :order => "age DESC")
-        info[:items].first.age.should == 27
+        result = @document.paginate({
+          :conditions => {:lname => 'Nunemaker'},
+          :order      => "age DESC",
+          :per_page   => 2, 
+          :page       => 1,
+        })
+        result.first.age.should == 27
       end
     end
 
