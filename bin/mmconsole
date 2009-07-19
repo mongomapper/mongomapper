@@ -1,0 +1,56 @@
+#!/usr/bin/env ruby
+$:.unshift File.dirname(__FILE__)+"/../lib"
+
+require 'mongomapper'
+require 'irb'
+
+IRB.setup(nil)
+irb = IRB::Irb.new
+
+IRB.conf[:MAIN_CONTEXT] = irb.context
+
+irb.context.evaluate("require 'irb/completion'", 0)
+irb.context.evaluate(%@
+include XGen::Mongo::Driver
+include MongoMapper
+
+MongoMapper.database = "mmtest"
+$db = MongoMapper.database
+
+@, 0)
+
+puts %@
+Welcome to the MongoMapper Console!
+
+Example 1:
+  things = $db.collection("things")
+  things.insert("name" => "Raw Thing")
+  things.insert("name" => "Another Thing", "date" => Time.now)
+
+  cursor = things.find("name" => "Raw Thing")
+  puts cursor.next_object.inspect
+
+Example 2:
+  class Thing
+    include MongoMapper::Document
+    key :name, String, :required => true
+    key :date, Time
+  end
+
+  thing = Thing.new
+  thing.name = "My thing"
+  thing.date = Time.now
+  thing.save
+
+  all_things = Thing.all
+  puts all_things.map { |object| object.name }.inspect
+
+@
+
+trap("SIGINT") do
+  irb.signal_handle
+end
+catch(:IRB_EXIT) do
+  irb.eval_input
+end
+
