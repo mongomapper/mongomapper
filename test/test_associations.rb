@@ -27,6 +27,12 @@ class Status
   key :name, String
 end
 
+class Person
+  include MongoMapper::EmbeddedDocument
+  key :name, String
+  key :child, Person
+end
+
 class AssociationsTest < Test::Unit::TestCase
   def setup
     Project.collection.clear
@@ -144,6 +150,25 @@ class AssociationsTest < Test::Unit::TestCase
       from_db.addresses.size.should == 2
       from_db.addresses[0].should == sb
       from_db.addresses[1].should == chi
+    end
+    
+    should "allow embedding arbitrarily deep" do
+      @document = Class.new do
+        include MongoMapper::Document
+        key :person, Person
+      end
+      
+      meg = Person.new(:name => "Meg")
+      meg.child = Person.new(:name => "Steve")
+      meg.child.child = Person.new(:name => "Linda")
+      
+      doc = @document.new(:person => meg)
+      doc.save
+      
+      from_db = @document.find(doc.id)
+      from_db.person.name.should == 'Meg'
+      from_db.person.child.name.should == 'Steve'
+      from_db.person.child.child.name.should == 'Linda'
     end
   end
 end
