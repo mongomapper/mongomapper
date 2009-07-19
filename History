@@ -1,7 +1,8 @@
 0.2.1(working)
 * 1 major addition
-  * Added Document#paginate which works just like find but adds pagination
-  * Added a basic console for playing around with MongoMapper
+  * Added Document#paginate which works just like find but adds pagination (dcu did basics and I pimped)
+  * Added a basic console for playing around with MongoMapper (dcu)
+  * Embedded associations can now be deeply nested (Keith Hanson)
 
 0.2.0 7/7/2009
 * 2 major additions (observers, associations), several minor additions, and a few bug fixes
