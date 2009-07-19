@@ -39,7 +39,11 @@ module MongoMapper
             end
           when :many
             if self.klass.embeddable?
-              HasManyEmbeddedProxy
+              if @options[:polymorphic]
+                PolymorphicHasManyEmbeddedProxy
+              else
+                HasManyEmbeddedProxy
+              end
             else
               HasManyProxy
             end

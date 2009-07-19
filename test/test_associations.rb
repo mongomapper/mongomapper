@@ -1,5 +1,5 @@
 require 'test_helper'
-require 'ruby-debug'
+
 class Address
   include MongoMapper::EmbeddedDocument
 
@@ -42,10 +42,151 @@ class Pet
   key :species, String
 end
 
+class Media
+  include MongoMapper::EmbeddedDocument
+  key :file, String
+end
+
+class Video < Media
+  key :length, Integer
+end
+
+class Image < Media
+  key :width, Integer
+  key :height, Integer
+end
+
+class Music < Media
+  key :bitrate, String
+end
+
+class Catalog
+  include MongoMapper::Document
+  
+  many :medias, :polymorphic => true
+end
+
+module TrModels
+  class Transport
+    include MongoMapper::EmbeddedDocument
+    key :license_plate, String
+  end
+  
+  class Car < TrModels::Transport
+    include MongoMapper::EmbeddedDocument
+    key :model, String
+    key :year, Integer
+  end
+  
+  class Bus < TrModels::Transport
+    include MongoMapper::EmbeddedDocument
+    key :max_passengers, Integer
+  end
+  
+  class Ambulance < TrModels::Transport
+    include MongoMapper::EmbeddedDocument
+    key :icu, Boolean
+  end
+  
+  class Fleet
+    include MongoMapper::Document
+    many :transports, :polymorphic => true, :class_name => "TrModels::Transport"
+    key :name, String
+  end
+end
+
 class AssociationsTest < Test::Unit::TestCase
   def setup
     Project.collection.clear
     Status.collection.clear
+  end
+  
+  context "Nested Polymorphic Many" do
+    should "default reader to empty array" do
+      fleet = TrModels::Fleet.new
+      fleet.transports.should == []
+    end
+
+    should "allow adding to association like it was an array" do
+      fleet = TrModels::Fleet.new
+      fleet.transports << TrModels::Car.new
+      fleet.transports.push TrModels::Bus.new
+      fleet.transports.size.should == 2
+    end
+
+    should "store the association" do
+      fleet = TrModels::Fleet.new
+      fleet.transports = [TrModels::Car.new("license_plate" => "DCU2013", "model" => "Honda Civic")]
+      fleet.save.should be_true
+
+      from_db = TrModels::Fleet.find(fleet.id)
+      from_db.transports.size.should == 1
+      from_db.transports[0].license_plate.should == "DCU2013"
+    end
+
+    should "store different associations" do
+      fleet = TrModels::Fleet.new
+      fleet.transports = [
+        TrModels::Car.new("license_plate" => "ABC1223", "model" => "Honda Civic", "year" => 2003),
+        TrModels::Bus.new("license_plate" => "XYZ9090", "max_passengers" => 51),
+        TrModels::Ambulance.new("license_plate" => "HDD3030", "icu" => true)
+      ]
+      fleet.save.should be_true
+
+      from_db = TrModels::Fleet.find(fleet.id)
+      from_db.transports.size.should == 3
+      from_db.transports[0].license_plate.should == "ABC1223"
+      from_db.transports[0].model.should == "Honda Civic"
+      from_db.transports[0].year.should == 2003
+      from_db.transports[1].license_plate.should == "XYZ9090"
+      from_db.transports[1].max_passengers.should == 51
+      from_db.transports[2].license_plate.should == "HDD3030"
+      from_db.transports[2].icu.should == true
+    end
+  end
+
+  context "Polymorphic Many" do
+    should "default reader to empty array" do
+      catalog = Catalog.new
+      catalog.medias.should == []
+    end
+
+    should "allow adding to association like it was an array" do
+      catalog = Catalog.new
+      catalog.medias << Video.new
+      catalog.medias.push Video.new
+      catalog.medias.size.should == 2
+    end
+
+    should "store the association" do
+      catalog = Catalog.new
+      catalog.medias = [Video.new("file" => "video.mpg", "length" => 3600)]
+      catalog.save.should be_true
+
+      from_db = Catalog.find(catalog.id)
+      from_db.medias.size.should == 1
+      from_db.medias[0].file.should == "video.mpg"
+    end
+
+    should "store different associations" do
+      catalog = Catalog.new
+      catalog.medias = [
+        Video.new("file" => "video.mpg", "length" => 3600),
+        Music.new("file" => "music.mp3", "bitrate" => "128kbps"),
+        Image.new("file" => "image.png", "width" => 800, "height" => 600)
+      ]
+      catalog.save.should be_true
+
+      from_db = Catalog.find(catalog.id)
+      from_db.medias.size.should == 3
+      from_db.medias[0].file.should == "video.mpg"
+      from_db.medias[0].length.should == 3600
+      from_db.medias[1].file.should == "music.mp3"
+      from_db.medias[1].bitrate.should == "128kbps"
+      from_db.medias[2].file.should == "image.png"
+      from_db.medias[2].width.should == 800
+      from_db.medias[2].height.should == 600
+    end
   end
 
   context "Polymorphic Belongs To" do
