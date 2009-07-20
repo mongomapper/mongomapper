@@ -1,4 +1,5 @@
 require 'pathname'
+require 'pp'
 require 'rubygems'
 require 'test/unit'
 require 'shoulda'

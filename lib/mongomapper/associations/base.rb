@@ -10,45 +10,47 @@ module MongoMapper
       end
 
       def klass
-        class_name.constantize
+        @klass ||= class_name.constantize
       end
 
       def class_name
         @class_name ||= begin
           if cn = options[:class_name]
             cn
-          elsif @type == :many
+          elsif many?
             name.to_s.singularize.camelize
           else
             name.to_s.camelize
           end
         end
       end
-
+      
+      def many?
+        @many_type ||= @type == :many
+      end
+      
+      def polymorphic?
+        @options[:polymorphic]
+      end
+      
+      def type_key_name
+        @type_key_name ||= many? ? '_type' : "#{name}_type"
+      end
+      
       def ivar
         @ivar ||= "@_#{name}"
       end
 
       def proxy_class
-        case @type
-          when :belongs_to
-            if @options[:polymorphic]
-              PolymorphicBelongsToProxy
-            else
-              BelongsToProxy
-            end
-          when :many
-            if self.klass.embeddable?
-              if @options[:polymorphic]
-                PolymorphicHasManyEmbeddedProxy
-              else
-                HasManyEmbeddedProxy
-              end
-            else
-              HasManyProxy
-            end
-        end
-      end
+        @proxy_class ||= begin
+          if many?
+            return HasManyProxy unless self.klass.embeddable?            
+            polymorphic? ? PolymorphicHasManyEmbeddedProxy : HasManyEmbeddedProxy
+          else
+            polymorphic? ? PolymorphicBelongsToProxy : BelongsToProxy
+          end
+        end # end begin
+      end # end proxy_class
     end
   end
 end

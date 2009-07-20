@@ -18,23 +18,6 @@ class DocumentTest < Test::Unit::TestCase
       MongoMapper::Document.descendants.should include(@document)
     end
 
-    should "find its parent model" do
-      class A < Address
-        key :new_key, String
-      end
-
-      A.parent_model.should == Address
-    end
-
-    should "inherit keys" do
-      class A < Address
-        key :new_key, String
-      end
-
-      A.keys.should include("new_key")
-      Address.keys.should_not include("new_key")
-    end
-
     should "be able to define a key" do
       key = @document.key(:name, String)
       key.name.should == 'name'
@@ -54,6 +37,13 @@ class DocumentTest < Test::Unit::TestCase
       @document.keys['name'].type.should == String
       @document.keys['age'].name.should == 'age'
       @document.keys['age'].type.should == Integer
+    end
+    
+    should "allow redefining a key" do
+      @document.key(:foo, String)
+      @document.keys['foo'].type.should == String
+      @document.key(:foo, Integer)
+      @document.keys['foo'].type.should == Integer
     end
 
     should "use default database by default" do

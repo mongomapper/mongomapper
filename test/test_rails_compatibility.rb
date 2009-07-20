@@ -44,8 +44,9 @@ class TestRailsCompatibility < Test::Unit::TestCase
 
     should "have column names" do
       Order.column_names.sort.should == ['_id', 'created_at', 'order_only', 'updated_at']
-      FirstItem.column_names.sort.should == ['first_only', 'for_all']
-      SecondItem.column_names.sort.should == ['for_all', 'second_only']
+      Item.column_names.sort.should == ['_type', 'for_all']
+      FirstItem.column_names.sort.should == ['_type', 'first_only', 'for_all']
+      SecondItem.column_names.sort.should == ['_type', 'for_all', 'second_only']
     end
   end
 

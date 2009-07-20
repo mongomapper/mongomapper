@@ -9,11 +9,11 @@ module MongoMapper
       end
 
       protected
-      def find_target
-        (@_values || []).map do |e|
-          @association.klass.new(e)
+        def find_target
+          (@_values || []).map do |e|
+            @association.klass.new(e)
+          end
         end
-      end
     end
   end
 end

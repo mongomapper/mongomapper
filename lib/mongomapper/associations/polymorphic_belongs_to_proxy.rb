@@ -19,13 +19,13 @@ module MongoMapper
       end
 
       protected
-      def find_target
-        ref_id = @owner.__send__(:read_attribute, "#{@association.name}_id")
-        ref_type = @owner.__send__(:read_attribute, "#{@association.name}_type")
-        if ref_id && ref_type
-          ref_type.constantize.find(ref_id)
+        def find_target
+          ref_id = @owner.__send__(:read_attribute, "#{@association.name}_id")
+          ref_type = @owner.__send__(:read_attribute, "#{@association.name}_type")
+          if ref_id && ref_type
+            ref_type.constantize.find(ref_id)
+          end
         end
-      end
     end
   end
 end

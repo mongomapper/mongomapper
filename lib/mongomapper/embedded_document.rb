@@ -19,6 +19,14 @@ module MongoMapper
     end
 
     module ClassMethods
+      def inherited(subclass)
+        (@subclasses ||= []) << subclass
+      end
+
+      def subclasses
+        @subclasses
+      end
+      
       def keys
         @keys ||= if parent = parent_model
           parent.keys.dup
@@ -27,12 +35,23 @@ module MongoMapper
         end
       end
 
-      def key(name, type, options={})
+      def key(name, type, options={})        
         key = Key.new(name, type, options)
         keys[key.name] = key
+        
+        add_to_subclasses(name, type, options)
         apply_validations_for(key)
         create_indexes_for(key)
+        
         key
+      end
+      
+      def add_to_subclasses(name, type, options)
+        return if subclasses.blank?
+        
+        subclasses.each do |subclass|
+          subclass.key name, type, options
+        end
       end
 
       def ensure_index(name_or_array, options={})
@@ -148,7 +167,7 @@ module MongoMapper
 
       def method_missing(method, *args, &block)
         attribute = method.to_s
-
+        
         if reader?(attribute)
           read_attribute(attribute)
         elsif writer?(attribute)
@@ -239,7 +258,7 @@ module MongoMapper
       def initialize_associations(attrs={})
         self.class.associations.each_pair do |name, association|
           if collection = attrs.delete(name)
-            __send__("#{association.name}=", collection)
+            send("#{association.name}=", collection)
           end
         end
       end

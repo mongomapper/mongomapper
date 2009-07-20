@@ -10,7 +10,6 @@ module MongoMapper
       def initialize(owner, association)
         @owner= owner
         @association = association
-
         reset
       end
 
@@ -38,23 +37,31 @@ module MongoMapper
       end
 
       protected
-      def method_missing(method, *args)
-        if load_target
-          if block_given?
-            @target.send(method, *args)  { |*block_args| yield(*block_args) }
-          else
-            @target.send(method, *args)
+        def method_missing(method, *args)
+          if load_target
+            if block_given?
+              @target.send(method, *args)  { |*block_args| yield(*block_args) }
+            else
+              @target.send(method, *args)
+            end
           end
         end
-      end
 
-      def load_target
-        @target ||= find_target
-      end
+        def load_target
+          @target ||= find_target
+        end
 
-      def find_target
-        raise NotImplementedError
-      end
+        def find_target
+          raise NotImplementedError
+        end
+        
+        # Array#flatten has problems with recursive arrays. Going one level
+        # deeper solves the majority of the problems.
+        def flatten_deeper(array)
+          array.collect do |element|
+            (element.respond_to?(:flatten) && !element.is_a?(Hash)) ? element.flatten : element
+          end.flatten
+        end
     end
   end
 end

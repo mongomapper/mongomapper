@@ -1,40 +1,45 @@
 module MongoMapper
   module Associations
-    class PolymorphicHasManyEmbeddedProxy < Proxy
+    class PolymorphicHasManyEmbeddedProxy < ArrayProxy      
       def replace(v)
-        @_values = v.map do |e|
-          ref_type = "#{@association.name}_type"
-          if e.kind_of?(EmbeddedDocument)  
-            e.class.send(:key, ref_type, String)
-            {ref_type => e.class.name}.merge(e.attributes)
+        @_values = v.map do |doc_or_hash|
+          if doc_or_hash.kind_of?(EmbeddedDocument)
+            doc = doc_or_hash
+            {@association.type_key_name => doc.class.name}.merge(doc.attributes)
           else
-            e
+            doc_or_hash
           end
         end
         
         @target = nil
-
         reload_target
       end
+      
+      def <<(*docs)
+        load_target if @owner.new?
+        
+        flatten_deeper(docs).each do |doc|
+          doc.send("#{@association.type_key_name}=", doc.class)
+          @target << doc
+        end
+        
+        self
+      end
+      alias_method :push, :<<
+      alias_method :concat, :<<
 
       protected
         def find_target
-          (@_values || []).map do |e|
-            ref_type = "#{@association.name}_type"
-            class_name = e[ref_type]
-          
-            if class_name
-              current = Kernel
-              parts = class_name.split("::")
-              parts.each do |p|
-                current = current.const_get(p)
-              end
-              klass = current
-            else
-              @association.klass
-            end
-          
-            klass.new(e)
+          (@_values || []).map do |hash|
+            polymorphic_class(hash).new(hash)
+          end
+        end
+        
+        def polymorphic_class(doc)
+          if class_name = doc[@association.type_key_name]
+            class_name.constantize
+          else
+            @association.klass
           end
         end
     end

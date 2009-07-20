@@ -1,5 +1,20 @@
 require 'test_helper'
 
+class Grandparent
+  include MongoMapper::EmbeddedDocument
+  key :grandparent, String
+end
+
+class Parent < Grandparent
+  include MongoMapper::EmbeddedDocument
+  key :parent, String
+end
+
+class Child < Parent
+  include MongoMapper::EmbeddedDocument
+  key :child, String
+end
+
 class EmbeddedDocumentTest < Test::Unit::TestCase
   context "Including MongoMapper::EmbeddedDocument" do
     setup do
@@ -11,6 +26,48 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     should "clear out document default keys" do
       @klass.keys.size.should == 0
     end
+  end
+  
+  context "parent_model" do
+    should "be nil if none of parents ancestors include EmbeddedDocument" do
+      parent = Class.new
+      document = Class.new(parent) do
+        include MongoMapper::EmbeddedDocument
+      end
+      document.parent_model.should be_nil
+    end
+    
+    should "find parent" do
+      Parent.parent_model.should == Grandparent
+      Child.parent_model.should == Parent
+    end
+  end
+  
+  context "keys" do    
+    should "be inherited" do
+      Grandparent.keys.keys.should == ['grandparent']
+      Parent.keys.keys.sort.should == ['grandparent', 'parent']
+      Child.keys.keys.sort.should  == ['child', 'grandparent', 'parent']
+    end
+    
+    should "propogate to subclasses if key added after class definition" do
+      Grandparent.key :_type, String
+      
+      Grandparent.keys.keys.sort.should == ['_type', 'grandparent']
+      Parent.keys.keys.sort.should      == ['_type', 'grandparent', 'parent']
+      Child.keys.keys.sort.should       == ['_type', 'child', 'grandparent', 'parent']
+    end
+  end
+  
+  context "subclasses" do
+    should "default to nil" do
+      Child.subclasses.should be_nil
+    end
+
+    should "be recorded" do
+      Grandparent.subclasses.sort.should == [Parent]
+      Parent.subclasses.sort.should      == [Child]
+    end    
   end
 
   context "An instance of an embedded document" do

@@ -11,19 +11,19 @@ module MongoMapper
         include SaveWithValidation
         include DocumentRailsCompatibility
         extend ClassMethods
-
+        
         key :_id, String
         key :created_at, Time
         key :updated_at, Time
       end
-
+      
       descendants << model
     end
 
     def self.descendants
       @descendants ||= Set.new
     end
-
+    
     module ClassMethods
       def find(*args)
         options = args.extract_options!
