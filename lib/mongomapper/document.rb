@@ -9,7 +9,7 @@ module MongoMapper
         include Observing
         include Callbacks
         include SaveWithValidation
-        include RailsCompatibility
+        include DocumentRailsCompatibility
         extend ClassMethods
 
         key :_id, String

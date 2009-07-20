@@ -1,8 +1,7 @@
 module MongoMapper
-  module RailsCompatibility
+  module EmbeddedDocumentRailsCompatibility
     def self.included(model)
       model.class_eval do
-        alias_method :new_record?, :new?
         extend ClassMethods
       end
       class << model
@@ -17,7 +16,7 @@ module MongoMapper
     end
 
     def to_param
-      id
+      raise "Missing to_param method in #{self.class.name}. You should implement it to return the unique identifier of this document within a collection."
     end
   end
 end

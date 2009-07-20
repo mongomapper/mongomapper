@@ -8,10 +8,11 @@ module MongoMapper
       model.class_eval do
         extend ClassMethods
         include InstanceMethods
-
+      
         extend Associations::ClassMethods
         include Associations::InstanceMethods
 
+        include EmbeddedDocumentRailsCompatibility
         include Validatable
         include Serialization
       end
