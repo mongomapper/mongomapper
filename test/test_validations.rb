@@ -169,6 +169,12 @@ class ValidationsTest < Test::Unit::TestCase
       should "allow to update an object" do
         doc = @document.new("name" => "joe")
         doc.save
+
+        @document \
+          .stubs(:find) \
+          .with(:first, :conditions => {:name => 'joe'}, :limit => 1) \
+          .returns(doc)
+
         doc.name = "joe"
         doc.valid?.should be_true
         doc.should_not have_error_on(:name)
@@ -177,7 +183,12 @@ class ValidationsTest < Test::Unit::TestCase
       should "fail if object name is not unique" do
         doc = @document.new("name" => "joe")
         doc.save.should be_true
-        sleep 0.2 # hack to avoid race condition
+
+        @document \
+          .stubs(:find) \
+          .with(:first, :conditions => {:name => 'joe'}, :limit => 1) \
+          .returns(doc)
+
         doc2 = @document.new("name" => "joe")
         doc2.should have_error_on(:name)
       end
@@ -189,7 +200,12 @@ class ValidationsTest < Test::Unit::TestCase
         
         doc = @document.create(:name => 'John')
         doc.should_not have_error_on(:name)
-        sleep 0.2 # hack to avoid race condition
+        
+        @document \
+          .stubs(:find) \
+          .with(:first, :conditions => {:name => 'John'}, :limit => 1) \
+          .returns(doc)
+        
         second_john = @document.create(:name => 'John')
         second_john.should have_error_on(:name, 'has already been taken')
       end
