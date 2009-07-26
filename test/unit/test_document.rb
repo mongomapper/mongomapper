@@ -1,93 +1,105 @@
 require 'test_helper'
 
-class Grandparent
-  include MongoMapper::EmbeddedDocument
-  key :grandparent, String
-end
-
-class Parent < Grandparent
-  include MongoMapper::EmbeddedDocument
-  key :parent, String
-end
-
-class Child < Parent
-  include MongoMapper::EmbeddedDocument
-  key :child, String
-end
-
-class EmbeddedDocumentTest < Test::Unit::TestCase
-  context "Including MongoMapper::EmbeddedDocument" do
-    setup do
-      @klass = Class.new do
-        include MongoMapper::EmbeddedDocument
-      end
-    end
-
-    should "clear out document default keys" do
-      @klass.keys.size.should == 0
-    end
-  end
-  
-  context "parent_model" do
-    should "be nil if none of parents ancestors include EmbeddedDocument" do
-      parent = Class.new
-      document = Class.new(parent) do
-        include MongoMapper::EmbeddedDocument
-      end
-      document.parent_model.should be_nil
-    end
-    
-    should "find parent" do
-      Parent.parent_model.should == Grandparent
-      Child.parent_model.should == Parent
-    end
-  end
-  
-  context "keys" do    
-    should "be inherited" do
-      Grandparent.keys.keys.should == ['grandparent']
-      Parent.keys.keys.sort.should == ['grandparent', 'parent']
-      Child.keys.keys.sort.should  == ['child', 'grandparent', 'parent']
-    end
-    
-    should "propogate to subclasses if key added after class definition" do
-      Grandparent.key :_type, String
-      
-      Grandparent.keys.keys.sort.should == ['_type', 'grandparent']
-      Parent.keys.keys.sort.should      == ['_type', 'grandparent', 'parent']
-      Child.keys.keys.sort.should       == ['_type', 'child', 'grandparent', 'parent']
-    end
-  end
-  
-  context "subclasses" do
-    should "default to nil" do
-      Child.subclasses.should be_nil
-    end
-
-    should "be recorded" do
-      Grandparent.subclasses.sort.should == [Parent]
-      Parent.subclasses.sort.should      == [Child]
-    end    
-  end
-
-  context "An instance of an embedded document" do
+class DocumentTest < Test::Unit::TestCase
+  context "The Document Class" do
     setup do
       @document = Class.new do
-        include MongoMapper::EmbeddedDocument
+        include MongoMapper::Document
+      end
+    end
+
+    should "track its descendants" do
+      MongoMapper::Document.descendants.should include(@document)
+    end
+
+    should "use default database by default" do
+      @document.database.should == MongoMapper.database
+    end
+
+    should "have a connection" do
+      @document.connection.should be_instance_of(XGen::Mongo::Driver::Mongo)
+    end
+
+    should "allow setting different connection without affecting the default" do
+      conn = XGen::Mongo::Driver::Mongo.new
+      @document.connection conn
+      @document.connection.should == conn
+      @document.connection.should_not == MongoMapper.connection
+    end
+
+    should "allow setting a different database without affecting the default" do
+      @document.database AlternateDatabase
+      @document.database.name.should == AlternateDatabase
+
+      another_document = Class.new do
+        include MongoMapper::Document
+      end
+      another_document.database.should == MongoMapper.database
+    end
+    
+    should "default collection name to class name tableized" do
+      class Item
+        include MongoMapper::Document
+      end
+      
+      Item.collection.should be_instance_of(XGen::Mongo::Driver::Collection)
+      Item.collection.name.should == 'items'
+    end
+
+    should "allow setting the collection name" do
+      @document.collection('foobar')
+      @document.collection.should be_instance_of(XGen::Mongo::Driver::Collection)
+      @document.collection.name.should == 'foobar'
+    end
+  end # Document class
+
+  context "An instance of a document" do
+    setup do
+      @document = Class.new do
+        include MongoMapper::Document
 
         key :name, String
         key :age, Integer
       end
+      @document.collection.clear
     end
 
-    context "when initialized" do
-      should "accept a hash that sets keys and values" do
-        doc = @document.new(:name => 'John', :age => 23)
-        doc.attributes.should == {'name' => 'John', 'age' => 23}
+    should "have access to the class's collection" do
+      doc = @document.new
+      doc.collection.should == @document.collection
+    end
+
+    should "automatically have an _id key" do
+      @document.keys.keys.should include('_id')
+    end
+
+    should "automatically have a created_at key" do
+      @document.keys.keys.should include('created_at')
+    end
+
+    should "automatically have an updated_at key" do
+      @document.keys.keys.should include('updated_at')
+    end
+
+    should "use default values if defined for keys" do
+      @document.key :active, Boolean, :default => true
+
+      @document.new.active.should be_true
+      @document.new(:active => false).active.should be_false
+    end
+
+    context "new?" do
+      should "be true if no id" do
+        @document.new.new?.should be(true)
       end
 
-      should "not throw error if initialized with nil" do
-        doc = @document.new(nil)
+      should "be true if has id but id not in database" do
+        @document.new('_id' => 1).new?.should be(true)
+      end
+
+      should "be false if has id and id is in database" do
+        doc = @document.create(:name => 'John Nunemaker', :age => 27)
+        doc.new?.should be(false)
       end
     end
 
@@ -111,19 +123,6 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.attributes = {:name => 'new value', :foobar => 'baz'}
         doc.attributes[:name].should == 'new value'
         doc.attributes[:foobar].should be(nil)
-      end
-
-      should "not ignore keys that have methods defined" do
-        @document.class_eval do
-          attr_writer :password
-
-          def passwd
-            @password
-          end
-        end
-
-        doc = @document.new(:name => 'foobar', :password => 'secret')
-        doc.passwd.should == 'secret'
       end
 
       should "typecast key values" do
@@ -294,17 +293,21 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
 
     context "equality" do
-      should "be true if all keys and values are equal" do
-        doc1 = @document.new(:name => 'John', :age => 27)
-        doc2 = @document.new(:name => 'John', :age => 27)
-        doc1.should == doc2
+      should "be equal if id and class are the same" do
+        (@document.new('_id' => 1) == @document.new('_id' => 1)).should be(true)
       end
 
-      should "be false if not all the keys and values are equal" do
-        doc1 = @document.new(:name => 'Steve', :age => 27)
-        doc2 = @document.new(:name => 'John', :age => 27)
-        doc1.should_not == doc2
+      should "not be equal if class same but id different" do
+        (@document.new('_id' => 1) == @document.new('_id' => 2)).should be(false)
+      end
+
+      should "not be equal if id same but class different" do
+        @another_document = Class.new do
+          include MongoMapper::Document
+        end
+
+        (@document.new('_id' => 1) == @another_document.new('_id' => 1)).should be(false)
       end
     end
-  end # instance of a embedded document
-end
+  end # instance of a document
+end # DocumentTest

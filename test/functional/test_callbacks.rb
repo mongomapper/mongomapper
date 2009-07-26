@@ -29,6 +29,7 @@ class CallbacksTest < Test::Unit::TestCase
           @history = nil
         end
       end
+      
       @document.collection.clear
     end
     

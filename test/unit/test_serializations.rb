@@ -20,7 +20,6 @@ class SerializationTest < Test::Unit::TestCase
     )
   end
   
-  # [:xml, :json].each do |format|
   [:json].each do |format|
     context format do
       should "be reversable" do
@@ -48,7 +47,6 @@ class SerializationTest < Test::Unit::TestCase
         assert_nil unserialized.age
         assert_equal @instance.awesome, unserialized.awesome
       end
-      
     end
   end
 end

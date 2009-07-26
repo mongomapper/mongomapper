@@ -1,9 +1,9 @@
 require 'test_helper'
 
-class PaginationTest < Test::Unit::TestCase
-  include MongoMapper::Pagination
-  
+class PaginationTest < Test::Unit::TestCase  
   context "Pagination proxy" do
+    include MongoMapper::Pagination
+    
     should "should have accessors for subject" do
       subject = [1,2,3,4,5]
       collection = PaginationProxy.new(25, 2)

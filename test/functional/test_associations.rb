@@ -97,6 +97,7 @@ class AssociationsTest < Test::Unit::TestCase
   def setup
     Project.collection.clear
     Status.collection.clear
+    RealPerson.collection.clear
     Catalog.collection.clear
     TrModels::Fleet.collection.clear
   end
@@ -339,6 +340,7 @@ class AssociationsTest < Test::Unit::TestCase
         include MongoMapper::Document
         key :person, Person
       end
+      @document.collection.clear
       
       meg = Person.new(:name => "Meg")
       meg.child = Person.new(:name => "Steve")
@@ -383,6 +385,7 @@ class AssociationsTest < Test::Unit::TestCase
         include MongoMapper::Document
         many :people
       end
+      @document.collection.clear
       
       meg = Person.new(:name => "Meg")
       sparky = Pet.new(:name => "Sparky", :species => "Dog")

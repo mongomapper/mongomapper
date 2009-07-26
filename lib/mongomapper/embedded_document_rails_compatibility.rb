@@ -4,8 +4,9 @@ module MongoMapper
       model.class_eval do
         extend ClassMethods
       end
+      
       class << model
-        alias_method :has_many, :many
+        alias has_many many
       end
     end
 
@@ -16,7 +17,7 @@ module MongoMapper
     end
 
     def to_param
-      raise "Missing to_param method in #{self.class.name}. You should implement it to return the unique identifier of this document within a collection."
+      raise "Missing to_param method in #{self.class}. You should implement it to return the unique identifier of this embedded document within a document."
     end
   end
 end
