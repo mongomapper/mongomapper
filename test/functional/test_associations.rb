@@ -286,24 +286,7 @@ class AssociationsTest < Test::Unit::TestCase
       from_db = Status.find(status.id)
       from_db.project = nil
       from_db.project.should be_nil
-    end
-    
-    should "allow changing the class name" do
-      class User
-        include MongoMapper::Document
-      end
-
-      class Article
-        include MongoMapper::Document
-        belongs_to :creator, :class_name => 'AssociationsTest::User'
-      end
-      
-      user = User.create
-      article = Article.create(:creator => user)
-      
-      from_db = Article.find(article.id)
-      from_db.creator.should == user
-    end
+    end    
   end
   
   context "Many documents" do    
@@ -425,4 +408,39 @@ class AssociationsTest < Test::Unit::TestCase
       from_db.people.first.pets[1].species.should == "Dog"
     end
   end
+  
+  context "Changing association class names" do
+    should "work for many and belongs to" do
+      class AwesomeUser
+        include MongoMapper::Document
+        many :posts, :class_name => 'AssociationsTest::AwesomePost', :foreign_key => :creator_id
+      end
+      
+      class AwesomeTag
+        include MongoMapper::EmbeddedDocument
+        key :name, String
+        belongs_to :post, :class_name => 'AssociationsTest::AwesomeUser'
+      end
+      
+      class AwesomePost
+        include MongoMapper::Document
+        belongs_to :creator, :class_name => 'AssociationsTest::AwesomeUser'
+        many :tags, :class_name => 'AssociationsTest::AwesomeTag', :foreign_key => :post_id
+      end
+      
+      AwesomeUser.collection.clear
+      AwesomePost.collection.clear
+      
+      user = AwesomeUser.create
+      tag1 = AwesomeTag.new(:name => 'awesome')
+      tag2 = AwesomeTag.new(:name => 'grand')
+      post1 = AwesomePost.create(:creator => user, :tags => [tag1])
+      post2 = AwesomePost.create(:creator => user, :tags => [tag2])
+      user.posts.should == [post1, post2]
+      
+      post1_from_db = AwesomePost.find(post1.id)
+      post1_from_db.tags.should == [tag1]
+    end
+  end
+  
 end
