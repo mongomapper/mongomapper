@@ -3,26 +3,26 @@ require 'observer'
 module MongoMapper
   module EmbeddedDocument
     class NotImplemented < StandardError; end
-
+    
     def self.included(model)
       model.class_eval do
         extend ClassMethods
         include InstanceMethods
-      
+        
         extend Associations::ClassMethods
         include Associations::InstanceMethods
-
+        
         include EmbeddedDocumentRailsCompatibility
         include Validatable
         include Serialization
       end
     end
-
+    
     module ClassMethods
       def inherited(subclass)
         (@subclasses ||= []) << subclass
       end
-
+      
       def subclasses
         @subclasses
       end
@@ -34,16 +34,31 @@ module MongoMapper
           HashWithIndifferentAccess.new
         end
       end
-
+      
       def key(name, type, options={})        
         key = Key.new(name, type, options)
         keys[key.name] = key
         
+        create_accessors_for(key)
         add_to_subclasses(name, type, options)
         apply_validations_for(key)
         create_indexes_for(key)
         
         key
+      end
+      
+      def create_accessors_for(key)
+        define_method(key.name) do
+          read_attribute(key.name)
+        end
+        
+        define_method("#{key.name}=") do |value|
+          write_attribute(key.name, value)
+        end
+        
+        define_method("#{key.name}_before_typecast") do
+          read_attribute_before_typecast(key.name)
+        end
       end
       
       def add_to_subclasses(name, type, options)
@@ -53,52 +68,52 @@ module MongoMapper
           subclass.key name, type, options
         end
       end
-
+      
       def ensure_index(name_or_array, options={})
         keys_to_index = if name_or_array.is_a?(Array)
           name_or_array.map { |pair| [pair[0], pair[1]] }
         else
           name_or_array
         end
-
+        
         collection.create_index(keys_to_index, options.delete(:unique))
       end
-
+      
       def embeddable?
         !self.ancestors.include?(Document)
       end
-
+      
       def parent_model
         if parent = ancestors[1]
           parent if parent.ancestors.include?(EmbeddedDocument)
         end
       end
-
+      
     private
       def create_indexes_for(key)
         ensure_index key.name if key.options[:index]
       end
-
+      
       def apply_validations_for(key)
         attribute = key.name.to_sym
-
+        
         if key.options[:required]
           validates_presence_of(attribute)
         end
-
+        
         if key.options[:unique]
           validates_uniqueness_of(attribute)
         end
-
+        
         if key.options[:numeric]
           number_options = key.type == Integer ? {:only_integer => true} : {}
           validates_numericality_of(attribute, number_options)
         end
-
+        
         if key.options[:format]
           validates_format_of(attribute, :with => key.options[:format])
         end
-
+        
         if key.options[:length]
           length_options = case key.options[:length]
           when Integer
@@ -112,7 +127,7 @@ module MongoMapper
         end
       end
     end
-
+    
     module InstanceMethods
       def initialize(attrs={})
         unless attrs.nil?
@@ -120,19 +135,14 @@ module MongoMapper
           self.attributes = attrs
         end
       end
-
+      
       def attributes=(attrs)
         return if attrs.blank?
-        attrs.each_pair do |key_name, value|
-          if writer?(key_name)
-            write_attribute(key_name, value)
-          else
-            writer_method ="#{key_name}="
-            self.send(writer_method, value) if respond_to?(writer_method)
-          end
+        attrs.each_pair do |method, value|
+          self.send("#{method}=", value)
         end
       end
-
+      
       def attributes
         self.class.keys.inject(HashWithIndifferentAccess.new) do |attributes, key_hash|
           name, key = key_hash
@@ -141,61 +151,26 @@ module MongoMapper
           attributes
         end
       end
-
-      def reader?(name)
-        defined_key_names.include?(name.to_s)
-      end
-
-      def writer?(name)
-        name = name.to_s
-        name = name.chop if name.ends_with?('=')
-        reader?(name)
-      end
-
-      def before_typecast_reader?(name)
-        name.to_s.match(/^(.*)_before_typecast$/) && reader?($1)
-      end
-
+      
       def [](name)
         read_attribute(name)
       end
-
+      
       def []=(name, value)
         write_attribute(name, value)
       end
-
-      def method_missing(method, *args, &block)
-        attribute = method.to_s
-        
-        if reader?(attribute)
-          read_attribute(attribute)
-        elsif writer?(attribute)
-          write_attribute(attribute.chop, args[0])
-        elsif before_typecast_reader?(attribute)
-          read_attribute_before_typecast(attribute.gsub(/_before_typecast$/, ''))
-        else
-          super
-        end
-      end
-
+      
       def ==(other)
         other.is_a?(self.class) && attributes == other.attributes
       end
-
+      
       def inspect
         attributes_as_nice_string = defined_key_names.collect do |name|
           "#{name}: #{read_attribute(name)}"
         end.join(", ")
         "#<#{self.class} #{attributes_as_nice_string}>"
       end
-
-      alias :respond_to_without_attributes? :respond_to?
-
-      def respond_to?(method, include_private=false)
-        return true if reader?(method) || writer?(method) || before_typecast_reader?(method)
-        super
-      end
-
+      
     private
       def value_for_key(key)
         if key.native?

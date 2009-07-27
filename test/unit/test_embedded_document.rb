@@ -147,11 +147,11 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.attributes[:age].should == 10
       end
 
-      should "ignore keys that do not exist" do
+      should "raise undefined method if no key exists" do
         doc = @document.new(:name => 'foobar', :age => 10)
-        doc.attributes = {:name => 'new value', :foobar => 'baz'}
-        doc.attributes[:name].should == 'new value'
-        doc.attributes[:foobar].should be(nil)
+        lambda {
+          doc.attributes = {:name => 'new value', :foobar => 'baz'}
+        }.should raise_error(NoMethodError)
       end
 
       should "not ignore keys that have methods defined" do
@@ -185,20 +185,20 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.attributes.should == {'name' => 'string'}
       end
     end
-
-    context "accessing keys with bracket notation" do
-      should "read with []" do
+    
+    context "key shorcuts" do
+      should "be able to read key with []" do
         doc = @document.new(:name => 'string')
         doc[:name].should == 'string'
       end
-
-      should "write value with []=" do
+      
+      should "be able to write key value with []=" do
         doc = @document.new
         doc[:name] = 'string'
         doc[:name].should == 'string'
       end
     end
-
+    
     context "indifferent access" do
       should "be enabled for keys" do
         doc = @document.new(:name => 'string')
@@ -216,16 +216,6 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       should "raise no method error for undefined keys" do
         doc = @document.new
         lambda { doc.fart }.should raise_error(NoMethodError)
-      end
-
-      should "know if reader defined" do
-        doc = @document.new
-        doc.reader?('name').should be(true)
-        doc.reader?(:name).should be(true)
-        doc.reader?('age').should be(true)
-        doc.reader?(:age).should be(true)
-        doc.reader?('foobar').should be(false)
-        doc.reader?(:foobar).should be(false)
       end
 
       should "be accessible for use in the model" do
@@ -283,20 +273,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.age = '21'
         doc.age.should == 21
       end
-
-      should "know if writer defined" do
-        doc = @document.new
-        doc.writer?('name').should be(true)
-        doc.writer?('name=').should be(true)
-        doc.writer?(:name).should be(true)
-        doc.writer?('age').should be(true)
-        doc.writer?('age=').should be(true)
-        doc.writer?(:age).should be(true)
-        doc.writer?('foobar').should be(false)
-        doc.writer?('foobar=').should be(false)
-        doc.writer?(:foobar).should be(false)
-      end
-
+      
       should "be accessible for use in the model" do
         @document.class_eval do
           def name_and_age=(new_value)
@@ -312,28 +289,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.age.should == 62
       end
     end # writing an attribute
-
-    context "respond_to?" do
-      setup do
-        @doc = @document.new
-      end
-
-      should "work for readers" do
-        @doc.respond_to?(:name).should be_true
-        @doc.respond_to?('name').should be_true
-      end
-
-      should "work for writers" do
-        @doc.respond_to?(:name=).should be_true
-        @doc.respond_to?('name=').should be_true
-      end
-
-      should "work for readers before typecast" do
-        @doc.respond_to?(:name_before_typecast).should be_true
-        @doc.respond_to?('name_before_typecast').should be_true
-      end
-    end
-
+    
     context "equality" do
       should "be true if all keys and values are equal" do
         doc1 = @document.new(:name => 'John', :age => 27)
