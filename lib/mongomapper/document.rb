@@ -32,7 +32,7 @@ module MongoMapper
           when :first then find_first(options)
           when :last  then find_last(options)
           when :all   then find_every(options)
-          else             find_from_ids(args)
+          else             find_from_ids(args, options)
         end
       end
 
@@ -166,8 +166,8 @@ module MongoMapper
         find_every(options.merge(:limit => 1, :order => 'created_at desc')).first
       end
       
-      def find_some(ids)
-        documents = find_every(:conditions => {'_id' => ids})
+      def find_some(ids, options={})
+        documents = find_every(options.deep_merge(:conditions => {'_id' => ids}))
         if ids.size == documents.size
           documents
         else
@@ -175,16 +175,24 @@ module MongoMapper
         end
       end
       
-      def find_from_ids(*ids)
+      def find_one(id, options={})        
+        if doc = find_every(options.deep_merge(:conditions => {:_id => id})).first
+          doc
+        else
+          raise DocumentNotFound, "Document with id of #{id} does not exist in collection named #{collection.name}"
+        end
+      end
+      
+      def find_from_ids(ids, options={})
         ids = ids.flatten.compact.uniq
         
         case ids.size
           when 0
             raise(DocumentNotFound, "Couldn't find without an ID")
           when 1
-            find_by_id(ids[0]) || raise(DocumentNotFound, "Document with id of #{ids[0]} does not exist in collection named #{collection.name}")
+            find_one(ids[0], options)
           else
-            find_some(ids)
+            find_some(ids, options)
         end
       end
       

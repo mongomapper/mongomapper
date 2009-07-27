@@ -15,6 +15,10 @@ dir = (Pathname(__FILE__).dirname +  '..' + 'lib').expand_path
 require dir + 'mongomapper'
 
 class Test::Unit::TestCase
+  def clear_all_collections
+    MongoMapper::Document.descendants.map(&:delete_all)
+  end
+  
   custom_matcher :be_nil do |receiver, matcher, args|
     matcher.positive_failure_message = "Expected #{receiver} to be nil but it wasn't"
     matcher.negative_failure_message = "Expected #{receiver} not to be nil but it was"

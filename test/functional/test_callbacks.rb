@@ -30,7 +30,7 @@ class CallbacksTest < Test::Unit::TestCase
         end
       end
       
-      @document.collection.clear
+      clear_all_collections
     end
     
     should "get the order right for creating documents" do
