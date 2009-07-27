@@ -30,6 +30,10 @@ class KeyTest < Test::Unit::TestCase
     should "allow setting options" do
       Key.new(:foo, Integer, :required => true).options[:required].should be(true)
     end
+    
+    should "default options to {}" do
+      Key.new(:foo, Integer, nil).options.should == {}
+    end
 
     should "symbolize option keys" do
       Key.new(:foo, Integer, 'required' => true).options[:required].should be(true)

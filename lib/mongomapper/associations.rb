@@ -23,7 +23,7 @@ module MongoMapper
           define_association_keys(association)
           association
         end
-
+        
         def define_association_methods(association)
           define_method(association.name) do
             get_proxy(association)
@@ -36,16 +36,13 @@ module MongoMapper
         end
         
         def define_association_keys(association)
-          if association.many?
-            if association.polymorphic?
-              association.klass.send :key, association.type_key_name, String
-            end
-          else
-            key association.belongs_to_key_name, String
-            
-            if association.polymorphic?
-              key association.type_key_name, String
-            end
+          if association.belongs_to?
+            key(association.belongs_to_key_name, String)
+            key(association.type_key_name, String) if association.polymorphic?            
+          end
+          
+          if association.many? && association.polymorphic?
+            association.klass.send(:key, association.type_key_name, String)
           end
         end
     end

@@ -10,8 +10,8 @@ module MongoMapper
 
     def initialize(name, type, options={})
       @name, @type = name.to_s, type
-      self.options = options.symbolize_keys
-      self.default_value = options.delete(:default)
+      self.options = (options || {}).symbolize_keys
+      self.default_value = self.options.delete(:default)
     end
 
     def ==(other)

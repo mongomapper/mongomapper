@@ -29,6 +29,10 @@ module MongoMapper
         @many_type ||= @type == :many
       end
       
+      def belongs_to?
+        @belongs_to_type ||= @type == :belongs_to
+      end
+      
       def polymorphic?
         @options[:polymorphic]
       end
