@@ -5,6 +5,7 @@
   * Embedded associations can now be deeply nested (Keith Hanson)
   * Added support for many polymorphic documents (Felipe Coury and Me)
   * Fixed bug where conditions that disallowed using $in, $all and $any with an array
+  * Bumped version of validatable so :if validation option supports symbol/string to proc.
 
 0.2.0 7/7/2009
 * 2 major additions (observers, associations), several minor additions, and a few bug fixes
