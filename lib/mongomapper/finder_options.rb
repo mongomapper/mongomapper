@@ -8,7 +8,11 @@ module MongoMapper
       conditions.each_pair do |field, value|
         case value
           when Array
-            criteria[field] = {'$in' => value}
+            criteria[field] = if field =~ /^\$/
+                                value
+                              else
+                                {'$in' => value}
+                              end
           when Hash
             criteria[field] = to_mongo_criteria(value)
           else

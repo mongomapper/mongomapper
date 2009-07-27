@@ -47,6 +47,12 @@ class FinderOptionsTest < Test::Unit::TestCase
       }
     end
     
+    should "not use $in for arrays if already using array modifier" do
+      FinderOptions.to_mongo_criteria(:foo => {'$all' => [1,2,3]}).should == {
+        :foo => {'$all' => [1,2,3]}
+      }
+    end
+    
     should "work arbitrarily deep" do
       FinderOptions.to_mongo_criteria(:foo => {:bar => [1,2,3]}).should == {
         :foo => {:bar => {'$in' => [1,2,3]}}
