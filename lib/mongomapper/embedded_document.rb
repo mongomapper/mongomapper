@@ -1,9 +1,7 @@
 require 'observer'
 
 module MongoMapper
-  module EmbeddedDocument
-    class NotImplemented < StandardError; end
-    
+  module EmbeddedDocument    
     def self.included(model)
       model.class_eval do
         extend ClassMethods
@@ -135,7 +133,12 @@ module MongoMapper
     module InstanceMethods
       def initialize(attrs={})
         unless attrs.nil?
-          initialize_associations(attrs)
+          self.class.associations.each_pair do |name, association|
+            if collection = attrs.delete(name)
+              send("#{association.name}=", collection)
+            end
+          end
+          
           self.attributes = attrs
         end
       end
@@ -148,11 +151,13 @@ module MongoMapper
       end
       
       def attributes
-        self.class.keys.inject(HashWithIndifferentAccess.new) do |attributes, key_hash|
-          name, key = key_hash
-          value = value_for_key(key)
-          attributes[name] = value unless value.nil?
-          attributes
+        returning HashWithIndifferentAccess.new do |attributes|
+          self.class.keys.each_pair do |name, key|
+            value = value_for_key(key)
+            attributes[name] = value unless value.nil?
+          end
+          
+          attributes.merge!(embedded_association_attributes)
         end
       end
       
@@ -169,77 +174,45 @@ module MongoMapper
       end
       
       def inspect
-        attributes_as_nice_string = defined_key_names.collect do |name|
+        attributes_as_nice_string = self.class.keys.keys.collect do |name|
           "#{name}: #{read_attribute(name)}"
         end.join(", ")
         "#<#{self.class} #{attributes_as_nice_string}>"
       end
       
-    private
-      def value_for_key(key)
-        if key.native?
-          read_attribute(key.name)
-        else
-          embedded_document = read_attribute(key.name)
-          embedded_document && embedded_document.attributes
+      private
+        def value_for_key(key)
+          if key.native?
+            read_attribute(key.name)
+          else
+            embedded_document = read_attribute(key.name)
+            embedded_document && embedded_document.attributes
+          end
         end
-      end
-
-      def read_attribute(name)
-        defined_key(name).get(instance_variable_get("@#{name}"))
-      end
-
-      def read_attribute_before_typecast(name)
-        instance_variable_get("@#{name}_before_typecast")
-      end
-
-      def write_attribute(name, value)
-        instance_variable_set "@#{name}_before_typecast", value
-        instance_variable_set "@#{name}", defined_key(name).set(value)
-      end
-
-      def defined_key(name)
-        self.class.keys[name]
-      end
-
-      def defined_key_names
-        self.class.keys.keys
-      end
-
-      def only_defined_keys(hash={})
-        defined_key_names = defined_key_names()
-        hash.delete_if { |k, v| !defined_key_names.include?(k.to_s) }
-      end
       
-      def embedded_association_attributes
-        embedded_attributes = HashWithIndifferentAccess.new
-        self.class.associations.each_pair do |name, association|
-          
-          if association.type == :many && association.klass.embeddable?            
-            if documents = instance_variable_get(association.ivar)
-              embedded_attributes[name] = documents.collect do |item|
-                attributes_hash = item.attributes
-                
-                item.send(:embedded_association_attributes).each_pair do |association_name, association_value|
-                  attributes_hash[association_name] = association_value
-                end
-                
-                attributes_hash
-              end
+        def read_attribute(name)
+          self.class.keys[name].get(instance_variable_get("@#{name}"))
+        end
+      
+        def read_attribute_before_typecast(name)
+          instance_variable_get("@#{name}_before_typecast")
+        end
+      
+        def write_attribute(name, value)
+          instance_variable_set "@#{name}_before_typecast", value
+          instance_variable_set "@#{name}", self.class.keys[name].set(value)
+        end
+      
+        def embedded_association_attributes
+          returning HashWithIndifferentAccess.new do |attrs|
+            self.class.associations.each_pair do |name, association|
+              next unless association.embeddable?
+              next unless documents = instance_variable_get(association.ivar)
+            
+              attrs[name] = documents.collect { |doc| doc.attributes }
             end
           end
         end
-        
-        embedded_attributes
-      end
-
-      def initialize_associations(attrs={})
-        self.class.associations.each_pair do |name, association|
-          if collection = attrs.delete(name)
-            send("#{association.name}=", collection)
-          end
-        end
-      end
-    end
-  end
-end
+    end # InstanceMethods
+  end # EmbeddedDocument
+end # MongoMapper

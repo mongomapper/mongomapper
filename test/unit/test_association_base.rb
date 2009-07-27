@@ -86,6 +86,21 @@ class AssociationBaseTest < Test::Unit::TestCase
     Base.new(:belongs_to, :foo).ivar.should == '@_foo'
   end
   
+  context "embeddable?" do
+    should "be true if class is embeddable" do
+      base = Base.new(:many, :medias)
+      base.embeddable?.should be_true
+    end
+    
+    should "be false if class is not embeddable" do
+      base = Base.new(:many, :statuses)
+      base.embeddable?.should be_false
+      
+      base = Base.new(:belongs_to, :project)
+      base.embeddable?.should be_false
+    end
+  end
+  
   context "proxy_class" do
     should "be HasManyProxy for many" do      
       base = Base.new(:many, :statuses)

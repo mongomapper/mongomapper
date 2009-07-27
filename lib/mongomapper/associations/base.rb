@@ -48,6 +48,10 @@ module MongoMapper
       def ivar
         @ivar ||= "@_#{name}"
       end
+      
+      def embeddable?
+        many? && klass.embeddable?
+      end
 
       def proxy_class
         @proxy_class ||= begin

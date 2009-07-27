@@ -1,7 +1,7 @@
 require 'set'
 
 module MongoMapper
-  module Document    
+  module Document
     def self.included(model)
       model.class_eval do
         include EmbeddedDocument
@@ -200,6 +200,7 @@ module MongoMapper
         unless docs.is_a?(Hash)
           raise ArgumentError, "Updating multiple documents takes 1 argument and it must be hash"
         end
+        
         instances = []
         docs.each_pair { |id, attrs| instances << update(id, attrs) }
         instances
@@ -260,7 +261,7 @@ module MongoMapper
       end
       
       def save_to_collection
-        collection.save(attributes.merge!(embedded_association_attributes))
+        collection.save(attributes)
       end
       
       def update_timestamps

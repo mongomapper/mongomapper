@@ -10,7 +10,7 @@ module MongoMapper #:nodoc:
       end
 
       def serializable_key_names
-        key_names = @record.send :defined_key_names
+        key_names = @record.class.keys.keys
 
         if options[:only]
           options.delete(:except)
