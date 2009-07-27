@@ -8,11 +8,7 @@ module MongoMapper
         @type = type
         @name = name
       end
-
-      def klass
-        @klass ||= class_name.constantize
-      end
-
+      
       def class_name
         @class_name ||= begin
           if cn = options[:class_name]
@@ -25,6 +21,10 @@ module MongoMapper
         end
       end
       
+      def klass
+        @klass ||= class_name.constantize
+      end
+      
       def many?
         @many_type ||= @type == :many
       end
@@ -34,7 +34,7 @@ module MongoMapper
       end
       
       def polymorphic?
-        @options[:polymorphic]
+        !!@options[:polymorphic]
       end
       
       def type_key_name
