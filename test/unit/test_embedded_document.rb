@@ -82,6 +82,30 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @document.key(:foo, Integer)
       @document.keys['foo'].type.should == Integer
     end
+    
+    should "create reader method" do
+      @document.new.should_not respond_to(:foo)
+      @document.key(:foo, String)
+      @document.new.should respond_to(:foo)
+    end
+    
+    should "create reader before typecast method" do
+      @document.new.should_not respond_to(:foo_before_typecast)
+      @document.key(:foo, String)
+      @document.new.should respond_to(:foo_before_typecast)
+    end
+    
+    should "create writer method" do
+      @document.new.should_not respond_to(:foo=)
+      @document.key(:foo, String)
+      @document.new.should respond_to(:foo=)
+    end
+    
+    should "create boolean method" do
+      @document.new.should_not respond_to(:foo?)
+      @document.key(:foo, String)
+      @document.new.should respond_to(:foo?)
+    end
   end
   
   context "keys" do
@@ -174,7 +198,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
     end
 
-    context "requesting keys" do
+    context "attributes" do
       should "default to empty hash" do
         doc = @document.new
         doc.attributes.should == {}
@@ -186,7 +210,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
     end
     
-    context "key shorcuts" do
+    context "key shorcut access" do
       should "be able to read key with []" do
         doc = @document.new(:name => 'string')
         doc[:name].should == 'string'
@@ -289,6 +313,20 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.age.should == 62
       end
     end # writing an attribute
+    
+    context "checking if an attributes value is present" do
+      should "work for defined keys" do
+        doc = @document.new
+        doc.name?.should be_false
+        doc.name = 'John'
+        doc.name?.should be_true
+      end
+      
+      should "raise no method error for undefined keys" do
+        doc = @document.new
+        lambda { doc.fart? }.should raise_error(NoMethodError)
+      end
+    end
     
     context "equality" do
       should "be true if all keys and values are equal" do

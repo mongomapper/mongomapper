@@ -52,12 +52,16 @@ module MongoMapper
           read_attribute(key.name)
         end
         
+        define_method("#{key.name}_before_typecast") do
+          read_attribute_before_typecast(key.name)
+        end
+        
         define_method("#{key.name}=") do |value|
           write_attribute(key.name, value)
         end
         
-        define_method("#{key.name}_before_typecast") do
-          read_attribute_before_typecast(key.name)
+        define_method("#{key.name}?") do
+          read_attribute(key.name).present?
         end
       end
       
