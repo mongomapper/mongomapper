@@ -14,19 +14,6 @@ module MongoMapper
         @target = nil
         reload_target
       end
-      
-      def <<(*docs)
-        load_target if @owner.new?
-        
-        flatten_deeper(docs).each do |doc|
-          doc.send("#{@association.type_key_name}=", doc.class)
-          @target << doc
-        end
-        
-        self
-      end
-      alias_method :push, :<<
-      alias_method :concat, :<<
 
       protected
         def find_target
