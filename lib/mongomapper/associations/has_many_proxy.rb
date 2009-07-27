@@ -8,6 +8,10 @@ module MongoMapper
         klass.find(*args << scoped_options(options))
       end
       
+      def paginate(options)
+        klass.paginate(scoped_options(options))
+      end
+      
       def all(options={})
         find(:all, scoped_options(options))
       end

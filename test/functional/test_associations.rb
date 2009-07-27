@@ -332,6 +332,24 @@ class AssociationsTest < Test::Unit::TestCase
           }.should raise_error(MongoMapper::DocumentNotFound)
         end
       end
+      
+      context "with #paginate" do
+        setup do
+          @statuses = @project2.statuses.paginate(:per_page => 2, :page => 1)
+        end
+        
+        should "return total pages" do
+          @statuses.total_pages.should == 2
+        end
+        
+        should "return total entries" do
+          @statuses.total_entries.should == 3
+        end
+        
+        should "return the subject" do
+          @statuses.should == [@in_progress, @archived]
+        end
+      end
     end
   end
   

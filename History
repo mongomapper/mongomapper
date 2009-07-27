@@ -9,6 +9,7 @@
   * Document#create with no attributes now creates a document as long as it is valid
   * Now defining accessor methods when key is declared rather than using method missing and all that jazz
   * Attributes now have boolean methods that return true or false based on whether they have value present
+  * Added scoped finds on many association.
 
 0.2.0 7/7/2009
 * 2 major additions (observers, associations), several minor additions, and a few bug fixes

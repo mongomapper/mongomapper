@@ -36,15 +36,15 @@ module MongoMapper
         end
       end
 
-      def paginate(options)
+      def paginate(options)        
         per_page      = options.delete(:per_page)
         page          = options.delete(:page)
-        total_entries = count(options)
+        total_entries = count(options[:conditions] || {})
         
         collection = Pagination::PaginationProxy.new(total_entries, page, per_page)
         
         options[:limit] = collection.limit
-        options[:skip] = collection.skip
+        options[:offset]  = collection.offset
         
         collection.subject = find_every(options)
         collection

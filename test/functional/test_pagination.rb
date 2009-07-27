@@ -7,16 +7,16 @@ class PaginationTest < Test::Unit::TestCase
         include MongoMapper::Document
         collection 'users'
 
-        key :fname, String
-        key :lname, String
+        key :first_name, String
+        key :last_name, String
         key :age, Integer
       end
 
       @document.collection.clear
       
-      @doc1 = @document.create({:fname => 'John', :lname => 'Nunemaker', :age => '27'})
-      @doc2 = @document.create({:fname => 'Steve', :lname => 'Smith', :age => '28'})
-      @doc3 = @document.create({:fname => 'Steph', :lname => 'Nunemaker', :age => '26'})
+      @doc1 = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
+      @doc2 = @document.create({:first_name => 'Steve', :last_name => 'Smith', :age => '28'})
+      @doc3 = @document.create({:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26'})
     end
 
     should "return the total pages" do
@@ -33,16 +33,50 @@ class PaginationTest < Test::Unit::TestCase
       result = @document.paginate(:per_page => 2, :page => 1)
       result.size.should == 2
       result.subject.should == [@doc1, @doc2]
+      result.should == [@doc1, @doc2]
     end
 
     should "accept conditions" do
       result = @document.paginate({
-        :conditions => {:lname => 'Nunemaker'},
+        :conditions => {:last_name => 'Nunemaker'},
         :order      => "age DESC",
         :per_page   => 2, 
         :page       => 1,
       })
+      result.should == [@doc1, @doc3]
       result.first.age.should == 27
+    end
+    
+    should "withstand rigor" do
+      result = @document.paginate({
+        :per_page   => 1, 
+        :page       => 1,
+        :order      => 'age desc', 
+        :conditions => {:last_name => 'Nunemaker'}
+      })
+      result.should == [@doc1]
+      result.total_entries.should == 2
+      result.total_pages.should == 2
+      
+      result = @document.paginate({
+        :per_page   => 1,
+        :page       => 2,
+        :order      => 'age desc',
+        :conditions => {:last_name => 'Nunemaker'}
+      })
+      result.should == [@doc3]
+      result.total_entries.should == 2
+      result.total_pages.should == 2
+      
+      result = @document.paginate({
+        :per_page   => 2, 
+        :page       => 1, 
+        :order      => 'age desc',
+        :conditions => {:last_name => 'Nunemaker'}
+      })
+      result.should == [@doc1, @doc3]
+      result.total_entries.should == 2
+      result.total_pages.should == 1
     end
   end
 end
