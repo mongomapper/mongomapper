@@ -282,10 +282,27 @@ class AssociationsTest < Test::Unit::TestCase
       project = Project.new(:name => "mongomapper")
       status.project = project
       status.save.should be_true
-  
+      
       from_db = Status.find(status.id)
       from_db.project = nil
       from_db.project.should be_nil
+    end
+    
+    should "allow changing the class name" do
+      class User
+        include MongoMapper::Document
+      end
+
+      class Article
+        include MongoMapper::Document
+        belongs_to :creator, :class_name => 'AssociationsTest::User'
+      end
+      
+      user = User.create
+      article = Article.create(:creator => user)
+      
+      from_db = Article.find(article.id)
+      from_db.creator.should == user
     end
   end
   

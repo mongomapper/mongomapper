@@ -93,6 +93,22 @@ class DocumentTest < Test::Unit::TestCase
         @doc_instance.age.should == 27
       end
     end
+    
+    context "Creating a document with no attributes provided" do
+      setup do
+        @document = Class.new do
+          include MongoMapper::Document
+        end
+        @document.collection.clear
+      end
+      
+      should "create the document" do
+        lambda {
+          @document.create
+        }.should change { @document.count }.by(1)
+      end
+    end
+    
 
     context "Creating multiple documents" do
       setup do

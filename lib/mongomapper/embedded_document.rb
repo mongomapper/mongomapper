@@ -111,7 +111,6 @@ module MongoMapper
           validates_length_of(attribute, length_options)
         end
       end
-
     end
 
     module InstanceMethods
