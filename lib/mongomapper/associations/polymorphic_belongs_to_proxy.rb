@@ -1,29 +1,31 @@
 module MongoMapper
   module Associations
     class PolymorphicBelongsToProxy < Proxy
-      def replace(v)
-        ref_id = "#{@association.name}_id"
-        ref_type = "#{@association.name}_type"
-
-        if v
-          v.save if v.new?
-          @owner.__send__(:write_attribute, ref_id, v.id)
-          @owner.__send__(:write_attribute, ref_type, v.class.name)
-        else
-          @owner.__send__(:write_attribute, ref_id, nil)
-          @owner.__send__(:write_attribute, ref_type, nil)
+      def replace(doc)        
+        if doc
+          doc.save if doc.new?
+          id, type = doc.id, doc.class.name
         end
-        @owner.save
-
+        
+        @owner.send("#{@association.belongs_to_key_name}=", id)
+        @owner.send("#{@association.type_key_name}=", type)
+        
         reload_target
       end
-
+      
       protected
         def find_target
-          ref_id = @owner.__send__(:read_attribute, "#{@association.name}_id")
-          ref_type = @owner.__send__(:read_attribute, "#{@association.name}_type")
-          if ref_id && ref_type
-            ref_type.constantize.find(ref_id)
+          proxy_class.find(proxy_id) if proxy_id && proxy_class
+        end
+        
+        def proxy_id
+          @proxy_id ||= @owner.send(@association.belongs_to_key_name)
+        end
+        
+        def proxy_class
+          @proxy_class ||= begin
+            klass = @owner.send(@association.type_key_name)
+            klass && klass.constantize
           end
         end
     end
