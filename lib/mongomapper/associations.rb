@@ -41,7 +41,7 @@ module MongoMapper
               association.klass.send :key, association.type_key_name, String
             end
           else
-            key "#{association.name}_id", String
+            key association.belongs_to_key_name, String
             
             if association.polymorphic?
               key association.type_key_name, String

@@ -37,6 +37,10 @@ module MongoMapper
         @type_key_name ||= many? ? '_type' : "#{name}_type"
       end
       
+      def belongs_to_key_name
+        "#{name}_id"
+      end
+      
       def ivar
         @ivar ||= "@_#{name}"
       end
