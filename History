@@ -1,5 +1,8 @@
 0.2.1(working)
-* 1 major addition
+* 5 major additions, 3 minor additions, 3 bug fix, and other miscellany
+  
+  * BACKWORDS COMPATIBILITY BREAK: _id is now stored in binary form (recommended by mongodb team) instead of string, api is the same everywhere as before but data stored with string id's previous to change will need to be updated
+  
   * Added Document#paginate which works just like find but adds pagination (dcu did basics and I pimped)
   * Added a basic console for playing around with MongoMapper (dcu)
   * Embedded associations can now be deeply nested (Keith Hanson)
@@ -9,7 +12,10 @@
   * Document#create with no attributes now creates a document as long as it is valid
   * Now defining accessor methods when key is declared rather than using method missing and all that jazz
   * Attributes now have boolean methods that return true or false based on whether they have value present
-  * Added scoped finds on many association.
+  * Added scoped finds and pagination on many document association.
+  * find first and last now use natural order which is more reliable.
+  * Updated to latest ruby driver (0.10.1)
+  
 
 0.2.0 7/7/2009
 * 2 major additions (observers, associations), several minor additions, and a few bug fixes
