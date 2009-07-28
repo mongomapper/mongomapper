@@ -41,6 +41,16 @@ end
 
 dir = Pathname(__FILE__).dirname.expand_path + 'mongomapper'
 
+require dir + 'associations'
+require dir + 'associations/proxy'
+require dir + 'associations/array_proxy'
+require dir + 'associations/base'
+require dir + 'associations/many_proxy'
+require dir + 'associations/many_embedded_proxy'
+require dir + 'associations/many_embedded_polymorphic_proxy'
+require dir + 'associations/belongs_to_proxy'
+require dir + 'associations/belongs_to_polymorphic_proxy'
+
 require dir + 'callbacks'
 require dir + 'finder_options'
 require dir + 'key'
@@ -51,16 +61,6 @@ require dir + 'embedded_document_rails_compatibility'
 require dir + 'save_with_validation'
 require dir + 'serialization'
 require dir + 'validations'
-
-require dir + 'associations/proxy'
-require dir + 'associations/array_proxy'
-require dir + 'associations/base'
-require dir + 'associations/has_many_proxy'
-require dir + 'associations/has_many_embedded_proxy'
-require dir + 'associations/polymorphic_has_many_embedded_proxy'
-require dir + 'associations/belongs_to_proxy'
-require dir + 'associations/polymorphic_belongs_to_proxy'
-require dir + 'associations'
 
 require dir + 'embedded_document'
 require dir + 'document'

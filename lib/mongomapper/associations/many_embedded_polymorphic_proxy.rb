@@ -1,6 +1,6 @@
 module MongoMapper
   module Associations
-    class PolymorphicHasManyEmbeddedProxy < ArrayProxy      
+    class ManyEmbeddedPolymorphicProxy < ArrayProxy      
       def replace(v)
         @_values = v.map do |doc_or_hash|
           if doc_or_hash.kind_of?(EmbeddedDocument)

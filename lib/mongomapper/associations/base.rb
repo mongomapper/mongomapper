@@ -56,10 +56,10 @@ module MongoMapper
       def proxy_class
         @proxy_class ||= begin
           if many?
-            return HasManyProxy unless self.klass.embeddable?            
-            polymorphic? ? PolymorphicHasManyEmbeddedProxy : HasManyEmbeddedProxy
+            return ManyProxy unless self.klass.embeddable?            
+            polymorphic? ? ManyEmbeddedPolymorphicProxy : ManyEmbeddedProxy
           else
-            polymorphic? ? PolymorphicBelongsToProxy : BelongsToProxy
+            polymorphic? ? BelongsToPolymorphicProxy : BelongsToProxy
           end
         end # end begin
       end # end proxy_class

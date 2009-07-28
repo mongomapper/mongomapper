@@ -102,19 +102,19 @@ class AssociationBaseTest < Test::Unit::TestCase
   end
   
   context "proxy_class" do
-    should "be HasManyProxy for many" do      
+    should "be ManyProxy for many" do      
       base = Base.new(:many, :statuses)
-      base.proxy_class.should == HasManyProxy
+      base.proxy_class.should == ManyProxy
     end
     
-    should "be HasManyEmbeddedProxy for many embedded" do
+    should "be ManyEmbeddedProxy for many embedded" do
       base = Base.new(:many, :medias)
-      base.proxy_class.should == HasManyEmbeddedProxy
+      base.proxy_class.should == ManyEmbeddedProxy
     end
     
-    should "be PolymorphicHasManyEmbeddedProxy for polymorphic many embedded" do
+    should "be ManyEmbeddedPolymorphicProxy for polymorphic many embedded" do
       base = Base.new(:many, :medias, :polymorphic => true)
-      base.proxy_class.should == PolymorphicHasManyEmbeddedProxy
+      base.proxy_class.should == ManyEmbeddedPolymorphicProxy
     end
     
     should "be BelongsToProxy for belongs_to" do
@@ -122,9 +122,9 @@ class AssociationBaseTest < Test::Unit::TestCase
       base.proxy_class.should == BelongsToProxy
     end
     
-    should "be PolymorphicBelongsToProxy for polymorphic belongs_to" do
+    should "be BelongsToPolymorphicProxy for polymorphic belongs_to" do
       base = Base.new(:belongs_to, :target, :polymorphic => true)
-      base.proxy_class.should == PolymorphicBelongsToProxy
+      base.proxy_class.should == BelongsToPolymorphicProxy
     end
   end
   

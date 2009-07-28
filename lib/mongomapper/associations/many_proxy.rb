@@ -1,6 +1,6 @@
 module MongoMapper
   module Associations
-    class HasManyProxy < ArrayProxy
+    class ManyProxy < ArrayProxy
       delegate :klass, :to => :@association
       
       def find(*args)
