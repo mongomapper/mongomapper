@@ -14,7 +14,7 @@ class KeyTest < Test::Unit::TestCase
 
   context "The Key Class" do
     should "have the native types defined" do
-      Key::NativeTypes.should == [String, Float, Time, Integer, Boolean, Array, Hash, Ref]
+      Key::NativeTypes.should == [String, Float, Time, Integer, Boolean, Array, Hash, MongoID]
     end
   end
 
@@ -75,6 +75,14 @@ class KeyTest < Test::Unit::TestCase
   end
 
   context "setting a value" do
+    should "correctly typecast MongoIDs" do
+      key = Key.new(:_id, MongoID)
+      id = MongoID.new
+      [id, id.to_s].each do |a|
+        key.set(a).should == id
+      end
+    end
+    
     should "correctly typecast Strings" do
       key = Key.new(:foo, String)
       [21, '21'].each do |a|

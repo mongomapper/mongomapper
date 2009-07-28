@@ -58,6 +58,44 @@ class FinderOptionsTest < Test::Unit::TestCase
         :foo => {:bar => {'$in' => [1,2,3]}}
       }
     end
+    
+    should "convert string _ids to objectid automatically" do
+      id = XGen::Mongo::Driver::ObjectID.new
+      
+      FinderOptions.to_mongo_criteria(:_id => id.to_s).should == {
+        :_id => id
+      }
+    end
+    
+    should "leave objectid _ids alone" do
+      id = XGen::Mongo::Driver::ObjectID.new
+      
+      FinderOptions.to_mongo_criteria(:_id => id).should == {
+        :_id => id
+      }
+    end
+    
+    should "convert array of string _ids to object ids" do
+      id1 = XGen::Mongo::Driver::ObjectID.new
+      id2 = XGen::Mongo::Driver::ObjectID.new
+      
+      FinderOptions.to_mongo_criteria(:_id => [id1.to_s, id2.to_s]).should == {
+        :_id => {'$in' => [id1, id2]}
+      }
+    end
+    
+    should "convert array of string _ids when using mongo array stuff" do
+      id1 = XGen::Mongo::Driver::ObjectID.new
+      id2 = XGen::Mongo::Driver::ObjectID.new
+      
+      FinderOptions.to_mongo_criteria(:_id => {'$all' => [id1.to_s, id2.to_s]}).should == {
+        :_id => {'$all' => [id1, id2]}
+      }
+      
+      FinderOptions.to_mongo_criteria(:_id => {'$any' => [id1.to_s, id2.to_s]}).should == {
+        :_id => {'$any' => [id1, id2]}
+      }
+    end
   end
   
   context "ordering" do

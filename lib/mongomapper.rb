@@ -2,7 +2,7 @@ require 'pathname'
 require 'rubygems'
 
 gem 'activesupport'
-gem 'mongodb-mongo', '0.10'
+gem 'mongodb-mongo', '0.10.1'
 gem 'jnunemaker-validatable', '1.7.2'
 gem 'deep_merge', '0.1.0'
 
@@ -14,6 +14,30 @@ require 'deep_merge'
 class BasicObject #:nodoc:
   instance_methods.each { |m| undef_method m unless m =~ /^__|instance_eval/ }
 end unless defined?(BasicObject)
+
+class Boolean
+  def self.mm_typecast(value)
+    ['true', 't', '1'].include?(value.to_s.downcase)
+  end
+end
+
+class MongoID < XGen::Mongo::Driver::ObjectID
+  def self.mm_typecast(value)
+    begin
+      if value.is_a?(XGen::Mongo::Driver::ObjectID)
+        value
+      else
+        XGen::Mongo::Driver::ObjectID::from_string(value.to_s)
+      end
+    rescue => exception
+      if exception.message == 'illegal ObjectID format'
+        raise MongoMapper::DocumentNotFound
+      else
+        raise exception
+      end
+    end
+  end
+end
 
 dir = Pathname(__FILE__).dirname.expand_path + 'mongomapper'
 
@@ -42,6 +66,8 @@ require dir + 'embedded_document'
 require dir + 'document'
 
 module MongoMapper
+  # include XGen::Mongo::Driver
+  
   class DocumentNotFound < StandardError; end
   class DocumentNotValid < StandardError
     def initialize(document)

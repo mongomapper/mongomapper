@@ -92,15 +92,6 @@ class DocumentTest < Test::Unit::TestCase
       should "be true if no id" do
         @document.new.new?.should be(true)
       end
-
-      should "be true if has id but id not in database" do
-        @document.new('_id' => 1).new?.should be(true)
-      end
-
-      should "be false if has id and id is in database" do
-        doc = @document.create(:name => 'John Nunemaker', :age => 27)
-        doc.new?.should be(false)
-      end
     end
     
     context "equality" do

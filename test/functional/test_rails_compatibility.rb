@@ -18,8 +18,9 @@ class TestRailsCompatibility < Test::Unit::TestCase
     end
   
     should "have to_param that returns id" do
-      instance = Order.create('_id' => '1234')
-      instance.to_param.should == '1234'
+      id = MongoID.new
+      instance = Order.create('_id' => id.to_s)
+      instance.to_param.should == id.to_s
     end
 
     should "alias new to new_record?" do

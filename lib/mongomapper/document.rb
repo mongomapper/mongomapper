@@ -12,7 +12,7 @@ module MongoMapper
         include DocumentRailsCompatibility
         extend ClassMethods
         
-        key :_id, String
+        key :_id, MongoID
         key :created_at, Time
         key :updated_at, Time
       end
@@ -63,7 +63,8 @@ module MongoMapper
       end
 
       def find_by_id(id)
-        if doc = collection.find_first({:_id => id})
+        criteria = FinderOptions.to_mongo_criteria(:_id => id)
+        if doc = collection.find_first(criteria)
           new(doc)
         end
       end
@@ -98,11 +99,13 @@ module MongoMapper
       end
       
       def delete(*ids)
-        collection.remove(:_id => {'$in' => ids.flatten})
+        criteria = FinderOptions.to_mongo_criteria(:_id => ids.flatten)
+        collection.remove(criteria)
       end
       
       def delete_all(conditions={})
-        collection.remove(FinderOptions.to_mongo_criteria(conditions))
+        criteria = FinderOptions.to_mongo_criteria(conditions)
+        collection.remove(criteria)
       end
       
       def destroy(*ids)
@@ -154,7 +157,7 @@ module MongoMapper
       
     private
       def find_every(options)
-        criteria, options = FinderOptions.new(options).to_a
+        criteria, options = FinderOptions.new(options).to_a        
         collection.find(criteria, options).to_a.map { |doc| new(doc) }
       end
       
@@ -175,7 +178,7 @@ module MongoMapper
         end
       end
       
-      def find_one(id, options={})        
+      def find_one(id, options={})
         if doc = find_every(options.deep_merge(:conditions => {:_id => id})).first
           doc
         else
@@ -221,7 +224,7 @@ module MongoMapper
       end
       
       def new?
-        read_attribute('_id').blank? || self.class.find_by_id(id).blank?
+        read_attribute('_id').blank?
       end
       
       def save
@@ -239,7 +242,8 @@ module MongoMapper
       end
       
       def destroy
-        collection.remove(:_id => id) unless new?
+        criteria = FinderOptions.to_mongo_criteria(:_id => id)
+        collection.remove(criteria) unless new?
         freeze
       end
       
@@ -248,7 +252,7 @@ module MongoMapper
       end
       
       def id
-        read_attribute('_id')
+        read_attribute('_id').to_s
       end
       
     private
@@ -258,9 +262,8 @@ module MongoMapper
       end
       
       def create
-        write_attribute('_id', generate_id) if read_attribute('_id').blank?
         update_timestamps
-        save_to_collection
+        write_attribute :_id, save_to_collection
       end
       
       def update
@@ -268,6 +271,7 @@ module MongoMapper
         save_to_collection
       end
       
+      # collection.save returns mongoid
       def save_to_collection
         collection.save(attributes)
       end
@@ -275,10 +279,6 @@ module MongoMapper
       def update_timestamps
         write_attribute('created_at', Time.now.utc) if new?
         write_attribute('updated_at', Time.now.utc)
-      end
-      
-      def generate_id
-        XGen::Mongo::Driver::ObjectID.new
       end
     end
   end # Document
