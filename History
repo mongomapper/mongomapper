@@ -1,8 +1,6 @@
-0.2.1(working)
+0.3.0 7/28/2009
 * 5 major additions, 3 minor additions, 3 bug fix, and other miscellany
-  
   * BACKWORDS COMPATIBILITY BREAK: _id is now stored in binary form (recommended by mongodb team) instead of string, api is the same everywhere as before but data stored with string id's previous to change will need to be updated
-  
   * Added Document#paginate which works just like find but adds pagination (dcu did basics and I pimped)
   * Added a basic console for playing around with MongoMapper (dcu)
   * Embedded associations can now be deeply nested (Keith Hanson)
