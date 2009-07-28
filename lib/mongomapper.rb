@@ -64,9 +64,7 @@ require dir + 'validations'
 require dir + 'embedded_document'
 require dir + 'document'
 
-module MongoMapper
-  # include XGen::Mongo::Driver
-  
+module MongoMapper  
   class DocumentNotFound < StandardError; end
   class DocumentNotValid < StandardError
     def initialize(document)
