@@ -4,12 +4,10 @@ require 'rubygems'
 gem 'activesupport'
 gem 'mongodb-mongo', '0.10.1'
 gem 'jnunemaker-validatable', '1.7.2'
-gem 'deep_merge', '0.1.0'
 
 require 'activesupport'
 require 'mongo'
 require 'validatable'
-require 'deep_merge'
 
 class BasicObject #:nodoc:
   instance_methods.each { |m| undef_method m unless m =~ /^__|instance_eval/ }

@@ -14,7 +14,6 @@ begin
     gem.add_dependency('activesupport')
     gem.add_dependency('mongodb-mongo', '0.10.1')
     gem.add_dependency('jnunemaker-validatable', '1.7.2')
-    gem.add_dependency('deep_merge', '0.1.0')
     
     gem.add_development_dependency('mocha', '0.9.4')
     gem.add_development_dependency('jnunemaker-matchy', '0.4.0')
