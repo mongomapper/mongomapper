@@ -1,5 +1,5 @@
 module MongoMapper
-  module DocumentRailsCompatibility
+  module RailsCompatibilityDocument
     def self.included(model)
       model.class_eval do
         alias_method :new_record?, :new?

@@ -1,5 +1,5 @@
 module MongoMapper
-  module EmbeddedDocumentRailsCompatibility
+  module RailsCompatibilityEmbeddedDocument
     def self.included(model)
       model.class_eval do
         extend ClassMethods

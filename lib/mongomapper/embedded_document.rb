@@ -10,7 +10,7 @@ module MongoMapper
         extend Associations::ClassMethods
         include Associations::InstanceMethods
         
-        include EmbeddedDocumentRailsCompatibility
+        include RailsCompatibilityEmbeddedDocument
         include Validatable
         include Serialization
       end
