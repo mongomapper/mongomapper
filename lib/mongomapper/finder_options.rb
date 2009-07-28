@@ -40,7 +40,7 @@ module MongoMapper
         :fields => to_mongo_fields(options.delete(:fields) || options.delete(:select)),
         :offset => (options.delete(:offset) || 0).to_i,
         :limit  => (options.delete(:limit) || 0).to_i,
-        :sort   => to_mongo_sort(options.delete(:order))
+        :sort   => options.delete(:sort) || to_mongo_sort(options.delete(:order))
       }
     end
     

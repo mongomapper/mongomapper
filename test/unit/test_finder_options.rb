@@ -134,6 +134,28 @@ class FinderOptionsTest < Test::Unit::TestCase
       hash[:baz] = 1
       FinderOptions.to_mongo_options(:order => 'foo desc, bar, baz')[:sort].should == hash
     end
+    
+    should "just use sort if sort and order are present" do
+      FinderOptions.to_mongo_options(:sort => {'$natural' => 1}, :order => 'foo asc')[:sort].should == {
+        '$natural' => 1
+      }
+    end
+    
+    should "convert natural in order to proper" do
+      hash = OrderedHash.new
+      hash[:'$natural'] = 1
+      FinderOptions.to_mongo_options(:order => '$natural asc')[:sort].should == hash
+      hash[:'$natural'] = -1
+      FinderOptions.to_mongo_options(:order => '$natural desc')[:sort].should == hash
+    end
+    
+    should "work for natural order ascending" do
+      FinderOptions.to_mongo_options(:sort => {'$natural' => 1})[:sort]['$natural'].should == 1
+    end
+    
+    should "work for natural order descending" do
+      FinderOptions.to_mongo_options(:sort => {'$natural' => -1})[:sort]['$natural'].should == -1
+    end
   end
   
   context "offset" do
