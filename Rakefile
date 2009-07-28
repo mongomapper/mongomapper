@@ -12,7 +12,7 @@ begin
     gem.rubyforge_project = "mongomapper"
     
     gem.add_dependency('activesupport')
-    gem.add_dependency('mongodb-mongo', '0.9')
+    gem.add_dependency('mongodb-mongo', '0.10')
     gem.add_dependency('jnunemaker-validatable', '1.7.2')
     gem.add_dependency('deep_merge', '0.1.0')
     
