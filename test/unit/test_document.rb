@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'models'
 
 class DocumentTest < Test::Unit::TestCase
   context "The Document Class" do
@@ -52,6 +53,19 @@ class DocumentTest < Test::Unit::TestCase
       @document.collection.name.should == 'foobar'
     end
   end # Document class
+  
+  context "Documents that inherit from other documents" do
+    should "default collection to inherited class" do
+      Message.collection.name.should == 'messages'
+      Enter.collection.name.should   == 'messages'
+      Exit.collection.name.should    == 'messages'
+      Chat.collection.name.should    == 'messages'
+    end
+    
+    should "track subclasses" do
+      Message.subclasses.should == [Enter, Exit, Chat]
+    end
+  end
 
   context "An instance of a document" do
     setup do

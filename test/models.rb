@@ -6,6 +6,22 @@ class Address
   key :zip,     Integer
 end
 
+class Message
+  include MongoMapper::Document
+  key :body, String
+  belongs_to :room
+end
+
+class Enter < Message; end
+class Exit < Message;  end
+class Chat < Message;  end
+
+class Room
+  include MongoMapper::Document
+  key :name, String
+  many :messages, :polymorphic => true
+end
+
 class Project
   include MongoMapper::Document
   key :name, String

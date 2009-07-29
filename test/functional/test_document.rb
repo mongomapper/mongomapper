@@ -1,10 +1,5 @@
 require 'test_helper'
-
-class Address
-  include MongoMapper::EmbeddedDocument
-  key :city, String
-  key :state, String
-end
+require 'models'
 
 class DocumentTest < Test::Unit::TestCase
   def setup
@@ -25,7 +20,7 @@ class DocumentTest < Test::Unit::TestCase
       setup do
         @document.key :tags, Array
       end
-  
+      
       should "work" do
         doc = @document.new
         doc.tags.should == []
@@ -109,7 +104,6 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
     
-  
     context "Creating multiple documents" do
       setup do
         @doc_instances = @document.create([

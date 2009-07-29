@@ -18,6 +18,10 @@ module MongoMapper
     
     module ClassMethods
       def inherited(subclass)
+        unless subclass.embeddable?
+          subclass.collection(self.collection.name)
+        end
+        
         (@subclasses ||= []) << subclass
       end
       

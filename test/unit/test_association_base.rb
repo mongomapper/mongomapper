@@ -107,6 +107,11 @@ class AssociationBaseTest < Test::Unit::TestCase
       base.proxy_class.should == ManyProxy
     end
     
+    should "be ManyPolymorphicProxy for polymorphic many" do
+      base = Base.new(:many, :messages, :polymorphic => true)
+      base.proxy_class.should == ManyPolymorphicProxy
+    end
+    
     should "be ManyEmbeddedProxy for many embedded" do
       base = Base.new(:many, :medias)
       base.proxy_class.should == ManyEmbeddedProxy

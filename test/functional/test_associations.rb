@@ -353,6 +353,41 @@ class AssociationsTest < Test::Unit::TestCase
     end
   end
   
+  context "Many polymorphic documents" do
+    should "default reader to empty array" do
+      Room.new.messages.should == []
+    end
+    
+    should "add type key to polymorphic class base" do
+      Message.keys.keys.should include('_type')
+    end
+    
+    should "allow adding to assiciation like it was an array" do
+      room = Room.new
+      room.messages << Enter.new(:body => 'John entered room')
+      room.messages.push Exit.new(:body => 'John exited room')
+      room.messages.size.should == 2
+    end
+    
+    should "store the association" do
+      room = Room.create(:name => 'Lounge')
+      
+      lambda {
+        room.messages = [
+          Enter.new(:body => 'John entered room'),
+          Chat.new(:body => 'Heyyyoooo!'),
+          Exit.new(:body => 'John exited room')
+        ]
+      }.should change { Message.count }.by(3)
+      
+      from_db = Room.find(room.id)
+      from_db.messages.size.should == 3
+      from_db.messages[0].body.should == 'John entered room'
+      from_db.messages[1].body.should == 'Heyyyoooo!'
+      from_db.messages[2].body.should == 'John exited room'
+    end
+  end
+  
   context "Many embedded documents" do
     should "allow adding to association like it was an array" do
       project = Project.new
