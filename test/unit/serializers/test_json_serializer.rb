@@ -29,18 +29,18 @@ class JsonSerializationTest < Test::Unit::TestCase
   should "encode all encodable attributes" do
     json = @contact.to_json
 
-    assert_match %r{"name": "Konata Izumi"}, json
-    assert_match %r{"age": 16}, json
-    assert json.include?(%("created_at": #{ActiveSupport::JSON.encode(Time.utc(2006, 8, 1))}))
-    assert_match %r{"awesome": true}, json
-    assert_match %r{"preferences": \{"shows": "anime"\}}, json
+    assert_match %r{"name":"Konata Izumi"}, json
+    assert_match %r{"age":16}, json
+    assert json.include?(%("created_at":#{ActiveSupport::JSON.encode(Time.utc(2006, 8, 1))}))
+    assert_match %r{"awesome":true}, json
+    assert_match %r{"preferences":\{"shows":"anime"\}}, json
   end
   
   should "allow attribute filtering with only" do
     json = @contact.to_json(:only => [:name, :age])
 
-    assert_match %r{"name": "Konata Izumi"}, json
-    assert_match %r{"age": 16}, json
+    assert_match %r{"name":"Konata Izumi"}, json
+    assert_match %r{"age":16}, json
     assert_no_match %r{"awesome"}, json
     assert_no_match %r{"created_at"}, json
     assert_no_match %r{"preferences"}, json
@@ -63,14 +63,13 @@ class JsonSerializationTest < Test::Unit::TestCase
     end
     
     should "include single method" do
-      # Single method.
-      assert_match %r{"label": "Has cheezburger"}, @contact.to_json(:only => :name, :methods => :label)
+      assert_match %r{"label":"Has cheezburger"}, @contact.to_json(:only => :name, :methods => :label)
     end
     
     should "include multiple methods" do
       json = @contact.to_json(:only => :name, :methods => [:label, :favorite_quote])
-      assert_match %r{"label": "Has cheezburger"}, json
-      assert_match %r{"favorite_quote": "Constraints are liberating"}, json
+      assert_match %r{"label":"Has cheezburger"}, json
+      assert_match %r{"favorite_quote":"Constraints are liberating"}, json
     end
   end
   
@@ -83,12 +82,12 @@ class JsonSerializationTest < Test::Unit::TestCase
     end
 
     should "allow attribute filtering with only" do
-      assert_equal %([{"name": "David"}, {"name": "Mary"}]), @contacts.to_json(:only => :name)
+      assert_equal %([{"name":"David"},{"name":"Mary"}]), @contacts.to_json(:only => :name)
     end
     
     should "allow attribute filtering with except" do
       json = @contacts.to_json(:except => [:name, :preferences, :awesome, :created_at])
-      assert_equal %([{"age": 39}, {"age": 14}]), json
+      assert_equal %([{"age":39},{"age":14}]), json
     end
   end
   
@@ -98,7 +97,7 @@ class JsonSerializationTest < Test::Unit::TestCase
       2 => Contact.new(:name => 'Mary', :age => 14)
     }
 
-    assert_equal %({"1": {"name": "David"}}), contacts.to_json(:only => [1, :name])
+    assert_equal %({"1":{"name":"David"}}), contacts.to_json(:only => [1, :name])
   end
   
 end
