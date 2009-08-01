@@ -24,6 +24,10 @@ module MongoMapper
         find(:last, scoped_options(options))
       end
       
+      def count(conditions={})
+        klass.count(conditions.deep_merge(scoped_conditions))
+      end
+      
       def replace(docs)
         @target.map(&:destroy) if load_target
         docs.each { |doc| apply_scope(doc).save }
@@ -38,9 +42,25 @@ module MongoMapper
       alias_method :push, :<<
       alias_method :concat, :<<
       
+      def build(attrs={})
+        doc = klass.new(attrs)
+        apply_scope(doc)
+        doc
+      end
+      
+      def create(attrs={})
+        doc = klass.new(attrs)
+        apply_scope(doc).save
+        doc
+      end
+      
       protected
+        def scoped_conditions
+          {self.foreign_key => @owner.id}
+        end
+        
         def scoped_options(options)
-          options.dup.deep_merge({:conditions => {self.foreign_key => @owner.id}})
+          options.deep_merge({:conditions => scoped_conditions})
         end
         
         def find_target

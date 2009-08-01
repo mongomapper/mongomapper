@@ -41,6 +41,63 @@ class ManyProxyTest < Test::Unit::TestCase
     from_db.statuses[2].project_id.should == project.id
   end
   
+  context "build" do
+    should "assign foreign key" do
+      project = Project.create
+      status = project.statuses.build
+      status.project_id.should == project.id
+    end
+
+    should "allow assigning attributes" do
+      project = Project.create
+      status = project.statuses.build(:name => 'Foo')
+      status.name.should == 'Foo'
+    end
+  end
+  
+  context "create" do
+    should "assign foreign key" do
+      project = Project.create
+      status = project.statuses.create
+      status.project_id.should == project.id
+    end
+    
+    should "save record" do
+      project = Project.create
+      lambda {
+        project.statuses.create
+      }.should change { Status.count }
+    end
+    
+    should "allow passing attributes" do
+      project = Project.create
+      status = project.statuses.create(:name => 'Foo!')
+      status.name.should == 'Foo!'
+    end
+  end
+  
+  context "count" do
+    should "work scoped to association" do
+      project = Project.create
+      3.times { project.statuses.create }
+      
+      other_project = Project.create
+      2.times { other_project.statuses.create }
+      
+      project.statuses.count.should == 3
+      other_project.statuses.count.should == 2
+    end
+    
+    should "work with conditions" do
+      project = Project.create
+      project.statuses.create(:name => 'Foo')
+      project.statuses.create(:name => 'Other 1')
+      project.statuses.create(:name => 'Other 2')
+      
+      project.statuses.count(:name => 'Foo').should == 1
+    end
+  end
+  
   context "Finding scoped to association" do
     setup do
       @project1          = Project.new(:name => 'Project 1')
@@ -160,7 +217,7 @@ class ManyProxyTest < Test::Unit::TestCase
     
     context "with #paginate" do
       setup do
-        @statuses = @project2.statuses.paginate(:per_page => 2, :page => 1)
+        @statuses = @project2.statuses.paginate(:per_page => 2, :page => 1, :order => '$natural asc')
       end
       
       should "return total pages" do

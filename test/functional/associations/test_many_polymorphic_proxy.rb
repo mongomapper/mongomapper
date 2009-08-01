@@ -22,18 +22,6 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     room.messages.size.should == 3
   end
   
-  should "correctly store type when using <<, push and concat" do
-    room = Room.new
-    room.messages << Enter.new(:body => 'John entered the room')
-    room.messages.push Exit.new(:body => 'John entered the room')
-    room.messages.concat Chat.new(:body => 'Holla!')
-    
-    from_db = Room.find(room.id)
-    from_db.messages[0]._type.should == 'Enter'
-    from_db.messages[1]._type.should == 'Exit'
-    from_db.messages[2]._type.should == 'Chat'
-  end
-  
   should "be able to replace the association" do
     room = Room.create(:name => 'Lounge')
     
@@ -50,6 +38,87 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     from_db.messages[0].body.should == 'John entered room'
     from_db.messages[1].body.should == 'Heyyyoooo!'
     from_db.messages[2].body.should == 'John exited room'
+  end
+  
+  should "correctly store type when using <<, push and concat" do
+    room = Room.new
+    room.messages << Enter.new(:body => 'John entered the room')
+    room.messages.push Exit.new(:body => 'John entered the room')
+    room.messages.concat Chat.new(:body => 'Holla!')
+    
+    from_db = Room.find(room.id)
+    from_db.messages[0]._type.should == 'Enter'
+    from_db.messages[1]._type.should == 'Exit'
+    from_db.messages[2]._type.should == 'Chat'
+  end
+  
+  context "build" do
+    should "assign foreign key" do
+      room = Room.create
+      message = room.messages.build
+      message.room_id.should == room.id
+    end
+    
+    should "assign _type" do
+      room = Room.create
+      message = room.messages.build
+      message._type.should == 'Message'
+    end
+    
+    should "allow assigning attributes" do
+      room = Room.create
+      message = room.messages.build(:body => 'Foo!')
+      message.body.should == 'Foo!'
+    end
+  end
+  
+  context "create" do
+    should "assign foreign key" do
+      room = Room.create
+      message = room.messages.create
+      message.room_id.should == room.id
+    end
+    
+    should "assign _type" do
+      room = Room.create
+      message = room.messages.create
+      message._type.should == 'Message'
+    end
+    
+    should "save record" do
+      room = Room.create
+      lambda {
+        room.messages.create
+      }.should change { Message.count }
+    end
+    
+    should "allow passing attributes" do
+      room = Room.create
+      message = room.messages.create(:body => 'Foo!')
+      message.body.should == 'Foo!'
+    end
+  end
+  
+  context "count" do
+    should "work scoped to association" do
+      room = Room.create
+      3.times { room.messages.create }
+      
+      other_room = Room.create
+      2.times { other_room.messages.create }
+      
+      room.messages.count.should == 3
+      other_room.messages.count.should == 2
+    end
+    
+    should "work with conditions" do
+      room = Room.create
+      room.messages.create(:body => 'Foo')
+      room.messages.create(:body => 'Other 1')
+      room.messages.create(:body => 'Other 2')
+      
+      room.messages.count(:body => 'Foo').should == 1
+    end
   end
   
   context "Finding scoped to association" do
@@ -171,7 +240,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     
     context "with #paginate" do
       setup do
-        @messages = @hall.messages.paginate(:per_page => 2, :page => 1)
+        @messages = @hall.messages.paginate(:per_page => 2, :page => 1, :order => '$natural asc')
       end
       
       should "return total pages" do
