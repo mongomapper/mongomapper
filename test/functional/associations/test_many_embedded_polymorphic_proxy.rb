@@ -18,7 +18,7 @@ class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
     catalog.medias.size.should == 2
   end
 
-  should "store the association" do
+  should "be able to replace the association" do
     catalog = Catalog.new
     catalog.medias = [Video.new("file" => "video.mpg", "length" => 3600)]
     catalog.save.should be_true
@@ -98,7 +98,7 @@ class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
       fleet.transports.size.should == 2
     end
     
-    should "store the association" do
+    should "be able to replace the association" do
       fleet = TrModels::Fleet.new
       fleet.transports = [TrModels::Car.new("license_plate" => "DCU2013", "model" => "Honda Civic")]
       fleet.save.should be_true

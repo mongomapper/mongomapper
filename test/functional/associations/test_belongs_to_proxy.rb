@@ -11,7 +11,7 @@ class BelongsToProxyTest < Test::Unit::TestCase
     status.project.should be_nil
   end
   
-  should "store the association" do
+  should "be able to replace the association" do
     status = Status.new
     project = Project.new(:name => "mongomapper")
     status.project = project

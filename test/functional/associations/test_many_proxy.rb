@@ -18,7 +18,7 @@ class ManyProxyTest < Test::Unit::TestCase
     project.statuses.size.should == 2
   end
 
-  should "store the association" do
+  should "be able to replace the association" do
     project = Project.new
     project.statuses = [Status.new("name" => "ready")]
     project.save.should be_true

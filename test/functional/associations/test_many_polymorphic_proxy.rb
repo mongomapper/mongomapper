@@ -21,7 +21,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     room.messages.size.should == 2
   end
   
-  should "store the association" do
+  should "be able to replace the association" do
     room = Room.create(:name => 'Lounge')
     
     lambda {

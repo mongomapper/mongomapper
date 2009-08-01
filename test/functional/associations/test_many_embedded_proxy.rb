@@ -6,6 +6,10 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     clear_all_collections
   end
   
+  should "default reader to empty array" do
+    Project.new.addresses.should == []
+  end
+  
   should "allow adding to association like it was an array" do
     project = Project.new
     project.addresses << Address.new

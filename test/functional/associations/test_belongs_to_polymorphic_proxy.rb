@@ -11,7 +11,7 @@ class BelongsToPolymorphicProxyTest < Test::Unit::TestCase
     status.target.should be_nil
   end
 
-  should "store the association" do
+  should "be able to replace the association" do
     status = Status.new
     project = Project.new(:name => "mongomapper")
     status.target = project
