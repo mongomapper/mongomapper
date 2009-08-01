@@ -1,6 +1,6 @@
 module MongoMapper
   module Associations
-    class ManyEmbeddedProxy < ArrayProxy
+    class ManyEmbeddedProxy < Proxy
       def replace(v)
         @_values = v.map { |e| e.kind_of?(EmbeddedDocument) ? e.attributes : e }
         @target = nil

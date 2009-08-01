@@ -1,6 +1,6 @@
 module MongoMapper
   module Associations
-    class ManyArrayProxy < Proxy
+    class ManyDocumentsProxy < Proxy
       delegate :klass, :to => :@association
       
       def find(*args)
@@ -24,6 +24,20 @@ module MongoMapper
         find(:last, scoped_options(options))
       end
       
+      def replace(docs)
+        @target.map(&:destroy) if load_target
+        docs.each { |doc| apply_scope(doc).save }
+        reload_target
+      end
+      
+      def <<(*docs)
+        ensure_owner_saved
+        flatten_deeper(docs).each { |doc| apply_scope(doc).save }
+        reload_target
+      end
+      alias_method :push, :<<
+      alias_method :concat, :<<
+      
       protected
         def scoped_options(options)
           options.dup.deep_merge({:conditions => {self.foreign_key => @owner.id}})
@@ -31,6 +45,16 @@ module MongoMapper
         
         def find_target
           find(:all)
+        end
+        
+        def ensure_owner_saved
+          @owner.save if @owner.new?
+        end
+        
+        def apply_scope(doc)
+          ensure_owner_saved
+          doc.send("#{self.foreign_key}=", @owner.id)
+          doc
         end
 
         def foreign_key

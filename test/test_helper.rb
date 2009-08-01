@@ -6,15 +6,17 @@ require 'shoulda'
 
 gem 'mocha', '0.9.4'
 gem 'jnunemaker-matchy', '0.4.0'
+gem 'thoughtbot-quietbacktrace', '1.1.6'
 
 require 'matchy'
 require 'mocha'
+require 'quietbacktrace'
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 dir = (Pathname(__FILE__).dirname +  '..' + 'lib').expand_path
 require dir + 'mongomapper'
 
-class Test::Unit::TestCase
+class Test::Unit::TestCase  
   def clear_all_collections
     MongoMapper::Document.descendants.map(&:delete_all)
   end

@@ -13,9 +13,10 @@ class ManyProxyTest < Test::Unit::TestCase
 
   should "allow adding to association like it was an array" do
     project = Project.new
-    project.statuses << Status.new
-    project.statuses.push Status.new
-    project.statuses.size.should == 2
+    project.statuses <<     Status.new
+    project.statuses.push   Status.new
+    project.statuses.concat Status.new
+    project.statuses.size.should == 3
   end
 
   should "be able to replace the association" do
@@ -26,6 +27,18 @@ class ManyProxyTest < Test::Unit::TestCase
     from_db = Project.find(project.id)
     from_db.statuses.size.should == 1
     from_db.statuses[0].name.should == "ready"
+  end
+  
+  should "correctly assign foreign key when using <<, push and concat" do
+    project = Project.new
+    project.statuses <<     Status.new(:name => '<<')
+    project.statuses.push   Status.new(:name => 'push')
+    project.statuses.concat Status.new(:name => 'concat')
+    
+    from_db = Project.find(project.id)
+    from_db.statuses[0].project_id.should == project.id
+    from_db.statuses[1].project_id.should == project.id
+    from_db.statuses[2].project_id.should == project.id
   end
   
   context "Finding scoped to association" do

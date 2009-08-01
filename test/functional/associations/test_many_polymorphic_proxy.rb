@@ -16,9 +16,22 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
   
   should "allow adding to assiciation like it was an array" do
     room = Room.new
-    room.messages << Enter.new(:body => 'John entered room')
-    room.messages.push Exit.new(:body => 'John exited room')
-    room.messages.size.should == 2
+    room.messages << Enter.new
+    room.messages.push Exit.new
+    room.messages.concat Exit.new
+    room.messages.size.should == 3
+  end
+  
+  should "correctly store type when using <<, push and concat" do
+    room = Room.new
+    room.messages << Enter.new(:body => 'John entered the room')
+    room.messages.push Exit.new(:body => 'John entered the room')
+    room.messages.concat Chat.new(:body => 'Holla!')
+    
+    from_db = Room.find(room.id)
+    from_db.messages[0]._type.should == 'Enter'
+    from_db.messages[1]._type.should == 'Exit'
+    from_db.messages[2]._type.should == 'Chat'
   end
   
   should "be able to replace the association" do
