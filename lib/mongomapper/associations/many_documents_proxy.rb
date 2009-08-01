@@ -27,13 +27,13 @@ module MongoMapper
       def replace(docs)
         @target.map(&:destroy) if load_target
         docs.each { |doc| apply_scope(doc).save }
-        reload_target
+        reset
       end
       
       def <<(*docs)
         ensure_owner_saved
         flatten_deeper(docs).each { |doc| apply_scope(doc).save }
-        reload_target
+        reset
       end
       alias_method :push, :<<
       alias_method :concat, :<<

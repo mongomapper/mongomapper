@@ -3,9 +3,7 @@ module MongoMapper
     class ManyEmbeddedProxy < Proxy
       def replace(v)
         @_values = v.map { |e| e.kind_of?(EmbeddedDocument) ? e.attributes : e }
-        @target = nil
-
-        reload_target
+        reset
       end
 
       protected

@@ -8,13 +8,13 @@ module MongoMapper
         end
         
         @owner.send("#{@association.belongs_to_key_name}=", id)
-        reload_target
+        reset
       end
 
       protected
         def find_target
-          if ref = @owner.send(@association.belongs_to_key_name)
-            @association.klass.find(ref)
+          if association_id = @owner.send(@association.belongs_to_key_name)
+            @association.klass.find(association_id)
           end
         end
     end

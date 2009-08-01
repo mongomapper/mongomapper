@@ -9,8 +9,7 @@ module MongoMapper
         
         @owner.send("#{@association.belongs_to_key_name}=", id)
         @owner.send("#{@association.type_key_name}=", type)
-        
-        reload_target
+        reset
       end
       
       protected

@@ -11,8 +11,7 @@ module MongoMapper
           end
         end
         
-        @target = nil
-        reload_target
+        reset
       end
 
       protected
