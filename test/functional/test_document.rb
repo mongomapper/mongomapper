@@ -617,12 +617,21 @@ class DocumentTest < Test::Unit::TestCase
       doc.updated_at.should_not be(nil)
     end
   
-    should "set updated_at on update but leave created_at alone" do
+    should "set updated_at on field update but leave created_at alone" do
       doc = @document.create(:first_name => 'John', :age => 27)
       old_created_at = doc.created_at
       old_updated_at = doc.updated_at
       doc.first_name = 'Johnny'
       doc.save
+      doc.created_at.should == old_created_at
+      doc.updated_at.should_not == old_updated_at
+    end
+    
+    should "set updated_at on document update but leave created_at alone" do
+      doc = @document.create(:first_name => 'John', :age => 27)
+      old_created_at = doc.created_at
+      old_updated_at = doc.updated_at
+      doc = @document.update(old._id, { :first_name => 'Johnny' })
       doc.created_at.should == old_created_at
       doc.updated_at.should_not == old_updated_at
     end
