@@ -218,7 +218,7 @@ class DocumentTest < Test::Unit::TestCase
   
       context "with :all" do
         should "find all documents" do
-          @document.find(:all).should == [@doc1, @doc2, @doc3]
+          @document.find(:all, :order => 'first_name').should == [@doc1, @doc3, @doc2]
         end
   
         should "be able to add conditions" do
@@ -228,20 +228,20 @@ class DocumentTest < Test::Unit::TestCase
   
       context "with #all" do
         should "find all documents based on criteria" do
-          @document.all.should == [@doc1, @doc2, @doc3]
+          @document.all(:order => 'first_name').should == [@doc1, @doc3, @doc2]
           @document.all(:conditions => {:last_name => 'Nunemaker'}).should == [@doc1, @doc3]
         end
       end
   
       context "with :first" do
         should "find first document" do
-          @document.find(:first).should == @doc1
+          @document.find(:first, :order => 'first_name').should == @doc1
         end
       end
   
       context "with #first" do
         should "find first document based on criteria" do
-          @document.first.should == @doc1
+          @document.first(:order => 'first_name').should == @doc1
           @document.first(:conditions => {:age => 28}).should == @doc2
         end
       end

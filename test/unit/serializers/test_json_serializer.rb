@@ -2,7 +2,7 @@ require 'test_helper'
 
 class JsonSerializationTest < Test::Unit::TestCase
   class Contact
-    include MongoMapper::EmbeddedDocument
+    include MongoMapper::Document
     key :name, String
     key :age, Integer
     key :created_at, Time
@@ -86,8 +86,8 @@ class JsonSerializationTest < Test::Unit::TestCase
     end
     
     should "allow attribute filtering with except" do
-      json = @contacts.to_json(:except => [:name, :preferences, :awesome, :created_at])
-      assert_equal %([{"age":39},{"age":14}]), json
+      json = @contacts.to_json(:except => [:name, :preferences, :awesome, :created_at, :updated_at, :_id])
+      assert_equal %([{"id":"","age":39},{"id":"","age":14}]), json
     end
   end
   

@@ -83,10 +83,6 @@ class DocumentTest < Test::Unit::TestCase
       doc.collection.should == @document.collection
     end
 
-    should "automatically have an _id key" do
-      @document.keys.keys.should include('_id')
-    end
-
     should "automatically have a created_at key" do
       @document.keys.keys.should include('created_at')
     end

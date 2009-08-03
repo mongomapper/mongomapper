@@ -12,7 +12,6 @@ module MongoMapper
         include RailsCompatibility::Document
         extend ClassMethods
         
-        key :_id, MongoID
         key :created_at, Time
         key :updated_at, Time
       end
@@ -162,7 +161,8 @@ module MongoMapper
       end
       
       def find_first(options)
-        find_every(options.merge(:limit => 1, :order => '$natural asc'))[0]
+        options.merge!(:limit => 1)
+        find_every({:order => '$natural asc'}.merge(options))[0]
       end
       
       def find_last(options)
@@ -245,14 +245,6 @@ module MongoMapper
         criteria = FinderOptions.to_mongo_criteria(:_id => id)
         collection.remove(criteria) unless new?
         freeze
-      end
-      
-      def ==(other)
-        other.is_a?(self.class) && id == other.id
-      end
-      
-      def id
-        read_attribute('_id').to_s
       end
       
     private

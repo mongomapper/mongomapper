@@ -1,3 +1,9 @@
+0.3.2 (master)
+  * Added many polymorphic documents association
+  * Implemented build and create for many and many polymorphic documents
+  * <<, push and concat now work correctly for many and many polymorphic documents
+  * find(:first) now accepts order option
+  
 0.3.1 7/28/2009
 * 1 minor tweak
   * Removed deep_merge gem as dependency as ActiveSupport has deep_merge that works good enough

@@ -28,8 +28,8 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
     end
     
-    should "clear out document default keys" do
-      @klass.keys.size.should == 0
+    should "add _id key" do
+      @klass.keys['_id'].should_not be_nil
     end
   end
   
@@ -110,17 +110,17 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
   
   context "keys" do
     should "be inherited" do
-      Grandparent.keys.keys.should == ['grandparent']
-      Parent.keys.keys.sort.should == ['grandparent', 'parent']
-      Child.keys.keys.sort.should  == ['child', 'grandparent', 'parent']
+      Grandparent.keys.keys.sort.should == ['_id', 'grandparent']
+      Parent.keys.keys.sort.should == ['_id', 'grandparent', 'parent']
+      Child.keys.keys.sort.should  == ['_id', 'child', 'grandparent', 'parent']
     end
     
     should "propogate to subclasses if key added after class definition" do
       Grandparent.key :_type, String
       
-      Grandparent.keys.keys.sort.should == ['_type', 'grandparent']
-      Parent.keys.keys.sort.should      == ['_type', 'grandparent', 'parent']
-      Child.keys.keys.sort.should       == ['_type', 'child', 'grandparent', 'parent']
+      Grandparent.keys.keys.sort.should == ['_id', '_type', 'grandparent']
+      Parent.keys.keys.sort.should      == ['_id', '_type', 'grandparent', 'parent']
+      Child.keys.keys.sort.should       == ['_id', '_type', 'child', 'grandparent', 'parent']
     end
   end
   
@@ -144,15 +144,35 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         key :age, Integer
       end
     end
+    
+    should "automatically have an _id key" do
+      @document.keys.keys.should include('_id')
+    end
+    
+    should "have id method that is string representation of _id" do
+      doc = @document.new
+      doc.id.should == doc._id.to_s
+    end
+    
+    should "be able to set _id using id=" do
+      id = MongoID.new
+      doc = @document.new(:id => id.to_s)
+      doc._id.should == id
+      doc.id.should == id.to_s
+    end
 
     context "being initialized" do
       should "accept a hash that sets keys and values" do
         doc = @document.new(:name => 'John', :age => 23)
-        doc.attributes.should == {'name' => 'John', 'age' => 23}
+        doc.attributes.keys.sort.should == ['_id', 'age', 'name']
+        doc.attributes['name'].should == 'John'
+        doc.attributes['age'].should == 23
       end
 
       should "not throw error if initialized with nil" do
-        doc = @document.new(nil)
+        lambda {
+          @document.new(nil)
+        }.should_not raise_error
       end
     end
 
@@ -199,14 +219,15 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
 
     context "attributes" do
-      should "default to empty hash" do
+      should "default to hash with _id" do
         doc = @document.new
-        doc.attributes.should == {}
+        doc.attributes.keys.should == ['_id']
       end
 
       should "return all keys that aren't nil" do
         doc = @document.new(:name => 'string', :age => nil)
-        doc.attributes.should == {'name' => 'string'}
+        doc.attributes.keys.sort.should == ['_id', 'name']
+        doc.attributes.values.should include('string')
       end
     end
     
@@ -329,16 +350,20 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
     
     context "equality" do
-      should "be true if all keys and values are equal" do
-        doc1 = @document.new(:name => 'John', :age => 27)
-        doc2 = @document.new(:name => 'John', :age => 27)
-        doc1.should == doc2
+      should "be equal if id and class are the same" do
+        (@document.new('_id' => 1) == @document.new('_id' => 1)).should be(true)
       end
 
-      should "be false if not all the keys and values are equal" do
-        doc1 = @document.new(:name => 'Steve', :age => 27)
-        doc2 = @document.new(:name => 'John', :age => 27)
-        doc1.should_not == doc2
+      should "not be equal if class same but id different" do
+        (@document.new('_id' => 1) == @document.new('_id' => 2)).should be(false)
+      end
+
+      should "not be equal if id same but class different" do
+        @another_document = Class.new do
+          include MongoMapper::Document
+        end
+
+        (@document.new('_id' => 1) == @another_document.new('_id' => 1)).should be(false)
       end
     end
   end # instance of a embedded document

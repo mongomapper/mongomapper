@@ -30,10 +30,9 @@ class PaginationTest < Test::Unit::TestCase
     end
 
     should "return the items" do
-      result = @document.paginate(:per_page => 2, :page => 1)
+      result = @document.paginate(:per_page => 2, :page => 1, :order => 'first_name')
       result.size.should == 2
-      result.subject.should == [@doc1, @doc2]
-      result.should == [@doc1, @doc2]
+      result.should == [@doc1, @doc3]
     end
 
     should "accept conditions" do

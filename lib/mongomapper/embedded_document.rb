@@ -13,6 +13,8 @@ module MongoMapper
         include RailsCompatibility::EmbeddedDocument
         include Validatable
         include Serialization
+        
+        key :_id, MongoID
       end
     end
     
@@ -145,6 +147,10 @@ module MongoMapper
           
           self.attributes = attrs
         end
+        
+        if self.class.embeddable? && read_attribute(:_id).blank?
+          write_attribute :_id, XGen::Mongo::Driver::ObjectID.new
+        end
       end
       
       def attributes=(attrs)
@@ -174,7 +180,15 @@ module MongoMapper
       end
       
       def ==(other)
-        other.is_a?(self.class) && attributes == other.attributes
+        other.is_a?(self.class) && id == other.id
+      end
+      
+      def id
+        self._id.to_s
+      end
+      
+      def id=(value)
+        self._id = value
       end
       
       def inspect
