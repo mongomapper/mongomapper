@@ -17,7 +17,6 @@ begin
     
     gem.add_development_dependency('mocha', '0.9.4')
     gem.add_development_dependency('jnunemaker-matchy', '0.4.0')
-    gem.add_development_dependency('thoughtbot-quietbacktrace', '1.1.6')
   end
 
   Jeweler::RubyforgeTasks.new
