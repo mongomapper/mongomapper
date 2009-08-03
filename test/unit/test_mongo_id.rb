@@ -20,10 +20,10 @@ class MongoIDTest < Test::Unit::TestCase
       MongoID.mm_typecast(id.to_s).should == id
     end
     
-    should "raise DocumentNotFound if invalid id" do
+    should "raise MongoMapper::IllegalID if invalid id" do
       lambda {
         MongoID.mm_typecast(1234)
-      }.should raise_error(MongoMapper::DocumentNotFound)
+      }.should raise_error(MongoMapper::IllegalID)
     end
     
     should "raise exception if message does not match illegal object id" do

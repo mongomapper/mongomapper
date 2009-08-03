@@ -202,7 +202,7 @@ class DocumentTest < Test::Unit::TestCase
         end
         
         should "raise error if id is illegal" do
-          lambda { @document.find(1) }.should raise_error(MongoMapper::DocumentNotFound)
+          lambda { @document.find(1) }.should raise_error(MongoMapper::IllegalID)
         end
       end
       

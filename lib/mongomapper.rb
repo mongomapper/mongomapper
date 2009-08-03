@@ -29,7 +29,7 @@ class MongoID < XGen::Mongo::Driver::ObjectID
       end
     rescue => exception
       if exception.message == 'illegal ObjectID format'
-        raise MongoMapper::DocumentNotFound
+        raise MongoMapper::IllegalID
       else
         raise exception
       end
@@ -67,9 +67,11 @@ require dir + 'rails_compatibility/embedded_document'
 require dir + 'embedded_document'
 require dir + 'document'
 
-module MongoMapper  
-  class DocumentNotFound < StandardError; end
-  class DocumentNotValid < StandardError
+module MongoMapper
+  DocumentNotFound = Class.new(StandardError)
+  IllegalID        = Class.new(StandardError)
+  
+  DocumentNotValid = Class.new(StandardError) do
     def initialize(document)
       @document = document
       super("Validation failed: #{@document.errors.full_messages.join(", ")}")
