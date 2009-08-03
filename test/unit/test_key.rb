@@ -109,6 +109,11 @@ class KeyTest < Test::Unit::TestCase
       key.set('2000-01-01 01:01:01.123456').should == Time.local(2000, 1, 1, 1, 1, 1, 123456)
     end
 
+    should "correctly typecast Times into UTC time zone" do
+      key = Key.new(:foo, Time)
+      key.set('2000-01-01 01:01:01.123456').zone.should == "UTC"
+    end
+
     should_eventually "correctly typecast Dates" do
       key = Key.new(:foo, Date)
       key.set('2000-01-01').should == Date.new(2000, 1, 1)
