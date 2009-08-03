@@ -76,7 +76,7 @@ module MongoMapper
         class << self; self; end.instance_eval do
           define_method("find_by_#{key.name}") do |*args|
             options = args.extract_options!
-            find(:first, options.merge({:conditions => {key.name => args.first}}))
+            find(:first, options.deep_merge({:conditions => {key.name => args.first}}))
           end
         end
       end
