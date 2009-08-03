@@ -563,12 +563,12 @@ class DocumentTest < Test::Unit::TestCase
       @document.count.should == 1
     end
   
-    should_eventually "update attributes" do
+    should "update attributes" do
       @doc.first_name.should == 'Johnny'
       @doc.age.should == 30
     end
   
-    should_eventually "update attributes in the database" do
+    should "update attributes in the database" do
       from_db = @document.find(@doc.id)
       from_db.first_name.should == 'Johnny'
       from_db.age.should == 30

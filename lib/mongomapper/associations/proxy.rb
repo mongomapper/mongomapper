@@ -8,7 +8,7 @@ module MongoMapper
       end
 
       def initialize(owner, association)
-        @owner= owner
+        @owner = owner
         @association = association
         reset
       end
