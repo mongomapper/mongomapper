@@ -62,14 +62,31 @@ class JsonSerializationTest < Test::Unit::TestCase
       def @contact.favorite_quote; "Constraints are liberating"; end
     end
     
-    should "include single method" do
-      assert_match %r{"label":"Has cheezburger"}, @contact.to_json(:only => :name, :methods => :label)
+    should "include label method" do
+      json = @contact.to_json(:methods => :label)
+      assert_match %r{"label":"Has cheezburger"}, json
+    end
+    
+    should "include name and label method" do
+      json = @contact.to_json(:only => :name, :methods => :label)
+
+      assert_match %r{"label":"Has cheezburger"}, json
+      assert_match %r{"name":"Konata Izumi"}, json
+      assert_no_match %r{"age":16}, json
+      assert_no_match %r{"awesome"}, json
+      assert_no_match %r{"created_at"}, json
+      assert_no_match %r{"preferences"}, json
     end
     
     should "include multiple methods" do
       json = @contact.to_json(:only => :name, :methods => [:label, :favorite_quote])
       assert_match %r{"label":"Has cheezburger"}, json
       assert_match %r{"favorite_quote":"Constraints are liberating"}, json
+      assert_match %r{"name":"Konata Izumi"}, json
+      assert_no_match %r{"age":16}, json
+      assert_no_match %r{"awesome"}, json
+      assert_no_match %r{"created_at"}, json
+      assert_no_match %r{"preferences"}, json
     end
   end
   

@@ -50,7 +50,17 @@ module MongoMapper #:nodoc:
     #         "created_at": "2006/08/01", "awesome": true,
     #         "permalink": "1-konata-izumi"}
     def to_json(options = {})
-      options.merge!(:methods => :id) unless options[:only]
+      unless options[:only]
+        o = options[:methods]
+        if o && o.is_a?(Array)
+          o << :id
+        elsif o
+          o = [o, :id]
+        else
+          o = :id
+        end
+        options[:methods] = o
+      end
       options.reverse_merge!(:except => :_id)
       if include_root_in_json
         "{#{self.class.json_class_name}: #{JsonSerializer.new(self, options).to_s}}"
