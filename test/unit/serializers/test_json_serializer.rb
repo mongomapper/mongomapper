@@ -29,6 +29,7 @@ class JsonSerializationTest < Test::Unit::TestCase
   should "encode all encodable attributes" do
     json = @contact.to_json
 
+    assert_no_match %r{"_id"}, json
     assert_match %r{"name":"Konata Izumi"}, json
     assert_match %r{"age":16}, json
     assert json.include?(%("created_at":#{ActiveSupport::JSON.encode(Time.utc(2006, 8, 1))}))
@@ -39,6 +40,7 @@ class JsonSerializationTest < Test::Unit::TestCase
   should "allow attribute filtering with only" do
     json = @contact.to_json(:only => [:name, :age])
 
+    assert_no_match %r{"_id"}, json
     assert_match %r{"name":"Konata Izumi"}, json
     assert_match %r{"age":16}, json
     assert_no_match %r{"awesome"}, json
@@ -49,6 +51,7 @@ class JsonSerializationTest < Test::Unit::TestCase
   should "allow attribute filtering with except" do
     json = @contact.to_json(:except => [:name, :age])
 
+    assert_match %r{"_id"}, json
     assert_no_match %r{"name"}, json
     assert_no_match %r{"age"}, json
     assert_match %r{"awesome"}, json
