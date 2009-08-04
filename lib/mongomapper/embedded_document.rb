@@ -209,7 +209,8 @@ module MongoMapper
         end
       
         def read_attribute(name)
-          self.class.keys[name].get(instance_variable_get("@#{name}"))
+          val = self.class.keys[name].get(instance_variable_get("@#{name}"))
+          instance_variable_set "@#{name}", val
         end
       
         def read_attribute_before_typecast(name)

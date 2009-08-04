@@ -21,26 +21,78 @@ class DocumentTest < Test::Unit::TestCase
         @document.key :tags, Array
       end
       
-      should "work" do
+      should "give correct default" do
         doc = @document.new
         doc.tags.should == []
+      end
+
+      should "work with assignment" do
+        doc = @document.new
+        doc.tags = %w(foo bar)
+        doc.tags.should == %w(foo bar)
+      end
+
+      should "work with assignment after saving" do
+        doc = @document.new
         doc.tags = %w(foo bar)
         doc.save
         doc.tags.should == %w(foo bar)
         @document.find(doc.id).tags.should == %w(foo bar)
       end
+
+      should "work with assignment then <<" do
+        doc = @document.new
+        doc.tags = []
+        doc.tags << "foo"
+        doc.tags.should == ["foo"]
+      end
+
+      should "work with <<" do
+        doc = @document.new
+        doc.tags << "foo"
+        doc.tags.should == ["foo"]
+      end
+
+      should_eventually "work with << then save" do
+        doc = @document.new
+        doc.tags << "foo"
+        doc.tags << "bar"
+        doc.save
+        doc.tags.should == %w(foo bar)
+        @document.find(doc.id).tags.should == %w(foo bar)
+      end
+
     end
   
     context "Using key with type Hash" do
       setup do
         @document.key :foo, Hash
       end
-  
+
+      should "give correct default" do
+        doc = @document.new
+        doc.foo.should == {}
+      end
+      
+      should "work with []=" do
+        doc = @document.new
+        doc.foo["quux"] = "bar"
+        doc.foo["quux"].should == "bar"
+        doc.foo.should == { "quux" => "bar" }
+      end
+      
       should "work with indifferent access" do
         doc = @document.new
         doc.foo = {:baz => 'bar'}
+        doc.foo[:baz].should == 'bar'
+        doc.foo['baz'].should == 'bar'
+      end
+
+      should "work with indifferent access after save" do
+        doc = @document.new
+        doc.foo = {:baz => 'bar'}
         doc.save
-  
+        
         doc = @document.find(doc.id)
         doc.foo[:baz].should == 'bar'
         doc.foo['baz'].should == 'bar'
