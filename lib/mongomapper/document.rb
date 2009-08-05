@@ -269,9 +269,9 @@ module MongoMapper
       end
       
       def update_timestamps
-        t = Time.now.utc
-        write_attribute('created_at', t) if new?
-        write_attribute('updated_at', t)
+        now = Time.now.utc
+        write_attribute('created_at', now) if new?
+        write_attribute('updated_at', now)
       end
     end
   end # Document

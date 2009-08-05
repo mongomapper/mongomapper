@@ -41,12 +41,13 @@ module MongoMapper
     private
       def typecast(value)
         return HashWithIndifferentAccess.new(value) if value.is_a?(Hash) && type == Hash
+        return value.utc if type == Time && value.kind_of?(type)
         return value if value.kind_of?(type) || value.nil?
         begin
           if    type == String    then value.to_s
           elsif type == Float     then value.to_f
           elsif type == Array     then value.to_a
-          elsif type == Time      then Time.parse(value.to_s)
+          elsif type == Time      then Time.parse(value.to_s).utc
           elsif type == MongoID   then MongoID.mm_typecast(value)
           #elsif type == Date      then Date.parse(value.to_s)
           elsif type == Boolean   then Boolean.mm_typecast(value)
