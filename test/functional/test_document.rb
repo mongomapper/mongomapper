@@ -61,7 +61,6 @@ class DocumentTest < Test::Unit::TestCase
         doc.tags.should == %w(foo bar)
         @document.find(doc.id).tags.should == %w(foo bar)
       end
-
     end
   
     context "Using key with type Hash" do
@@ -683,10 +682,12 @@ class DocumentTest < Test::Unit::TestCase
       doc = @document.create(:first_name => 'John', :age => 27)
       old_created_at = doc.created_at
       old_updated_at = doc.updated_at
+      sleep 1 # this annoys me
+      @document.update(doc._id, { :first_name => 'Johnny' })
       
-      doc = @document.update(doc._id, { :first_name => 'Johnny' })
-      doc.created_at.to_i.should == old_created_at.to_i
-      doc.updated_at.to_i.should_not == old_updated_at.to_i
+      from_db = @document.find(doc.id)
+      from_db.created_at.to_i.should == old_created_at.to_i
+      from_db.updated_at.to_i.should_not == old_updated_at.to_i
     end
   end
 end
