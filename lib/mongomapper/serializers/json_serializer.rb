@@ -50,18 +50,8 @@ module MongoMapper #:nodoc:
     #         "created_at": "2006/08/01", "awesome": true,
     #         "permalink": "1-konata-izumi"}
     def to_json(options = {})
-      unless options[:only]
-        o = options[:methods]
-        if o && o.is_a?(Array)
-          o << :id
-        elsif o
-          o = [o, :id]
-        else
-          o = :id
-        end
-        options[:methods] = o
-      end
-      options.reverse_merge!(:except => :_id)
+      apply_to_json_defaults(options)
+      
       if include_root_in_json
         "{#{self.class.json_class_name}: #{JsonSerializer.new(self, options).to_s}}"
       else
@@ -85,5 +75,18 @@ module MongoMapper #:nodoc:
         @json_class_name ||= name.demodulize.underscore.inspect
       end
     end
+    
+    private
+      def apply_to_json_defaults(options)
+        unless options[:only]
+          methods = [options.delete(:methods)].flatten.compact
+          methods << :id
+          options[:methods] = methods.uniq
+        end
+
+        except = [options.delete(:except)].flatten.compact
+        except << :_id
+        options[:except] = except
+      end
   end
 end

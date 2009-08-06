@@ -51,7 +51,7 @@ class JsonSerializationTest < Test::Unit::TestCase
   should "allow attribute filtering with except" do
     json = @contact.to_json(:except => [:name, :age])
 
-    assert_match %r{"_id"}, json
+    assert_no_match %r{"_id"}, json
     assert_no_match %r{"name"}, json
     assert_no_match %r{"age"}, json
     assert_match %r{"awesome"}, json
@@ -59,26 +59,60 @@ class JsonSerializationTest < Test::Unit::TestCase
     assert_match %r{"preferences"}, json
   end
   
+  context "_id key" do
+    should "not be included by default" do
+      json = @contact.to_json
+      assert_no_match %r{"_id":}, json
+    end
+    
+    should "not be included even if :except is used" do
+      json = @contact.to_json(:except => :name)
+      assert_no_match %r{"_id":}, json
+    end
+  end
+  
+  context "id method" do
+    setup do
+      def @contact.label; "Has cheezburger"; end
+      def @contact.favorite_quote; "Constraints are liberating"; end
+    end
+    
+    should "be included by default" do
+      json = @contact.to_json
+      assert_match %r{"id"}, json
+    end
+    
+    should "be included when single method included" do
+      json = @contact.to_json(:methods => :label)
+      assert_match %r{"id"}, json
+      assert_match %r{"label":"Has cheezburger"}, json
+      assert_match %r{"name":"Konata Izumi"}, json
+      assert_no_match %r{"favorite_quote":"Constraints are liberating"}, json
+    end
+    
+    should "be included when multiple methods included" do
+      json = @contact.to_json(:methods => [:label, :favorite_quote])
+      assert_match %r{"id"}, json
+      assert_match %r{"label":"Has cheezburger"}, json
+      assert_match %r{"favorite_quote":"Constraints are liberating"}, json
+      assert_match %r{"name":"Konata Izumi"}, json
+    end
+    
+    should "not be included if :only is present" do
+      json = @contact.to_json(:only => :name)
+      assert_no_match %r{"id":}, json
+    end
+  end  
+  
   context "including methods" do
     setup do
       def @contact.label; "Has cheezburger"; end
       def @contact.favorite_quote; "Constraints are liberating"; end
     end
     
-    should "include label method" do
+    should "include single method" do
       json = @contact.to_json(:methods => :label)
       assert_match %r{"label":"Has cheezburger"}, json
-    end
-    
-    should "include name and label method" do
-      json = @contact.to_json(:only => :name, :methods => :label)
-
-      assert_match %r{"label":"Has cheezburger"}, json
-      assert_match %r{"name":"Konata Izumi"}, json
-      assert_no_match %r{"age":16}, json
-      assert_no_match %r{"awesome"}, json
-      assert_no_match %r{"created_at"}, json
-      assert_no_match %r{"preferences"}, json
     end
     
     should "include multiple methods" do
@@ -106,7 +140,7 @@ class JsonSerializationTest < Test::Unit::TestCase
     end
     
     should "allow attribute filtering with except" do
-      json = @contacts.to_json(:except => [:name, :preferences, :awesome, :created_at, :updated_at, :_id])
+      json = @contacts.to_json(:except => [:name, :preferences, :awesome, :created_at, :updated_at])
       assert_equal %([{"id":"","age":39},{"id":"","age":14}]), json
     end
   end
