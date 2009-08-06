@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mongomapper}
-  s.version = "0.3.1"
+  s.version = "0.3.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
-  s.date = %q{2009-07-28}
+  s.date = %q{2009-08-06}
   s.default_executable = %q{mmconsole}
   s.email = %q{nunemaker@gmail.com}
   s.executables = ["mmconsole"]
@@ -24,12 +24,13 @@ Gem::Specification.new do |s|
      "bin/mmconsole",
      "lib/mongomapper.rb",
      "lib/mongomapper/associations.rb",
-     "lib/mongomapper/associations/array_proxy.rb",
      "lib/mongomapper/associations/base.rb",
      "lib/mongomapper/associations/belongs_to_polymorphic_proxy.rb",
      "lib/mongomapper/associations/belongs_to_proxy.rb",
+     "lib/mongomapper/associations/many_documents_proxy.rb",
      "lib/mongomapper/associations/many_embedded_polymorphic_proxy.rb",
      "lib/mongomapper/associations/many_embedded_proxy.rb",
+     "lib/mongomapper/associations/many_polymorphic_proxy.rb",
      "lib/mongomapper/associations/many_proxy.rb",
      "lib/mongomapper/associations/proxy.rb",
      "lib/mongomapper/callbacks.rb",
@@ -47,6 +48,12 @@ Gem::Specification.new do |s|
      "lib/mongomapper/validations.rb",
      "mongomapper.gemspec",
      "test/NOTE_ON_TESTING",
+     "test/functional/associations/test_belongs_to_polymorphic_proxy.rb",
+     "test/functional/associations/test_belongs_to_proxy.rb",
+     "test/functional/associations/test_many_embedded_polymorphic_proxy.rb",
+     "test/functional/associations/test_many_embedded_proxy.rb",
+     "test/functional/associations/test_many_polymorphic_proxy.rb",
+     "test/functional/associations/test_many_proxy.rb",
      "test/functional/test_associations.rb",
      "test/functional/test_callbacks.rb",
      "test/functional/test_document.rb",
@@ -77,7 +84,13 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.1}
   s.summary = %q{Awesome gem for modeling your domain and storing it in mongo}
   s.test_files = [
-    "test/functional/test_associations.rb",
+    "test/functional/associations/test_belongs_to_polymorphic_proxy.rb",
+     "test/functional/associations/test_belongs_to_proxy.rb",
+     "test/functional/associations/test_many_embedded_polymorphic_proxy.rb",
+     "test/functional/associations/test_many_embedded_proxy.rb",
+     "test/functional/associations/test_many_polymorphic_proxy.rb",
+     "test/functional/associations/test_many_proxy.rb",
+     "test/functional/test_associations.rb",
      "test/functional/test_callbacks.rb",
      "test/functional/test_document.rb",
      "test/functional/test_pagination.rb",
