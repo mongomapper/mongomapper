@@ -81,7 +81,7 @@ class DocumentTest < Test::Unit::TestCase
         doc = @document.new
         doc.foo.should == {}
       end
-      
+
       should "work with []=" do
         doc = @document.new
         doc.foo["quux"] = "bar"
@@ -320,7 +320,7 @@ class DocumentTest < Test::Unit::TestCase
       end
 
       context "with :find_by" do
-        should "find documented based on argument" do
+        should "find document based on argument" do
           users = []
           users << @document.find_by_first_name('John')
           users << @document.find_by_first_name('Nunemaker')
@@ -334,6 +334,45 @@ class DocumentTest < Test::Unit::TestCase
 
         should "define a method for each key" do
           @document.methods(false).select { |e| e =~ /^find_by_/ }.size == @document.keys.size
+        end
+      end
+
+      context "with dynamic finders" do
+        should "find document based on all arguments" do
+          @document.find_by_first_name_and_last_name_and_age('John', 'Nunemaker', 27).should == @doc1
+        end
+
+        should "not find the document if an argument is wrong" do
+          @document.find_by_first_name_and_last_name_and_age('John', 'Nunemaker', 28).should be_nil
+        end
+
+        should "find all documents based on arguments" do
+          docs = @document.find_all_by_last_name('Nunemaker')
+          docs.should be_kind_of(Array)
+          docs.should include(@doc1)
+          docs.should include(@doc3)
+        end
+
+        should "find last document based on arguments" do
+          doc = @document.find_last_by_last_name('Nunemaker')
+          doc.should == @doc3
+        end
+
+        should "initialize document with given arguments" do
+          doc = @document.find_or_initialize_by_first_name_and_last_name('David', 'Cuadrado')
+          doc.should be_new
+          doc.first_name.should == 'David'
+        end
+
+        should "not initialize document if document is found" do
+          doc = @document.find_or_initialize_by_first_name('John')
+          doc.should_not be_new
+        end
+
+        should "create document with given arguments" do
+          doc = @document.find_or_create_by_first_name_and_last_name('David', 'Cuadrado')
+          doc.should_not be_new
+          doc.first_name.should == 'David'
         end
       end
     end # finding documents
@@ -645,7 +684,7 @@ class DocumentTest < Test::Unit::TestCase
       @doc.first_name.should == 'Johnny'
       @doc.age.should == 30
     end
-  
+
     should "update attributes in the database" do
       from_db = @document.find(@doc.id)
       from_db.first_name.should == 'Johnny'
@@ -704,14 +743,14 @@ class DocumentTest < Test::Unit::TestCase
       doc.created_at.should == old_created_at
       doc.updated_at.should_not == old_updated_at
     end
-    
+
     should "set updated_at on document update but leave created_at alone" do
       doc = @document.create(:first_name => 'John', :age => 27)
       old_created_at = doc.created_at
       old_updated_at = doc.updated_at
       sleep 1 # this annoys me
       @document.update(doc._id, { :first_name => 'Johnny' })
-      
+
       from_db = @document.find(doc.id)
       from_db.created_at.to_i.should == old_created_at.to_i
       from_db.updated_at.to_i.should_not == old_updated_at.to_i

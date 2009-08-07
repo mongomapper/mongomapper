@@ -32,6 +32,7 @@ module MongoMapper
           @options[:finder] = :all if $1 == 'all_by'
           names = $2
         when /^find_by_([_a-zA-Z]\w*)\!$/
+          @options[:bang] = true
           names = $1
         when /^find_or_(initialize|create)_by_([_a-zA-Z]\w*)$/
           @options[:instantiator] = $1 == 'initialize' ? :new : :create
