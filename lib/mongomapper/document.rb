@@ -158,7 +158,12 @@ module MongoMapper
       def method_missing(meth, *args)
         finder = DynamicFinder.new(self, meth)
         if finder.valid?
-          finder.run_method(args)
+          class << self; self end.instance_eval do
+            define_method(finder.options[:method]) do |*args|
+              find_with_args(args, finder.options)
+            end
+          end
+          __send__(finder.options[:method], *args)
         else
           super
         end

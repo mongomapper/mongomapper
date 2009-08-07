@@ -1,5 +1,7 @@
 module MongoMapper
   class DynamicFinder
+    attr_reader :options
+
     def initialize(model, meth)
       @model = model
       @options = {}
@@ -10,17 +12,6 @@ module MongoMapper
 
     def valid?
       !@options[:finder].nil?
-    end
-
-    def run_method(method_args)
-      opts = @options
-
-      class << @model; self end.instance_eval do
-        define_method(opts[:method]) do |*args|
-          find_with_args(args, opts)
-        end
-      end
-      @model.__send__(opts[:method], *method_args)
     end
 
     protected
