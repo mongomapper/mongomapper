@@ -23,7 +23,7 @@ module MongoMapper
         unless subclass.embeddable?
           subclass.collection(self.collection.name)
         end
-        
+
         (@subclasses ||= []) << subclass
       end
 
@@ -159,7 +159,7 @@ module MongoMapper
 
           self.attributes = attrs
         end
-        
+
         if self.class.embeddable? && read_attribute(:_id).blank?
           write_attribute :_id, XGen::Mongo::Driver::ObjectID.new.to_s
         end
@@ -194,11 +194,11 @@ module MongoMapper
       def ==(other)
         other.is_a?(self.class) && id == other.id
       end
-      
+
       def id
         read_attribute(:_id)
       end
-      
+
       def id=(value)
         @using_custom_id = true
         write_attribute :_id, value

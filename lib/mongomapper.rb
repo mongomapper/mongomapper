@@ -36,6 +36,7 @@ require dir + 'associations/many_embedded_polymorphic_proxy'
 
 require dir + 'callbacks'
 require dir + 'finder_options'
+require dir + 'dynamic_finder'
 require dir + 'key'
 require dir + 'observing'
 require dir + 'pagination'
@@ -52,7 +53,7 @@ require dir + 'document'
 module MongoMapper
   DocumentNotFound = Class.new(StandardError)
   IllegalID        = Class.new(StandardError)
-  
+
   DocumentNotValid = Class.new(StandardError) do
     def initialize(document)
       @document = document
