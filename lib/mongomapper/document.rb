@@ -230,12 +230,17 @@ module MongoMapper
       def find_with_args(args, opts)
         find_options = args.extract_options!
 
-        conditions = {}
+        attributes = {}
         opts[:attribute_names].each_with_index do |att, index|
-          conditions[att] = args[index]
+          attributes[att] = args[index]
         end
 
-        doc = find(opts[:finder], find_options.deep_merge(:conditions => conditions))
+        doc = find(opts[:finder], find_options.deep_merge(:conditions => attributes))
+        if doc.nil? && opts[:instantiator]
+          doc = self.new(attributes)
+          doc.save if opts[:instantiator] == :create
+        end
+        doc
       end
     end
 
