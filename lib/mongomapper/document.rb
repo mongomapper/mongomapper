@@ -236,9 +236,13 @@ module MongoMapper
         end
 
         doc = find(opts[:finder], find_options.deep_merge(:conditions => attributes))
-        if doc.nil? && opts[:instantiator]
-          doc = self.new(attributes)
-          doc.save if opts[:instantiator] == :create
+        if doc.nil?
+          if opts[:instantiator]
+            doc = self.new(attributes)
+            doc.save if opts[:instantiator] == :create
+          elsif opts[:bang]
+            raise DocumentNotFound, "Couldn't find Document with #{attributes.inspect} in collection named #{collection.name}"
+          end
         end
         doc
       end
