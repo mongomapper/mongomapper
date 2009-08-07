@@ -1,12 +1,8 @@
 module MongoMapper
   module Associations
-    class Proxy
+    class Proxy < BasicObject
       attr_reader :owner, :association
-
-      instance_methods.each do |m|
-        undef_method m unless m =~ /(^__|^nil\?$|^send$|proxy_|^object_id$)/
-      end
-
+      
       def initialize(owner, association)
         @owner = owner
         @association = association
