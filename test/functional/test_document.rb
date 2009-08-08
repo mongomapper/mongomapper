@@ -515,6 +515,116 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
 
+    context ":dependent" do
+      setup do
+        class ::Property
+          include MongoMapper::Document
+        end
+
+        class ::Thing
+          include MongoMapper::Document
+          key :name, String
+        end
+      end
+
+      teardown do
+        Object.send :remove_const, "Property" if defined?(::Property)
+        Object.send :remove_const, "Thing" if defined?(::Thing)
+      end
+
+      context "many" do
+        context "=> destroy" do
+          setup do
+            Property.belongs_to :thing, :dependent => :destroy
+            Thing.has_many :properties, :dependent => :destroy
+
+            @thing = Thing.create(:name => "Tree")
+            @property1 = Property.create
+            @property2 = Property.create
+            @property3 = Property.create
+            @thing.properties << @property1
+            @thing.properties << @property2
+            @thing.properties << @property3
+          end
+
+          should "should destroy the thing" do
+            @property1.destroy
+            @property1.thing.should be_frozen
+          end
+
+          should "should destroy the properties" do
+            @thing.destroy
+            @thing.properties[0].should be_frozen
+          end
+        end
+
+        context "=> delete_all" do
+          setup do
+            Property.belongs_to :thing
+            Thing.has_many :properties, :dependent => :delete_all
+
+            @thing = Thing.create(:name => "Tree")
+            @property1 = Property.create
+            @property2 = Property.create
+            @property3 = Property.create
+            @thing.properties << @property1
+            @thing.properties << @property2
+            @thing.properties << @property3
+          end
+
+          should "should destroy the properties" do
+            @thing.properties[0].should_not be_nil
+            @thing.destroy
+            @thing.properties[0].should be_nil
+            @thing.properties[1].should be_nil
+          end
+        end
+
+        context "=> nullify" do
+          setup do
+            Property.belongs_to :thing
+            Thing.has_many :properties, :dependent => :nullify
+
+            @thing = Thing.create(:name => "Tree")
+            @property1 = Property.create
+            @property2 = Property.create
+            @property3 = Property.create
+            @thing.properties << @property1
+            @thing.properties << @property2
+            @thing.properties << @property3
+          end
+
+          should "should destroy the properties" do
+            @thing.properties[0].should_not be_nil
+            @thing.destroy
+            @thing.properties.first be_nil
+          end
+        end
+      end
+
+      context "belongs_to" do
+        context "=> destroy" do
+          setup do
+            Property.belongs_to :thing, :dependent => :destroy
+            Thing.has_many :properties
+
+            @thing = Thing.create(:name => "Tree")
+            @property1 = Property.create
+            @property2 = Property.create
+            @property3 = Property.create
+            @thing.properties << @property1
+            @thing.properties << @property2
+            @thing.properties << @property3
+          end
+
+          should "destroy the thing" do
+            @property1.destroy
+            @property1.thing.should be_frozen
+          end
+        end
+      end
+    end
+
     context "Counting documents in collection" do
       setup do
         @doc1 = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})

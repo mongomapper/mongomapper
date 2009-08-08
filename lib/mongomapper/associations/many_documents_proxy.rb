@@ -58,6 +58,16 @@ module MongoMapper
         @target.map(&:destroy) if load_target
       end
 
+      def delete_all(save = false)
+        if load_target
+          @target.map do |doc|
+            doc.send("#{self.foreign_key}=", nil)
+            doc.save if save
+          end
+          reset
+        end
+      end
+
       protected
         def scoped_conditions
           {self.foreign_key => @owner.id}
