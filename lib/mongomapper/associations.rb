@@ -58,6 +58,8 @@ module MongoMapper
         end
 
         def define_dependent_callback_for_many(association)
+          return if association.embeddable?
+
           after_destroy do |doc|
             case association.options[:dependent]
             when :destroy
