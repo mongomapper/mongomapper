@@ -2,12 +2,12 @@ module MongoMapper
   module Associations
     module ClassMethods
       def belongs_to(association_id, options = {})
-        create_association(:belongs_to, association_id, options)        
+        create_association(:belongs_to, association_id, options)
         self
       end
 
       def many(association_id, options = {})
-        create_association(:many, association_id, options)        
+        create_association(:many, association_id, options)
         self
       end
 
@@ -23,24 +23,33 @@ module MongoMapper
           define_association_keys(association)
           association
         end
-        
+
         def define_association_methods(association)
           define_method(association.name) do
             get_proxy(association)
           end
-          
+
           define_method("#{association.name}=") do |value|
             get_proxy(association).replace(value)
             value
           end
+
+          if association.options[:dependent]
+            after_destroy do |doc|
+              case association.options[:dependent]
+              when :destroy
+                doc.get_proxy(association).destroy_all
+              end
+            end
+          end
         end
-        
+
         def define_association_keys(association)
           if association.belongs_to?
             key(association.belongs_to_key_name, String)
-            key(association.type_key_name, String) if association.polymorphic?            
+            key(association.type_key_name, String) if association.polymorphic?
           end
-          
+
           if association.many? && association.polymorphic?
             association.klass.send(:key, association.type_key_name, String)
           end
@@ -53,7 +62,7 @@ module MongoMapper
           proxy = association.proxy_class.new(self, association)
           self.instance_variable_set(association.ivar, proxy)
         end
-        
+
         proxy
       end
     end

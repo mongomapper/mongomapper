@@ -169,7 +169,7 @@ module MongoMapper
           end
         end
 
-      private        
+      private
         def find_every(options)
           criteria, options = FinderOptions.new(options).to_a
           collection.find(criteria, options).to_a.map { |doc| new(doc) }
@@ -213,25 +213,7 @@ module MongoMapper
               find_some(ids, options)
           end
         end
-
-        def update_single(id, attrs)
-          if id.blank? || attrs.blank? || !attrs.is_a?(Hash)
-            raise ArgumentError, "Updating a single document requires an id and a hash of attributes"
-          end
-
-          find(id).update_attributes(attrs)
-        end
-
-        def update_multiple(docs)
-          unless docs.is_a?(Hash)
-            raise ArgumentError, "Updating multiple documents takes 1 argument and it must be hash"
-          end
-
-          instances = []
-          docs.each_pair { |id, attrs| instances << update(id, attrs) }
-          instances
-        end
-
+        
         def find_with_args(args, opts)
           find_options = args.extract_options!
 
@@ -250,6 +232,24 @@ module MongoMapper
             end
           end
           doc
+        end
+
+        def update_single(id, attrs)
+          if id.blank? || attrs.blank? || !attrs.is_a?(Hash)
+            raise ArgumentError, "Updating a single document requires an id and a hash of attributes"
+          end
+
+          find(id).update_attributes(attrs)
+        end
+
+        def update_multiple(docs)
+          unless docs.is_a?(Hash)
+            raise ArgumentError, "Updating multiple documents takes 1 argument and it must be hash"
+          end
+
+          instances = []
+          docs.each_pair { |id, attrs| instances << update(id, attrs) }
+          instances
         end
     end
 
