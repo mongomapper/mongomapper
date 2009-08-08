@@ -21,6 +21,7 @@ module MongoMapper
           associations[association.name] = association
           define_association_methods(association)
           define_association_keys(association)
+          define_dependent_callback(association)
           association
         end
 
@@ -32,26 +33,6 @@ module MongoMapper
           define_method("#{association.name}=") do |value|
             get_proxy(association).replace(value)
             value
-          end
-
-          if association.options[:dependent]
-            after_destroy do |doc|
-              case association.options[:dependent]
-              when :destroy
-                doc.get_proxy(association).destroy_all
-              when :delete_all
-                proxy = doc.get_proxy(association)
-                proxy.each do |doc|
-                  doc.send("#{proxy.foreign_key}=", nil)
-                  doc.save
-                end
-              when :nullify
-                proxy = doc.get_proxy(association)
-                proxy.each do |doc|
-                  doc.send("#{proxy.foreign_key}=", nil)
-                end
-              end
-            end
           end
         end
 
@@ -65,13 +46,54 @@ module MongoMapper
             association.klass.send(:key, association.type_key_name, String)
           end
         end
+
+        def define_dependent_callback(association)
+          if association.options[:dependent]
+            if association.many?
+              define_dependent_callback_for_many(association)
+            elsif association.belongs_to?
+              define_dependent_callback_for_belongs_to(association)
+            end
+          end
+        end
+
+        def define_dependent_callback_for_many(association)
+          after_destroy do |doc|
+            case association.options[:dependent]
+            when :destroy
+              doc.get_proxy(association).destroy_all
+            when :delete_all
+              proxy = doc.get_proxy(association)
+              proxy.each do |doc|
+                doc.send("#{proxy.foreign_key}=", nil)
+                doc.save
+              end
+            when :nullify
+              proxy = doc.get_proxy(association)
+              proxy.each do |doc|
+                doc.send("#{proxy.foreign_key}=", nil)
+              end
+            end
+          end
+        end
+
+        def define_dependent_callback_for_belongs_to(association)
+          after_destroy do |doc|
+            case association.options[:dependent]
+            when :destroy
+              doc.get_proxy(association).destroy
+            when :delete
+              self[association.belongs_to_key_name] = nil
+            end
+          end
+        end
     end
 
     module InstanceMethods
       def get_proxy(association)
         unless proxy = self.instance_variable_get(association.ivar)
           proxy = association.proxy_class.new(self, association)
-          self.instance_variable_set(association.ivar, proxy)
+          self.instance_variable_set(association.ivar, proxy) if !frozen?
         end
 
         proxy
