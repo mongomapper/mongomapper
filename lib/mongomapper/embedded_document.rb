@@ -202,7 +202,7 @@ module MongoMapper
         end.join(", ")
         "#<#{self.class} #{attributes_as_nice_string}>"
       end
-      
+
       private
         def value_for_key(key)
           if key.native?
@@ -215,7 +215,8 @@ module MongoMapper
 
         def read_attribute(name)
           value = self.class.keys[name].get(instance_variable_get("@#{name}"))
-          instance_variable_set "@#{name}", value
+          instance_variable_set "@#{name}", value if !frozen?
+          value
         end
 
         def read_attribute_before_typecast(name)
