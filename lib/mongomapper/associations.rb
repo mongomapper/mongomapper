@@ -39,6 +39,17 @@ module MongoMapper
               case association.options[:dependent]
               when :destroy
                 doc.get_proxy(association).destroy_all
+              when :delete_all
+                proxy = doc.get_proxy(association)
+                proxy.each do |doc|
+                  doc.send("#{proxy.foreign_key}=", nil)
+                  doc.save
+                end
+              when :nullify
+                proxy = doc.get_proxy(association)
+                proxy.each do |doc|
+                  doc.send("#{proxy.foreign_key}=", nil)
+                end
               end
             end
           end
