@@ -554,7 +554,7 @@ class DocumentTest < Test::Unit::TestCase
 
           should "should destroy the properties" do
             @thing.destroy
-            @thing.properties[0].should be_frozen
+            @thing.properties.should == []
           end
         end
 
