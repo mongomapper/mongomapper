@@ -54,12 +54,13 @@ module MongoMapper
         doc
       end
 
-      def destroy_all
-        @target.map(&:destroy) if load_target
+      def destroy_all(conditions={})
+        all(:conditions => conditions).map(&:destroy)
+        reset
       end
 
-      def delete_all
-        klass.delete_all(scoped_conditions)
+      def delete_all(conditions={})
+        klass.delete_all(conditions.deep_merge(scoped_conditions))
         reset
       end
       

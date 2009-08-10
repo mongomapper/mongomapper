@@ -118,6 +118,15 @@ class ManyProxyTest < Test::Unit::TestCase
       Status.count.should == 2
     end
     
+    should "work with destroy all and conditions" do
+      @project.statuses.count.should == 2
+      @project.statuses.destroy_all(:name => '1')
+      @project.statuses.count.should == 1
+
+      @project2.statuses.count.should == 2
+      Status.count.should == 3
+    end
+    
     should "work with delete all" do
       @project.statuses.count.should == 2
       @project.statuses.delete_all
@@ -125,6 +134,15 @@ class ManyProxyTest < Test::Unit::TestCase
       
       @project2.statuses.count.should == 2
       Status.count.should == 2
+    end
+    
+    should "work with delete all and conditions" do
+      @project.statuses.count.should == 2
+      @project.statuses.delete_all(:name => '1')
+      @project.statuses.count.should == 1
+      
+      @project2.statuses.count.should == 2
+      Status.count.should == 3
     end
     
     should "work with nullify" do
