@@ -148,7 +148,7 @@ class ManyProxyTest < Test::Unit::TestCase
     
     context "with :first" do
       should "work" do
-        @project1.statuses.find(:first).should == @brand_new
+        @project1.statuses.find(:first, :order => 'name').should == @complete
       end
       
       should "work with conditions" do
@@ -159,7 +159,7 @@ class ManyProxyTest < Test::Unit::TestCase
     
     context "with #first" do
       should "work" do
-        @project1.statuses.first.should == @brand_new
+        @project1.statuses.first(:order => 'name').should == @complete
       end
       
       should "work with conditions" do
@@ -217,7 +217,7 @@ class ManyProxyTest < Test::Unit::TestCase
     
     context "with #paginate" do
       setup do
-        @statuses = @project2.statuses.paginate(:per_page => 2, :page => 1, :order => '$natural asc')
+        @statuses = @project2.statuses.paginate(:per_page => 2, :page => 1, :order => 'name asc')
       end
       
       should "return total pages" do
@@ -229,7 +229,7 @@ class ManyProxyTest < Test::Unit::TestCase
       end
       
       should "return the subject" do
-        @statuses.should == [@in_progress, @archived]
+        @statuses.collect(&:name).should == %w(Archived Complete)
       end
     end
   end

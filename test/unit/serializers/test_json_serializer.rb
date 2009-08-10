@@ -141,7 +141,7 @@ class JsonSerializationTest < Test::Unit::TestCase
     
     should "allow attribute filtering with except" do
       json = @contacts.to_json(:except => [:name, :preferences, :awesome, :created_at, :updated_at])
-      assert_equal %([{"id":"","age":39},{"id":"","age":14}]), json
+      assert_equal %([{"id":null,"age":39},{"id":null,"age":14}]), json
     end
   end
   

@@ -224,7 +224,7 @@ module MongoMapper
       end
       
       def new?
-        read_attribute('_id').blank?
+        read_attribute('_id').blank? || using_custom_id?
       end
       
       def save
@@ -272,6 +272,7 @@ module MongoMapper
       
       # collection.save returns mongoid
       def save_to_collection
+        clear_custom_id_flag
         collection.save(attributes)
       end
       
@@ -279,6 +280,10 @@ module MongoMapper
         now = Time.now.utc
         write_attribute('created_at', now) if new?
         write_attribute('updated_at', now)
+      end
+      
+      def clear_custom_id_flag
+        @using_custom_id = nil
       end
     end
   end # Document

@@ -184,11 +184,16 @@ module MongoMapper
       end
       
       def id
-        self._id.to_s
+        read_attribute(:_id)
       end
       
       def id=(value)
-        self._id = value
+        @using_custom_id = true
+        write_attribute :_id, value
+      end
+      
+      def using_custom_id?
+        !!@using_custom_id
       end
       
       def inspect
@@ -198,7 +203,7 @@ module MongoMapper
         "#<#{self.class} #{attributes_as_nice_string}>"
       end
       
-      private
+      private        
         def value_for_key(key)
           if key.native?
             read_attribute(key.name)

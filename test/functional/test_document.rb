@@ -15,6 +15,15 @@ class DocumentTest < Test::Unit::TestCase
     @document.collection.clear
   end
   
+  context "Saving a document with a custom id" do
+    should "clear custom id flag when saved" do
+      doc = @document.new(:id => '1234')
+      doc.using_custom_id?.should be_true
+      doc.save.should be_true
+      doc.using_custom_id?.should be_false
+    end
+  end
+  
   context "Document Class Methods" do
     context "Using key with type Array" do
       setup do
@@ -53,7 +62,7 @@ class DocumentTest < Test::Unit::TestCase
         doc.tags.should == ["foo"]
       end
 
-      should_eventually "work with << then save" do
+      should "work with << then save" do
         doc = @document.new
         doc.tags << "foo"
         doc.tags << "bar"
@@ -130,6 +139,10 @@ class DocumentTest < Test::Unit::TestCase
       should "automatically set id" do
         @doc_instance.id.should_not be_nil
         @doc_instance.id.size.should == 24
+      end
+      
+      should "no longer be new?" do
+        @doc_instance.new?.should be_false
       end
   
       should "return instance of document" do

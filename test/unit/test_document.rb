@@ -100,7 +100,13 @@ class DocumentTest < Test::Unit::TestCase
 
     context "new?" do
       should "be true if no id" do
-        @document.new.new?.should be(true)
+        @document.new.new?.should be_true
+      end
+      
+      should "be true if id but using custom id and not saved yet" do
+        doc = @document.new
+        doc.id = '1234'
+        doc.new?.should be_true
       end
     end
     

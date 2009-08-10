@@ -1,3 +1,7 @@
+0.3.3 8/9/2009
+  * BACKWORDS COMPATIBILITY BREAK: _id is now once again a string rather than an object id and will stay that way.
+  * Custom id's can now be used because of the change to string id's
+  
 0.3.2 8/6/2009
   * Added many polymorphic documents association
   * Implemented build and create for many and many polymorphic documents

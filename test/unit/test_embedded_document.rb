@@ -149,15 +149,23 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @document.keys.keys.should include('_id')
     end
     
-    should "have id method that is string representation of _id" do
+    should "have id method that sets _id" do
       doc = @document.new
       doc.id.should == doc._id.to_s
     end
     
-    should "be able to set _id using id=" do
-      doc = @document.new(:id => '1234')
-      doc._id.should == '1234'
-      doc.id.should == '1234'
+    context "setting custom id" do
+      should "set _id" do
+        doc = @document.new(:id => '1234')
+        doc._id.should == '1234'
+      end
+      
+      should "know that custom id is set" do
+        doc = @document.new
+        doc.using_custom_id?.should be_false
+        doc.id = '1234'
+        doc.using_custom_id?.should be_true
+      end
     end
 
     context "being initialized" do
