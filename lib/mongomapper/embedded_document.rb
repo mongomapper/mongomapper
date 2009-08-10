@@ -44,41 +44,11 @@ module MongoMapper
         keys[key.name] = key
 
         create_accessors_for(key)
-        create_find_by_methods(key)
         add_to_subclasses(name, type, options)
         apply_validations_for(key)
         create_indexes_for(key)
 
         key
-      end
-
-      def create_accessors_for(key)
-        define_method(key.name) do
-          read_attribute(key.name)
-        end
-
-        define_method("#{key.name}_before_typecast") do
-          read_attribute_before_typecast(key.name)
-        end
-
-        define_method("#{key.name}=") do |value|
-          write_attribute(key.name, value)
-        end
-
-        define_method("#{key.name}?") do
-          read_attribute(key.name).present?
-        end
-      end
-
-      def create_find_by_methods(key)
-        return if embeddable? || key.name.to_s == "_id"
-
-        class << self; self; end.instance_eval do
-          define_method("find_by_#{key.name}") do |*args|
-            options = args.extract_options!
-            find(:first, options.deep_merge({:conditions => {key.name => args.first}}))
-          end
-        end
       end
 
       def add_to_subclasses(name, type, options)
@@ -110,6 +80,24 @@ module MongoMapper
       end
 
     private
+      def create_accessors_for(key)
+        define_method(key.name) do
+          read_attribute(key.name)
+        end
+
+        define_method("#{key.name}_before_typecast") do
+          read_attribute_before_typecast(key.name)
+        end
+
+        define_method("#{key.name}=") do |value|
+          write_attribute(key.name, value)
+        end
+
+        define_method("#{key.name}?") do
+          read_attribute(key.name).present?
+        end
+      end
+      
       def create_indexes_for(key)
         ensure_index key.name if key.options[:index]
       end

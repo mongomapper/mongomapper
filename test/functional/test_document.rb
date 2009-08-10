@@ -321,11 +321,9 @@ class DocumentTest < Test::Unit::TestCase
 
       context "with :find_by" do
         should "find document based on argument" do
-          users = []
-          users << @document.find_by_first_name('John')
-          users << @document.find_by_first_name('Nunemaker')
-          users << @document.find_by_first_name('27')
-          users.uniq.first.should == @doc1
+          @document.find_by_first_name('John').should == @doc1
+          @document.find_by_last_name('Nunemaker').should == @doc1
+          @document.find_by_age(27).should == @doc1          
         end
 
         should "not raise error" do

@@ -153,7 +153,7 @@ module MongoMapper
       def validates_inclusion_of(*args)
         add_validations(args, MongoMapper::Validations::ValidatesInclusionOf)
       end
-
+      
       protected
         def method_missing(meth, *args)
           finder = DynamicFinder.new(self, meth)
@@ -169,7 +169,7 @@ module MongoMapper
           end
         end
 
-      private
+      private        
         def find_every(options)
           criteria, options = FinderOptions.new(options).to_a
           collection.find(criteria, options).to_a.map { |doc| new(doc) }
