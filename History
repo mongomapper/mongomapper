@@ -3,7 +3,7 @@
   * Custom id's can now be used because of the change to string id's
   * Added dynamic finders to document. (dcu)
   * Added destroy_all, delete_all and nullify for many document association
-  * Added :dependent => :destroy|:delete_all|:nullify for associations (dcu)
+  * Added :dependent => :destroy|:delete_all|:nullify for many documents assocation (dcu)
   
 0.3.2 8/6/2009
   * Added many polymorphic documents association
