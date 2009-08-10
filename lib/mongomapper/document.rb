@@ -163,7 +163,7 @@ module MongoMapper
                 find_with_args(args, finder.options)
               end
             end
-            __send__(finder.options[:method], *args)
+            send(finder.options[:method], *args)
           else
             super
           end
