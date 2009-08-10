@@ -98,6 +98,47 @@ class ManyProxyTest < Test::Unit::TestCase
     end
   end
   
+  context "Unassociating documents" do
+    setup do
+      @project = Project.create
+      @project.statuses << Status.create(:name => '1')
+      @project.statuses << Status.create(:name => '2')
+
+      @project2 = Project.create
+      @project2.statuses << Status.create(:name => '1')
+      @project2.statuses << Status.create(:name => '2')
+    end
+
+    should "work with destroy all" do
+      @project.statuses.count.should == 2
+      @project.statuses.destroy_all
+      @project.statuses.count.should == 0
+
+      @project2.statuses.count.should == 2
+      Status.count.should == 2
+    end
+    
+    should "work with delete all" do
+      @project.statuses.count.should == 2
+      @project.statuses.delete_all
+      @project.statuses.count.should == 0
+      
+      @project2.statuses.count.should == 2
+      Status.count.should == 2
+    end
+    
+    should "work with nullify" do
+      @project.statuses.count.should == 2
+      @project.statuses.nullify
+      @project.statuses.count.should == 0
+      
+      @project2.statuses.count.should == 2
+      Status.count.should == 4
+      Status.count(:name => '1').should == 2
+      Status.count(:name => '2').should == 2
+    end
+  end  
+  
   context "Finding scoped to association" do
     setup do
       @project1          = Project.new(:name => 'Project 1')

@@ -65,9 +65,9 @@ module MongoMapper
             when :destroy
               doc.get_proxy(association).destroy_all
             when :delete_all
-              doc.get_proxy(association).delete_all(true)
+              doc.get_proxy(association).delete_all
             when :nullify
-              doc.get_proxy(association).delete_all(false)
+              doc.get_proxy(association).nullify
             end
           end
         end

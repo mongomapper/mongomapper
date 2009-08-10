@@ -58,14 +58,17 @@ module MongoMapper
         @target.map(&:destroy) if load_target
       end
 
-      def delete_all(save = false)
-        if load_target
-          @target.map do |doc|
-            doc.send("#{self.foreign_key}=", nil)
-            doc.save if save
-          end
-          reset
+      def delete_all
+        klass.delete_all(scoped_conditions)
+        reset
+      end
+      
+      def nullify
+        criteria = FinderOptions.to_mongo_criteria(scoped_conditions)
+        all(criteria).each do |doc|
+          doc.update_attributes self.foreign_key => nil
         end
+        reset
       end
 
       protected
