@@ -32,4 +32,14 @@ class BelongsToProxyTest < Test::Unit::TestCase
     from_db.project = nil
     from_db.project.should be_nil
   end
+  
+  context "association id set but document not found" do
+    setup do
+      @status = Status.new(:name => 'Foo', :project_id => '1234')
+    end
+
+    should "return nil instead of raising error" do
+      @status.project.should be_nil
+    end
+  end
 end

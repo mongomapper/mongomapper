@@ -36,4 +36,18 @@ class BelongsToPolymorphicProxyTest < Test::Unit::TestCase
     from_db.target_id.should be_nil
     from_db.target.should be_nil
   end
+  
+  context "association id set but document not found" do
+    setup do
+      @status = Status.new
+      project = Project.new(:name => "mongomapper")
+      @status.target = project
+      @status.save.should be_true
+      project.destroy
+    end
+
+    should "return nil instead of raising error" do
+      @status.target.should be_nil
+    end
+  end
 end

@@ -14,7 +14,9 @@ module MongoMapper
       
       protected
         def find_target
-          proxy_class.find(proxy_id) if proxy_id && proxy_class
+          if proxy_id && proxy_class
+            proxy_class.find_by_id(proxy_id)
+          end
         end
         
         def proxy_id

@@ -520,23 +520,25 @@ class DocumentTest < Test::Unit::TestCase
         class ::Property
           include MongoMapper::Document
         end
+        Property.delete_all
 
         class ::Thing
           include MongoMapper::Document
           key :name, String
         end
+        Thing.delete_all
       end
 
       teardown do
-        Object.send :remove_const, "Property" if defined?(::Property)
-        Object.send :remove_const, "Thing" if defined?(::Thing)
+        Object.send :remove_const, 'Property' if defined?(::Property)
+        Object.send :remove_const, 'Thing' if defined?(::Thing)
       end
 
       context "many" do
         context "=> destroy" do
           setup do
             Property.belongs_to :thing, :dependent => :destroy
-            Thing.has_many :properties, :dependent => :destroy
+            Thing.many :properties, :dependent => :destroy
 
             @thing = Thing.create(:name => "Tree")
             @property1 = Property.create
@@ -547,14 +549,11 @@ class DocumentTest < Test::Unit::TestCase
             @thing.properties << @property3
           end
 
-          should "should destroy the thing" do
-            @property1.destroy
-            @property1.thing.should be_frozen
-          end
-
-          should "should destroy the properties" do
+          should "should destroy the associated documents" do
+            @thing.properties.count.should == 3
             @thing.destroy
-            @thing.properties.should == []
+            @thing.properties.count.should == 0
+            Property.count.should == 0
           end
         end
 
@@ -572,11 +571,11 @@ class DocumentTest < Test::Unit::TestCase
             @thing.properties << @property3
           end
 
-          should "should destroy the properties" do
-            @thing.properties[0].should_not be_nil
+          should "should delete associated documents" do
+            @thing.properties.count.should == 3
             @thing.destroy
-            @thing.properties[0].should be_nil
-            @thing.properties[1].should be_nil
+            @thing.properties.count.should == 0
+            Property.count.should == 0
           end
         end
 
@@ -594,10 +593,11 @@ class DocumentTest < Test::Unit::TestCase
             @thing.properties << @property3
           end
 
-          should "should destroy the properties" do
-            @thing.properties[0].should_not be_nil
+          should "should nullify relationship but not destroy associated documents" do
+            @thing.properties.count.should == 3
             @thing.destroy
-            @thing.properties.first be_nil
+            @thing.properties.count.should == 0
+            Property.count.should == 3
           end
         end
       end
@@ -618,7 +618,9 @@ class DocumentTest < Test::Unit::TestCase
           end
 
           should "destroy the thing" do
+            Thing.count.should == 1
             @property1.destroy
+            Thing.count.should == 0
             @property1.thing.should be_frozen
           end
         end
