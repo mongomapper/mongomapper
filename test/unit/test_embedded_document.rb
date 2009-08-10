@@ -155,10 +155,9 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
     
     should "be able to set _id using id=" do
-      id = MongoID.new
-      doc = @document.new(:id => id.to_s)
-      doc._id.should == id
-      doc.id.should == id.to_s
+      doc = @document.new(:id => '1234')
+      doc._id.should == '1234'
+      doc.id.should == '1234'
     end
 
     context "being initialized" do

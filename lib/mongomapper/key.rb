@@ -1,7 +1,7 @@
 module MongoMapper
   class Key
     # DateTime and Date are currently not supported by mongo's bson so just use Time
-    NativeTypes = [String, Float, Time, Integer, Boolean, Array, Hash, MongoID]
+    NativeTypes = [String, Float, Time, Integer, Boolean, Array, Hash]
 
     attr_accessor :name, :type, :options, :default_value
 
@@ -48,7 +48,6 @@ module MongoMapper
           elsif type == Float     then value.to_f
           elsif type == Array     then value.to_a
           elsif type == Time      then Time.parse(value.to_s).utc
-          elsif type == MongoID   then MongoID.mm_typecast(value)
           #elsif type == Date      then Date.parse(value.to_s)
           elsif type == Boolean   then Boolean.mm_typecast(value)
           elsif type == Integer

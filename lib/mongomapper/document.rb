@@ -255,7 +255,14 @@ module MongoMapper
       
       def create
         update_timestamps
-        write_attribute :_id, save_to_collection
+        assign_id
+        save_to_collection
+      end
+      
+      def assign_id
+        if read_attribute(:_id).blank?
+          write_attribute(:_id, XGen::Mongo::Driver::ObjectID.new.to_s)
+        end
       end
       
       def update

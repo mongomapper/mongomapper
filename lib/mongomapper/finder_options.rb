@@ -7,26 +7,15 @@ module MongoMapper
       conditions.each_pair do |field, value|
         case value
           when Array
-            operator_present = field.to_s =~ /^\$/
-            
-            dealing_with_ids =  field.to_s == '_id' || 
-                                (parent_key && parent_key.to_s == '_id')
-            
-            criteria[field] = if dealing_with_ids
-                                ids = value.map { |id| MongoID.mm_typecast(id) }
-                                operator_present ? ids : {'$in' => ids}
-                              elsif operator_present
+            operator_present = field.to_s =~ /^\$/            
+            criteria[field] = if operator_present
                                 value
                               else
                                 {'$in' => value}
                               end
           when Hash
             criteria[field] = to_mongo_criteria(value, field)
-          else
-            if field.to_s == '_id'
-              value = MongoID.mm_typecast(value)
-            end
-            
+          else            
             criteria[field] = value
         end
       end

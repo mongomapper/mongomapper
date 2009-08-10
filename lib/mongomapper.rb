@@ -19,24 +19,6 @@ class Boolean
   end
 end
 
-class MongoID < XGen::Mongo::Driver::ObjectID
-  def self.mm_typecast(value)
-    begin
-      if value.is_a?(XGen::Mongo::Driver::ObjectID)
-        value
-      else
-        XGen::Mongo::Driver::ObjectID::from_string(value.to_s)
-      end
-    rescue => exception
-      if exception.message == 'illegal ObjectID format'
-        raise MongoMapper::IllegalID
-      else
-        raise exception
-      end
-    end
-  end
-end
-
 dir = Pathname(__FILE__).dirname.expand_path + 'mongomapper'
 
 require dir + 'associations'
