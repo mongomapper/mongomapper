@@ -819,6 +819,10 @@ class DocumentTest < Test::Unit::TestCase
     should "raise error if assignment is attempted" do
       lambda { @doc.first_name = 'Foo' }.should raise_error(TypeError)
     end
+    
+    should "do nothing if destroy is called again" do
+      @doc.destroy.should be_false
+    end
   end
 
   context "Destroying a document that is a new" do
