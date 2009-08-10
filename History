@@ -1,6 +1,7 @@
-0.3.3 8/9/2009
+0.3.3 (master)
   * BACKWORDS COMPATIBILITY BREAK: _id is now once again a string rather than an object id and will stay that way.
   * Custom id's can now be used because of the change to string id's
+  * Added dynamic finders to document. (dcu)
   
 0.3.2 8/6/2009
   * Added many polymorphic documents association
