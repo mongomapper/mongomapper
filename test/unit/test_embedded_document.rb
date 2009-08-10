@@ -280,6 +280,23 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc = @document.new(:name => 'John', :age => 27)
         doc.name_and_age.should == 'John (27)'
       end
+      
+      should "set instance variable" do
+        @document.key :foo, Array
+        doc = @document.new
+        doc.instance_variable_get("@foo").should be_nil
+        doc.foo
+        doc.instance_variable_get("@foo").should == []
+      end
+      
+      should "not set instance variable if frozen" do
+        @document.key :foo, Array
+        doc = @document.new
+        doc.instance_variable_get("@foo").should be_nil
+        doc.freeze
+        doc.foo
+        doc.instance_variable_get("@foo").should be_nil
+      end
     end
 
     context "reading an attribute before typcasting" do
