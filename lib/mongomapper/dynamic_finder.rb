@@ -15,23 +15,23 @@ module MongoMapper
     end
 
     protected
-    def match
-      @options[:finder] = :first
-      case @options[:method].to_s
-        when /^find_(all_by|last_by|by)_([_a-zA-Z]\w*)$/
-          @options[:finder] = :last if $1 == 'last_by'
-          @options[:finder] = :all if $1 == 'all_by'
-          names = $2
-        when /^find_by_([_a-zA-Z]\w*)\!$/
-          @options[:bang] = true
-          names = $1
-        when /^find_or_(initialize|create)_by_([_a-zA-Z]\w*)$/
-          @options[:instantiator] = $1 == 'initialize' ? :new : :create
-          names = $2
-        else
-          @options[:finder] = nil
+      def match
+        @options[:finder] = :first
+        case @options[:method].to_s
+          when /^find_(all_by|last_by|by)_([_a-zA-Z]\w*)$/
+            @options[:finder] = :last if $1 == 'last_by'
+            @options[:finder] = :all if $1 == 'all_by'
+            names = $2
+          when /^find_by_([_a-zA-Z]\w*)\!$/
+            @options[:bang] = true
+            names = $1
+          when /^find_or_(initialize|create)_by_([_a-zA-Z]\w*)$/
+            @options[:instantiator] = $1 == 'initialize' ? :new : :create
+            names = $2
+          else
+            @options[:finder] = nil
+        end
+        @options[:attribute_names] = names && names.split('_and_')
       end
-      @options[:attribute_names] = names && names.split('_and_')
-    end
   end
 end

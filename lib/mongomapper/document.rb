@@ -154,103 +154,103 @@ module MongoMapper
         add_validations(args, MongoMapper::Validations::ValidatesInclusionOf)
       end
 
-    protected
-      def method_missing(meth, *args)
-        finder = DynamicFinder.new(self, meth)
-        if finder.valid?
-          class << self; self end.instance_eval do
-            define_method(finder.options[:method]) do |*args|
-              find_with_args(args, finder.options)
+      protected
+        def method_missing(meth, *args)
+          finder = DynamicFinder.new(self, meth)
+          if finder.valid?
+            class << self; self end.instance_eval do
+              define_method(finder.options[:method]) do |*args|
+                find_with_args(args, finder.options)
+              end
+            end
+            __send__(finder.options[:method], *args)
+          else
+            super
+          end
+        end
+
+      private
+        def find_every(options)
+          criteria, options = FinderOptions.new(options).to_a
+          collection.find(criteria, options).to_a.map { |doc| new(doc) }
+        end
+
+        def find_first(options)
+          options.merge!(:limit => 1)
+          find_every({:order => '$natural asc'}.merge(options))[0]
+        end
+
+        def find_last(options)
+          find_every(options.merge(:limit => 1, :order => '$natural desc'))[0]
+        end
+
+        def find_some(ids, options={})
+          documents = find_every(options.deep_merge(:conditions => {'_id' => ids}))
+          if ids.size == documents.size
+            documents
+          else
+            raise DocumentNotFound, "Couldn't find all of the ids (#{ids.to_sentence}). Found #{documents.size}, but was expecting #{ids.size}"
+          end
+        end
+
+        def find_one(id, options={})
+          if doc = find_every(options.deep_merge(:conditions => {:_id => id})).first
+            doc
+          else
+            raise DocumentNotFound, "Document with id of #{id} does not exist in collection named #{collection.name}"
+          end
+        end
+
+        def find_from_ids(ids, options={})
+          ids = ids.flatten.compact.uniq
+
+          case ids.size
+            when 0
+              raise(DocumentNotFound, "Couldn't find without an ID")
+            when 1
+              find_one(ids[0], options)
+            else
+              find_some(ids, options)
+          end
+        end
+
+        def update_single(id, attrs)
+          if id.blank? || attrs.blank? || !attrs.is_a?(Hash)
+            raise ArgumentError, "Updating a single document requires an id and a hash of attributes"
+          end
+
+          find(id).update_attributes(attrs)
+        end
+
+        def update_multiple(docs)
+          unless docs.is_a?(Hash)
+            raise ArgumentError, "Updating multiple documents takes 1 argument and it must be hash"
+          end
+
+          instances = []
+          docs.each_pair { |id, attrs| instances << update(id, attrs) }
+          instances
+        end
+
+        def find_with_args(args, opts)
+          find_options = args.extract_options!
+
+          attributes = {}
+          opts[:attribute_names].each_with_index do |att, index|
+            attributes[att] = args[index]
+          end
+
+          doc = find(opts[:finder], find_options.deep_merge(:conditions => attributes))
+          if doc.nil?
+            if opts[:instantiator]
+              doc = self.new(attributes)
+              doc.save if opts[:instantiator] == :create
+            elsif opts[:bang]
+              raise DocumentNotFound, "Couldn't find Document with #{attributes.inspect} in collection named #{collection.name}"
             end
           end
-          __send__(finder.options[:method], *args)
-        else
-          super
-        end
-      end
-
-    private
-      def find_every(options)
-        criteria, options = FinderOptions.new(options).to_a
-        collection.find(criteria, options).to_a.map { |doc| new(doc) }
-      end
-
-      def find_first(options)
-        options.merge!(:limit => 1)
-        find_every({:order => '$natural asc'}.merge(options))[0]
-      end
-
-      def find_last(options)
-        find_every(options.merge(:limit => 1, :order => '$natural desc'))[0]
-      end
-
-      def find_some(ids, options={})
-        documents = find_every(options.deep_merge(:conditions => {'_id' => ids}))
-        if ids.size == documents.size
-          documents
-        else
-          raise DocumentNotFound, "Couldn't find all of the ids (#{ids.to_sentence}). Found #{documents.size}, but was expecting #{ids.size}"
-        end
-      end
-
-      def find_one(id, options={})
-        if doc = find_every(options.deep_merge(:conditions => {:_id => id})).first
           doc
-        else
-          raise DocumentNotFound, "Document with id of #{id} does not exist in collection named #{collection.name}"
         end
-      end
-
-      def find_from_ids(ids, options={})
-        ids = ids.flatten.compact.uniq
-
-        case ids.size
-          when 0
-            raise(DocumentNotFound, "Couldn't find without an ID")
-          when 1
-            find_one(ids[0], options)
-          else
-            find_some(ids, options)
-        end
-      end
-
-      def update_single(id, attrs)
-        if id.blank? || attrs.blank? || !attrs.is_a?(Hash)
-          raise ArgumentError, "Updating a single document requires an id and a hash of attributes"
-        end
-
-        find(id).update_attributes(attrs)
-      end
-
-      def update_multiple(docs)
-        unless docs.is_a?(Hash)
-          raise ArgumentError, "Updating multiple documents takes 1 argument and it must be hash"
-        end
-
-        instances = []
-        docs.each_pair { |id, attrs| instances << update(id, attrs) }
-        instances
-      end
-
-      def find_with_args(args, opts)
-        find_options = args.extract_options!
-
-        attributes = {}
-        opts[:attribute_names].each_with_index do |att, index|
-          attributes[att] = args[index]
-        end
-
-        doc = find(opts[:finder], find_options.deep_merge(:conditions => attributes))
-        if doc.nil?
-          if opts[:instantiator]
-            doc = self.new(attributes)
-            doc.save if opts[:instantiator] == :create
-          elsif opts[:bang]
-            raise DocumentNotFound, "Couldn't find Document with #{attributes.inspect} in collection named #{collection.name}"
-          end
-        end
-        doc
-      end
     end
 
     module InstanceMethods
