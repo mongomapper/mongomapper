@@ -272,8 +272,7 @@ module MongoMapper
 
       def update_attributes(attrs={})
         self.attributes = attrs
-        save
-        self
+        save ? self : false
       end
 
       def destroy

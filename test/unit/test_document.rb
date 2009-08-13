@@ -127,5 +127,18 @@ class DocumentTest < Test::Unit::TestCase
         (@document.new('_id' => 1) == @another_document.new('_id' => 1)).should be(false)
       end
     end
+    
+    context "update_attributes" do
+      should "return the document if the save passed validation" do
+        date_of_birth = "11/19/1976"
+        @document.key :dob, String, :required => true
+        doc = @document.new.update_attributes({:dob => date_of_birth})
+        doc.dob.should == date_of_birth
+      end
+      should "return false if the save failed validation" do
+        @document.key :dob, String, :required => true
+        @document.new.update_attributes({}).should == false
+      end
+    end
   end # instance of a document
 end # DocumentTest
