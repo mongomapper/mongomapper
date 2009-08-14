@@ -20,7 +20,7 @@ module MongoMapper
     end
 
     def native?
-      @native ||= NativeTypes.include?(type)
+      @native ||= NativeTypes.include?(type) || type.nil?
     end
 
     def embedded_document?
@@ -40,6 +40,7 @@ module MongoMapper
 
     private
       def typecast(value)
+        return value if type.nil?
         return HashWithIndifferentAccess.new(value) if value.is_a?(Hash) && type == Hash
         return value.utc if type == Time && value.kind_of?(type)
         return value if value.kind_of?(type) || value.nil?

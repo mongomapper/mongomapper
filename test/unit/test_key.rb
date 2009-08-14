@@ -30,7 +30,7 @@ class KeyTest < Test::Unit::TestCase
     should "allow setting options" do
       Key.new(:foo, Integer, :required => true).options[:required].should be(true)
     end
-    
+
     should "default options to {}" do
       Key.new(:foo, Integer, nil).options.should == {}
     end
@@ -142,6 +142,22 @@ class KeyTest < Test::Unit::TestCase
     should "work" do
       key = Key.new(:foo, String)
       key.get('bar').should == 'bar'
+    end
+
+    context "without type" do
+      setup do
+        @key = Key.new(:foo, nil)
+      end
+
+      should "not cast the value" do
+        @key.get([1,"2"]).should == [1, "2"]
+        @key.get(false).should == false
+        @key.get({}).should == {}
+      end
+
+      should "be native" do
+        @key.native?.should be_true
+      end
     end
 
     context "for a key with a default value set" do

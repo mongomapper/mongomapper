@@ -158,7 +158,7 @@ module MongoMapper
         attrs.each_pair do |key, value|
           method = "#{key}="
           if !respond_to?(method)
-            self.class.key(key, String)
+            self.class.key(key, nil)
           end
           self.send(method, value)
         end

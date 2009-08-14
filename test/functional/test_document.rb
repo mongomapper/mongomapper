@@ -733,10 +733,11 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     should "allow to add custom attributes to the document" do
-      @doc = @document.new(:first_name => 'David', :age => '26', :gender => 'male')
+      @doc = @document.new(:first_name => 'David', :age => '26', :gender => 'male', :tags => [1, "2"])
       @doc.save
       from_db = @document.find(@doc.id)
       from_db.gender.should == 'male'
+      from_db.tags.should == [1, "2"]
     end
 
     should "allow to use custom methods to assign properties" do
