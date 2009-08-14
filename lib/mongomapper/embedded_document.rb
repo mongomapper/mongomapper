@@ -175,6 +175,12 @@ module MongoMapper
         end
       end
 
+      def assign_attributes(white_list, values)
+        white_list.each do |key|
+          send("#{key}=", values[key]) if values.has_key?(key)
+        end
+      end
+
       def [](name)
         read_attribute(name)
       end
