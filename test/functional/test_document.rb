@@ -738,6 +738,13 @@ class DocumentTest < Test::Unit::TestCase
       from_db = @document.find(@doc.id)
       from_db.gender.should == 'male'
     end
+
+    should "allow to use custom methods to assign properties" do
+      person = RealPerson.new(:realname => "David")
+      person.save
+      from_db = RealPerson.find(person.id)
+      from_db.name.should == "David"
+    end
   end
 
   context "Saving an existing document" do

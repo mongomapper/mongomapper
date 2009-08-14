@@ -38,8 +38,12 @@ end
 
 class RealPerson
   include MongoMapper::Document
-  many :pets  
+  many :pets
   key :name, String
+
+  def realname=(n)
+    self.name = n
+  end
 end
 
 class Person
@@ -83,26 +87,26 @@ module TrModels
     include MongoMapper::EmbeddedDocument
     key :license_plate, String
   end
-  
+
   class Car < TrModels::Transport
     include MongoMapper::EmbeddedDocument
     key :model, String
     key :year, Integer
   end
-  
+
   class Bus < TrModels::Transport
     include MongoMapper::EmbeddedDocument
     key :max_passengers, Integer
   end
-  
+
   class Ambulance < TrModels::Transport
     include MongoMapper::EmbeddedDocument
     key :icu, Boolean
   end
-  
+
   class Fleet
     include MongoMapper::Document
     many :transports, :polymorphic => true, :class_name => "TrModels::Transport"
-    key :name, String    
+    key :name, String
   end
 end
