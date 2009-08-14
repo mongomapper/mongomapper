@@ -198,13 +198,6 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.attributes[:age].should == 10
       end
 
-      should "raise undefined method if no key exists" do
-        doc = @document.new(:name => 'foobar', :age => 10)
-        lambda {
-          doc.attributes = {:name => 'new value', :foobar => 'baz'}
-        }.should raise_error(NoMethodError)
-      end
-
       should "not ignore keys that have methods defined" do
         @document.class_eval do
           attr_writer :password
