@@ -13,7 +13,7 @@ module MongoMapper
         include RailsCompatibility::EmbeddedDocument
         include Validatable
         include Serialization
-        
+
         key :_id, String
       end
     end
@@ -97,7 +97,7 @@ module MongoMapper
           read_attribute(key.name).present?
         end
       end
-      
+
       def create_indexes_for(key)
         ensure_index key.name if key.options[:index]
       end
@@ -155,8 +155,12 @@ module MongoMapper
 
       def attributes=(attrs)
         return if attrs.blank?
-        attrs.each_pair do |method, value|
-          self.send("#{method}=", value)
+        attrs.each_pair do |key, value|
+          method = "#{key}="
+          if !respond_to?(method)
+            self.class.key(key, String)
+          end
+          self.send(method, value)
         end
       end
 
@@ -191,7 +195,7 @@ module MongoMapper
         @using_custom_id = true
         write_attribute :_id, value
       end
-      
+
       def using_custom_id?
         !!@using_custom_id
       end

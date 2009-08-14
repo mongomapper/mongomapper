@@ -14,7 +14,7 @@ class DocumentTest < Test::Unit::TestCase
 
     @document.collection.clear
   end
-  
+
   context "Saving a document with a custom id" do
     should "clear custom id flag when saved" do
       doc = @document.new(:id => '1234')
@@ -23,7 +23,7 @@ class DocumentTest < Test::Unit::TestCase
       doc.using_custom_id?.should be_false
     end
   end
-  
+
   context "Document Class Methods" do
     context "Using key with type Array" do
       setup do
@@ -140,11 +140,11 @@ class DocumentTest < Test::Unit::TestCase
         @doc_instance.id.should_not be_nil
         @doc_instance.id.size.should == 24
       end
-      
+
       should "no longer be new?" do
         @doc_instance.new?.should be_false
       end
-      
+
       should "return instance of document" do
         @doc_instance.should be_instance_of(@document)
         @doc_instance.first_name.should == 'John'
@@ -323,7 +323,7 @@ class DocumentTest < Test::Unit::TestCase
         should "find document based on argument" do
           @document.find_by_first_name('John').should == @doc1
           @document.find_by_last_name('Nunemaker').should == @doc1
-          @document.find_by_age(27).should == @doc1          
+          @document.find_by_age(27).should == @doc1
         end
 
         should "not raise error" do
@@ -517,6 +517,7 @@ class DocumentTest < Test::Unit::TestCase
 
     context ":dependent" do
       setup do
+        # FIXME: make use of already defined models
         class ::Property
           include MongoMapper::Document
         end
@@ -730,6 +731,13 @@ class DocumentTest < Test::Unit::TestCase
       from_db.first_name.should == 'John'
       from_db.age.should == 27
     end
+
+    should "allow to add custom attributes to the document" do
+      @doc = @document.new(:first_name => 'David', :age => '26', :gender => 'male')
+      @doc.save
+      from_db = @document.find(@doc.id)
+      from_db.gender.should == 'male'
+    end
   end
 
   context "Saving an existing document" do
@@ -753,6 +761,14 @@ class DocumentTest < Test::Unit::TestCase
       from_db = @document.find(@doc.id)
       from_db.first_name.should == 'Johnny'
       from_db.age.should == 30
+    end
+
+    should "allow to update custom attributes" do
+      @doc = @document.new(:first_name => 'David', :age => '26', :gender => 'male')
+      @doc.gender = 'Male'
+      @doc.save
+      from_db = @document.find(@doc.id)
+      from_db.gender.should == 'Male'
     end
   end
 
@@ -781,6 +797,12 @@ class DocumentTest < Test::Unit::TestCase
       from_db.should == @doc
       from_db.first_name.should == 'Johnny'
       from_db.age.should == 30
+    end
+
+    should "allow to update custom attributes" do
+      @doc.update_attributes(:gender => 'mALe')
+      from_db = @document.find(@doc.id)
+      from_db.gender.should == 'mALe'
     end
   end
 
@@ -833,7 +855,7 @@ class DocumentTest < Test::Unit::TestCase
     should "raise error if assignment is attempted" do
       lambda { @doc.first_name = 'Foo' }.should raise_error(TypeError)
     end
-    
+
     should "do nothing if destroy is called again" do
       @doc.destroy.should be_false
     end
