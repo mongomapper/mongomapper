@@ -690,7 +690,7 @@ class DocumentTest < Test::Unit::TestCase
           index_name = @document.ensure_index [[:first_name, 1], [:last_name, -1]]
         }.should change { @document.collection.index_information.size }.by(1)
 
-        index_name.should == 'first_name_1_last_name_-1'
+        [ 'first_name_1_last_name_-1', 'last_name_-1_first_name_1' ].should include(index_name)
 
         index = @document.collection.index_information[index_name]
         index.should_not be_nil
