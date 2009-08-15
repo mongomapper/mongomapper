@@ -35,6 +35,7 @@ class Status
   belongs_to :project
   belongs_to :target, :polymorphic => true
   key :name, String
+  key :item_order, Integer
 end
 
 class RealPerson
