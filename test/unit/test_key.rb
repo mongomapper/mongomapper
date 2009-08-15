@@ -38,6 +38,30 @@ class KeyTest < Test::Unit::TestCase
     should "symbolize option keys" do
       Key.new(:foo, Integer, 'required' => true).options[:required].should be(true)
     end
+    
+    should "work with just name" do
+      key = Key.new(:foo)
+      key.name.should == 'foo'
+    end
+    
+    should "work with name and type" do
+      key = Key.new(:foo, String)
+      key.name.should == 'foo'
+      key.type.should == String
+    end
+    
+    should "work with name, type, and options" do
+      key = Key.new(:foo, String, :required => true)
+      key.name.should == 'foo'
+      key.type.should == String
+      key.options[:required].should be_true
+    end
+    
+    should "work with name and options" do
+      key = Key.new(:foo, :required => true)
+      key.name.should == 'foo'
+      key.options[:required].should be_true
+    end
   end
 
   context "A key" do

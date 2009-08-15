@@ -13,7 +13,7 @@ module MongoMapper
         include RailsCompatibility::EmbeddedDocument
         include Validatable
         include Serialization
-
+        
         key :_id, String
       end
     end
@@ -39,23 +39,26 @@ module MongoMapper
         end
       end
 
-      def key(name, type, options={})
-        key = Key.new(name, type, options)
-        keys[key.name] = key
-
-        create_accessors_for(key)
-        add_to_subclasses(name, type, options)
-        apply_validations_for(key)
-        create_indexes_for(key)
-
-        key
+      def key(*args)
+        key = Key.new(*args)
+        
+        if keys[key.name].blank?
+          keys[key.name] = key
+          
+          create_accessors_for(key)
+          add_to_subclasses(*args)
+          apply_validations_for(key)
+          create_indexes_for(key)
+          
+          key
+        end
       end
 
-      def add_to_subclasses(name, type, options)
+      def add_to_subclasses(*args)
         return if subclasses.blank?
 
         subclasses.each do |subclass|
-          subclass.key name, type, options
+          subclass.key(*args)
         end
       end
 
@@ -97,7 +100,7 @@ module MongoMapper
           read_attribute(key.name).present?
         end
       end
-
+      
       def create_indexes_for(key)
         ensure_index key.name if key.options[:index]
       end
@@ -157,9 +160,7 @@ module MongoMapper
         return if attrs.blank?
         attrs.each_pair do |key, value|
           method = "#{key}="
-          if !respond_to?(method)
-            self.class.key(key, nil)
-          end
+          self.class.key(key) unless respond_to?(method)
           self.send(method, value)
         end
       end
@@ -174,7 +175,7 @@ module MongoMapper
           attributes.merge!(embedded_association_attributes)
         end
       end
-
+      
       def assign_attributes(white_list, values)
         white_list.each do |key|
           send("#{key}=", values[key]) if values.has_key?(key)
@@ -201,7 +202,7 @@ module MongoMapper
         @using_custom_id = true
         write_attribute :_id, value
       end
-
+      
       def using_custom_id?
         !!@using_custom_id
       end

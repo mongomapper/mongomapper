@@ -55,16 +55,28 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
     end
     
-    should "work" do
+    should "work with name" do
+      key = @document.key(:name)
+      key.name.should == 'name'
+    end
+    
+    should "work with name and type" do
       key = @document.key(:name, String)
       key.name.should == 'name'
       key.type.should == String
-      key.should be_instance_of(MongoMapper::Key)
     end
     
-    should "work with options" do
+    should "work with name, type and options" do
       key = @document.key(:name, String, :required => true)
-      key.options[:required].should be(true)
+      key.name.should == 'name'
+      key.type.should == String
+      key.options[:required].should be_true
+    end
+    
+    should "work with name and options" do
+      key = @document.key(:name, :required => true)
+      key.name.should == 'name'
+      key.options[:required].should be_true
     end
     
     should "be tracked per document" do
@@ -76,11 +88,11 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @document.keys['age'].type.should == Integer
     end
     
-    should "be redefinable" do
+    should "not be redefinable" do
       @document.key(:foo, String)
       @document.keys['foo'].type.should == String
       @document.key(:foo, Integer)
-      @document.keys['foo'].type.should == Integer
+      @document.keys['foo'].type.should == String
     end
     
     should "create reader method" do

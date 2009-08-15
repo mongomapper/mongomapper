@@ -5,8 +5,10 @@ module MongoMapper
 
     attr_accessor :name, :type, :options, :default_value
 
-    def initialize(name, type, options={})
-      @name, @type = name.to_s, type
+    # def initialize(name, type=nil, options={})
+    def initialize(*args)
+      options = args.extract_options!
+      @name, @type = args.shift.to_s, args.shift
       self.options = (options || {}).symbolize_keys
       self.default_value = self.options.delete(:default)
     end
