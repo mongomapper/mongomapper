@@ -308,13 +308,13 @@ class DocumentTest < Test::Unit::TestCase
 
       context "with :last" do
         should "find last document" do
-          @document.find(:last, :order => 'age desc').should == @doc2
+          @document.find(:last, :order => 'age').should == @doc2
         end
       end
 
       context "with #last" do
         should "find last document based on criteria" do
-          @document.last(:order => 'age desc').should == @doc2
+          @document.last(:order => 'age').should == @doc2
           @document.last(:conditions => {:age => 28}).should == @doc2
         end
       end
@@ -352,7 +352,7 @@ class DocumentTest < Test::Unit::TestCase
         end
 
         should "find last document based on arguments" do
-          doc = @document.find_last_by_last_name('Nunemaker', :order => 'age desc')
+          doc = @document.find_last_by_last_name('Nunemaker', :order => 'age')
           doc.should == @doc1
         end
 

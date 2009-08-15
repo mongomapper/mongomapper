@@ -9,6 +9,7 @@ end
 class Message
   include MongoMapper::Document
   key :body, String
+  key :item_order, Integer
   belongs_to :room
 end
 

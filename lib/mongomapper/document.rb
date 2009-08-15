@@ -182,7 +182,22 @@ module MongoMapper
 
         def find_last(options)
           options.merge!(:limit => 1)
-          find_every({:order => '$natural desc'}.merge(options))[0]
+          options[:order] = invert_order_clause(options)
+          find_every(options)[0]
+          #find_every({:order => '$natural desc'}.merge(invert_order_clause(options)))[0]
+        end
+
+        def invert_order_clause(options)
+          return '$natural desc' unless options[:order]
+          options[:order].split(',').map do |order_segment| 
+            if order_segment =~ /\sasc/i
+              order_segment.sub /\sasc/i, ' desc'
+            elsif order_segment =~ /\sdesc/i
+              order_segment.sub /\sdesc/i, ' asc'
+            else
+              "#{order_segment.strip} desc"
+            end
+          end.join(',')
         end
 
         def find_some(ids, options={})
