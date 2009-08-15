@@ -8,7 +8,7 @@ module MongoMapper
         @type = type
         @name = name
       end
-      
+
       def class_name
         @class_name ||= begin
           if cn = options[:class_name]
@@ -20,35 +20,43 @@ module MongoMapper
           end
         end
       end
-      
+
       def klass
         @klass ||= class_name.constantize
       end
-      
+
       def many?
         @many_type ||= @type == :many
       end
-      
+
       def belongs_to?
         @belongs_to_type ||= @type == :belongs_to
       end
-      
+
       def polymorphic?
         !!@options[:polymorphic]
       end
-      
-      def type_key_name
-        @type_key_name ||= many? ? '_type' : "#{name}_type"
+
+      def as?
+        !!@options[:as]
       end
-      
+
+      def type_key_name
+        @type_key_name ||= many? ? '_type' : "#{as}_type"
+      end
+
+      def as
+        @options[:as] || self.name
+      end
+
       def belongs_to_key_name
         "#{name}_id"
       end
-      
+
       def ivar
         @ivar ||= "@_#{name}"
       end
-      
+
       def embeddable?
         many? && klass.embeddable?
       end
@@ -59,7 +67,13 @@ module MongoMapper
             if self.klass.embeddable?
               polymorphic? ? ManyEmbeddedPolymorphicProxy : ManyEmbeddedProxy
             else
-              polymorphic? ? ManyPolymorphicProxy : ManyProxy
+              if polymorphic?
+                ManyPolymorphicProxy
+              elsif as?
+                ManyDocumentsAsProxy
+              else
+                ManyProxy
+              end
             end
           else
             polymorphic? ? BelongsToPolymorphicProxy : BelongsToProxy
