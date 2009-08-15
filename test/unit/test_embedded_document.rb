@@ -41,6 +41,19 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
       document.parent_model.should be_nil
     end
+
+    should "work when other modules have been included" do
+      grandparent = Class.new
+      parent = Class.new grandparent do
+        include MongoMapper::EmbeddedDocument
+      end
+      example_module = Module.new
+      document = Class.new(parent) do
+        include MongoMapper::EmbeddedDocument
+        include example_module
+      end
+      document.parent_model.should == parent
+    end
     
     should "find parent" do
       Parent.parent_model.should == Grandparent

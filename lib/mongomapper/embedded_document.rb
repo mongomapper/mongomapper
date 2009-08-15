@@ -77,8 +77,8 @@ module MongoMapper
       end
 
       def parent_model
-        if parent = ancestors[1]
-          parent if parent.ancestors.include?(EmbeddedDocument)
+        (ancestors - [self,EmbeddedDocument]).find do |parent_class|
+          parent_class.ancestors.include?(EmbeddedDocument)
         end
       end
 
