@@ -805,6 +805,20 @@ class DocumentTest < Test::Unit::TestCase
       from_db.age.should == 30
     end
   end
+  
+  context "update_attributes" do
+    setup do
+      @document.key :foo, String, :required => true
+    end
+    
+    should "return true if document valid" do
+      @document.new.update_attributes(:foo => 'bar').should be_true
+    end
+    
+    should "return false if document not valid" do
+      @document.new.update_attributes({}).should be_false
+    end
+  end
 
   context "Destroying a document that exists" do
     setup do

@@ -239,7 +239,9 @@ module MongoMapper
             raise ArgumentError, "Updating a single document requires an id and a hash of attributes"
           end
 
-          find(id).update_attributes(attrs)
+          doc = find(id)
+          doc.update_attributes(attrs)
+          doc
         end
 
         def update_multiple(docs)
@@ -272,7 +274,7 @@ module MongoMapper
 
       def update_attributes(attrs={})
         self.attributes = attrs
-        save ? self : false
+        save
       end
 
       def destroy
