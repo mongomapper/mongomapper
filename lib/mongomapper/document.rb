@@ -181,7 +181,8 @@ module MongoMapper
         end
 
         def find_last(options)
-          find_every(options.merge(:limit => 1, :order => '$natural desc'))[0]
+          options.merge!(:limit => 1)
+          find_every({:order => '$natural desc'}.merge(options))[0]
         end
 
         def find_some(ids, options={})

@@ -289,7 +289,7 @@ class DocumentTest < Test::Unit::TestCase
       context "with #all" do
         should "find all documents based on criteria" do
           @document.all(:order => 'first_name').should == [@doc1, @doc3, @doc2]
-          @document.all(:conditions => {:last_name => 'Nunemaker'}).should == [@doc1, @doc3]
+          @document.all(:conditions => {:last_name => 'Nunemaker'}, :order => 'age desc').should == [@doc1, @doc3]
         end
       end
 
@@ -308,13 +308,13 @@ class DocumentTest < Test::Unit::TestCase
 
       context "with :last" do
         should "find last document" do
-          @document.find(:last).should == @doc3
+          @document.find(:last, :order => 'age desc').should == @doc2
         end
       end
 
       context "with #last" do
         should "find last document based on criteria" do
-          @document.last.should == @doc3
+          @document.last(:order => 'age desc').should == @doc2
           @document.last(:conditions => {:age => 28}).should == @doc2
         end
       end
@@ -322,7 +322,7 @@ class DocumentTest < Test::Unit::TestCase
       context "with :find_by" do
         should "find document based on argument" do
           @document.find_by_first_name('John').should == @doc1
-          @document.find_by_last_name('Nunemaker').should == @doc1
+          @document.find_by_last_name('Nunemaker', :order => 'age desc').should == @doc1
           @document.find_by_age(27).should == @doc1
         end
 
@@ -352,8 +352,8 @@ class DocumentTest < Test::Unit::TestCase
         end
 
         should "find last document based on arguments" do
-          doc = @document.find_last_by_last_name('Nunemaker')
-          doc.should == @doc3
+          doc = @document.find_last_by_last_name('Nunemaker', :order => 'age desc')
+          doc.should == @doc1
         end
 
         should "initialize document with given arguments" do
