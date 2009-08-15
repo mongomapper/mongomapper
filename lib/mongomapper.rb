@@ -25,6 +25,7 @@ require dir + 'associations/many_proxy'
 require dir + 'associations/many_polymorphic_proxy'
 require dir + 'associations/many_embedded_proxy'
 require dir + 'associations/many_embedded_polymorphic_proxy'
+require dir + 'associations/many_documents_as_proxy'
 
 require dir + 'callbacks'
 require dir + 'finder_options'

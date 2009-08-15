@@ -7,6 +7,14 @@ class Address
   key :zip,     Integer
 end
 
+class Vote
+  include MongoMapper::Document
+
+  key :value, Boolean, :required => true
+
+  belongs_to :voteable, :polymorphic => true
+end
+
 class Message
   include MongoMapper::Document
   
@@ -16,6 +24,15 @@ class Message
   key :room_id, String
   
   belongs_to :room
+
+  has_many :votes, :as => :voteable
+end
+
+class Answer
+  include MongoMapper::Document
+
+  key :body, String
+  has_many :votes, :as => :voteable
 end
 
 class Enter < Message; end
