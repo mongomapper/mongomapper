@@ -4,8 +4,7 @@ module MongoMapper
     NativeTypes = [String, Float, Time, Integer, Boolean, Array, Hash]
 
     attr_accessor :name, :type, :options, :default_value
-
-    # def initialize(name, type=nil, options={})
+    
     def initialize(*args)
       options = args.extract_options!
       @name, @type = args.shift.to_s, args.shift
