@@ -5,6 +5,7 @@
   * Added destroy_all, delete_all and nullify for many document association
   * Added :dependent => :destroy|:delete_all|:nullify for many documents assocation (dcu)
   * update_attributes now returns true or false instead of the document. (Durran Jordan and me)
+  * keys can now be added on the fly. also, keys no longer require a type.
   
 0.3.2 8/6/2009
   * Added many polymorphic documents association
