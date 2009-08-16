@@ -25,7 +25,7 @@ module MongoMapper
     end
 
     def embedded_document?
-      type.ancestors.include?(EmbeddedDocument) && !type.ancestors.include?(Document)
+      type.respond_to?(:embeddable?) && type.embeddable?
     end
 
     def get(value)
