@@ -18,8 +18,10 @@ begin
     gem.add_development_dependency('mocha', '0.9.4')
     gem.add_development_dependency('jnunemaker-matchy', '0.4.0')
   end
-
-  Jeweler::RubyforgeTasks.new
+  
+  Jeweler::RubyforgeTasks.new do |rubyforge|
+    rubyforge.doc_task = "rdoc"
+  end
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
