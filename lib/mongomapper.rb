@@ -2,7 +2,7 @@ require 'pathname'
 require 'rubygems'
 
 gem 'activesupport'
-gem 'mongodb-mongo', '0.10.1'
+gem 'mongodb-mongo', '0.11.1'
 gem 'jnunemaker-validatable', '1.7.2'
 
 require 'activesupport'
