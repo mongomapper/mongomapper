@@ -146,6 +146,54 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       Parent.subclasses.should      == [Child, OtherChild]
     end
   end
+  
+  context "Applying default values for keys" do
+    setup do
+      @document = Class.new do
+        include MongoMapper::EmbeddedDocument
+        
+        key :name,      String,   :default => 'foo'
+        key :age,       Integer,  :default => 20
+        key :net_worth, Float,    :default => 100.00
+        key :active,    Boolean,  :default => true
+        key :smart,     Boolean,  :default => false
+        key :skills,    Array,    :default => [1]
+        key :options,   Hash,     :default => {'foo' => 'bar'}
+      end
+      
+      @doc = @document.new
+    end
+    
+    should "work for strings" do
+      @doc.name.should == 'foo'
+    end
+    
+    should "work for integers" do
+      @doc.age.should == 20
+    end
+    
+    should "work for floats" do
+      @doc.net_worth.should == 100.00
+    end
+    
+    should "work for booleans" do
+      @doc.active.should == true
+      @doc.smart.should == false
+    end
+    
+    should "work for arrays" do
+      @doc.skills.should == [1]
+      @doc.skills << 2
+      @doc.skills.should == [1, 2]
+    end
+    
+    should "work for hashes" do
+      @doc.options['foo'].should == 'bar'
+      @doc.options['baz'] = 'wick'
+      @doc.options['baz'].should == 'wick'
+    end
+  end
+  
 
   context "An instance of an embedded document" do
     setup do
