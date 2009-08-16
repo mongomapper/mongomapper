@@ -2,21 +2,21 @@ module MongoMapper
   class DynamicFinder
     attr_reader :options
 
-    def initialize(model, meth)
+    def initialize(model, method)
       @model = model
       @options = {}
-      @options[:method] = meth
-
+      @options[:method] = method
       match
     end
 
     def valid?
-      !@options[:finder].nil?
+      @options[:finder].present?
     end
 
     protected
       def match
         @options[:finder] = :first
+        
         case @options[:method].to_s
           when /^find_(all_by|last_by|by)_([_a-zA-Z]\w*)$/
             @options[:finder] = :last if $1 == 'last_by'
@@ -31,6 +31,7 @@ module MongoMapper
           else
             @options[:finder] = nil
         end
+        
         @options[:attribute_names] = names && names.split('_and_')
       end
   end

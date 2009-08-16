@@ -39,10 +39,9 @@ module MongoMapper
         per_page      = options.delete(:per_page)
         page          = options.delete(:page)
         total_entries = count(options[:conditions] || {})
+        collection    = Pagination::PaginationProxy.new(total_entries, page, per_page)
 
-        collection = Pagination::PaginationProxy.new(total_entries, page, per_page)
-
-        options[:limit] = collection.limit
+        options[:limit]   = collection.limit
         options[:offset]  = collection.offset
 
         collection.subject = find_every(options)
@@ -155,14 +154,14 @@ module MongoMapper
       end
       
       protected
-        def method_missing(meth, *args)
-          finder = DynamicFinder.new(self, meth)
+        def method_missing(method, *args)
+          finder = DynamicFinder.new(self, method)
+          
           if finder.valid?
-            class << self; self end.instance_eval do
-              define_method(finder.options[:method]) do |*args|
-                find_with_args(args, finder.options)
-              end
+            meta_def(finder.options[:method]) do |*args|
+              find_with_args(args, finder.options)
             end
+            
             send(finder.options[:method], *args)
           else
             super
@@ -215,24 +214,27 @@ module MongoMapper
           end
         end
         
-        def find_with_args(args, opts)
-          find_options = args.extract_options!
-
-          attributes = {}
-          opts[:attribute_names].each_with_index do |att, index|
-            attributes[att] = args[index]
+        def find_with_args(args, options)
+          attributes,  = {}
+          find_options = args.extract_options!.deep_merge(:conditions => attributes)
+          
+          options[:attribute_names].each_with_index do |attr, index|
+            attributes[attr] = args[index]
           end
 
-          doc = find(opts[:finder], find_options.deep_merge(:conditions => attributes))
-          if doc.nil?
-            if opts[:instantiator]
-              doc = self.new(attributes)
-              doc.save if opts[:instantiator] == :create
-            elsif opts[:bang]
+          result = find(options[:finder], find_options)
+          
+          if result.nil?
+            if options[:bang]
               raise DocumentNotFound, "Couldn't find Document with #{attributes.inspect} in collection named #{collection.name}"
             end
+            
+            if options[:instantiator]
+              self.send(options[:instantiator], attributes)
+            end
+          else
+            result
           end
-          doc
         end
 
         def update_single(id, attrs)
