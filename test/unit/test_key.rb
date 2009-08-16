@@ -76,14 +76,19 @@ class KeyTest < Test::Unit::TestCase
     should "not be equal to another key with different type" do
       Key.new(:name, String).should_not == Key.new(:name, Integer)
     end
-
-    should "know if it is native" do
-      Key.new(:name, String).native?.should be_true
-    end
-
-    should "know if it is not native" do
-      klass = Class.new
-      Key.new(:name, klass).native?.should be_false
+    
+    context "native?" do
+      should "be true if native type" do
+        Key.new(:name, String).native?.should be_true
+      end
+      
+      should "be true if no type" do
+        Key.new(:name).native?.should be_true
+      end
+      
+      should "be false if not native" do
+        Key.new(:name, Class.new).native?.should be_false
+      end
     end
 
     should "know if it is a embedded_document" do
@@ -130,11 +135,6 @@ class KeyTest < Test::Unit::TestCase
       key.set('2000-01-01 01:01:01.123456').zone.should == "UTC"
     end
 
-    should_eventually "correctly typecast Dates" do
-      key = Key.new(:foo, Date)
-      key.set('2000-01-01').should == Date.new(2000, 1, 1)
-    end
-
     should "correctly typecast Boolean" do
       key = Key.new(:foo, Boolean)
       ['false', false, 'f', '0', 0].each do |b|
@@ -167,21 +167,12 @@ class KeyTest < Test::Unit::TestCase
       key = Key.new(:foo, String)
       key.get('bar').should == 'bar'
     end
-
-    context "without type" do
-      setup do
-        @key = Key.new(:foo, nil)
-      end
-
-      should "not cast the value" do
-        @key.get([1,"2"]).should == [1, "2"]
-        @key.get(false).should == false
-        @key.get({}).should == {}
-      end
-
-      should "be native" do
-        @key.native?.should be_true
-      end
+    
+    should "work without type" do
+      key = Key.new(:foo)
+      key.get([1,"2"]).should == [1, "2"]
+      key.get(false).should   == false
+      key.get({}).should      == {}
     end
 
     context "for a key with a default value set" do
