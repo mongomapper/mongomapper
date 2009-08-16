@@ -1,3 +1,6 @@
+0.3.4 (master)
+  * Timestamps are now optional. To use them add timestamps! to your model.
+  
 0.3.3 8/16/2009
   * BACKWORDS COMPATIBILITY BREAK: _id is now once again a string rather than an object id and will stay that way.
   * Custom id's can now be used because of the change to string id's

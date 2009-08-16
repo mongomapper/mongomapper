@@ -910,6 +910,10 @@ class DocumentTest < Test::Unit::TestCase
   end
 
   context "timestamping" do
+    setup do
+      @document.timestamps!
+    end
+    
     should "set created_at and updated_at on create" do
       doc = @document.new(:first_name => 'John', :age => 27)
       doc.created_at.should be(nil)

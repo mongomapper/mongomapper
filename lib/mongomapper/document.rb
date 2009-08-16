@@ -11,9 +11,6 @@ module MongoMapper
         include SaveWithValidation
         include RailsCompatibility::Document
         extend ClassMethods
-
-        key :created_at, Time
-        key :updated_at, Time
       end
 
       descendants << model
@@ -139,6 +136,13 @@ module MongoMapper
           @collection = database.collection(name)
         end
         @collection
+      end
+      
+      def timestamps!
+        key :created_at, Time
+        key :updated_at, Time
+        
+        class_eval { before_save :update_timestamps }
       end
 
       def validates_uniqueness_of(*args)
@@ -310,7 +314,6 @@ module MongoMapper
       end
 
       def create
-        update_timestamps
         assign_id
         save_to_collection
       end
@@ -322,7 +325,6 @@ module MongoMapper
       end
 
       def update
-        update_timestamps
         save_to_collection
       end
 

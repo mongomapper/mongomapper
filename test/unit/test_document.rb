@@ -83,14 +83,6 @@ class DocumentTest < Test::Unit::TestCase
       doc.collection.should == @document.collection
     end
 
-    should "automatically have a created_at key" do
-      @document.keys.keys.should include('created_at')
-    end
-
-    should "automatically have an updated_at key" do
-      @document.keys.keys.should include('updated_at')
-    end
-
     should "use default values if defined for keys" do
       @document.key :active, Boolean, :default => true
 
