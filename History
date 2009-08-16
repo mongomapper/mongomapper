@@ -1,5 +1,6 @@
 0.3.4 (master)
-  * Timestamps are now optional. To use them add timestamps! to your model.
+  * BACKWORDS COMPATIBILITY BREAK: Timestamps are now optional. To use them add timestamps! to your model.
+  * BACKWORDS COMPATIBILITY BREAK: Associations keys are no longer created automatically when you use belongs_to and many. Too much was hidden from the developer. You now have to declare them like key :creator_id, String and such.
   
 0.3.3 8/16/2009
   * BACKWORDS COMPATIBILITY BREAK: _id is now once again a string rather than an object id and will stay that way.
