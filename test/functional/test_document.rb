@@ -873,29 +873,6 @@ class DocumentTest < Test::Unit::TestCase
     end
   end
 
-  context "Updating an existing document using assign attributes" do
-    setup do
-      @doc = @document.create(:first_name => 'John', :age => '27')
-      @doc.assign_attributes([:first_name], {:first_name => 'David', :age => '26'})
-      @doc.save
-    end
-
-    should "not insert document into collection" do
-      @document.count.should == 1
-    end
-
-    should "update attributes" do
-      @doc.first_name.should == 'David'
-      @doc.age.should_not == 26
-    end
-
-    should "only update the first name in the database" do
-      from_db = @document.find(@doc.id)
-      from_db.first_name.should == 'David'
-      from_db.age.should == 27
-    end
-  end
-
   context "Destroying a document that exists" do
     setup do
       @doc = @document.create(:first_name => 'John', :age => '27')

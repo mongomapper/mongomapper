@@ -166,20 +166,12 @@ module MongoMapper
       end
 
       def attributes
-        returning HashWithIndifferentAccess.new do |attributes|
-          self.class.keys.each_pair do |name, key|
-            value = value_for_key(key)
-            attributes[name] = value unless value.nil?
-          end
-
-          attributes.merge!(embedded_association_attributes)
+        attrs = HashWithIndifferentAccess.new
+        self.class.keys.each_pair do |name, key|
+          value = value_for_key(key)
+          attrs[name] = value unless value.nil?
         end
-      end
-      
-      def assign_attributes(white_list, values)
-        white_list.each do |key|
-          send("#{key}=", values[key]) if values.has_key?(key)
-        end
+        attrs.merge!(embedded_association_attributes)
       end
 
       def [](name)
