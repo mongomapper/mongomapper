@@ -52,8 +52,6 @@ require dir + 'document'
 
 module MongoMapper
   DocumentNotFound = Class.new(StandardError)
-  IllegalID        = Class.new(StandardError)
-
   DocumentNotValid = Class.new(StandardError) do
     def initialize(document)
       @document = document
