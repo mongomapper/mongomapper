@@ -117,6 +117,13 @@ class KeyTest < Test::Unit::TestCase
         key.set(a).should == 21
       end
     end
+    
+    should "work fine with long integers" do
+      key = Key.new(:foo, Integer)
+      [9223372036854775807, '9223372036854775807'].each do |value|
+        key.set(value).should == 9223372036854775807
+      end
+    end
 
     should "correctly typecast Floats" do
       key = Key.new(:foo, Float)
