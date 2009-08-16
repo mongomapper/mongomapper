@@ -23,7 +23,30 @@ class DocumentTest < Test::Unit::TestCase
       doc.using_custom_id?.should be_false
     end
   end
+  
+  context "Loading a document from the database with keys that are not defined" do
+    setup do
+      @id = XGen::Mongo::Driver::ObjectID.new.to_s
+      @document.collection.insert({
+        :_id            => @id,
+        :first_name     => 'John', 
+        :last_name      => 'Nunemaker', 
+        :age            => 27, 
+        :favorite_color => 'red',
+        :skills         => ['ruby', 'rails', 'javascript', 'xhtml', 'css']
+      })
+    end
 
+    should "assign all keys from database" do
+      doc = @document.find(@id)
+      doc.first_name.should == 'John'
+      doc.last_name.should == 'Nunemaker'
+      doc.age.should == 27
+      doc.favorite_color.should == 'red'
+      doc.skills.should == ['ruby', 'rails', 'javascript', 'xhtml', 'css']
+    end
+  end
+  
   context "Document Class Methods" do
     context "Using key with type Array" do
       setup do
