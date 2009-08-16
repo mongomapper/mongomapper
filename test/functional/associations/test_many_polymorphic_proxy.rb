@@ -27,14 +27,14 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     
     lambda {
       room.messages = [
-        Enter.new(:body => 'John entered room', :item_order => 1),
-        Chat.new(:body => 'Heyyyoooo!',         :item_order => 2),
-        Exit.new(:body => 'John exited room',   :item_order => 3)
+        Enter.new(:body => 'John entered room', :position => 1),
+        Chat.new(:body => 'Heyyyoooo!',         :position => 2),
+        Exit.new(:body => 'John exited room',   :position => 3)
       ]
     }.should change { Message.count }.by(3)
     
     from_db = Room.find(room.id)
-    messages = from_db.messages.all :order => "item_order ASC"
+    messages = from_db.messages.all :order => "position"
     messages.size.should == 3
     messages[0].body.should == 'John entered room'
     messages[1].body.should == 'Heyyyoooo!'
@@ -43,12 +43,12 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
   
   should "correctly store type when using <<, push and concat" do
     room = Room.new
-    room.messages <<      Enter.new(:body => 'John entered the room', :item_order => 1)
-    room.messages.push    Exit.new(:body => 'John entered the room', :item_order => 2)
-    room.messages.concat  Chat.new(:body => 'Holla!'             , :item_order => 3)
+    room.messages <<      Enter.new(:body => 'John entered the room', :position => 1)
+    room.messages.push    Exit.new(:body => 'John entered the room', :position => 2)
+    room.messages.concat  Chat.new(:body => 'Holla!'             , :position => 3)
     
     from_db = Room.find(room.id)
-    messages = from_db.messages.all :order => "item_order ASC"
+    messages = from_db.messages.all :order => "position"
     messages[0]._type.should == 'Enter'
     messages[1]._type.should == 'Exit'
     messages[2]._type.should == 'Chat'
@@ -126,91 +126,91 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
   context "Finding scoped to association" do
     setup do
       @lounge = Room.create(:name => 'Lounge')
-      @lm1 = Message.create(:body => 'Loungin!', :item_order => 1)
-      @lm2 = Message.create(:body => 'I love loungin!', :item_order => 2)
+      @lm1 = Message.create(:body => 'Loungin!', :position => 1)
+      @lm2 = Message.create(:body => 'I love loungin!', :position => 2)
       @lounge.messages = [@lm1, @lm2]
       @lounge.save
       
       @hall = Room.create(:name => 'Hall')
-      @hm1 = Message.create(:body => 'Do not fall in the hall', :item_order => 1)
-      @hm2 = Message.create(:body => 'Hall the king!', :item_order => 2)
-      @hm3 = Message.create(:body => 'Loungin!', :item_order => 3)
+      @hm1 = Message.create(:body => 'Do not fall in the hall', :position => 1)
+      @hm2 = Message.create(:body => 'Hall the king!', :position => 2)
+      @hm3 = Message.create(:body => 'Loungin!', :position => 3)
       @hall.messages = [@hm1, @hm2, @hm3]
       @hall.save
     end
     
     context "with :all" do
       should "work" do
-        @lounge.messages.find(:all, :order => "item_order ASC").should == [@lm1, @lm2]
+        @lounge.messages.find(:all, :order => "position").should == [@lm1, @lm2]
       end
       
       should "work with conditions" do
-        messages = @lounge.messages.find(:all, :conditions => {:body => 'Loungin!'}, :order => "item_order ASC")
+        messages = @lounge.messages.find(:all, :conditions => {:body => 'Loungin!'}, :order => "position")
         messages.should == [@lm1]
       end
       
       should "work with order" do
-        messages = @lounge.messages.find(:all, :order => 'item_order desc')
+        messages = @lounge.messages.find(:all, :order => 'position desc')
         messages.should == [@lm2, @lm1]
       end
     end
     
     context "with #all" do
       should "work" do
-        @lounge.messages.all(:order => "item_order ASC").should == [@lm1, @lm2]
+        @lounge.messages.all(:order => "position").should == [@lm1, @lm2]
       end
       
       should "work with conditions" do
-        messages = @lounge.messages.all(:conditions => {:body => 'Loungin!'}, :order => "item_order ASC")
+        messages = @lounge.messages.all(:conditions => {:body => 'Loungin!'}, :order => "position")
         messages.should == [@lm1]
       end
       
       should "work with order" do
-        messages = @lounge.messages.all(:order => 'item_order desc')
+        messages = @lounge.messages.all(:order => 'position desc')
         messages.should == [@lm2, @lm1]
       end
     end
     
     context "with :first" do
       should "work" do
-        @lounge.messages.find(:first, :order => "item_order asc").should == @lm1
+        @lounge.messages.find(:first, :order => "position asc").should == @lm1
       end
       
       should "work with conditions" do
-        message = @lounge.messages.find(:first, :conditions => {:body => 'I love loungin!'}, :order => "item_order asc")
+        message = @lounge.messages.find(:first, :conditions => {:body => 'I love loungin!'}, :order => "position asc")
         message.should == @lm2
       end
     end
     
     context "with #first" do
       should "work" do
-        @lounge.messages.first(:order => "item_order asc").should == @lm1
+        @lounge.messages.first(:order => "position asc").should == @lm1
       end
       
       should "work with conditions" do
-        message = @lounge.messages.first(:conditions => {:body => 'I love loungin!'}, :order => "item_order asc")
+        message = @lounge.messages.first(:conditions => {:body => 'I love loungin!'}, :order => "position asc")
         message.should == @lm2
       end
     end
     
     context "with :last" do
       should "work" do
-        @lounge.messages.find(:last, :order => "item_order asc").should == @lm2
+        @lounge.messages.find(:last, :order => "position asc").should == @lm2
       end
       
       should "work with conditions" do
-        message = @lounge.messages.find(:last, :conditions => {:body => 'Loungin!'}, :order => "item_order asc")
+        message = @lounge.messages.find(:last, :conditions => {:body => 'Loungin!'}, :order => "position asc")
         message.should == @lm1
       end
     end
     
     context "with #last" do
       should "work" do
-        @lounge.messages.last(:order => "item_order asc").should == @lm2
+        @lounge.messages.last(:order => "position asc").should == @lm2
       end
       
       should "work with conditions" do
-        message = @lounge.messages.last(:conditions => {:body => 'Loungin!'}, :order => "item_order asc")
+        message = @lounge.messages.last(:conditions => {:body => 'Loungin!'}, :order => "position asc")
         message.should == @lm1
       end
     end
@@ -242,7 +242,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     
     context "with #paginate" do
       setup do
-        @messages = @hall.messages.paginate(:per_page => 2, :page => 1, :order => 'item_order asc')
+        @messages = @hall.messages.paginate(:per_page => 2, :page => 1, :order => 'position asc')
       end
       
       should "return total pages" do
