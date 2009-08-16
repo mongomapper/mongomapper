@@ -9,6 +9,7 @@ end
 class Message
   include MongoMapper::Document
   key :body, String
+  key :item_order, Integer
   belongs_to :room
 end
 
@@ -34,6 +35,7 @@ class Status
   belongs_to :project
   belongs_to :target, :polymorphic => true
   key :name, String
+  key :item_order, Integer
 end
 
 class RealPerson

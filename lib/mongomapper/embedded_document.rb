@@ -77,28 +77,39 @@ module MongoMapper
       end
 
       def parent_model
-        if parent = ancestors[1]
-          parent if parent.ancestors.include?(EmbeddedDocument)
+        (ancestors - [self,EmbeddedDocument]).find do |parent_class|
+          parent_class.ancestors.include?(EmbeddedDocument)
         end
       end
 
     private
+      def accessors_module
+        if const_defined?('MongoMapperKeys') && constants.include?( 'MongoMapperKeys' )
+          const_get 'MongoMapperKeys'
+        else 
+          const_set 'MongoMapperKeys', Module.new
+        end
+      end
+
       def create_accessors_for(key)
-        define_method(key.name) do
-          read_attribute(key.name)
-        end
+        accessors_module.module_eval <<-end_eval
+          def #{key.name}
+            read_attribute( :'#{key.name}' )
+          end
 
-        define_method("#{key.name}_before_typecast") do
-          read_attribute_before_typecast(key.name)
-        end
+          def #{key.name}_before_typecast
+            read_attribute_before_typecast(:'#{key.name}')
+          end
 
-        define_method("#{key.name}=") do |value|
-          write_attribute(key.name, value)
-        end
+          def #{key.name}=(value)
+            write_attribute(:'#{key.name}', value)
+          end
 
-        define_method("#{key.name}?") do
-          read_attribute(key.name).present?
-        end
+          def #{key.name}?
+            read_attribute(:#{key.name}).present?
+          end
+        end_eval
+        include accessors_module
       end
       
       def create_indexes_for(key)

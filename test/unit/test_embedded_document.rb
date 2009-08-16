@@ -15,8 +15,20 @@ class Child < Parent
   key :child, String
 end
 
+module KeyOverride
+  def other_child
+    read_attribute(:other_child) || "special result"
+  end
+  
+  def other_child=(value)
+    super(value + " modified")
+  end
+end
+
 class OtherChild < Parent
   include MongoMapper::EmbeddedDocument
+  include KeyOverride
+  
   key :other_child, String
 end
 
@@ -40,6 +52,21 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         include MongoMapper::EmbeddedDocument
       end
       document.parent_model.should be_nil
+    end
+
+    should "work when other modules have been included" do
+      grandparent = Class.new
+      parent = Class.new grandparent do
+        include MongoMapper::EmbeddedDocument
+      end
+      
+      example_module = Module.new
+      document = Class.new(parent) do
+        include MongoMapper::EmbeddedDocument
+        include example_module
+      end
+      
+      document.parent_model.should == parent
     end
     
     should "find parent" do
@@ -133,6 +160,14 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       Grandparent.keys.keys.sort.should == ['_id', '_type', 'grandparent']
       Parent.keys.keys.sort.should      == ['_id', '_type', 'grandparent', 'parent']
       Child.keys.keys.sort.should       == ['_id', '_type', 'child', 'grandparent', 'parent']
+    end
+
+    should "not add anonymous objects to the ancestor tree" do
+      OtherChild.ancestors.any? { |a| a.name.blank? }.should be_false
+    end
+
+    should "not include descendant keys" do
+      lambda { Parent.new.other_child }.should raise_error
     end
   end
   
@@ -364,6 +399,21 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.foo
         doc.instance_variable_get("@foo").should be_nil
       end
+      
+      should "be overrideable by modules" do
+        @document = Class.new do
+          include MongoMapper::Document
+          key :other_child, String
+        end
+        
+        child = @document.new
+        child.other_child.should be_nil
+        
+        @document.send :include, KeyOverride
+        
+        overriden_child = @document.new
+        overriden_child.other_child.should == 'special result'
+      end
     end
 
     context "reading an attribute before typcasting" do
@@ -423,6 +473,21 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.name_and_age = 'Frank (62)'
         doc.name.should == 'Frank'
         doc.age.should == 62
+      end
+      
+      should "be overrideable by modules" do
+        @document = Class.new do
+          include MongoMapper::Document
+          key :other_child, String
+        end
+        
+        child = @document.new(:other_child => 'foo')
+        child.other_child.should == 'foo'
+        
+        @document.send :include, KeyOverride
+        
+        overriden_child = @document.new(:other_child => 'foo')
+        overriden_child.other_child.should == 'foo modified'
       end
     end # writing an attribute
     
