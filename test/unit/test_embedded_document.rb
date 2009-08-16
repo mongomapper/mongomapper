@@ -234,6 +234,12 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.attributes['name'].should == 'John'
         doc.attributes['age'].should == 23
       end
+      
+      should "be able to assign keys dynamically" do
+        doc = @document.new(:name => 'John', :skills => ['ruby', 'rails'])
+        doc.name.should == 'John'
+        doc.skills.should == ['ruby', 'rails']
+      end
 
       should "not throw error if initialized with nil" do
         lambda {
@@ -296,10 +302,19 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc[:name].should == 'string'
       end
       
-      should "be able to write key value with []=" do
-        doc = @document.new
-        doc[:name] = 'string'
-        doc[:name].should == 'string'
+      context "[]=" do
+        should "write key value for existing key" do
+          doc = @document.new
+          doc[:name] = 'string'
+          doc[:name].should == 'string'
+        end
+        
+        should "create key and write value for missing key" do
+          doc = @document.new
+          doc[:foo] = 'string'
+          @document.keys.keys.include?('foo').should be_true
+          doc[:foo].should == 'string'
+        end
       end
     end
     

@@ -158,17 +158,29 @@ module MongoMapper
 
       def attributes=(attrs)
         return if attrs.blank?
-        attrs.each_pair do |key, value|
-          method = "#{key}="
-          self.class.key(key) unless respond_to?(method)
-          self.send(method, value)
+        attrs.each_pair do |name, value|
+          writer_method = "#{name}="
+          
+          if respond_to?(writer_method)
+            self.send(writer_method, value)
+          else
+            self[name.to_s] = value
+          end
         end
       end
 
       def attributes
         attrs = HashWithIndifferentAccess.new
         self.class.keys.each_pair do |name, key|
-          value = value_for_key(key)
+          value = 
+            if key.native?
+              read_attribute(key.name)
+            else
+              if embedded_document = read_attribute(key.name)
+                embedded_document.attributes
+              end
+            end
+          
           attrs[name] = value unless value.nil?
         end
         attrs.merge!(embedded_association_attributes)
@@ -179,6 +191,7 @@ module MongoMapper
       end
 
       def []=(name, value)
+        ensure_key_exists(name)
         write_attribute(name, value)
       end
 
@@ -207,13 +220,8 @@ module MongoMapper
       end
 
       private
-        def value_for_key(key)
-          if key.native?
-            read_attribute(key.name)
-          else
-            embedded_document = read_attribute(key.name)
-            embedded_document && embedded_document.attributes
-          end
+        def ensure_key_exists(name)
+          self.class.key(name) unless respond_to?("#{name}=")
         end
 
         def read_attribute(name)
