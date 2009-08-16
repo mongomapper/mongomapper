@@ -4,7 +4,6 @@ module MongoMapper
   module EmbeddedDocument
     def self.included(model)
       model.class_eval do
-        #module MongoMapperKeys; end
         extend ClassMethods
         include InstanceMethods
 
@@ -85,10 +84,10 @@ module MongoMapper
 
     private
       def accessors_module
-        if const_defined?("MongoMapperKeys") && constants.include?( "MongoMapperKeys" )
-          const_get "MongoMapperKeys"
+        if const_defined?('MongoMapperKeys') && constants.include?( 'MongoMapperKeys' )
+          const_get 'MongoMapperKeys'
         else 
-          const_set "MongoMapperKeys", Module.new
+          const_set 'MongoMapperKeys', Module.new
         end
       end
 

@@ -43,9 +43,9 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
   
   should "correctly store type when using <<, push and concat" do
     room = Room.new
-    room.messages <<  Enter.new(:body => 'John entered the room', :item_order => 1)
-    room.messages.push Exit.new(:body => 'John entered the room', :item_order => 2)
-    room.messages.concat Chat.new(:body => 'Holla!'             , :item_order => 3)
+    room.messages <<      Enter.new(:body => 'John entered the room', :item_order => 1)
+    room.messages.push    Exit.new(:body => 'John entered the room', :item_order => 2)
+    room.messages.concat  Chat.new(:body => 'Holla!'             , :item_order => 3)
     
     from_db = Room.find(room.id)
     messages = from_db.messages.all :order => "item_order ASC"
@@ -157,16 +157,16 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     
     context "with #all" do
       should "work" do
-        @lounge.messages.find(:all, :order => "item_order ASC").should == [@lm1, @lm2]
+        @lounge.messages.all(:order => "item_order ASC").should == [@lm1, @lm2]
       end
       
       should "work with conditions" do
-        messages = @lounge.messages.find(:all, :conditions => {:body => 'Loungin!'}, :order => "item_order ASC")
+        messages = @lounge.messages.all(:conditions => {:body => 'Loungin!'}, :order => "item_order ASC")
         messages.should == [@lm1]
       end
       
       should "work with order" do
-        messages = @lounge.messages.find(:all, :order => 'item_order desc')
+        messages = @lounge.messages.all(:order => 'item_order desc')
         messages.should == [@lm2, @lm1]
       end
     end
@@ -184,11 +184,11 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     
     context "with #first" do
       should "work" do
-        @lounge.messages.find(:first, :order => "item_order asc").should == @lm1
+        @lounge.messages.first(:order => "item_order asc").should == @lm1
       end
       
       should "work with conditions" do
-        message = @lounge.messages.find(:first, :conditions => {:body => 'I love loungin!'}, :order => "item_order asc")
+        message = @lounge.messages.first(:conditions => {:body => 'I love loungin!'}, :order => "item_order asc")
         message.should == @lm2
       end
     end
@@ -206,11 +206,11 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     
     context "with #last" do
       should "work" do
-        @lounge.messages.find(:last, :order => "item_order asc").should == @lm2
+        @lounge.messages.last(:order => "item_order asc").should == @lm2
       end
       
       should "work with conditions" do
-        message = @lounge.messages.find(:last, :conditions => {:body => 'Loungin!'}, :order => "item_order asc")
+        message = @lounge.messages.last(:conditions => {:body => 'Loungin!'}, :order => "item_order asc")
         message.should == @lm1
       end
     end
