@@ -20,6 +20,12 @@ class OtherChild < Parent
   key :other_child, String
 end
 
+module KeyOverride
+  def other_child
+    "special result"
+  end
+end
+
 class EmbeddedDocumentTest < Test::Unit::TestCase
   context "Including MongoMapper::EmbeddedDocument" do
     setup do
@@ -146,6 +152,19 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       Grandparent.keys.keys.sort.should == ['_id', '_type', 'grandparent']
       Parent.keys.keys.sort.should      == ['_id', '_type', 'grandparent', 'parent']
       Child.keys.keys.sort.should       == ['_id', '_type', 'child', 'grandparent', 'parent']
+    end
+
+    should "be overrideable" do
+      OtherChild.send :include, KeyOverride
+      OtherChild.new.other_child.should == "special result"
+    end
+
+    should "not add anonymous objects to the ancestor tree" do
+      OtherChild.ancestors.any? { |a| a.name.blank? }.should be_false
+    end
+
+    should "not include descendant keys" do
+      lambda { Parent.new.other_child }.should raise_error
     end
   end
   
