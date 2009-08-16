@@ -12,6 +12,9 @@ class Message
   
   key :body, String
   key :position, Integer
+  key :_type, String
+  key :room_id, String
+  
   belongs_to :room
 end
 
@@ -39,6 +42,10 @@ class Status
   
   belongs_to :project
   belongs_to :target, :polymorphic => true
+  
+  key :project_id, String
+  key :target_id, String
+  key :target_type, String
   key :name, String
   key :position, Integer
 end
@@ -72,6 +79,7 @@ end
 class Media
   include MongoMapper::EmbeddedDocument
   
+  key :_type, String
   key :file, String
 end
 
@@ -98,6 +106,7 @@ module TrModels
   class Transport
     include MongoMapper::EmbeddedDocument
     
+    key :_type, String
     key :license_plate, String
   end
 

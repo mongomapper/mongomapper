@@ -144,7 +144,7 @@ module MongoMapper
         
         class_eval { before_save :update_timestamps }
       end
-
+      
       def validates_uniqueness_of(*args)
         add_validations(args, MongoMapper::Validations::ValidatesUniquenessOf)
       end

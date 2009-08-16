@@ -20,7 +20,6 @@ module MongoMapper
           association = Associations::Base.new(type, name, options)
           associations[association.name] = association
           define_association_methods(association)
-          define_association_keys(association)
           define_dependent_callback(association)
           association
         end
@@ -33,17 +32,6 @@ module MongoMapper
           define_method("#{association.name}=") do |value|
             get_proxy(association).replace(value)
             value
-          end
-        end
-
-        def define_association_keys(association)
-          if association.belongs_to?
-            key(association.belongs_to_key_name, String)
-            key(association.type_key_name, String) if association.polymorphic?
-          end
-
-          if association.many? && association.polymorphic?
-            association.klass.send(:key, association.type_key_name, String)
           end
         end
 

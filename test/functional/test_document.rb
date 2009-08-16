@@ -561,6 +561,7 @@ class DocumentTest < Test::Unit::TestCase
       context "many" do
         context "=> destroy" do
           setup do
+            Property.key :thing_id, String
             Property.belongs_to :thing, :dependent => :destroy
             Thing.many :properties, :dependent => :destroy
 
@@ -583,6 +584,7 @@ class DocumentTest < Test::Unit::TestCase
 
         context "=> delete_all" do
           setup do
+            Property.key :thing_id, String
             Property.belongs_to :thing
             Thing.has_many :properties, :dependent => :delete_all
 
@@ -605,6 +607,7 @@ class DocumentTest < Test::Unit::TestCase
 
         context "=> nullify" do
           setup do
+            Property.key :thing_id, String
             Property.belongs_to :thing
             Thing.has_many :properties, :dependent => :nullify
 
@@ -629,6 +632,7 @@ class DocumentTest < Test::Unit::TestCase
       context "belongs_to" do
         context "=> destroy" do
           setup do
+            Property.key :thing_id, String
             Property.belongs_to :thing, :dependent => :destroy
             Thing.has_many :properties
 
