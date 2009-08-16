@@ -50,18 +50,12 @@ module MongoMapper
           elsif type == Float     then value.to_f
           elsif type == Array     then value.to_a
           elsif type == Time      then Time.parse(value.to_s).utc
-          #elsif type == Date      then Date.parse(value.to_s)
           elsif type == Boolean   then Boolean.mm_typecast(value)
           elsif type == Integer
             # ganked from datamapper
             value_to_i = value.to_i
-            if value_to_i == 0 && value != '0'
-              value_to_s = value.to_s
-              begin
-                Integer(value_to_s =~ /^(\d+)/ ? $1 : value_to_s)
-              rescue ArgumentError
-                nil
-              end
+            if value_to_i == 0
+              value.to_s =~ /^(0x|0b)?0+/ ? 0 : nil
             else
               value_to_i
             end

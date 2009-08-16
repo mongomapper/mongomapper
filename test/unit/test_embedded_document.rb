@@ -193,7 +193,6 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @doc.options['baz'].should == 'wick'
     end
   end
-  
 
   context "An instance of an embedded document" do
     setup do
