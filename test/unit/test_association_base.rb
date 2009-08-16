@@ -78,8 +78,16 @@ class AssociationBaseTest < Test::Unit::TestCase
     end
   end
   
-  should "have belongs_to_key_name" do
-    Base.new(:belongs_to, :foo).belongs_to_key_name.should == 'foo_id'
+  context "foreign_key" do
+    should "default to assocation_name_id" do
+      base = Base.new(:belongs_to, :foo)
+      base.foreign_key.should == 'foo_id'
+    end
+    
+    should "be overridable with :foreign_key option" do
+      base = Base.new(:belongs_to, :foo, :foreign_key => 'foobar_id')
+      base.foreign_key.should == 'foobar_id'
+    end
   end
   
   should "have ivar that is association name" do

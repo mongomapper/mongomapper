@@ -5,7 +5,7 @@ class AssociationsTest < Test::Unit::TestCase
   def setup
     clear_all_collections
   end
-  
+    
   should "allow changing class names" do
     class AwesomeUser
       include MongoMapper::Document
@@ -15,6 +15,7 @@ class AssociationsTest < Test::Unit::TestCase
     
     class AwesomeTag
       include MongoMapper::EmbeddedDocument
+      
       key :name, String
       key :post_id, String
       
@@ -23,6 +24,7 @@ class AssociationsTest < Test::Unit::TestCase
     
     class AwesomePost
       include MongoMapper::Document
+      
       key :creator_id, String
       
       belongs_to :creator, :class_name => 'AssociationsTest::AwesomeUser'
@@ -41,5 +43,5 @@ class AssociationsTest < Test::Unit::TestCase
     
     post1_from_db = AwesomePost.find(post1.id)
     post1_from_db.tags.should == [tag1]
-  end
+  end  
 end

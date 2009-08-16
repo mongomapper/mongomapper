@@ -7,7 +7,7 @@ module MongoMapper
           id, type = doc.id, doc.class.name
         end
         
-        @owner.send("#{@association.belongs_to_key_name}=", id)
+        @owner.send("#{@association.foreign_key}=", id)
         @owner.send("#{@association.type_key_name}=", type)
         reset
       end
@@ -20,7 +20,7 @@ module MongoMapper
         end
         
         def proxy_id
-          @proxy_id ||= @owner.send(@association.belongs_to_key_name)
+          @proxy_id ||= @owner.send(@association.foreign_key)
         end
         
         def proxy_class

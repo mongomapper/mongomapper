@@ -40,14 +40,14 @@ end
 class Status
   include MongoMapper::Document
   
-  belongs_to :project
-  belongs_to :target, :polymorphic => true
-  
   key :project_id, String
   key :target_id, String
   key :target_type, String
   key :name, String
   key :position, Integer
+  
+  belongs_to :project
+  belongs_to :target, :polymorphic => true
 end
 
 class RealPerson
@@ -66,6 +66,7 @@ class Person
   
   key :name, String
   key :child, Person
+  
   many :pets
 end
 

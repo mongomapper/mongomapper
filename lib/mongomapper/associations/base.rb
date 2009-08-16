@@ -4,9 +4,7 @@ module MongoMapper
       attr_reader :type, :name, :options
 
       def initialize(type, name, options = {})
-        @options = options
-        @type = type
-        @name = name
+        @type, @name, @options = type, name, options
       end
       
       def class_name
@@ -41,8 +39,8 @@ module MongoMapper
         @type_key_name ||= many? ? '_type' : "#{name}_type"
       end
       
-      def belongs_to_key_name
-        "#{name}_id"
+      def foreign_key
+        @options[:foreign_key] || "#{name}_id"
       end
       
       def ivar
