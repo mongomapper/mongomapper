@@ -1,5 +1,19 @@
 module MongoMapper
-  module Validations
+  module Validations    
+    module Macros
+      def validates_uniqueness_of(*args)
+        add_validations(args, MongoMapper::Validations::ValidatesUniquenessOf)
+      end
+
+      def validates_exclusion_of(*args)
+        add_validations(args, MongoMapper::Validations::ValidatesExclusionOf)
+      end
+
+      def validates_inclusion_of(*args)
+        add_validations(args, MongoMapper::Validations::ValidatesInclusionOf)
+      end
+    end
+    
     class ValidatesUniquenessOf < Validatable::ValidationBase
       def valid?(instance)
         # TODO: scope

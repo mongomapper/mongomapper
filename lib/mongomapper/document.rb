@@ -10,6 +10,7 @@ module MongoMapper
         include Callbacks
         include SaveWithValidation
         include RailsCompatibility::Document
+        extend Validations::Macros
         extend ClassMethods
       end
 
@@ -143,18 +144,6 @@ module MongoMapper
         key :updated_at, Time
         
         class_eval { before_save :update_timestamps }
-      end
-      
-      def validates_uniqueness_of(*args)
-        add_validations(args, MongoMapper::Validations::ValidatesUniquenessOf)
-      end
-
-      def validates_exclusion_of(*args)
-        add_validations(args, MongoMapper::Validations::ValidatesExclusionOf)
-      end
-
-      def validates_inclusion_of(*args)
-        add_validations(args, MongoMapper::Validations::ValidatesInclusionOf)
       end
       
       protected

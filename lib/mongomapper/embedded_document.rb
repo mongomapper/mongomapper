@@ -14,6 +14,8 @@ module MongoMapper
         include Validatable
         include Serialization
         
+        extend Validations::Macros
+        
         key :_id, String
       end
     end
