@@ -47,8 +47,8 @@ module MongoMapper
         @options[:as] || self.name
       end
 
-      def belongs_to_key_name
-        "#{name}_id"
+      def foreign_key
+        @options[:foreign_key] || "#{name}_id"
       end
 
       def ivar

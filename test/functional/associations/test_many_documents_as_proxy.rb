@@ -7,245 +7,246 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
   end
 
   should "default reader to empty array" do
-    Message.new.votes.should == []
+    Post.new.comments.should == []
   end
 
   should "add type and id key to polymorphic class base" do
-    Vote.keys.keys.should include('voteable_type')
-    Vote.keys.keys.should include('voteable_id')
+    PostComment.keys.keys.should include('commentable_type')
+    PostComment.keys.keys.should include('commentable_id')
   end
 
   should "allow adding to association like it was an array" do
-    message = Message.new
-    message.votes << Vote.new(:value => true)
-    message.votes << Vote.new(:value => false)
-    message.votes.concat Vote.new(:value => false)
+    post = Post.new
+    post.comments << PostComment.new(:body => 'foo bar')
+    post.comments << PostComment.new(:body => 'baz')
+    post.comments.concat PostComment.new(:body => 'baz')
 
-    message.votes.size.should == 3
+    post.comments.size.should == 3
   end
 
   should "be able to replace the association" do
-    message = Message.new
+    post = Post.new
 
     lambda {
-      message.votes = [
-        Vote.new(:value => true),
-        Vote.new(:value => false),
-        Vote.new(:value => true)
+      post.comments = [
+        PostComment.new(:body => 'foo'),
+        PostComment.new(:body => 'bar'),
+        PostComment.new(:body => 'baz')
       ]
-    }.should change { Vote.count }.by(3)
+    }.should change { PostComment.count }.by(3)
 
-    from_db = Message.find(message.id)
-    from_db.votes.size.should == 3
-    from_db.votes[0].value.should == true
-    from_db.votes[1].value.should == false
-    from_db.votes[2].value.should == true
+    from_db = Post.find(post.id)
+    from_db.comments.size.should == 3
+    from_db.comments[0].body.should == 'foo'
+    from_db.comments[1].body.should == 'bar'
+    from_db.comments[2].body.should == 'baz'
   end
 
   context "build" do
     should "assign foreign key" do
-      message = Message.new
-      vote = message.votes.build
-      vote.voteable_id.should == message.id
+      post = Post.new
+      comment = post.comments.build
+      comment.commentable_id.should == post.id
     end
 
     should "assign _type" do
-      message = Message.new
-      vote = message.votes.build
-      vote.voteable_type.should == "Message"
+      post = Post.new
+      comment = post.comments.build
+      comment.commentable_type.should == "Post"
     end
 
     should "allow assigning attributes" do
-      message = Message.new
-      vote = message.votes.build(:value => true)
-      vote.value.should == true
+      post = Post.new
+      comment = post.comments.build(:body => 'foo bar')
+      comment.body.should == 'foo bar'
     end
   end
 
   context "create" do
     should "assign foreign key" do
-      message = Message.new
-      vote = message.votes.create
-      vote.voteable_id.should == message.id
+      post = Post.new
+      comment = post.comments.create
+      comment.commentable_id.should == post.id
     end
 
     should "assign _type" do
-      message = Message.new
-      vote = message.votes.create
-      vote.voteable_type.should == "Message"
+      post = Post.new
+      comment = post.comments.create
+      comment.commentable_type.should == "Post"
     end
 
     should "save record" do
-      message = Message.new
+      post = Post.new
       lambda {
-        message.votes.create(:value => false)
-      }.should change { Vote.count }
+        post.comments.create(:body => 'baz')
+      }.should change { PostComment.count }
     end
 
     should "allow passing attributes" do
-      message = Message.create
-      vote = message.votes.create(:value => true)
-      vote.value.should == true
+      post = Post.create
+      comment = post.comments.create(:body => 'foo bar')
+      comment.body.should == 'foo bar'
     end
   end
 
   context "count" do
     should "work scoped to association" do
-      message = Message.create
-      3.times { message.votes.create(:value => true) }
+      post = Post.create
+      3.times { post.comments.create(:body => 'foo bar') }
 
-      other_message = Message.create
-      2.times { other_message.votes.create(:value => false) }
+      other_post = Post.create
+      2.times { other_post.comments.create(:body => 'baz') }
 
-      message.votes.count.should == 3
-      other_message.votes.count.should == 2
+      post.comments.count.should == 3
+      other_post.comments.count.should == 2
     end
 
     should "work with conditions" do
-      message = Message.create
-      message.votes.create(:value => true)
-      message.votes.create(:value => false)
-      message.votes.create(:value => true)
+      post = Post.create
+      post.comments.create(:body => 'foo bar')
+      post.comments.create(:body => 'baz')
+      post.comments.create(:body => 'foo bar')
 
-      message.votes.count(:value => true).should == 2
+      post.comments.count(:body => 'foo bar').should == 2
     end
   end
 
   context "Finding scoped to association" do
     setup do
-      @message = Message.new
+      @post = Post.new
 
-      @v1 = Vote.create(:value => true)
-      @v2 = Vote.create(:value => false)
-      @v3 = Vote.create(:value => true)
-      @message.votes = [@v1, @v2]
-      @message.save
+      @comment1 = PostComment.create(:body => 'comment1')
+      @comment2 = PostComment.create(:body => 'comment2')
+      @comment3 = PostComment.create(:body => 'comment3')
+      @post.comments = [@comment1, @comment2]
+      @post.save
 
-      @message2 = Message.create(:body => "message #2")
-      @v4 = Vote.create(:value => true)
-      @v5 = Vote.create(:value => false)
-      @v6 = Vote.create(:value => false)
-      @message2.votes = [@v4, @v5, @v6]
-      @message2.save
+      @post2 = Post.create(:body => "post #2")
+      @comment4 = PostComment.create(:body => 'comment4')
+      @comment5 = PostComment.create(:body => 'comment5')
+      @comment6 = PostComment.create(:body => 'comment6')
+      @post2.comments = [@comment4, @comment5, @comment6]
+      @post2.save
     end
 
     context "with :all" do
       should "work" do
-        @message.votes.find(:all).should include(@v1)
-        @message.votes.find(:all).should include(@v2)
+        @post.comments.find(:all).should include(@comment1)
+        @post.comments.find(:all).should include(@comment2)
       end
 
       should "work with conditions" do
-        votes = @message.votes.find(:all, :conditions => {:value => true})
-        votes.should == [@v1]
+        comments = @post.comments.find(:all, :conditions => {:body => 'comment1'})
+        comments.should == [@comment1]
       end
 
       should "work with order" do
-        votes = @message.votes.find(:all, :order => '$natural desc')
-        votes.should == [@v2, @v1]
+        comments = @post.comments.find(:all, :order => '$natural desc')
+        comments.should == [@comment2, @comment1]
       end
     end
 
     context "with #all" do
       should "work" do
-        @message.votes.all.should == [@v1, @v2]
+        @post.comments.all.should == [@comment1, @comment2]
       end
 
       should "work with conditions" do
-        votes = @message.votes.all(:conditions => {:value => true})
-        votes.should == [@v1]
+        comments = @post.comments.all(:conditions => {:body => 'comment1'})
+        comments.should == [@comment1]
       end
 
       should "work with order" do
-        votes = @message.votes.all(:order => '$natural desc')
-        votes.should == [@v2, @v1]
+        comments = @post.comments.all(:order => '$natural desc')
+        comments.should == [@comment2, @comment1]
       end
     end
 
     context "with :first" do
       should "work" do
-        lambda {@message.votes.find(:first)}.should_not raise_error
+        lambda {@post.comments.find(:first)}.should_not raise_error
       end
 
       should "work with conditions" do
-        vote = @message.votes.find(:first, :conditions => {:value => false})
-        vote.value.should == false
+        comment = @post.comments.find(:first, :conditions => {:body => 'comment2'})
+        comment.body.should == 'comment2'
       end
     end
 
     context "with #first" do
       should "work" do
-        @message.votes.first.should == @v1
+        @post.comments.first.should == @comment1
       end
 
       should "work with conditions" do
-        vote = @message.votes.first(:conditions => {:value => false})
-        vote.should == @v2
+        comment = @post.comments.first(:conditions => {:body => 'comment2'})
+        comment.should == @comment2
       end
     end
 
     context "with :last" do
       should "work" do
-        @message.votes.find(:last).should == @v2
+        @post.comments.find(:last, :order => 'created_at asc').should == @comment2
       end
 
       should "work with conditions" do
-        message = @message.votes.find(:last, :conditions => {:value => true})
-        message.value.should == true
+        post = @post.comments.find(:last, :conditions => {:body => 'comment1'})
+        post.body.should == 'comment1'
       end
     end
 
     context "with #last" do
       should "work" do
-        @message.votes.last.should == @v2
+        @post.comments.last.should == @comment2
       end
 
       should "work with conditions" do
-        vote = @message.votes.last(:conditions => {:value => true})
-        vote.should == @v1
+        comment = @post.comments.last(:conditions => {:body => 'comment1'})
+        comment.should == @comment1
       end
     end
 
     context "with one id" do
       should "work for id in association" do
-        @message.votes.find(@v2.id).should == @v2
+        @post.comments.find(@comment2.id).should == @comment2
       end
 
       should "not work for id not in association" do
         lambda {
-          @message.votes.find(@v5.id)
+          @post.comments.find(@comment5.id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
 
     context "with multiple ids" do
       should "work for ids in association" do
-        messages = @message.votes.find(@v1.id, @v2.id)
-        messages.should == [@v1, @v2]
+        posts = @post.comments.find(@comment1.id, @comment2.id)
+        posts.should == [@comment1, @comment2]
       end
 
       should "not work for ids not in association" do
         lambda {
-          @message.votes.find(@v1.id, @v2.id, @v4.id)
+          @post.comments.find(@comment1.id, @comment2.id, @comment4.id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
 
     context "with #paginate" do
       setup do
-        @votes = @message2.votes.paginate(:per_page => 2, :page => 1, :order => '$natural asc')
+        @comments = @post2.comments.paginate(:per_page => 2, :page => 1, :order => 'created_at asc')
       end
 
       should "return total pages" do
-        @votes.total_pages.should == 2
+        @comments.total_pages.should == 2
       end
 
       should "return total entries" do
-        @votes.total_entries.should == 3
+        @comments.total_entries.should == 3
       end
 
       should "return the subject" do
-        @votes.should == [@v4, @v5]
+        @comments.should include(@comment4)
+        @comments.should include(@comment5)
       end
     end
   end
