@@ -46,7 +46,7 @@ module MongoMapper
       def as
         @options[:as] || self.name
       end
-      
+
       def foreign_key
         @options[:foreign_key] || "#{name}_id"
       end
