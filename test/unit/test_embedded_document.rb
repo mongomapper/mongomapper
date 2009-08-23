@@ -15,8 +15,20 @@ class Child < Parent
   key :child, String
 end
 
+module KeyOverride
+  def other_child
+    read_attribute(:other_child) || "special result"
+  end
+  
+  def other_child=(value)
+    super(value + " modified")
+  end
+end
+
 class OtherChild < Parent
   include MongoMapper::EmbeddedDocument
+  include KeyOverride
+  
   key :other_child, String
 end
 
@@ -41,6 +53,21 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
       document.parent_model.should be_nil
     end
+
+    should "work when other modules have been included" do
+      grandparent = Class.new
+      parent = Class.new grandparent do
+        include MongoMapper::EmbeddedDocument
+      end
+      
+      example_module = Module.new
+      document = Class.new(parent) do
+        include MongoMapper::EmbeddedDocument
+        include example_module
+      end
+      
+      document.parent_model.should == parent
+    end
     
     should "find parent" do
       Parent.parent_model.should == Grandparent
@@ -55,16 +82,28 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
     end
     
-    should "work" do
+    should "work with name" do
+      key = @document.key(:name)
+      key.name.should == 'name'
+    end
+    
+    should "work with name and type" do
       key = @document.key(:name, String)
       key.name.should == 'name'
       key.type.should == String
-      key.should be_instance_of(MongoMapper::Key)
     end
     
-    should "work with options" do
+    should "work with name, type and options" do
       key = @document.key(:name, String, :required => true)
-      key.options[:required].should be(true)
+      key.name.should == 'name'
+      key.type.should == String
+      key.options[:required].should be_true
+    end
+    
+    should "work with name and options" do
+      key = @document.key(:name, :required => true)
+      key.name.should == 'name'
+      key.options[:required].should be_true
     end
     
     should "be tracked per document" do
@@ -76,11 +115,11 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @document.keys['age'].type.should == Integer
     end
     
-    should "be redefinable" do
+    should "not be redefinable" do
       @document.key(:foo, String)
       @document.keys['foo'].type.should == String
       @document.key(:foo, Integer)
-      @document.keys['foo'].type.should == Integer
+      @document.keys['foo'].type.should == String
     end
     
     should "create reader method" do
@@ -122,6 +161,14 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       Parent.keys.keys.sort.should      == ['_id', '_type', 'grandparent', 'parent']
       Child.keys.keys.sort.should       == ['_id', '_type', 'child', 'grandparent', 'parent']
     end
+
+    should "not add anonymous objects to the ancestor tree" do
+      OtherChild.ancestors.any? { |a| a.name.blank? }.should be_false
+    end
+
+    should "not include descendant keys" do
+      lambda { Parent.new.other_child }.should raise_error
+    end
   end
   
   context "subclasses" do
@@ -132,6 +179,53 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     should "be recorded" do
       Grandparent.subclasses.should == [Parent]
       Parent.subclasses.should      == [Child, OtherChild]
+    end
+  end
+  
+  context "Applying default values for keys" do
+    setup do
+      @document = Class.new do
+        include MongoMapper::EmbeddedDocument
+        
+        key :name,      String,   :default => 'foo'
+        key :age,       Integer,  :default => 20
+        key :net_worth, Float,    :default => 100.00
+        key :active,    Boolean,  :default => true
+        key :smart,     Boolean,  :default => false
+        key :skills,    Array,    :default => [1]
+        key :options,   Hash,     :default => {'foo' => 'bar'}
+      end
+      
+      @doc = @document.new
+    end
+    
+    should "work for strings" do
+      @doc.name.should == 'foo'
+    end
+    
+    should "work for integers" do
+      @doc.age.should == 20
+    end
+    
+    should "work for floats" do
+      @doc.net_worth.should == 100.00
+    end
+    
+    should "work for booleans" do
+      @doc.active.should == true
+      @doc.smart.should == false
+    end
+    
+    should "work for arrays" do
+      @doc.skills.should == [1]
+      @doc.skills << 2
+      @doc.skills.should == [1, 2]
+    end
+    
+    should "work for hashes" do
+      @doc.options['foo'].should == 'bar'
+      @doc.options['baz'] = 'wick'
+      @doc.options['baz'].should == 'wick'
     end
   end
 
@@ -175,6 +269,12 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.attributes['name'].should == 'John'
         doc.attributes['age'].should == 23
       end
+      
+      should "be able to assign keys dynamically" do
+        doc = @document.new(:name => 'John', :skills => ['ruby', 'rails'])
+        doc.name.should == 'John'
+        doc.skills.should == ['ruby', 'rails']
+      end
 
       should "not throw error if initialized with nil" do
         lambda {
@@ -196,13 +296,6 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.attributes = {:name => 'new value'}
         doc.attributes[:name].should == 'new value'
         doc.attributes[:age].should == 10
-      end
-
-      should "raise undefined method if no key exists" do
-        doc = @document.new(:name => 'foobar', :age => 10)
-        lambda {
-          doc.attributes = {:name => 'new value', :foobar => 'baz'}
-        }.should raise_error(NoMethodError)
       end
 
       should "not ignore keys that have methods defined" do
@@ -244,10 +337,19 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc[:name].should == 'string'
       end
       
-      should "be able to write key value with []=" do
-        doc = @document.new
-        doc[:name] = 'string'
-        doc[:name].should == 'string'
+      context "[]=" do
+        should "write key value for existing key" do
+          doc = @document.new
+          doc[:name] = 'string'
+          doc[:name].should == 'string'
+        end
+        
+        should "create key and write value for missing key" do
+          doc = @document.new
+          doc[:foo] = 'string'
+          @document.keys.keys.include?('foo').should be_true
+          doc[:foo].should == 'string'
+        end
       end
     end
     
@@ -296,6 +398,21 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.freeze
         doc.foo
         doc.instance_variable_get("@foo").should be_nil
+      end
+      
+      should "be overrideable by modules" do
+        @document = Class.new do
+          include MongoMapper::Document
+          key :other_child, String
+        end
+        
+        child = @document.new
+        child.other_child.should be_nil
+        
+        @document.send :include, KeyOverride
+        
+        overriden_child = @document.new
+        overriden_child.other_child.should == 'special result'
       end
     end
 
@@ -356,6 +473,21 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.name_and_age = 'Frank (62)'
         doc.name.should == 'Frank'
         doc.age.should == 62
+      end
+      
+      should "be overrideable by modules" do
+        @document = Class.new do
+          include MongoMapper::Document
+          key :other_child, String
+        end
+        
+        child = @document.new(:other_child => 'foo')
+        child.other_child.should == 'foo'
+        
+        @document.send :include, KeyOverride
+        
+        overriden_child = @document.new(:other_child => 'foo')
+        overriden_child.other_child.should == 'foo modified'
       end
     end # writing an attribute
     

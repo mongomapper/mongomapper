@@ -1,9 +1,16 @@
-0.3.3 (master)
+0.3.4 (master)
+  * BACKWORDS COMPATIBILITY BREAK: Timestamps are now optional. To use them add timestamps! to your model.
+  * BACKWORDS COMPATIBILITY BREAK: Associations keys are no longer created automatically when you use belongs_to and many. Too much was hidden from the developer. You now have to declare them like key :creator_id, String and such.
+  
+0.3.3 8/16/2009
   * BACKWORDS COMPATIBILITY BREAK: _id is now once again a string rather than an object id and will stay that way.
   * Custom id's can now be used because of the change to string id's
   * Added dynamic finders to document. (dcu)
   * Added destroy_all, delete_all and nullify for many document association
-  * Added :dependent => :destroy|:delete_all|:nullify for many documents assocation (dcu)
+  * Added :dependent option for many documents assocation (dcu)
+  * update_attributes now returns true or false instead of the document. (Durran Jordan and me)
+  * Keys no longer require a type
+  * Keys can now be added on the fly using []=
   
 0.3.2 8/6/2009
   * Added many polymorphic documents association

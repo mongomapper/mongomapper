@@ -14,13 +14,36 @@ class DocumentTest < Test::Unit::TestCase
 
     @document.collection.clear
   end
-  
+
   context "Saving a document with a custom id" do
     should "clear custom id flag when saved" do
       doc = @document.new(:id => '1234')
       doc.using_custom_id?.should be_true
       doc.save.should be_true
       doc.using_custom_id?.should be_false
+    end
+  end
+  
+  context "Loading a document from the database with keys that are not defined" do
+    setup do
+      @id = XGen::Mongo::Driver::ObjectID.new.to_s
+      @document.collection.insert({
+        :_id            => @id,
+        :first_name     => 'John', 
+        :last_name      => 'Nunemaker', 
+        :age            => 27, 
+        :favorite_color => 'red',
+        :skills         => ['ruby', 'rails', 'javascript', 'xhtml', 'css']
+      })
+    end
+
+    should "assign all keys from database" do
+      doc = @document.find(@id)
+      doc.first_name.should == 'John'
+      doc.last_name.should == 'Nunemaker'
+      doc.age.should == 27
+      doc.favorite_color.should == 'red'
+      doc.skills.should == ['ruby', 'rails', 'javascript', 'xhtml', 'css']
     end
   end
   
@@ -140,11 +163,11 @@ class DocumentTest < Test::Unit::TestCase
         @doc_instance.id.should_not be_nil
         @doc_instance.id.size.should == 24
       end
-      
+
       should "no longer be new?" do
         @doc_instance.new?.should be_false
       end
-      
+
       should "return instance of document" do
         @doc_instance.should be_instance_of(@document)
         @doc_instance.first_name.should == 'John'
@@ -289,7 +312,7 @@ class DocumentTest < Test::Unit::TestCase
       context "with #all" do
         should "find all documents based on criteria" do
           @document.all(:order => 'first_name').should == [@doc1, @doc3, @doc2]
-          @document.all(:conditions => {:last_name => 'Nunemaker'}).should == [@doc1, @doc3]
+          @document.all(:conditions => {:last_name => 'Nunemaker'}, :order => 'age desc').should == [@doc1, @doc3]
         end
       end
 
@@ -308,13 +331,13 @@ class DocumentTest < Test::Unit::TestCase
 
       context "with :last" do
         should "find last document" do
-          @document.find(:last).should == @doc3
+          @document.find(:last, :order => 'age').should == @doc2
         end
       end
 
       context "with #last" do
         should "find last document based on criteria" do
-          @document.last.should == @doc3
+          @document.last(:order => 'age').should == @doc2
           @document.last(:conditions => {:age => 28}).should == @doc2
         end
       end
@@ -322,8 +345,8 @@ class DocumentTest < Test::Unit::TestCase
       context "with :find_by" do
         should "find document based on argument" do
           @document.find_by_first_name('John').should == @doc1
-          @document.find_by_last_name('Nunemaker').should == @doc1
-          @document.find_by_age(27).should == @doc1          
+          @document.find_by_last_name('Nunemaker', :order => 'age desc').should == @doc1
+          @document.find_by_age(27).should == @doc1
         end
 
         should "not raise error" do
@@ -352,8 +375,8 @@ class DocumentTest < Test::Unit::TestCase
         end
 
         should "find last document based on arguments" do
-          doc = @document.find_last_by_last_name('Nunemaker')
-          doc.should == @doc3
+          doc = @document.find_last_by_last_name('Nunemaker', :order => 'age')
+          doc.should == @doc1
         end
 
         should "initialize document with given arguments" do
@@ -517,6 +540,7 @@ class DocumentTest < Test::Unit::TestCase
 
     context ":dependent" do
       setup do
+        # FIXME: make use of already defined models
         class ::Property
           include MongoMapper::Document
         end
@@ -537,6 +561,7 @@ class DocumentTest < Test::Unit::TestCase
       context "many" do
         context "=> destroy" do
           setup do
+            Property.key :thing_id, String
             Property.belongs_to :thing, :dependent => :destroy
             Thing.many :properties, :dependent => :destroy
 
@@ -559,6 +584,7 @@ class DocumentTest < Test::Unit::TestCase
 
         context "=> delete_all" do
           setup do
+            Property.key :thing_id, String
             Property.belongs_to :thing
             Thing.has_many :properties, :dependent => :delete_all
 
@@ -581,6 +607,7 @@ class DocumentTest < Test::Unit::TestCase
 
         context "=> nullify" do
           setup do
+            Property.key :thing_id, String
             Property.belongs_to :thing
             Thing.has_many :properties, :dependent => :nullify
 
@@ -605,6 +632,7 @@ class DocumentTest < Test::Unit::TestCase
       context "belongs_to" do
         context "=> destroy" do
           setup do
+            Property.key :thing_id, String
             Property.belongs_to :thing, :dependent => :destroy
             Thing.has_many :properties
 
@@ -689,7 +717,7 @@ class DocumentTest < Test::Unit::TestCase
           index_name = @document.ensure_index [[:first_name, 1], [:last_name, -1]]
         }.should change { @document.collection.index_information.size }.by(1)
 
-        index_name.should == 'first_name_1_last_name_-1'
+        [ 'first_name_1_last_name_-1', 'last_name_-1_first_name_1' ].should include(index_name)
 
         index = @document.collection.index_information[index_name]
         index.should_not be_nil
@@ -730,6 +758,21 @@ class DocumentTest < Test::Unit::TestCase
       from_db.first_name.should == 'John'
       from_db.age.should == 27
     end
+
+    should "allow to add custom attributes to the document" do
+      @doc = @document.new(:first_name => 'David', :age => '26', :gender => 'male', :tags => [1, "2"])
+      @doc.save
+      from_db = @document.find(@doc.id)
+      from_db.gender.should == 'male'
+      from_db.tags.should == [1, "2"]
+    end
+
+    should "allow to use custom methods to assign properties" do
+      person = RealPerson.new(:realname => "David")
+      person.save
+      from_db = RealPerson.find(person.id)
+      from_db.name.should == "David"
+    end
   end
 
   context "Saving an existing document" do
@@ -753,6 +796,14 @@ class DocumentTest < Test::Unit::TestCase
       from_db = @document.find(@doc.id)
       from_db.first_name.should == 'Johnny'
       from_db.age.should == 30
+    end
+
+    should "allow to update custom attributes" do
+      @doc = @document.new(:first_name => 'David', :age => '26', :gender => 'male')
+      @doc.gender = 'Male'
+      @doc.save
+      from_db = @document.find(@doc.id)
+      from_db.gender.should == 'Male'
     end
   end
 
@@ -782,6 +833,12 @@ class DocumentTest < Test::Unit::TestCase
       from_db.first_name.should == 'Johnny'
       from_db.age.should == 30
     end
+
+    should "allow to update custom attributes" do
+      @doc.update_attributes(:gender => 'mALe')
+      from_db = @document.find(@doc.id)
+      from_db.gender.should == 'mALe'
+    end
   end
 
   context "Updating an existing document using update attributes" do
@@ -805,6 +862,20 @@ class DocumentTest < Test::Unit::TestCase
       from_db.age.should == 30
     end
   end
+  
+  context "update_attributes" do
+    setup do
+      @document.key :foo, String, :required => true
+    end
+    
+    should "return true if document valid" do
+      @document.new.update_attributes(:foo => 'bar').should be_true
+    end
+    
+    should "return false if document not valid" do
+      @document.new.update_attributes({}).should be_false
+    end
+  end
 
   context "Destroying a document that exists" do
     setup do
@@ -819,7 +890,7 @@ class DocumentTest < Test::Unit::TestCase
     should "raise error if assignment is attempted" do
       lambda { @doc.first_name = 'Foo' }.should raise_error(TypeError)
     end
-    
+
     should "do nothing if destroy is called again" do
       @doc.destroy.should be_false
     end
@@ -843,6 +914,10 @@ class DocumentTest < Test::Unit::TestCase
   end
 
   context "timestamping" do
+    setup do
+      @document.timestamps!
+    end
+    
     should "set created_at and updated_at on create" do
       doc = @document.new(:first_name => 'John', :age => 27)
       doc.created_at.should be(nil)

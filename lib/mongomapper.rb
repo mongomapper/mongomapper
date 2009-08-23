@@ -2,24 +2,16 @@ require 'pathname'
 require 'rubygems'
 
 gem 'activesupport'
-gem 'mongodb-mongo', '0.10.1'
+gem 'mongodb-mongo', '0.11.1'
 gem 'jnunemaker-validatable', '1.7.2'
 
 require 'activesupport'
 require 'mongo'
 require 'validatable'
 
-class BasicObject #:nodoc:
-  instance_methods.each { |m| undef_method m unless m =~ /(^__|^nil\?$|^send$|instance_eval|proxy_|^object_id$)/ }
-end unless defined?(BasicObject)
-
-class Boolean
-  def self.mm_typecast(value)
-    ['true', 't', '1'].include?(value.to_s.downcase)
-  end
-end
-
 dir = Pathname(__FILE__).dirname.expand_path + 'mongomapper'
+
+require dir + 'support'
 
 require dir + 'associations'
 require dir + 'associations/base'
@@ -52,16 +44,15 @@ require dir + 'embedded_document'
 require dir + 'document'
 
 module MongoMapper
-  DocumentNotFound = Class.new(StandardError)
-  IllegalID        = Class.new(StandardError)
-
-  DocumentNotValid = Class.new(StandardError) do
+  DocumentNotFound  = Class.new(StandardError)
+  
+  DocumentNotValid  = Class.new(StandardError) do
     def initialize(document)
       @document = document
       super("Validation failed: #{@document.errors.full_messages.join(", ")}")
     end
   end
-
+  
   def self.connection
     @@connection ||= XGen::Mongo::Driver::Mongo.new
   end

@@ -4,9 +4,7 @@ module MongoMapper
       attr_reader :type, :name, :options
 
       def initialize(type, name, options = {})
-        @options = options
-        @type = type
-        @name = name
+        @type, @name, @options = type, name, options
       end
 
       def class_name

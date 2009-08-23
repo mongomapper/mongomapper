@@ -11,9 +11,6 @@ module MongoMapper
         include SaveWithValidation
         include RailsCompatibility::Document
         extend ClassMethods
-
-        key :created_at, Time
-        key :updated_at, Time
       end
 
       descendants << model
@@ -39,10 +36,9 @@ module MongoMapper
         per_page      = options.delete(:per_page)
         page          = options.delete(:page)
         total_entries = count(options[:conditions] || {})
+        collection    = Pagination::PaginationProxy.new(total_entries, page, per_page)
 
-        collection = Pagination::PaginationProxy.new(total_entries, page, per_page)
-
-        options[:limit] = collection.limit
+        options[:limit]   = collection.limit
         options[:offset]  = collection.offset
 
         collection.subject = find_every(options)
@@ -141,7 +137,14 @@ module MongoMapper
         end
         @collection
       end
-
+      
+      def timestamps!
+        key :created_at, Time
+        key :updated_at, Time
+        
+        class_eval { before_save :update_timestamps }
+      end
+      
       def validates_uniqueness_of(*args)
         add_validations(args, MongoMapper::Validations::ValidatesUniquenessOf)
       end
@@ -155,14 +158,14 @@ module MongoMapper
       end
       
       protected
-        def method_missing(meth, *args)
-          finder = DynamicFinder.new(self, meth)
+        def method_missing(method, *args)
+          finder = DynamicFinder.new(self, method)
+          
           if finder.valid?
-            class << self; self end.instance_eval do
-              define_method(finder.options[:method]) do |*args|
-                find_with_args(args, finder.options)
-              end
+            meta_def(finder.options[:method]) do |*args|
+              find_with_args(args, finder.options)
             end
+            
             send(finder.options[:method], *args)
           else
             super
@@ -181,7 +184,23 @@ module MongoMapper
         end
 
         def find_last(options)
-          find_every(options.merge(:limit => 1, :order => '$natural desc'))[0]
+          options.merge!(:limit => 1)
+          options[:order] = invert_order_clause(options)
+          find_every(options)[0]
+          #find_every({:order => '$natural desc'}.merge(invert_order_clause(options)))[0]
+        end
+
+        def invert_order_clause(options)
+          return '$natural desc' unless options[:order]
+          options[:order].split(',').map do |order_segment| 
+            if order_segment =~ /\sasc/i
+              order_segment.sub /\sasc/i, ' desc'
+            elsif order_segment =~ /\sdesc/i
+              order_segment.sub /\sdesc/i, ' asc'
+            else
+              "#{order_segment.strip} desc"
+            end
+          end.join(',')
         end
 
         def find_some(ids, options={})
@@ -214,24 +233,27 @@ module MongoMapper
           end
         end
         
-        def find_with_args(args, opts)
-          find_options = args.extract_options!
-
-          attributes = {}
-          opts[:attribute_names].each_with_index do |att, index|
-            attributes[att] = args[index]
+        def find_with_args(args, options)
+          attributes,  = {}
+          find_options = args.extract_options!.deep_merge(:conditions => attributes)
+          
+          options[:attribute_names].each_with_index do |attr, index|
+            attributes[attr] = args[index]
           end
 
-          doc = find(opts[:finder], find_options.deep_merge(:conditions => attributes))
-          if doc.nil?
-            if opts[:instantiator]
-              doc = self.new(attributes)
-              doc.save if opts[:instantiator] == :create
-            elsif opts[:bang]
+          result = find(options[:finder], find_options)
+          
+          if result.nil?
+            if options[:bang]
               raise DocumentNotFound, "Couldn't find Document with #{attributes.inspect} in collection named #{collection.name}"
             end
+            
+            if options[:instantiator]
+              self.send(options[:instantiator], attributes)
+            end
+          else
+            result
           end
-          doc
         end
 
         def update_single(id, attrs)
@@ -239,7 +261,9 @@ module MongoMapper
             raise ArgumentError, "Updating a single document requires an id and a hash of attributes"
           end
 
-          find(id).update_attributes(attrs)
+          doc = find(id)
+          doc.update_attributes(attrs)
+          doc
         end
 
         def update_multiple(docs)
@@ -273,7 +297,6 @@ module MongoMapper
       def update_attributes(attrs={})
         self.attributes = attrs
         save
-        self
       end
 
       def destroy
@@ -291,7 +314,6 @@ module MongoMapper
       end
 
       def create
-        update_timestamps
         assign_id
         save_to_collection
       end
@@ -303,7 +325,6 @@ module MongoMapper
       end
 
       def update
-        update_timestamps
         save_to_collection
       end
 

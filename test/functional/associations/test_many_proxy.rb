@@ -160,8 +160,8 @@ class ManyProxyTest < Test::Unit::TestCase
   context "Finding scoped to association" do
     setup do
       @project1          = Project.new(:name => 'Project 1')
-      @brand_new         = Status.create(:name => 'New')
-      @complete          = Status.create(:name => 'Complete')
+      @brand_new         = Status.create(:name => 'New', :position => 1 )
+      @complete          = Status.create(:name => 'Complete', :position => 2)
       @project1.statuses = [@brand_new, @complete]
       @project1.save
       
@@ -175,7 +175,7 @@ class ManyProxyTest < Test::Unit::TestCase
     
     context "with :all" do
       should "work" do
-        @project1.statuses.find(:all).should == [@brand_new, @complete]
+        @project1.statuses.find(:all, :order => "position asc").should == [@brand_new, @complete]
       end
       
       should "work with conditions" do
@@ -191,7 +191,7 @@ class ManyProxyTest < Test::Unit::TestCase
 
     context "with #all" do
       should "work" do
-        @project1.statuses.all.should == [@brand_new, @complete]
+        @project1.statuses.all(:order => "position asc").should == [@brand_new, @complete]
       end
       
       should "work with conditions" do
@@ -229,7 +229,7 @@ class ManyProxyTest < Test::Unit::TestCase
     
     context "with :last" do
       should "work" do
-        @project1.statuses.find(:last).should == @complete
+        @project1.statuses.find(:last, :order => "position asc").should == @complete
       end
       
       should "work with conditions" do
@@ -240,7 +240,7 @@ class ManyProxyTest < Test::Unit::TestCase
     
     context "with #last" do
       should "work" do
-        @project1.statuses.last.should == @complete
+        @project1.statuses.last(:order => "position asc").should == @complete
       end
       
       should "work with conditions" do

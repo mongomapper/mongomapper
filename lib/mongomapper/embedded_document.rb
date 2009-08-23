@@ -39,23 +39,26 @@ module MongoMapper
         end
       end
 
-      def key(name, type, options={})
-        key = Key.new(name, type, options)
-        keys[key.name] = key
-
-        create_accessors_for(key)
-        add_to_subclasses(name, type, options)
-        apply_validations_for(key)
-        create_indexes_for(key)
-
-        key
+      def key(*args)
+        key = Key.new(*args)
+        
+        if keys[key.name].blank?
+          keys[key.name] = key
+          
+          create_accessors_for(key)
+          add_to_subclasses(*args)
+          apply_validations_for(key)
+          create_indexes_for(key)
+          
+          key
+        end
       end
 
-      def add_to_subclasses(name, type, options)
+      def add_to_subclasses(*args)
         return if subclasses.blank?
 
         subclasses.each do |subclass|
-          subclass.key name, type, options
+          subclass.key(*args)
         end
       end
 
@@ -74,28 +77,39 @@ module MongoMapper
       end
 
       def parent_model
-        if parent = ancestors[1]
-          parent if parent.ancestors.include?(EmbeddedDocument)
+        (ancestors - [self,EmbeddedDocument]).find do |parent_class|
+          parent_class.ancestors.include?(EmbeddedDocument)
         end
       end
 
     private
+      def accessors_module
+        if const_defined?('MongoMapperKeys') && constants.include?( 'MongoMapperKeys' )
+          const_get 'MongoMapperKeys'
+        else 
+          const_set 'MongoMapperKeys', Module.new
+        end
+      end
+
       def create_accessors_for(key)
-        define_method(key.name) do
-          read_attribute(key.name)
-        end
+        accessors_module.module_eval <<-end_eval
+          def #{key.name}
+            read_attribute( :'#{key.name}' )
+          end
 
-        define_method("#{key.name}_before_typecast") do
-          read_attribute_before_typecast(key.name)
-        end
+          def #{key.name}_before_typecast
+            read_attribute_before_typecast(:'#{key.name}')
+          end
 
-        define_method("#{key.name}=") do |value|
-          write_attribute(key.name, value)
-        end
+          def #{key.name}=(value)
+            write_attribute(:'#{key.name}', value)
+          end
 
-        define_method("#{key.name}?") do
-          read_attribute(key.name).present?
-        end
+          def #{key.name}?
+            read_attribute(:#{key.name}).present?
+          end
+        end_eval
+        include accessors_module
       end
       
       def create_indexes_for(key)
@@ -155,20 +169,32 @@ module MongoMapper
 
       def attributes=(attrs)
         return if attrs.blank?
-        attrs.each_pair do |method, value|
-          self.send("#{method}=", value)
+        attrs.each_pair do |name, value|
+          writer_method = "#{name}="
+          
+          if respond_to?(writer_method)
+            self.send(writer_method, value)
+          else
+            self[name.to_s] = value
+          end
         end
       end
 
       def attributes
-        returning HashWithIndifferentAccess.new do |attributes|
-          self.class.keys.each_pair do |name, key|
-            value = value_for_key(key)
-            attributes[name] = value unless value.nil?
-          end
-
-          attributes.merge!(embedded_association_attributes)
+        attrs = HashWithIndifferentAccess.new
+        self.class.keys.each_pair do |name, key|
+          value = 
+            if key.native?
+              read_attribute(key.name)
+            else
+              if embedded_document = read_attribute(key.name)
+                embedded_document.attributes
+              end
+            end
+          
+          attrs[name] = value unless value.nil?
         end
+        attrs.merge!(embedded_association_attributes)
       end
 
       def [](name)
@@ -176,6 +202,7 @@ module MongoMapper
       end
 
       def []=(name, value)
+        ensure_key_exists(name)
         write_attribute(name, value)
       end
 
@@ -204,13 +231,8 @@ module MongoMapper
       end
 
       private
-        def value_for_key(key)
-          if key.native?
-            read_attribute(key.name)
-          else
-            embedded_document = read_attribute(key.name)
-            embedded_document && embedded_document.attributes
-          end
+        def ensure_key_exists(name)
+          self.class.key(name) unless respond_to?("#{name}=")
         end
 
         def read_attribute(name)

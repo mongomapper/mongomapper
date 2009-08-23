@@ -30,13 +30,37 @@ class KeyTest < Test::Unit::TestCase
     should "allow setting options" do
       Key.new(:foo, Integer, :required => true).options[:required].should be(true)
     end
-    
+
     should "default options to {}" do
       Key.new(:foo, Integer, nil).options.should == {}
     end
 
     should "symbolize option keys" do
       Key.new(:foo, Integer, 'required' => true).options[:required].should be(true)
+    end
+    
+    should "work with just name" do
+      key = Key.new(:foo)
+      key.name.should == 'foo'
+    end
+    
+    should "work with name and type" do
+      key = Key.new(:foo, String)
+      key.name.should == 'foo'
+      key.type.should == String
+    end
+    
+    should "work with name, type, and options" do
+      key = Key.new(:foo, String, :required => true)
+      key.name.should == 'foo'
+      key.type.should == String
+      key.options[:required].should be_true
+    end
+    
+    should "work with name and options" do
+      key = Key.new(:foo, :required => true)
+      key.name.should == 'foo'
+      key.options[:required].should be_true
     end
   end
 
@@ -52,14 +76,19 @@ class KeyTest < Test::Unit::TestCase
     should "not be equal to another key with different type" do
       Key.new(:name, String).should_not == Key.new(:name, Integer)
     end
-
-    should "know if it is native" do
-      Key.new(:name, String).native?.should be_true
-    end
-
-    should "know if it is not native" do
-      klass = Class.new
-      Key.new(:name, klass).native?.should be_false
+    
+    context "native?" do
+      should "be true if native type" do
+        Key.new(:name, String).native?.should be_true
+      end
+      
+      should "be true if no type" do
+        Key.new(:name).native?.should be_true
+      end
+      
+      should "be false if not native" do
+        Key.new(:name, Class.new).native?.should be_false
+      end
     end
 
     should "know if it is a embedded_document" do
@@ -88,6 +117,13 @@ class KeyTest < Test::Unit::TestCase
         key.set(a).should == 21
       end
     end
+    
+    should "work fine with long integers" do
+      key = Key.new(:foo, Integer)
+      [9223372036854775807, '9223372036854775807'].each do |value|
+        key.set(value).should == 9223372036854775807
+      end
+    end
 
     should "correctly typecast Floats" do
       key = Key.new(:foo, Float)
@@ -104,11 +140,6 @@ class KeyTest < Test::Unit::TestCase
     should "correctly typecast Times into UTC time zone" do
       key = Key.new(:foo, Time)
       key.set('2000-01-01 01:01:01.123456').zone.should == "UTC"
-    end
-
-    should_eventually "correctly typecast Dates" do
-      key = Key.new(:foo, Date)
-      key.set('2000-01-01').should == Date.new(2000, 1, 1)
     end
 
     should "correctly typecast Boolean" do
@@ -142,6 +173,13 @@ class KeyTest < Test::Unit::TestCase
     should "work" do
       key = Key.new(:foo, String)
       key.get('bar').should == 'bar'
+    end
+    
+    should "work without type" do
+      key = Key.new(:foo)
+      key.get([1,"2"]).should == [1, "2"]
+      key.get(false).should   == false
+      key.get({}).should      == {}
     end
 
     context "for a key with a default value set" do
