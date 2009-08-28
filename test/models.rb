@@ -1,5 +1,3 @@
-
-# has_many :as
 class Post
   include MongoMapper::Document
 
@@ -23,8 +21,6 @@ class PostComment
 
   timestamps!
 end
-
-#
 
 class Address
   include MongoMapper::EmbeddedDocument
