@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mongomapper}
-  s.version = "0.3.3"
+  s.version = "0.3.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
-  s.date = %q{2009-08-16}
+  s.date = %q{2009-08-28}
   s.default_executable = %q{mmconsole}
   s.email = %q{nunemaker@gmail.com}
   s.executables = ["mmconsole"]
@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
      "lib/mongomapper/associations/base.rb",
      "lib/mongomapper/associations/belongs_to_polymorphic_proxy.rb",
      "lib/mongomapper/associations/belongs_to_proxy.rb",
+     "lib/mongomapper/associations/many_documents_as_proxy.rb",
      "lib/mongomapper/associations/many_documents_proxy.rb",
      "lib/mongomapper/associations/many_embedded_polymorphic_proxy.rb",
      "lib/mongomapper/associations/many_embedded_proxy.rb",
@@ -55,6 +56,7 @@ Gem::Specification.new do |s|
      "test/NOTE_ON_TESTING",
      "test/functional/associations/test_belongs_to_polymorphic_proxy.rb",
      "test/functional/associations/test_belongs_to_proxy.rb",
+     "test/functional/associations/test_many_documents_as_proxy.rb",
      "test/functional/associations/test_many_embedded_polymorphic_proxy.rb",
      "test/functional/associations/test_many_embedded_proxy.rb",
      "test/functional/associations/test_many_polymorphic_proxy.rb",
@@ -89,6 +91,7 @@ Gem::Specification.new do |s|
   s.test_files = [
     "test/functional/associations/test_belongs_to_polymorphic_proxy.rb",
      "test/functional/associations/test_belongs_to_proxy.rb",
+     "test/functional/associations/test_many_documents_as_proxy.rb",
      "test/functional/associations/test_many_embedded_polymorphic_proxy.rb",
      "test/functional/associations/test_many_embedded_proxy.rb",
      "test/functional/associations/test_many_polymorphic_proxy.rb",
