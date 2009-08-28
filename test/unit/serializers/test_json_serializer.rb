@@ -1,6 +1,11 @@
 require 'test_helper'
 
 class JsonSerializationTest < Test::Unit::TestCase
+  class Tag
+    include MongoMapper::EmbeddedDocument
+    key :name, String
+  end
+  
   class Contact
     include MongoMapper::Document
     key :name, String
@@ -8,6 +13,8 @@ class JsonSerializationTest < Test::Unit::TestCase
     key :created_at, Time
     key :awesome, Boolean
     key :preferences, Hash
+    
+    many :tags, :class_name => 'JsonSerializationTest::Tag'
   end
   
   def setup
@@ -162,5 +169,21 @@ class JsonSerializationTest < Test::Unit::TestCase
     assert_match %r{"1":},               json
     assert_match %r{\{"name":"David"\}}, json
     assert_no_match %r{"2":},            json
+  end
+  
+  should "include embedded attributes" do
+    contact = Contact.new(:name => 'John', :age => 27)
+    contact.tags = [Tag.new(:name => 'awesome'), Tag.new(:name => 'ruby')]
+    json = contact.to_json
+    assert_match %r{"tags":}, json
+    assert_match %r{"name":"awesome"}, json
+    assert_match %r{"name":"ruby"}, json
+  end
+  
+  should "include dynamic attributes" do
+    contact = Contact.new(:name => 'John', :age => 27, :foo => 'bar')
+    contact['smell'] = 'stinky'
+    json = contact.to_json
+    assert_match %r{"smell":"stinky"}, json
   end
 end
