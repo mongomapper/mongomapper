@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mongomapper}
-  s.version = "0.3.4"
+  s.version = "0.3.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
-  s.date = %q{2009-08-28}
+  s.date = %q{2009-08-29}
   s.default_executable = %q{mmconsole}
   s.email = %q{nunemaker@gmail.com}
   s.executables = ["mmconsole"]
@@ -124,20 +124,20 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activesupport>, [">= 0"])
-      s.add_runtime_dependency(%q<mongodb-mongo>, ["= 0.11.1"])
+      s.add_runtime_dependency(%q<mongodb-mongo>, ["= 0.14"])
       s.add_runtime_dependency(%q<jnunemaker-validatable>, ["= 1.7.2"])
       s.add_development_dependency(%q<mocha>, ["= 0.9.4"])
       s.add_development_dependency(%q<jnunemaker-matchy>, ["= 0.4.0"])
     else
       s.add_dependency(%q<activesupport>, [">= 0"])
-      s.add_dependency(%q<mongodb-mongo>, ["= 0.11.1"])
+      s.add_dependency(%q<mongodb-mongo>, ["= 0.14"])
       s.add_dependency(%q<jnunemaker-validatable>, ["= 1.7.2"])
       s.add_dependency(%q<mocha>, ["= 0.9.4"])
       s.add_dependency(%q<jnunemaker-matchy>, ["= 0.4.0"])
     end
   else
     s.add_dependency(%q<activesupport>, [">= 0"])
-    s.add_dependency(%q<mongodb-mongo>, ["= 0.11.1"])
+    s.add_dependency(%q<mongodb-mongo>, ["= 0.14"])
     s.add_dependency(%q<jnunemaker-validatable>, ["= 1.7.2"])
     s.add_dependency(%q<mocha>, ["= 0.9.4"])
     s.add_dependency(%q<jnunemaker-matchy>, ["= 0.4.0"])
