@@ -282,6 +282,27 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         }.should_not raise_error
       end
     end
+    
+    context "initialized when _type key present" do
+      setup do
+        ::FooBar = Class.new do
+          include MongoMapper::EmbeddedDocument
+          key :_type, String
+        end
+      end
+      
+      teardown do
+        Object.send(:remove_const, :FooBar)
+      end
+
+      should "set _type to class name" do
+        FooBar.new._type.should == 'FooBar'
+      end
+      
+      should "not change _type if already set" do
+        FooBar.new(:_type => 'Foo')._type.should == 'Foo'
+      end
+    end
 
     context "mass assigning keys" do
       should "update values for keys provided" do

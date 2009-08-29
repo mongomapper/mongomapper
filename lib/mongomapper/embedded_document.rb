@@ -94,7 +94,7 @@ module MongoMapper
       def create_accessors_for(key)
         accessors_module.module_eval <<-end_eval
           def #{key.name}
-            read_attribute( :'#{key.name}' )
+            read_attribute(:'#{key.name}')
           end
 
           def #{key.name}_before_typecast
@@ -160,6 +160,10 @@ module MongoMapper
           end
 
           self.attributes = attrs
+          
+          if respond_to?(:_type=) && self['_type'].blank?
+            self._type = self.class.name
+          end
         end
 
         if self.class.embeddable? && read_attribute(:_id).blank?
