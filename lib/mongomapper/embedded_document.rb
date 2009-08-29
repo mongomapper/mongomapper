@@ -84,7 +84,7 @@ module MongoMapper
 
     private
       def accessors_module
-        if const_defined?('MongoMapperKeys') && constants.include?( 'MongoMapperKeys' )
+        if const_defined?('MongoMapperKeys')
           const_get 'MongoMapperKeys'
         else 
           const_set 'MongoMapperKeys', Module.new
