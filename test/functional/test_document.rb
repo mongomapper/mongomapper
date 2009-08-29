@@ -26,7 +26,7 @@ class DocumentTest < Test::Unit::TestCase
   
   context "Loading a document from the database with keys that are not defined" do
     setup do
-      @id = XGen::Mongo::Driver::ObjectID.new.to_s
+      @id = Mongo::ObjectID.new.to_s
       @document.collection.insert({
         :_id            => @id,
         :first_name     => 'John', 

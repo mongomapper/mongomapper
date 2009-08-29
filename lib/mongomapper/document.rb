@@ -59,13 +59,13 @@ module MongoMapper
 
       def find_by_id(id)
         criteria = FinderOptions.to_mongo_criteria(:_id => id)
-        if doc = collection.find_first(criteria)
+        if doc = collection.find_one(criteria)
           new(doc)
         end
       end
 
       def count(conditions={})
-        collection.count(FinderOptions.to_mongo_criteria(conditions))
+        collection.find(FinderOptions.to_mongo_criteria(conditions)).count
       end
 
       def create(*docs)
@@ -320,7 +320,7 @@ module MongoMapper
       
       def assign_id
         if read_attribute(:_id).blank?
-          write_attribute(:_id, XGen::Mongo::Driver::ObjectID.new.to_s)
+          write_attribute(:_id, Mongo::ObjectID.new.to_s)
         end
       end
 

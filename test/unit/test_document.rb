@@ -18,11 +18,11 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     should "have a connection" do
-      @document.connection.should be_instance_of(XGen::Mongo::Driver::Mongo)
+      @document.connection.should be_instance_of(Mongo::Connection)
     end
 
     should "allow setting different connection without affecting the default" do
-      conn = XGen::Mongo::Driver::Mongo.new
+      conn = Mongo::Connection.new
       @document.connection conn
       @document.connection.should == conn
       @document.connection.should_not == MongoMapper.connection
@@ -43,13 +43,13 @@ class DocumentTest < Test::Unit::TestCase
         include MongoMapper::Document
       end
       
-      Item.collection.should be_instance_of(XGen::Mongo::Driver::Collection)
+      Item.collection.should be_instance_of(Mongo::Collection)
       Item.collection.name.should == 'items'
     end
 
     should "allow setting the collection name" do
       @document.collection('foobar')
-      @document.collection.should be_instance_of(XGen::Mongo::Driver::Collection)
+      @document.collection.should be_instance_of(Mongo::Collection)
       @document.collection.name.should == 'foobar'
     end
   end # Document class

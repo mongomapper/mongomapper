@@ -167,7 +167,7 @@ module MongoMapper
         end
 
         if self.class.embeddable? && read_attribute(:_id).blank?
-          write_attribute :_id, XGen::Mongo::Driver::ObjectID.new.to_s
+          write_attribute :_id, Mongo::ObjectID.new.to_s
         end
       end
 

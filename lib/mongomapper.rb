@@ -2,10 +2,10 @@ require 'pathname'
 require 'rubygems'
 
 gem 'activesupport'
-gem 'mongodb-mongo', '0.11.1'
+gem 'mongodb-mongo', '0.14'
 gem 'jnunemaker-validatable', '1.7.2'
 
-require 'activesupport'
+# require 'activesupport'
 require 'mongo'
 require 'validatable'
 
@@ -54,7 +54,7 @@ module MongoMapper
   end
   
   def self.connection
-    @@connection ||= XGen::Mongo::Driver::Mongo.new
+    @@connection ||= Mongo::Connection.new
   end
 
   def self.connection=(new_connection)
