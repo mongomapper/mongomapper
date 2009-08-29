@@ -179,7 +179,7 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
       end
 
       should "work with conditions" do
-        comment = @post.comments.first(:conditions => {:body => 'comment2'})
+        comment = @post.comments.first(:conditions => {:body => 'comment2'}, :order => 'body desc')
         comment.should == @comment2
       end
     end
