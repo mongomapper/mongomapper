@@ -141,7 +141,7 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
       end
 
       should "work with order" do
-        comments = @post.comments.find(:all, :order => '$natural desc')
+        comments = @post.comments.find(:all, :order => 'body desc')
         comments.should == [@comment2, @comment1]
       end
     end
