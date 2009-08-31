@@ -170,6 +170,21 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       lambda { Parent.new.other_child }.should raise_error
     end
   end
+
+  context "#inspect" do
+    setup do
+      @document = Class.new do
+        include MongoMapper::Document
+        key :animals
+      end
+    end
+
+    should "call inspect on the document's attributes instead of to_s" do
+      doc = @document.new
+      doc.animals = %w(dog cat)
+      doc.inspect.should include(%(animals: ["dog", "cat"]))
+    end
+  end
   
   context "subclasses" do
     should "default to nil" do

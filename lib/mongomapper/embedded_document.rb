@@ -231,7 +231,7 @@ module MongoMapper
 
       def inspect
         attributes_as_nice_string = self.class.keys.keys.collect do |name|
-          "#{name}: #{read_attribute(name)}"
+          "#{name}: #{read_attribute(name).inspect}"
         end.join(", ")
         "#<#{self.class} #{attributes_as_nice_string}>"
       end
