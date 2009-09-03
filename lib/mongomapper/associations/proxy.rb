@@ -24,6 +24,7 @@ module MongoMapper
       end
 
       def send(method, *args)
+        return super if methods.include? method.to_s
         load_target
         @target.send(method, *args)
       end

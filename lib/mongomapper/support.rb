@@ -1,5 +1,5 @@
 class BasicObject #:nodoc:
-  instance_methods.each { |m| undef_method m unless m =~ /(^__|^nil\?$|^send$|instance_eval|proxy_|^object_id$)/ }
+  instance_methods.each { |m| undef_method m unless m =~ /(^__|^nil\?$|^send$|^methods$|instance_eval|proxy_|^object_id$)/ }
 end unless defined?(BasicObject)
 
 class Boolean
