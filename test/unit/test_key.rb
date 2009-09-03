@@ -14,7 +14,7 @@ class KeyTest < Test::Unit::TestCase
 
   context "The Key Class" do
     should "have the native types defined" do
-      Key::NativeTypes.should == [String, Float, Time, Integer, Boolean, Array, Hash]
+      Key::NativeTypes.should == [String, Float, Time, Date, Integer, Boolean, Array, Hash]
     end
   end
 
@@ -141,6 +141,36 @@ class KeyTest < Test::Unit::TestCase
       key = Key.new(:foo, Time)
       key.set('2000-01-01 01:01:01.123456').zone.should == "UTC"
     end
+    
+    context "Dates" do
+      should "correctly typecast String to Date" do
+        key = Key.new(:foo, Date)
+        value = key.set('12/01/1974')
+        value.day.should == 1
+        value.month.should == 12
+        value.year.should == 1974
+      end
+      
+      should "correctly typecast bogus String to nil" do
+        key = Key.new(:foo, Date)
+        value = key.set('jdsafop874')
+        value.should == nil
+      end
+      
+      should "correctly typecast empty String to nil" do
+        key = Key.new(:foo, Date)
+        value = key.set('')
+        value.should == nil
+      end
+      
+      should "correctly preserve Date" do
+        key = Key.new(:foo, Date)
+        value = key.set(Date.parse('12/01/1974'))
+        value.day.should == 1
+        value.month.should == 12
+        value.year.should == 1974
+      end
+    end
 
     should "correctly typecast Boolean" do
       key = Key.new(:foo, Boolean)
@@ -206,6 +236,22 @@ class KeyTest < Test::Unit::TestCase
       end
     end
 
+    context "for a Date" do
+      should "correctly typecast Dates" do
+        key = Key.new(:foo, Date)
+        value = key.get(Time.utc(1974, 12, 1))
+        value.class.should == Date
+        value.day.should == 1
+        value.month.should == 12
+        value.year.should == 1974
+      end
+      
+      should "correctly return nil" do
+        key = Key.new(:foo, Date)
+        key.get(nil).should == nil
+      end
+    end
+    
     context "for an array" do
       should "return array" do
         key = Key.new(:foo, Array)

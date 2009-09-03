@@ -320,7 +320,7 @@ module MongoMapper
       # collection.save returns mongoid
       def save_to_collection
         clear_custom_id_flag
-        collection.save(attributes)
+        collection.save(mongodb_attributes)
       end
 
       def update_timestamps

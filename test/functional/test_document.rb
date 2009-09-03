@@ -10,6 +10,7 @@ class DocumentTest < Test::Unit::TestCase
       key :first_name, String
       key :last_name, String
       key :age, Integer
+      key :date, Date
     end
 
     @document.collection.clear
@@ -772,6 +773,17 @@ class DocumentTest < Test::Unit::TestCase
       person.save
       from_db = RealPerson.find(person.id)
       from_db.name.should == "David"
+    end
+    
+    context "Saving documents with Date key set" do
+      setup do
+        @doc = @document.new(:first_name => 'John', :age => '27', :date => "12/01/2009")
+      end
+    
+      should "save the Date value as a Time object" do
+        @doc.save
+        @doc.date.should == Date.new(2009, 12, 1)
+      end
     end
   end
 

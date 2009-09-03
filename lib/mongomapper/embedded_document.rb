@@ -203,6 +203,27 @@ module MongoMapper
         attrs.merge!(embedded_association_attributes)
       end
 
+      def mongodb_attributes
+        attrs = HashWithIndifferentAccess.new
+        self.class.keys.each_pair do |name, key|
+          value = 
+            if key.native?
+              if key.type == Date and date = instance_variable_get("@#{key.name}")
+                key.normalize_date(date)
+              else
+                read_attribute(key.name)
+              end
+            else
+              if embedded_document = read_attribute(key.name)
+                embedded_document.mongodb_attributes
+              end
+            end
+          
+          attrs[name] = value unless value.nil?
+        end
+        attrs.merge!(embedded_association_attributes)
+      end
+      
       def [](name)
         read_attribute(name)
       end

@@ -1,7 +1,7 @@
 module MongoMapper
   class Key
     # DateTime and Date are currently not supported by mongo's bson so just use Time
-    NativeTypes = [String, Float, Time, Integer, Boolean, Array, Hash]
+    NativeTypes = [String, Float, Time, Date, Integer, Boolean, Array, Hash]
 
     attr_accessor :name, :type, :options, :default_value
     
@@ -34,11 +34,20 @@ module MongoMapper
         value || []
       elsif type == Hash
         HashWithIndifferentAccess.new(value || {})
+      elsif type == Date && value
+        value.send(:to_date)
       else
         value
       end
     end
 
+    def normalize_date(value)
+      date = Date.parse(value.to_s)
+      Time.utc(date.year, date.month, date.day)
+    rescue
+      nil
+    end
+    
     private
       def typecast(value)
         return value if type.nil?
@@ -50,6 +59,7 @@ module MongoMapper
           elsif type == Float     then value.to_f
           elsif type == Array     then value.to_a
           elsif type == Time      then Time.parse(value.to_s).utc
+          elsif type == Date      then normalize_date(value)
           elsif type == Boolean   then Boolean.mm_typecast(value)
           elsif type == Integer
             # ganked from datamapper
