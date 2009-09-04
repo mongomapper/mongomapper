@@ -107,6 +107,19 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       from_db.people.first.pets[1].species.should == "Dog"
     end
 
+    should "create a reference to the parent document for all embedded documents before save" do
+      meg = Person.new(:name => "Meg")
+      sparky = Pet.new(:name => "Sparky", :species => "Dog")
+
+      doc = @document.new
+
+      doc.people << meg
+      meg.pets << sparky
+
+      doc.people.first._parent_document.should == doc
+      doc.people.first.pets.first._parent_document.should == doc
+    end
+
     should "create a reference to the parent document for all embedded documents" do
       meg = Person.new(:name => "Meg")
       sparky = Pet.new(:name => "Sparky", :species => "Dog")

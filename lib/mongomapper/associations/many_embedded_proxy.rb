@@ -6,6 +6,18 @@ module MongoMapper
         reset
       end
 
+      def <<(*docs)
+        if load_target
+          parent = @owner._parent_document || @owner
+          docs.each do |doc|
+            doc._parent_document = parent
+            @target << doc
+          end
+        end
+      end
+      alias_method :push, :<<
+      alias_method :concat, :<<
+
       protected
         def find_target
           (@_values || []).map do |e|
