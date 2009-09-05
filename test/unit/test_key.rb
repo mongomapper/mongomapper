@@ -179,9 +179,16 @@ class KeyTest < Test::Unit::TestCase
       key.set(:foo => {:bar => 'baz'})['foo']['bar'].should == 'baz'
     end
 
-    should "correctly typecast custom type" do
-      key = Key.new(:foo, FooDate)
-      key.set("2000-01-01").should == Time.utc(2000, 1, 1)
+    context "with a custom type" do
+      should "correctly typecast" do
+        key = Key.new(:foo, FooDate)
+        key.set("2000-01-01").should == Time.utc(2000, 1, 1)
+      end
+
+      should "correctly typecast if object of that type is given" do
+        key = Key.new(:foo, FooDate)
+        key.set(FooDate.new(2000, 1, 1)).should == Time.utc(2000, 1, 1)
+      end
     end
   end
 

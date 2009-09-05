@@ -46,7 +46,7 @@ module MongoMapper
         return value if type.nil?
         return HashWithIndifferentAccess.new(value) if value.is_a?(Hash) && type == Hash
         return value.utc if type == Time && value.kind_of?(type)
-        return value if value.kind_of?(type) || value.nil?
+        return value if (NativeTypes.include?(type) && value.kind_of?(type)) || value.nil?
         begin
           if    type == String    then value.to_s
           elsif type == Float     then value.to_f
