@@ -34,6 +34,8 @@ module MongoMapper
         value || []
       elsif type == Hash
         HashWithIndifferentAccess.new(value || {})
+      elsif type.respond_to?(:from_mongo)
+        type.from_mongo(value)
       else
         value
       end
@@ -61,6 +63,8 @@ module MongoMapper
             end
           elsif embedded_document?
             typecast_embedded_document(value)
+          elsif type.respond_to?(:to_mongo)
+            type.to_mongo(value)
           else
             value
           end
