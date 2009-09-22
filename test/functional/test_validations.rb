@@ -121,6 +121,22 @@ class ValidationsTest < Test::Unit::TestCase
       doc.should_not have_error_on(:name)
     end
 
+    should "not fail when new object is out of scope" do
+      document = Class.new do
+        include MongoMapper::Document
+        key :name
+        key :adult
+        validates_uniqueness_of :name, :scope => :adult
+      end
+      doc = document.new("name" => "joe", :adult => true)
+      doc.save.should be_true
+
+      doc2 = document.new("name" => "joe", :adult => false)
+      doc2.should be_valid
+
+      document.collection.clear
+    end
+
     should "allow to update an object" do
       doc = @document.new("name" => "joe")
       doc.save.should be_true
@@ -146,6 +162,21 @@ class ValidationsTest < Test::Unit::TestCase
 
       doc2 = @document.new("name" => "joe")
       doc2.should have_error_on(:name)
+    end
+
+    should "fail when object is not unique within scope" do
+      document = Class.new do
+        include MongoMapper::Document
+        key :name
+        key :adult
+        validates_uniqueness_of :name, :scope => :adult
+      end
+      doc = document.new("name" => "joe", :adult => true)
+      doc.save.should be_true
+
+      doc2 = document.new("name" => "joe", :adult => true)
+      doc2.should have_error_on(:name)
+      document.collection.clear
     end
   end
   

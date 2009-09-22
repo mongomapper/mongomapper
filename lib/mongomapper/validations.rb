@@ -15,9 +15,14 @@ module MongoMapper
     end
     
     class ValidatesUniquenessOf < Validatable::ValidationBase
+      option :scope
+
       def valid?(instance)
-        # TODO: scope
-        doc = instance.class.find(:first, :conditions => {self.attribute => instance[attribute]}, :limit => 1)
+        conditions = {self.attribute => instance[attribute]}
+        if scope
+          conditions.merge!(scope => instance[scope])
+        end
+        doc = instance.class.find(:first, :conditions => conditions, :limit => 1)
         doc.nil? || instance.id == doc.id
       end
 
