@@ -101,6 +101,22 @@ class DocumentTest < Test::Unit::TestCase
         doc.new?.should be_true
       end
     end
+
+    context "clone" do
+      should "not set the id" do
+        doc = @document.create(:name => "foo", :age => 27)
+        clone = doc.clone
+        clone.should be_new
+      end
+
+      should "copy the attributes" do
+        doc = @document.create(:name => "foo", :age => 27)
+        clone = doc.clone
+        clone.name.should == "foo"
+        clone.age.should == 27
+      end
+    end
+
     
     context "equality" do
       should "be equal if id and class are the same" do

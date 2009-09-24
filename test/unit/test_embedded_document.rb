@@ -351,7 +351,24 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.attributes.values.should include('string')
       end
     end
-    
+
+    context "clone" do
+      should "regenerate the id" do
+        doc = @document.new(:name => "foo", :age => 27)
+        doc_id = doc.id
+        clone = doc.clone
+        clone_id = clone.id
+        clone_id.should_not == doc_id
+      end
+
+      should "copy the attributes" do
+        doc = @document.new(:name => "foo", :age => 27)
+        clone = doc.clone
+        clone.name.should == "foo"
+        clone.age.should == 27
+      end
+    end
+
     context "key shorcut access" do
       should "be able to read key with []" do
         doc = @document.new(:name => 'string')
