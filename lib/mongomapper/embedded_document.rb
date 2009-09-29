@@ -259,6 +259,8 @@ module MongoMapper
               if key.native?
                 if key.type == Date and date = instance_variable_get("@#{key.name}")
                   key.normalize_date(date)
+                elsif key.type == Array && key.options[:serialize]
+                  key.serialize(read_attribute(key.name))
                 else
                   read_attribute(key.name)
                 end

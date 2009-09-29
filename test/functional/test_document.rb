@@ -94,6 +94,33 @@ class DocumentTest < Test::Unit::TestCase
         doc.tags.should == %w(foo bar)
         @document.find(doc.id).tags.should == %w(foo bar)
       end
+
+      should "serializes and deserializes the attributes" do
+        Thing = Class.new do
+          def initialize(hash={})
+            hash.each{|k,v| instance_variable_set("@#{k}", v)}
+          end
+
+          def attributes
+            instance_values
+          end
+
+          def ==(other)
+            attributes == other.attributes
+          end
+        end
+        @document.key :things, Array, :serialize => Thing
+
+        thing = Thing.new :name => 'foo'
+        doc = @document.new
+        doc.things << thing
+        doc.save
+        from_db = @document.find(doc.id)
+        from_db.things.should == [thing]
+        from_db.save
+        doc = @document.find(from_db.id)
+        doc.things.should == from_db.things
+      end
     end
 
     context "Using key with type Hash" do

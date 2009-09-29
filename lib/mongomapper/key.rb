@@ -47,17 +47,30 @@ module MongoMapper
     rescue
       nil
     end
-    
+
+    def deserialize_array(value)
+      values = Array(value)
+      if klass = options[:serialize]
+        values.map {|attrs| klass.new attrs}
+      else
+        values
+      end
+    end
+
+    def serialize(values)
+      values.map {|o| o.attributes}
+    end
+
     private
       def typecast(value)
         return value if type.nil?
         return HashWithIndifferentAccess.new(value) if value.is_a?(Hash) && type == Hash
         return value.utc if type == Time && value.kind_of?(type)
-        return value if value.kind_of?(type) || value.nil?
+        return value if (value.kind_of?(type) || value.nil?) && type != Array
         begin
           if    type == String    then value.to_s
           elsif type == Float     then value.to_f
-          elsif type == Array     then value.to_a
+          elsif type == Array     then deserialize_array(value)
           elsif type == Time      then Time.parse(value.to_s).utc
           elsif type == Date      then normalize_date(value)
           elsif type == Boolean   then Boolean.mm_typecast(value)
