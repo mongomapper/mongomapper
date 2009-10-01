@@ -17,7 +17,7 @@ module MongoMapper
         extend Validations::Macros
 
         key :_id, String
-        attr_accessor :_parent_document
+        attr_accessor :_root_document
       end
     end
 
@@ -159,9 +159,9 @@ module MongoMapper
           self.class.associations.each_pair do |name, association|
             if collection = attrs.delete(name)
               if association.many? && association.klass.embeddable?
-                parent_document = attrs[:_parent_document] || self
+                root_document = attrs[:_root_document] || self
                 collection.each do |doc|
-                  doc[:_parent_document] = parent_document
+                  doc[:_root_document] = root_document
                 end
               end
               send("#{association.name}=", collection)

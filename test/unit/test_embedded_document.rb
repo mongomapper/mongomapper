@@ -263,8 +263,8 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       doc.id.should == doc._id.to_s
     end
 
-    should "have a nil _parent_document" do
-      @document.new._parent_document.should be_nil
+    should "have a nil _root_document" do
+      @document.new._root_document.should be_nil
     end
 
     context "setting custom id" do
@@ -295,13 +295,13 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.skills.should == ['ruby', 'rails']
       end
 
-      should "set the parent id on embedded documents" do
+      should "set the root on embedded documents" do
         document = Class.new(@document) do
           many :children
         end
 
-        doc = document.new :_parent_document => 'document', 'children' => [{}]
-        doc.children.first._parent_document.should == 'document'
+        doc = document.new :_root_document => 'document', 'children' => [{}]
+        doc.children.first._root_document.should == 'document'
       end
 
       should "not throw error if initialized with nil" do

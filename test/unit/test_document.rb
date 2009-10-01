@@ -90,18 +90,18 @@ class DocumentTest < Test::Unit::TestCase
       @document.new(:active => false).active.should be_false
     end
 
-    context "parent document" do
-      should "have a nil _parent_document" do
-        @document.new._parent_document.should be_nil
+    context "root document" do
+      should "have a nil _root_document" do
+        @document.new._root_document.should be_nil
       end
 
-      should "set self to the parent document on embedded documents" do
+      should "set self to the root document on embedded documents" do
         document = Class.new(RealPerson) do
           many :pets
         end
 
         doc = document.new 'pets' => [{}]
-        doc.pets.first._parent_document.should == doc
+        doc.pets.first._root_document.should == doc
       end
     end
 

@@ -10,7 +10,7 @@ module MongoMapper
         owner = @owner
         child = @association.klass.new(opts)
         assign_parent_reference(child)
-        child._parent_document = owner
+        child._root_document = owner
         self << child
         child
       end
@@ -30,9 +30,9 @@ module MongoMapper
 
       def <<(*docs)
         if load_target
-          parent = @owner._parent_document || @owner
+          root = @owner._root_document || @owner
           docs.each do |doc|
-            doc._parent_document = parent
+            doc._root_document = root
             @target << doc
           end
         end

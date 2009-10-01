@@ -114,7 +114,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       from_db.people.first.pets[1].species.should == "Dog"
     end
 
-    should "create a reference to the parent document for all embedded documents before save" do
+    should "create a reference to the root document for all embedded documents before save" do
       meg = Person.new(:name => "Meg")
       sparky = Pet.new(:name => "Sparky", :species => "Dog")
 
@@ -123,8 +123,8 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       doc.people << meg
       meg.pets << sparky
 
-      doc.people.first._parent_document.should == doc
-      doc.people.first.pets.first._parent_document.should == doc
+      doc.people.first._root_document.should == doc
+      doc.people.first.pets.first._root_document.should == doc
     end
 
     should "create properly-named reference to parent document when building off association proxy" do
@@ -134,7 +134,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     end
 
 
-    should "create a reference to the parent document for all embedded documents" do
+    should "create a reference to the root document for all embedded documents" do
       meg = Person.new(:name => "Meg")
       sparky = Pet.new(:name => "Sparky", :species => "Dog")
 
@@ -146,8 +146,8 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       doc.save
 
       from_db = @document.find(doc.id)
-      from_db.people.first._parent_document.should == doc
-      from_db.people.first.pets.first._parent_document.should == doc
+      from_db.people.first._root_document.should == doc
+      from_db.people.first.pets.first._root_document.should == doc
     end
   end
   
