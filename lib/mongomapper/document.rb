@@ -283,11 +283,6 @@ module MongoMapper
         create_or_update || raise(DocumentNotValid.new(self))
       end
 
-      def update_attributes(attrs={})
-        self.attributes = attrs
-        save
-      end
-
       def destroy
         return false if frozen?
 

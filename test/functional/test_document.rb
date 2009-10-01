@@ -24,7 +24,7 @@ class DocumentTest < Test::Unit::TestCase
       doc.using_custom_id?.should be_false
     end
   end
-  
+
   context "Loading a document from the database with keys that are not defined" do
     setup do
       @id = Mongo::ObjectID.new.to_s
@@ -994,6 +994,34 @@ class DocumentTest < Test::Unit::TestCase
       should "raise error if assignment is attempted" do
         lambda { @doc.first_name = 'Foo' }.should raise_error(TypeError)
       end
+    end
+  end
+
+  context "embedded document persistence" do
+    setup do
+      RealPerson.create
+      @person = RealPerson.last
+    end
+
+    should "save the embedded document" do
+      pet = Pet.new :name => 'sparky'
+      @person.pets << pet
+      pet.save
+      doc = RealPerson.find @person.id
+      doc.pets.first.should == pet
+    end
+
+    should "update_attributes on the embedded document" do
+      pet = Pet.new :name => 'sparky'
+      @person.pets << pet
+      pet.save
+      doc = RealPerson.find @person.id
+      pet = doc.pets.first
+      pet.update_attributes :name => 'koda'
+      doc = RealPerson.find @person.id
+      embedded = doc.pets.first
+      embedded.id.should == pet.id
+      embedded.name.should == 'koda'
     end
   end
 

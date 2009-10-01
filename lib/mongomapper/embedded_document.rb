@@ -250,8 +250,17 @@ module MongoMapper
         "#<#{self.class} #{attributes_as_nice_string}>"
       end
 
+      def save
+        _root_document.save if _root_document
+      end
+
+      def update_attributes(attrs={})
+        self.attributes = attrs
+        save
+      end
+
       private
-      
+
         def mongodb_attributes
           attrs = HashWithIndifferentAccess.new
           self.class.keys.each_pair do |name, key|
