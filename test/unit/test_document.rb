@@ -62,6 +62,13 @@ class DocumentTest < Test::Unit::TestCase
       Chat.collection.name.should    == 'messages'
     end
     
+    should "default associations to inherited class" do
+     Message.associations.keys.should include("room")
+     Enter.associations.keys.should   include("room")
+     Exit.associations.keys.should    include("room")
+     Chat.associations.keys.should    include("room")
+   end
+    
     should "track subclasses" do
       Message.subclasses.should == [Enter, Exit, Chat]
     end

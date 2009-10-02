@@ -12,7 +12,9 @@ module MongoMapper
       end
 
       def associations
-        @associations ||= HashWithIndifferentAccess.new
+        @associations ||= self.superclass.respond_to?(:associations) ? 
+                            self.superclass.associations : 
+                            HashWithIndifferentAccess.new
       end
 
       private
