@@ -1019,7 +1019,7 @@ class DocumentTest < Test::Unit::TestCase
       old_created_at = doc.created_at
       old_updated_at = doc.updated_at
       doc.first_name = 'Johnny'
-      sleep 1
+      sleep 1 # this annoys me
       doc.save
       doc.created_at.should == old_created_at
       doc.updated_at.should_not == old_updated_at
