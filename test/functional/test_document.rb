@@ -158,20 +158,20 @@ class DocumentTest < Test::Unit::TestCase
         end
       end
 
-      should_eventually "be new until document is saved" do
+      should "be new until document is saved" do
         address = Address.new(:city => 'South Bend', :state => 'IN')
         doc = @document.new(:foo => address)
         address.new?.should == true
       end
       
-      should_eventually "not be new after document is saved" do
+      should "not be new after document is saved" do
         address = Address.new(:city => 'South Bend', :state => 'IN')
         doc = @document.new(:foo => address)
         doc.save
-        address.new?.should == false
+        doc.foo.new?.should == false
       end
       
-      should_eventually "not be new when document is read back" do
+      should "not be new when document is read back" do
         address = Address.new(:city => 'South Bend', :state => 'IN')
         doc = @document.new(:foo => address)
         doc.save

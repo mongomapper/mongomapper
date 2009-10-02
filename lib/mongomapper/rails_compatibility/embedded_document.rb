@@ -4,6 +4,8 @@ module MongoMapper
       def self.included(model)
         model.class_eval do
           extend ClassMethods
+          
+          alias_method :new_record?, :new?
         end
 
         class << model

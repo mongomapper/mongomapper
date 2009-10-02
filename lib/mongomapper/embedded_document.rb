@@ -193,8 +193,15 @@ module MongoMapper
         if self.class.embeddable? 
           if read_attribute(:_id).blank?
             write_attribute :_id, Mongo::ObjectID.new.to_s
+            @new_document = true
+          else
+            @new_document = false
           end
         end
+      end
+      
+      def new?
+        !!@new_document
       end
 
       def attributes=(attrs)
