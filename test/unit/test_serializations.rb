@@ -35,7 +35,7 @@ class SerializationTest < Test::Unit::TestCase
 
         assert_equal @instance.name, unserialized.name
         assert_equal @instance.age, unserialized.age
-        assert_nil unserialized.awesome
+        assert ! unserialized.awesome
         assert_nil unserialized.created_at
       end
       

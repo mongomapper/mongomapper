@@ -158,20 +158,20 @@ class DocumentTest < Test::Unit::TestCase
         end
       end
 
-      should "be new until document is saved" do
+      should_eventually "be new until document is saved" do
         address = Address.new(:city => 'South Bend', :state => 'IN')
         doc = @document.new(:foo => address)
         address.new?.should == true
       end
       
-      should "not be new after document is saved" do
+      should_eventually "not be new after document is saved" do
         address = Address.new(:city => 'South Bend', :state => 'IN')
         doc = @document.new(:foo => address)
         doc.save
         address.new?.should == false
       end
       
-      should "not be new when document is read back" do
+      should_eventually "not be new when document is read back" do
         address = Address.new(:city => 'South Bend', :state => 'IN')
         doc = @document.new(:foo => address)
         doc.save
@@ -805,28 +805,24 @@ class DocumentTest < Test::Unit::TestCase
     end
     
     context "with key of type date" do
-      setup do
-        @doc = @document.new(:first_name => 'John', :age => '27', :date => "12/01/2009")
-      end
-    
       should "save the date value as a Time object" do
-        @doc.save
-        @doc.date.should == Date.new(2009, 12, 1)
+        doc = @document.new(:first_name => 'John', :age => '27', :date => "12/01/2009")
+        doc.save
+        doc.date.should == Date.new(2009, 12, 1)
       end
     end
 
     context "Saving an embedded document with Date key set" do
-      setup do
+      should "save the Date value as a Time object" do
         Pet.class_eval do
           key :date_of_birth, Date
         end
-        @doc = RealPerson.new
-      end
-
-      should "save the Date value as a Time object" do
-        @doc.pets = [Pet.new(:date_of_birth => "12/01/2009")]
-        @doc.save
-        doc = RealPerson.find @doc.id
+        
+        doc = RealPerson.new
+        doc.pets = [Pet.new(:date_of_birth => "12/01/2009")]
+        doc.save
+        
+        doc = RealPerson.find(doc.id)
         doc.pets.last.date_of_birth.should == Date.new(2009, 12, 1)
       end
     end

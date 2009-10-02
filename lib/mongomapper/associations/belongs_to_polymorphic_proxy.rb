@@ -1,7 +1,7 @@
 module MongoMapper
   module Associations
     class BelongsToPolymorphicProxy < Proxy
-      def replace(doc)        
+      def replace(doc)
         if doc
           doc.save if doc.new?
           id, type = doc.id, doc.class.name

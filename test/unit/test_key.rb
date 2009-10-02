@@ -23,12 +23,6 @@ end
 class KeyTest < Test::Unit::TestCase
   include MongoMapper
 
-  context "The Key Class" do
-    should "have the native types defined" do
-      Key::NativeTypes.should == [String, Float, Time, Date, Integer, Boolean, Array, Hash]
-    end
-  end
-
   context "Initializing a new key" do
     should "allow setting the name" do
       Key.new(:foo, String).name.should == 'foo'
@@ -88,29 +82,15 @@ class KeyTest < Test::Unit::TestCase
       Key.new(:name, String).should_not == Key.new(:name, Integer)
     end
     
-    context "native?" do
-      should "be true if native type" do
-        Key.new(:name, String).native?.should be_true
-      end
-      
-      should "be true if no type" do
-        Key.new(:name).native?.should be_true
-      end
-      
-      should "be false if not native" do
-        Key.new(:name, Class.new).native?.should be_false
-      end
-    end
-
     should "know if it is a embedded_document" do
       klass = Class.new do
         include MongoMapper::EmbeddedDocument
       end
-      Key.new(:name, klass).embedded_document?.should be_true
+      Key.new(:name, klass).embeddable?.should be_true
     end
 
     should "know if it is not a embedded_document" do
-      Key.new(:name, String).embedded_document?.should be_false
+      Key.new(:name, String).embeddable?.should be_false
     end
   end
 
@@ -178,15 +158,14 @@ class KeyTest < Test::Unit::TestCase
           Time.zone = nil
         end
       end
-            
     end
     
     context "type Date" do
       should "correctly typecast String to Date" do
         key = Key.new(:foo, Date)
         value = key.set('12/01/1974')
-        value.day.should == 1
         value.month.should == 12
+        value.day.should == 1
         value.year.should == 1974
       end
       
@@ -229,12 +208,10 @@ class KeyTest < Test::Unit::TestCase
       key.set('1').should == ['1']
     end
 
-    should "correctly typecast Hash using indifferent access" do
+    should "correctly typecast Hash" do
       key = Key.new(:foo, Hash)
       key.set(:foo => 'bar')[:foo].should == 'bar'
-      key.set(:foo => 'bar')['foo'].should == 'bar'
       key.set(:foo => {:bar => 'baz'})[:foo][:bar].should == 'baz'
-      key.set(:foo => {:bar => 'baz'})['foo']['bar'].should == 'baz'
     end
 
     context "with a custom type" do

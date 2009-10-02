@@ -84,7 +84,22 @@ module MongoMapper
           parent_class.ancestors.include?(EmbeddedDocument)
         end
       end
-
+      
+      def to_mongo(instance)
+        return nil if instance.nil?
+        instance.to_mongo
+      end
+      
+      def from_mongo(instance_or_hash)
+        return nil if instance_or_hash.nil?
+        
+        if instance_or_hash.is_a?(self)
+          instance_or_hash
+        else
+          new(instance_or_hash)
+        end
+      end
+      
     private
       def accessors_module
         if const_defined?('MongoMapperKeys')
@@ -178,13 +193,8 @@ module MongoMapper
         if self.class.embeddable? 
           if read_attribute(:_id).blank?
             write_attribute :_id, Mongo::ObjectID.new.to_s
-            @new_document = true
           end
         end
-      end
-      
-      def new?
-        !!@new_document
       end
 
       def attributes=(attrs)
@@ -204,17 +214,26 @@ module MongoMapper
         attrs = HashWithIndifferentAccess.new
         self.class.keys.each_pair do |name, key|
           value =
-            if key.native?
-              read_attribute(key.name)
-            else
+            if key.embeddable?
               if embedded_document = read_attribute(key.name)
                 embedded_document.attributes
               end
+            else
+              read_attribute(key.name)
             end
 
           attrs[name] = value unless value.nil?
         end
         attrs.merge!(embedded_association_attributes)
+      end
+      
+      def to_mongo
+        attrs = HashWithIndifferentAccess.new
+        self.class.keys.each_pair do |name, key|
+          value = key.set(read_attribute(key.name))
+          attrs[name] = value unless value.nil?
+        end
+        attrs.merge!(embedded_associations_to_mongo)
       end
 
       def [](name)
@@ -262,28 +281,6 @@ module MongoMapper
       end
 
       private
-        def mongodb_attributes
-          attrs = HashWithIndifferentAccess.new
-          self.class.keys.each_pair do |name, key|
-            value = 
-              if key.native?
-                if key.type == Date and date = instance_variable_get("@#{key.name}")
-                  key.to_normalized_date(date)
-                else
-                  read_attribute(key.name)
-                end
-              else
-                if embedded_document = read_attribute(key.name)
-                  embedded_document.send :mongodb_attributes
-                end
-              end
-          
-            attrs[name] = value unless value.nil?
-          end
-          @new_document = false
-          attrs.merge!(embedded_association_attributes)
-        end
-      
         def ensure_key_exists(name)
           self.class.key(name) unless respond_to?("#{name}=")
         end
@@ -299,17 +296,42 @@ module MongoMapper
         end
 
         def write_attribute(name, value)
+          key = self.class.keys[name]          
           instance_variable_set "@#{name}_before_typecast", value
-          instance_variable_set "@#{name}", self.class.keys[name].set(value)
+          instance_variable_set "@#{name}", key.set(value)
+          
+          if key.embeddable?
+            if embedded_doc = instance_variable_get("@#{name}")
+              embedded_doc['_root_document'] = self
+              instance_variable_set "@#{name}", embedded_doc
+            end
+          end
         end
-
+        
+        def embedded_associations
+          self.class.associations.select do |name, association|
+            association.embeddable?
+          end.map do |name, association|
+            association
+          end
+        end
+        
+        def embedded_associations_to_mongo
+          returning HashWithIndifferentAccess.new do |attrs|
+            embedded_associations.each do |association|
+              documents = instance_variable_get(association.ivar)
+              next if documents.nil?
+              attrs[association.name] = documents.collect { |doc| doc.to_mongo }
+            end
+          end
+        end
+        
         def embedded_association_attributes
           returning HashWithIndifferentAccess.new do |attrs|
-            self.class.associations.each_pair do |name, association|
-              next unless association.embeddable?
-              next unless documents = instance_variable_get(association.ivar)
-
-              attrs[name] = documents.collect { |doc| doc.send(:mongodb_attributes) }
+            embedded_associations.each do |association|
+              documents = instance_variable_get(association.ivar)
+              next if documents.nil?
+              attrs[association.name] = documents.collect { |doc| doc.attributes }
             end
           end
         end

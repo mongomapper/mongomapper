@@ -380,14 +380,12 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
     end
 
-    context "mongodb_attributes" do
-      should "convert dates into times" do
-        document = Class.new(@document) do
-          key :start_date, Date
-        end
-        doc = document.new :start_date => "12/05/2009"
-        doc.send(:mongodb_attributes)['start_date'].should == Date.new(2009, 12, 05)
+    should "convert dates into times" do
+      document = Class.new(@document) do
+        key :start_date, Date
       end
+      doc = document.new :start_date => "12/05/2009"
+      doc.start_date.should == Date.new(2009, 12, 05)
     end
     
     context "key shorcut access" do
