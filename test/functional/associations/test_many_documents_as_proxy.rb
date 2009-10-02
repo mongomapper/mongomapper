@@ -186,7 +186,7 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
 
     context "with :last" do
       should "work" do
-        @post.comments.find(:last, :order => 'created_at asc').should == @comment2
+        @post.comments.find(:last).should == @comment2
       end
 
       should "work with conditions" do

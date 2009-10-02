@@ -177,14 +177,14 @@ module MongoMapper
 
         if self.class.embeddable? 
           if read_attribute(:_id).blank?
-            write_attribute :_id, XGen::Mongo::Driver::ObjectID.new.to_s
-            @new_record = true
+            write_attribute :_id, Mongo::ObjectID.new.to_s
+            @new_document = true
           end
         end
       end
       
-      def new_record?
-        !!@new_record
+      def new?
+        !!@new_document
       end
 
       def attributes=(attrs)
@@ -251,7 +251,9 @@ module MongoMapper
       end
 
       def save
-        _root_document.save if _root_document
+        if _root_document
+          _root_document.save
+        end
       end
 
       def update_attributes(attrs={})
@@ -260,7 +262,6 @@ module MongoMapper
       end
 
       private
-
         def mongodb_attributes
           attrs = HashWithIndifferentAccess.new
           self.class.keys.each_pair do |name, key|
@@ -268,8 +269,6 @@ module MongoMapper
               if key.native?
                 if key.type == Date and date = instance_variable_get("@#{key.name}")
                   key.to_normalized_date(date)
-                elsif key.type == Array && key.options[:serialize]
-                  key.serialize(read_attribute(key.name))
                 else
                   read_attribute(key.name)
                 end
@@ -281,7 +280,7 @@ module MongoMapper
           
             attrs[name] = value unless value.nil?
           end
-          @new_record = false
+          @new_document = false
           attrs.merge!(embedded_association_attributes)
         end
       

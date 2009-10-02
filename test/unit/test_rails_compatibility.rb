@@ -30,5 +30,10 @@ class TestRailsCompatibility < Test::Unit::TestCase
       FirstItem.column_names.sort.should == ['_id', 'first_only', 'for_all']
       SecondItem.column_names.sort.should == ['_id', 'for_all', 'second_only']
     end
+    
+    should "alias new to new_record?" do
+      instance = Item.new
+      instance.new_record?.should == instance.new?
+    end
   end
 end

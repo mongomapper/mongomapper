@@ -78,7 +78,7 @@ module MongoMapper
         begin
           if    type == String    then value.to_s
           elsif type == Float     then value.to_f
-          elsif type == Array     then deserialize_array(value)
+          elsif type == Array     then value.to_a
           elsif type == Time      then to_utc_time(value)
           elsif type == Date      then to_normalized_date(value)
           elsif type == Boolean   then Boolean.mm_typecast(value)
@@ -98,19 +98,6 @@ module MongoMapper
         rescue
           value
         end
-      end
-      
-      def deserialize_array(value)
-        values = Array(value)
-        if klass = options[:serialize]
-          values.map {|attrs| klass.new attrs}
-        else
-          values
-        end
-      end
-
-      def serialize(values)
-        values.map {|o| o.attributes}
       end
       
       def to_utc_time(value)

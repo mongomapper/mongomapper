@@ -94,33 +94,6 @@ class DocumentTest < Test::Unit::TestCase
         doc.tags.should == %w(foo bar)
         @document.find(doc.id).tags.should == %w(foo bar)
       end
-
-      should "serializes and deserializes the attributes" do
-        Thing = Class.new do
-          def initialize(hash={})
-            hash.each{|k,v| instance_variable_set("@#{k}", v)}
-          end
-
-          def attributes
-            instance_values
-          end
-
-          def ==(other)
-            attributes == other.attributes
-          end
-        end
-        @document.key :things, Array, :serialize => Thing
-
-        thing = Thing.new :name => 'foo'
-        doc = @document.new
-        doc.things << thing
-        doc.save
-        from_db = @document.find(doc.id)
-        from_db.things.should == [thing]
-        from_db.save
-        doc = @document.find(from_db.id)
-        doc.things.should == from_db.things
-      end
     end
 
     context "Using key with type Hash" do
@@ -178,32 +151,32 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
 
-    context "#new_record? for embedded documents" do
+    context "#new? for embedded documents" do
       setup do
         @document.class_eval do
           key :foo, Address
         end
       end
 
-      should "be a new_record until document is saved" do
+      should "be new until document is saved" do
         address = Address.new(:city => 'South Bend', :state => 'IN')
         doc = @document.new(:foo => address)
-        address.new_record?.should == true
+        address.new?.should == true
       end
       
-      should "not be a new_record after document is saved" do
+      should "not be new after document is saved" do
         address = Address.new(:city => 'South Bend', :state => 'IN')
         doc = @document.new(:foo => address)
         doc.save
-        address.new_record?.should == false
+        address.new?.should == false
       end
       
-      should "not be a new_record when document is read back" do
+      should "not be new when document is read back" do
         address = Address.new(:city => 'South Bend', :state => 'IN')
         doc = @document.new(:foo => address)
         doc.save
         read_doc = @document.find(doc.id)
-        read_doc.foo.new_record?.should == false
+        read_doc.foo.new?.should == false
       end
     end
     
@@ -831,12 +804,12 @@ class DocumentTest < Test::Unit::TestCase
       from_db.name.should == "David"
     end
     
-    context "Saving documents with Date key set" do
+    context "with key of type date" do
       setup do
         @doc = @document.new(:first_name => 'John', :age => '27', :date => "12/01/2009")
       end
     
-      should "save the Date value as a Time object" do
+      should "save the date value as a Time object" do
         @doc.save
         @doc.date.should == Date.new(2009, 12, 1)
       end
@@ -999,15 +972,14 @@ class DocumentTest < Test::Unit::TestCase
 
   context "embedded document persistence" do
     setup do
-      RealPerson.create
-      @person = RealPerson.last
+      @person = RealPerson.create
     end
-
+    
     should "save the embedded document" do
       pet = Pet.new :name => 'sparky'
       @person.pets << pet
       pet.save
-      doc = RealPerson.find @person.id
+      doc = RealPerson.find(@person.id)
       doc.pets.first.should == pet
     end
 
@@ -1044,6 +1016,7 @@ class DocumentTest < Test::Unit::TestCase
       old_created_at = doc.created_at
       old_updated_at = doc.updated_at
       doc.first_name = 'Johnny'
+      sleep 1
       doc.save
       doc.created_at.should == old_created_at
       doc.updated_at.should_not == old_updated_at
