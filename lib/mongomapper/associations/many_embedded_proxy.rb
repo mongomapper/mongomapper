@@ -9,11 +9,7 @@ module MongoMapper
       def build(opts={})
         owner = @owner
         child = @association.klass.new(opts)
-        child.class_eval do
-          define_method(owner.class.name.underscore) do
-            owner
-          end
-        end
+        assign_parent_reference(child)
         child._parent_document = owner
         self << child
         child
@@ -26,14 +22,7 @@ module MongoMapper
         when String
           if load_target
             child = @target.detect {|item| item.id == opts}
-            if child
-              owner = @owner
-              child.class_eval do
-                define_method(owner.class.name.underscore) do
-                  owner
-                end
-              end
-            end
+            assign_parent_reference(child)
             child
           end
         end
@@ -54,9 +43,25 @@ module MongoMapper
       protected
         def find_target
           (@_values || []).map do |e|
-            @association.klass.new(e)
+            child = @association.klass.new(e)
+            assign_parent_reference(child)
+            child
           end
         end
+        
+      private
+      
+        def assign_parent_reference(child)
+          return unless child && @owner
+          return if @owner.class.name.blank?
+          owner = @owner
+          child.class_eval do
+            define_method(owner.class.name.underscore) do
+              owner
+            end
+          end
+        end
+      
     end
   end
 end
