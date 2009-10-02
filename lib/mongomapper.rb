@@ -5,7 +5,7 @@ gem 'activesupport'
 gem 'mongodb-mongo', '0.14.1'
 gem 'jnunemaker-validatable', '1.7.2'
 
-# require 'activesupport'
+require 'activesupport'
 require 'mongo'
 require 'validatable'
 

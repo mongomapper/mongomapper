@@ -29,50 +29,58 @@ module MongoMapper
     end
 
     def get(value)
-      return default_value if value.nil? && !default_value.nil?
+      if value.nil? && !default_value.nil?
+        return default_value
+      end
+      
       if type == Array
         value || []
       elsif type == Hash
         HashWithIndifferentAccess.new(value || {})
-      elsif type == Date && value
+      elsif type == Date && value.present?
         value.send(:to_date)
+      elsif type == Time && value.present?
+        if Time.respond_to?(:zone) && Time.zone
+          value.in_time_zone(Time.zone)
+        else
+          value
+        end
       else
         value
       end
     end
 
-    def normalize_date(value)
+    def to_normalized_date(value)
       date = Date.parse(value.to_s)
       Time.utc(date.year, date.month, date.day)
     rescue
       nil
     end
 
-    def deserialize_array(value)
-      values = Array(value)
-      if klass = options[:serialize]
-        values.map {|attrs| klass.new attrs}
-      else
-        values
-      end
-    end
-
-    def serialize(values)
-      values.map {|o| o.attributes}
-    end
-
     private
       def typecast(value)
-        return value if type.nil?
-        return HashWithIndifferentAccess.new(value) if value.is_a?(Hash) && type == Hash
-        return value.utc if type == Time && value.kind_of?(type)
-        return value if (value.kind_of?(type) || value.nil?) && type != Array
+        if type.nil?
+          return value
+        end
+        
+        if value.is_a?(Hash) && type == Hash
+          return HashWithIndifferentAccess.new(value)
+        end
+        
+        if type == Time && value.kind_of?(type)
+          return to_utc_time(value)
+        end
+        
+        if (value.kind_of?(type) || value.nil?) && type != Array
+          return value
+        end
+        
         begin
           if    type == String    then value.to_s
           elsif type == Float     then value.to_f
           elsif type == Array     then deserialize_array(value)
-          elsif type == Time      then Time.parse(value.to_s).utc
-          elsif type == Date      then normalize_date(value)
+          elsif type == Time      then to_utc_time(value)
+          elsif type == Date      then to_normalized_date(value)
           elsif type == Boolean   then Boolean.mm_typecast(value)
           elsif type == Integer
             # ganked from datamapper
@@ -89,6 +97,32 @@ module MongoMapper
           end
         rescue
           value
+        end
+      end
+      
+      def deserialize_array(value)
+        values = Array(value)
+        if klass = options[:serialize]
+          values.map {|attrs| klass.new attrs}
+        else
+          values
+        end
+      end
+
+      def serialize(values)
+        values.map {|o| o.attributes}
+      end
+      
+      def to_utc_time(value)
+        to_local_time(value).utc
+      end
+      
+      # make sure we have a time and that it is local
+      def to_local_time(value)
+        if Time.respond_to?(:zone) && Time.zone
+          Time.zone.parse(value.to_s)
+        else
+          Time.parse(value.to_s)
         end
       end
 

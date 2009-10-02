@@ -131,18 +131,46 @@ class KeyTest < Test::Unit::TestCase
         key.set(a).should == 21.0
       end
     end
-
-    should "correctly typecast Times" do
-      key = Key.new(:foo, Time)
-      key.set('2000-01-01 01:01:01.123456').should == Time.local(2000, 1, 1, 1, 1, 1, 123456)
-    end
-
-    should "correctly typecast Times into UTC time zone" do
-      key = Key.new(:foo, Time)
-      key.set('2000-01-01 01:01:01.123456').zone.should == "UTC"
+    
+    context "type Time" do
+      context "with string value" do
+        should "typecast string to time" do
+          key = Key.new(:foo, Time)
+          key.set('2000-01-01 01:01:01.123456').should == Time.local(2000, 1, 1, 1, 1, 1, 123456).utc
+        end
+        
+        should "always return utc" do
+          key = Key.new(:foo, Time)
+          key.set('2000-01-01 01:01:01.123456').zone.should == "UTC"
+        end
+        
+        context "with Time.zone set" do
+          should "typecast string with Time.zone if present" do
+            Time.zone = 'Hawaii'
+            key = Key.new(:foo, Time)
+            key.set('2009-08-15 14:00:00').should == Time.utc(2009, 8, 16, 0, 0, 0)
+            Time.zone = nil
+          end
+        end
+      end
+      
+      context "with Time value" do
+        should "always return utc" do
+          key = Key.new(:foo, Time)
+          key.set(Time.local(2009, 8, 15, 0, 0, 0)).zone.should == 'UTC'
+        end
+        
+        should "work with Time.zone set" do
+          Time.zone = 'Hawaii'
+          key = Key.new(:foo, Time)
+          key.set(Time.zone.local(2009, 8, 15, 14, 0, 0)).should == Time.utc(2009, 8, 16, 0, 0, 0)
+          Time.zone = nil
+        end
+      end
+            
     end
     
-    context "Dates" do
+    context "type Date" do
       should "correctly typecast String to Date" do
         key = Key.new(:foo, Date)
         value = key.set('12/01/1974')
@@ -235,8 +263,31 @@ class KeyTest < Test::Unit::TestCase
         Key.new(:active, Boolean, :default => true).get(nil).should be_true
       end
     end
-
-    context "for a Date" do
+    
+    context "of type Time" do
+      should "return time if not nil" do
+        key = Key.new(:foo, Time)
+        key.get(Time.utc(2009, 10, 1)).should == Time.utc(2009, 10, 1)
+      end
+      
+      should "return nil if nil" do
+        key = Key.new(:foo, Time)
+        key.get(nil).should be_nil
+      end
+      
+      should "return time in zone if Time.zone available" do
+        Time.zone = 'Hawaii'
+        
+        key = Key.new(:foo, Time)
+        time = key.get(Time.utc(2009, 10, 1))
+        time.should == Time.zone.local(2009, 9, 30, 14)
+        time.is_a?(ActiveSupport::TimeWithZone).should be_true
+        
+        Time.zone = nil
+      end
+    end
+    
+    context "of type Date" do
       should "correctly typecast Dates" do
         key = Key.new(:foo, Date)
         value = key.get(Time.utc(1974, 12, 1))
