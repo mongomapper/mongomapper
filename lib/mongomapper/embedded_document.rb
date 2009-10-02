@@ -175,9 +175,16 @@ module MongoMapper
           end
         end
 
-        if self.class.embeddable? && read_attribute(:_id).blank?
-          write_attribute :_id, Mongo::ObjectID.new.to_s
+        if self.class.embeddable? 
+          if read_attribute(:_id).blank?
+            write_attribute :_id, XGen::Mongo::Driver::ObjectID.new.to_s
+            @new_record = true
+          end
         end
+      end
+      
+      def new_record?
+        !!@new_record
       end
 
       def attributes=(attrs)
@@ -202,27 +209,6 @@ module MongoMapper
             else
               if embedded_document = read_attribute(key.name)
                 embedded_document.attributes
-              end
-            end
-
-          attrs[name] = value unless value.nil?
-        end
-        attrs.merge!(embedded_association_attributes)
-      end
-
-      def mongodb_attributes
-        attrs = HashWithIndifferentAccess.new
-        self.class.keys.each_pair do |name, key|
-          value =
-            if key.native?
-              if key.type == Date and date = instance_variable_get("@#{key.name}")
-                key.normalize_date(date)
-              else
-                read_attribute(key.name)
-              end
-            else
-              if embedded_document = read_attribute(key.name)
-                embedded_document.mongodb_attributes
               end
             end
 
@@ -265,6 +251,29 @@ module MongoMapper
       end
 
       private
+      
+        def mongodb_attributes
+          attrs = HashWithIndifferentAccess.new
+          self.class.keys.each_pair do |name, key|
+            value = 
+              if key.native?
+                if key.type == Date and date = instance_variable_get("@#{key.name}")
+                  key.normalize_date(date)
+                else
+                  read_attribute(key.name)
+                end
+              else
+                if embedded_document = read_attribute(key.name)
+                  embedded_document.send :mongodb_attributes
+                end
+              end
+          
+            attrs[name] = value unless value.nil?
+          end
+          @new_record = false
+          attrs.merge!(embedded_association_attributes)
+        end
+      
         def ensure_key_exists(name)
           self.class.key(name) unless respond_to?("#{name}=")
         end

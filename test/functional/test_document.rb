@@ -151,6 +151,35 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
 
+    context "#new_record? for embedded documents" do
+      setup do
+        @document.class_eval do
+          key :foo, Address
+        end
+      end
+
+      should "be a new_record until document is saved" do
+        address = Address.new(:city => 'South Bend', :state => 'IN')
+        doc = @document.new(:foo => address)
+        address.new_record?.should == true
+      end
+      
+      should "not be a new_record after document is saved" do
+        address = Address.new(:city => 'South Bend', :state => 'IN')
+        doc = @document.new(:foo => address)
+        doc.save
+        address.new_record?.should == false
+      end
+      
+      should "not be a new_record when document is read back" do
+        address = Address.new(:city => 'South Bend', :state => 'IN')
+        doc = @document.new(:foo => address)
+        doc.save
+        read_doc = @document.find(doc.id)
+        read_doc.foo.new_record?.should == false
+      end
+    end
+    
     context "Creating a single document" do
       setup do
         @doc_instance = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
