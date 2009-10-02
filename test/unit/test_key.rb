@@ -9,6 +9,17 @@ class Address
   key :zip,     Integer
 end
 
+class FooDate < Date
+  def self.to_mongo(value)
+    value = Date.parse(value) unless value.is_a?(Date)
+    Time.utc(value.year, value.month, value.day)
+  end
+
+  def self.from_mongo(value)
+    new(value.year, value.month, value.day)
+  end
+end
+
 class KeyTest < Test::Unit::TestCase
   include MongoMapper
 
@@ -225,6 +236,18 @@ class KeyTest < Test::Unit::TestCase
       key.set(:foo => {:bar => 'baz'})[:foo][:bar].should == 'baz'
       key.set(:foo => {:bar => 'baz'})['foo']['bar'].should == 'baz'
     end
+
+    context "with a custom type" do
+      should "correctly typecast" do
+        key = Key.new(:foo, FooDate)
+        key.set("2000-01-01").should == Time.utc(2000, 1, 1)
+      end
+
+      should "correctly typecast if object of that type is given" do
+        key = Key.new(:foo, FooDate)
+        key.set(FooDate.new(2000, 1, 1)).should == Time.utc(2000, 1, 1)
+      end
+    end
   end
 
   context "getting a value" do
@@ -325,6 +348,13 @@ class KeyTest < Test::Unit::TestCase
         key = Key.new(:foo, Hash)
         key.get({:foo => 'bar'})['foo'].should == 'bar'
         key.get({:foo => 'bar'})[:foo].should == 'bar'
+      end
+    end
+
+    context "for a custom type" do
+      should "use #from_mongo to convert back to custom type" do
+        key = Key.new(:foo, FooDate)
+        key.get(Time.utc(2000,1,1)).should == Date.new(2000, 1, 1)
       end
     end
 
