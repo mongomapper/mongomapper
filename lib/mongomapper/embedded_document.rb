@@ -299,7 +299,7 @@ module MongoMapper
               next unless association.embeddable?
               next unless documents = instance_variable_get(association.ivar)
 
-              attrs[name] = documents.collect { |doc| doc.attributes }
+              attrs[name] = documents.collect { |doc| doc.send(:mongodb_attributes) }
             end
           end
         end

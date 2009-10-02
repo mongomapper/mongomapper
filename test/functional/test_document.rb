@@ -814,6 +814,22 @@ class DocumentTest < Test::Unit::TestCase
         @doc.date.should == Date.new(2009, 12, 1)
       end
     end
+
+    context "Saving an embedded document with Date key set" do
+      setup do
+        Pet.class_eval do
+          key :date_of_birth, Date
+        end
+        @doc = RealPerson.new
+      end
+
+      should "save the Date value as a Time object" do
+        @doc.pets = [Pet.new(:date_of_birth => "12/01/2009")]
+        @doc.save
+        doc = RealPerson.find @doc.id
+        doc.pets.last.date_of_birth.should == Date.new(2009, 12, 1)
+      end
+    end
   end
 
   context "Saving an existing document" do
