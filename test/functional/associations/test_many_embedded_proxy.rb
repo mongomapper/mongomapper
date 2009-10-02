@@ -16,6 +16,13 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     project.addresses.push Address.new
     project.addresses.size.should == 2
   end
+  
+  should "allow finding :all embedded documents" do
+    project = Project.new
+    project.addresses << Address.new
+    project.addresses << Address.new
+    project.save
+  end
 
   should "be embedded in document on save" do
     sb = Address.new(:city => 'South Bend', :state => 'IN')
@@ -120,6 +127,13 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       doc.people.first.pets.first._parent_document.should == doc
     end
 
+    should "create properly-named reference to parent document when building off association proxy" do
+      person = RealPerson.new
+      pet = person.pets.build
+      person.should == pet.real_person
+    end
+
+
     should "create a reference to the parent document for all embedded documents" do
       meg = Person.new(:name => "Meg")
       sparky = Pet.new(:name => "Sparky", :species => "Dog")
@@ -135,5 +149,23 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       from_db.people.first._parent_document.should == doc
       from_db.people.first.pets.first._parent_document.should == doc
     end
+  end
+  
+  should "allow retrieval via find(:all)" do
+    meg = Person.new(:name => "Meg")
+    sparky = Pet.new(:name => "Sparky", :species => "Dog")
+
+    meg.pets << sparky
+    
+    meg.pets.find(:all).should include(sparky)
+  end
+  
+  should "allow retrieval via find(id)" do
+    meg = Person.new(:name => "Meg")
+    sparky = Pet.new(:name => "Sparky", :species => "Dog")
+
+    meg.pets << sparky
+    
+    meg.pets.find(sparky.id).should == sparky
   end
 end

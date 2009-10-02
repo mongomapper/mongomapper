@@ -5,6 +5,39 @@ module MongoMapper
         @_values = v.map { |e| e.kind_of?(EmbeddedDocument) ? e.attributes : e }
         reset
       end
+      
+      def build(opts={})
+        owner = @owner
+        child = @association.klass.new(opts)
+        child.class_eval do
+          define_method(owner.class.name.underscore) do
+            owner
+          end
+        end
+        child._parent_document = owner
+        self << child
+        child
+      end
+      
+      def find(opts)
+        case opts
+        when :all
+          self
+        when String
+          if load_target
+            child = @target.detect {|item| item.id == opts}
+            if child
+              owner = @owner
+              child.class_eval do
+                define_method(owner.class.name.underscore) do
+                  owner
+                end
+              end
+            end
+            child
+          end
+        end
+      end
 
       def <<(*docs)
         if load_target
