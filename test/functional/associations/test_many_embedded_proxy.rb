@@ -75,32 +75,52 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     from_db.pets[1].name.should == "Sasha"
     from_db.pets[1].species.should == "Siberian Husky"
   end
-  
-  should "allow saving embedded documents in 'many' embedded documents" do
-    @document = Class.new do
-      include MongoMapper::Document
-      many :people
+
+  context "embedding many embedded documents" do
+    setup do
+      @document = Class.new do
+        include MongoMapper::Document
+        many :people
+      end
+      @document.collection.clear
     end
-    @document.collection.clear
-    
-    meg = Person.new(:name => "Meg")
-    sparky = Pet.new(:name => "Sparky", :species => "Dog")
-    koda = Pet.new(:name => "Koda", :species => "Dog")
-    
-    doc = @document.new
-    
-    meg.pets << sparky
-    meg.pets << koda
-    
-    doc.people << meg
-    doc.save
-    
-    from_db = @document.find(doc.id)
-    from_db.people.first.name.should == "Meg"
-    from_db.people.first.pets.should_not == []
-    from_db.people.first.pets.first.name.should == "Sparky"
-    from_db.people.first.pets.first.species.should == "Dog"
-    from_db.people.first.pets[1].name.should == "Koda"
-    from_db.people.first.pets[1].species.should == "Dog"
+
+    should "persist all embedded documents" do
+      meg = Person.new(:name => "Meg")
+      sparky = Pet.new(:name => "Sparky", :species => "Dog")
+      koda = Pet.new(:name => "Koda", :species => "Dog")
+
+      doc = @document.new
+
+      meg.pets << sparky
+      meg.pets << koda
+
+      doc.people << meg
+      doc.save
+
+      from_db = @document.find(doc.id)
+      from_db.people.first.name.should == "Meg"
+      from_db.people.first.pets.should_not == []
+      from_db.people.first.pets.first.name.should == "Sparky"
+      from_db.people.first.pets.first.species.should == "Dog"
+      from_db.people.first.pets[1].name.should == "Koda"
+      from_db.people.first.pets[1].species.should == "Dog"
+    end
+
+    should "create a reference to the parent document for all embedded documents" do
+      meg = Person.new(:name => "Meg")
+      sparky = Pet.new(:name => "Sparky", :species => "Dog")
+
+      doc = @document.new
+
+      meg.pets << sparky
+
+      doc.people << meg
+      doc.save
+
+      from_db = @document.find(doc.id)
+      from_db.people.first._parent_document.should == doc
+      from_db.people.first.pets.first._parent_document.should == doc
+    end
   end
 end

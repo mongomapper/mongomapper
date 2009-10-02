@@ -13,10 +13,11 @@ module MongoMapper
         include RailsCompatibility::EmbeddedDocument
         include Validatable
         include Serialization
-        
+
         extend Validations::Macros
-        
+
         key :_id, String
+        attr_accessor :_parent_document
       end
     end
 
@@ -43,15 +44,15 @@ module MongoMapper
 
       def key(*args)
         key = Key.new(*args)
-        
+
         if keys[key.name].blank?
           keys[key.name] = key
-          
+
           create_accessors_for(key)
           add_to_subclasses(*args)
           apply_validations_for(key)
           create_indexes_for(key)
-          
+
           key
         end
       end
@@ -88,7 +89,7 @@ module MongoMapper
       def accessors_module
         if const_defined?('MongoMapperKeys')
           const_get 'MongoMapperKeys'
-        else 
+        else
           const_set 'MongoMapperKeys', Module.new
         end
       end
@@ -113,7 +114,7 @@ module MongoMapper
         end_eval
         include accessors_module
       end
-      
+
       def create_indexes_for(key)
         ensure_index key.name if key.options[:index]
       end
@@ -157,6 +158,12 @@ module MongoMapper
         unless attrs.nil?
           self.class.associations.each_pair do |name, association|
             if collection = attrs.delete(name)
+              if association.many? && association.klass.embeddable?
+                parent_document = attrs[:_parent_document] || self
+                collection.each do |doc|
+                  doc[:_parent_document] = parent_document
+                end
+              end
               send("#{association.name}=", collection)
             end
           end
@@ -177,7 +184,7 @@ module MongoMapper
         return if attrs.blank?
         attrs.each_pair do |name, value|
           writer_method = "#{name}="
-          
+
           if respond_to?(writer_method)
             self.send(writer_method, value)
           else
@@ -189,7 +196,7 @@ module MongoMapper
       def attributes
         attrs = HashWithIndifferentAccess.new
         self.class.keys.each_pair do |name, key|
-          value = 
+          value =
             if key.native?
               read_attribute(key.name)
             else
@@ -197,7 +204,7 @@ module MongoMapper
                 embedded_document.attributes
               end
             end
-          
+
           attrs[name] = value unless value.nil?
         end
         attrs.merge!(embedded_association_attributes)
@@ -206,7 +213,7 @@ module MongoMapper
       def mongodb_attributes
         attrs = HashWithIndifferentAccess.new
         self.class.keys.each_pair do |name, key|
-          value = 
+          value =
             if key.native?
               if key.type == Date and date = instance_variable_get("@#{key.name}")
                 key.normalize_date(date)
@@ -218,12 +225,12 @@ module MongoMapper
                 embedded_document.mongodb_attributes
               end
             end
-          
+
           attrs[name] = value unless value.nil?
         end
         attrs.merge!(embedded_association_attributes)
       end
-      
+
       def [](name)
         read_attribute(name)
       end
@@ -245,7 +252,7 @@ module MongoMapper
         @using_custom_id = true
         write_attribute :_id, value
       end
-      
+
       def using_custom_id?
         !!@using_custom_id
       end
