@@ -132,6 +132,11 @@ class SupportTest < Test::Unit::TestCase
     should "be time in utc if time" do
       Time.to_mongo(Time.local(2009, 8, 15, 0, 0, 0)).zone.should == 'UTC'
     end
+    
+    should "not be nil if nil" do
+      # Time.parse actually returns like right now
+      Time.to_mongo(nil).should_not be_nil
+    end
   end
   
   context "Time#to_mongo with Time.zone" do
@@ -144,6 +149,12 @@ class SupportTest < Test::Unit::TestCase
     should "be time if string" do
       Time.zone = 'Hawaii'
       Time.to_mongo('2009-08-15 14:00:00').should == Time.utc(2009, 8, 16, 0, 0, 0)
+      Time.zone = nil
+    end
+    
+    should "be nil if nil" do
+      Time.zone = 'Hawaii'
+      Time.to_mongo(nil).should be_nil
       Time.zone = nil
     end
   end

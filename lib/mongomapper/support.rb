@@ -79,7 +79,7 @@ class Time
   end
   
   def self.to_utc_time(value)
-    to_local_time(value).utc
+    to_local_time(value).try(:utc)
   end
   
   # make sure we have a time and that it is local
