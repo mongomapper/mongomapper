@@ -129,14 +129,21 @@ module MongoMapper
         end
         @database
       end
+      
+      # Changes the collection name from the default to whatever you want
+      def set_collection_name(name=nil)
+        @collection = nil
+        @collection_name = name
+      end
+      
+      # Returns the collection name, if not set, defaults to class name tableized
+      def collection_name
+        @collection_name ||= self.to_s.demodulize.tableize
+      end
 
-      def collection(name=nil)
-        if name.nil?
-          @collection ||= database.collection(self.to_s.demodulize.tableize)
-        else
-          @collection = database.collection(name)
-        end
-        @collection
+      # Returns the mongo ruby driver collection object
+      def collection
+        @collection ||= database.collection(collection_name)
       end
       
       def timestamps!

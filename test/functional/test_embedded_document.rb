@@ -5,13 +5,13 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
   def setup
     @document = Class.new do
       include MongoMapper::Document
-      collection 'users'
+      set_collection_name 'users'
 
       key :first_name, String
       key :last_name, String
     end
 
-    @document.collection.clear
+    clear_all_collections
   end
   
   context "Saving a document with an embedded document" do

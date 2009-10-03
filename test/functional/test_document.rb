@@ -5,7 +5,7 @@ class DocumentTest < Test::Unit::TestCase
   def setup
     @document = Class.new do
       include MongoMapper::Document
-      collection 'users'
+      set_collection_name 'users'
 
       key :first_name, String
       key :last_name, String
@@ -13,7 +13,7 @@ class DocumentTest < Test::Unit::TestCase
       key :date, Date
     end
 
-    @document.collection.clear
+    clear_all_collections
   end
 
   context "Saving a document with a custom id" do
@@ -162,7 +162,6 @@ class DocumentTest < Test::Unit::TestCase
         @document = Class.new do
           include MongoMapper::Document
         end
-        @document.collection.clear
       end
 
       should "create the document" do
@@ -655,7 +654,7 @@ class DocumentTest < Test::Unit::TestCase
       should "return 0 if the collection does not exist" do
         klass = Class.new do
           include MongoMapper::Document
-          collection 'foobarbazwickdoesnotexist'
+          set_collection_name 'foobarbazwickdoesnotexist'
         end
 
         klass.count.should == 0

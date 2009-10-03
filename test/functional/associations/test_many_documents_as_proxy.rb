@@ -162,50 +162,6 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
       end
     end
 
-    context "with :first" do
-      should "work" do
-        lambda {@post.comments.find(:first)}.should_not raise_error
-      end
-
-      should "work with conditions" do
-        comment = @post.comments.find(:first, :conditions => {:body => 'comment2'})
-        comment.body.should == 'comment2'
-      end
-    end
-
-    context "with #first" do
-      should "work" do
-        @post.comments.first.should == @comment1
-      end
-
-      should "work with conditions" do
-        comment = @post.comments.first(:conditions => {:body => 'comment2'}, :order => 'body desc')
-        comment.should == @comment2
-      end
-    end
-
-    context "with :last" do
-      should "work" do
-        @post.comments.find(:last).should == @comment2
-      end
-
-      should "work with conditions" do
-        post = @post.comments.find(:last, :conditions => {:body => 'comment1'})
-        post.body.should == 'comment1'
-      end
-    end
-
-    context "with #last" do
-      should "work" do
-        @post.comments.last.should == @comment2
-      end
-
-      should "work with conditions" do
-        comment = @post.comments.last(:conditions => {:body => 'comment1'})
-        comment.should == @comment1
-      end
-    end
-
     context "with one id" do
       should "work for id in association" do
         @post.comments.find(@comment2.id).should == @comment2

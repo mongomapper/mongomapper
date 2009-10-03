@@ -43,7 +43,6 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       include MongoMapper::Document
       key :person, Person
     end
-    @document.collection.clear
     
     meg = Person.new(:name => "Meg")
     meg.child = Person.new(:name => "Steve")
@@ -89,7 +88,6 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
         include MongoMapper::Document
         many :people
       end
-      @document.collection.clear
     end
 
     should "persist all embedded documents" do

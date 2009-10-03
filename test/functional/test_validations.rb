@@ -1,13 +1,16 @@
 require 'test_helper'
 
 class ValidationsTest < Test::Unit::TestCase
+  def setup
+    clear_all_collections
+  end
+  
   context "Saving a new document that is invalid" do
     setup do
       @document = Class.new do
         include MongoMapper::Document
         key :name, String, :required => true
       end
-      @document.collection.clear
     end
     
     should "not insert document" do
@@ -30,7 +33,6 @@ class ValidationsTest < Test::Unit::TestCase
         include MongoMapper::Document
         key :name, String, :required => true
       end
-      @document.collection.clear
     end
     
     should "raise error" do
@@ -45,7 +47,6 @@ class ValidationsTest < Test::Unit::TestCase
         include MongoMapper::Document
         key :name, String, :required => true
       end
-      @document.collection.clear
       
       @doc = @document.create(:name => 'John Nunemaker')
     end
@@ -72,7 +73,6 @@ class ValidationsTest < Test::Unit::TestCase
           errors.add(:action, 'is invalid') if action.blank?
         end
       end
-      @document.collection.clear
     end
     
     should "work with validate_on_create callback" do
@@ -113,7 +113,6 @@ class ValidationsTest < Test::Unit::TestCase
         key :name, String
         validates_uniqueness_of :name
       end
-      @document.collection.clear
     end
 
     should "not fail if object is new" do
@@ -134,7 +133,6 @@ class ValidationsTest < Test::Unit::TestCase
       doc2 = document.new("name" => "joe", :adult => false)
       doc2.should be_valid
 
-      document.collection.clear
     end
 
     should "allow to update an object" do
@@ -176,7 +174,6 @@ class ValidationsTest < Test::Unit::TestCase
 
       doc2 = document.new("name" => "joe", :adult => true)
       doc2.should have_error_on(:name)
-      document.collection.clear
     end
   end
   
@@ -186,7 +183,6 @@ class ValidationsTest < Test::Unit::TestCase
         include MongoMapper::Document
         key :name, String, :unique => true
       end
-      @document.collection.clear
       
       doc = @document.create(:name => 'John')
       doc.should_not have_error_on(:name)

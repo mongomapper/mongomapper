@@ -48,18 +48,18 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     should "allow setting the collection name" do
-      @document.collection('foobar')
+      @document.set_collection_name('foobar')
       @document.collection.should be_instance_of(Mongo::Collection)
       @document.collection.name.should == 'foobar'
     end
   end # Document class
   
   context "Documents that inherit from other documents" do
-    should "default collection to inherited class" do
-      Message.collection.name.should == 'messages'
-      Enter.collection.name.should   == 'messages'
-      Exit.collection.name.should    == 'messages'
-      Chat.collection.name.should    == 'messages'
+    should "default collection name to inherited class" do
+      Message.collection_name.should == 'messages'
+      Enter.collection_name.should   == 'messages'
+      Exit.collection_name.should    == 'messages'
+      Chat.collection_name.should    == 'messages'
     end
     
     should "default associations to inherited class" do

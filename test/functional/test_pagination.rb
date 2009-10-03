@@ -5,14 +5,14 @@ class PaginationTest < Test::Unit::TestCase
     setup do
       @document = Class.new do
         include MongoMapper::Document
-        collection 'users'
+        set_collection_name 'users'
 
         key :first_name, String
         key :last_name, String
         key :age, Integer
       end
 
-      @document.collection.clear
+      clear_all_collections
       
       @doc1 = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
       @doc2 = @document.create({:first_name => 'Steve', :last_name => 'Smith', :age => '28'})
