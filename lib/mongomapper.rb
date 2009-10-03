@@ -62,10 +62,15 @@ module MongoMapper
   end
 
   def self.database=(name)
-    @@database = MongoMapper.connection.db(name)
+    @@database = nil
+    @@database_name = name
   end
 
   def self.database
-    @@database
+    if @@database_name.blank?
+      raise 'You forgot to set the default database name: MongoMapper.database = "foobar"'
+    end
+    
+    @@database ||= MongoMapper.connection.db(@@database_name)
   end
 end
