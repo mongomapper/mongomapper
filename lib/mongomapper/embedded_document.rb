@@ -331,16 +331,9 @@ module MongoMapper
         end
 
         def write_attribute(name, value)
-          key = _keys[name]          
+          key = _keys[name]
           instance_variable_set "@#{name}_before_typecast", value
-          instance_variable_set "@#{name}", key.set(value)
-          
-          if key.embeddable?
-            if embedded_doc = instance_variable_get("@#{name}")
-              embedded_doc['_root_document'] = self
-              instance_variable_set "@#{name}", embedded_doc
-            end
-          end
+          instance_variable_set "@#{name}", key.set(value)          
         end
         
         def embedded_associations

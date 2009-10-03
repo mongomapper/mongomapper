@@ -130,55 +130,6 @@ class DocumentTest < Test::Unit::TestCase
         doc.foo['baz'].should == 'bar'
       end
     end
-
-    context "Saving a document with an embedded document" do
-      setup do
-        @document.class_eval do
-          key :foo, Address
-        end
-      end
-
-      should "embed embedded document" do
-        address = Address.new(:city => 'South Bend', :state => 'IN')
-        doc = @document.new(:foo => address)
-        doc.save
-        doc.foo.city.should == 'South Bend'
-        doc.foo.state.should == 'IN'
-
-        from_db = @document.find(doc.id)
-        from_db.foo.city.should == 'South Bend'
-        from_db.foo.state.should == 'IN'
-      end
-    end
-
-    context "#new? for embedded documents" do
-      setup do
-        @document.class_eval do
-          key :foo, Address
-        end
-      end
-
-      should "be new until document is saved" do
-        address = Address.new(:city => 'South Bend', :state => 'IN')
-        doc = @document.new(:foo => address)
-        address.new?.should == true
-      end
-      
-      should "not be new after document is saved" do
-        address = Address.new(:city => 'South Bend', :state => 'IN')
-        doc = @document.new(:foo => address)
-        doc.save
-        doc.foo.new?.should == false
-      end
-      
-      should "not be new when document is read back" do
-        address = Address.new(:city => 'South Bend', :state => 'IN')
-        doc = @document.new(:foo => address)
-        doc.save
-        read_doc = @document.find(doc.id)
-        read_doc.foo.new?.should == false
-      end
-    end
     
     context "Creating a single document" do
       setup do
