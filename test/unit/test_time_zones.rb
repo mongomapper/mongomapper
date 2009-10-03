@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/../test_helper"
+require 'test_helper'
 
 class TimeZonesTest < Test::Unit::TestCase
   context "An instance of an embedded document" do

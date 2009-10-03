@@ -31,7 +31,7 @@ end
 
 class String
   def self.to_mongo(value)
-    value.to_s
+    value.nil? ? nil : value.to_s
   end
   
   def self.from_mongo(value)
@@ -55,17 +55,13 @@ class Array
   end
 end
 
-class Hash  
-  def self.to_mongo(value)
-    value unless value.nil?
-  end
-  
+class Hash
   def self.from_mongo(value)
     HashWithIndifferentAccess.new(value || {})
   end
   
   def to_mongo
-    Hash.to_mongo(self)
+    self
   end
 end
 

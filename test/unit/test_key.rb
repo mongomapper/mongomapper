@@ -9,14 +9,13 @@ class Address
   key :zip,     Integer
 end
 
-class FooDate < Date
+class FooType < Struct.new(:bar)
   def self.to_mongo(value)
-    value = Date.parse(value) unless value.is_a?(Date)
-    Time.utc(value.year, value.month, value.day)
+    'to_mongo'
   end
 
   def self.from_mongo(value)
-    new(value.year, value.month, value.day)
+    'from_mongo'
   end
 end
 
@@ -94,245 +93,36 @@ class KeyTest < Test::Unit::TestCase
     end
   end
 
-  context "setting a value" do
-    should "correctly typecast Strings" do
-      key = Key.new(:foo, String)
-      [21, '21'].each do |a|
-        key.set(a).should == '21'
-      end
+  context "setting a value with a custom type" do
+    should "correctly typecast" do
+      key = Key.new(:foo, FooType)
+      key.set("something").should == 'to_mongo'
     end
 
-    should "correctly typecast Integers" do
-      key = Key.new(:foo, Integer)
-      [21, 21.0, '21'].each do |a|
-        key.set(a).should == 21
-      end
+    should "correctly typecast if object of that type is given" do
+      key = Key.new(:foo, FooType)
+      key.set(FooType.new('something')).should == 'to_mongo'
     end
-    
-    should "work fine with long integers" do
-      key = Key.new(:foo, Integer)
-      [9223372036854775807, '9223372036854775807'].each do |value|
-        key.set(value).should == 9223372036854775807
-      end
-    end
-
-    should "correctly typecast Floats" do
-      key = Key.new(:foo, Float)
-      [21, 21.0, '21'].each do |a|
-        key.set(a).should == 21.0
-      end
-    end
-    
-    context "type Time" do
-      context "with string value" do
-        should "typecast string to time" do
-          key = Key.new(:foo, Time)
-          key.set('2000-01-01 01:01:01.123456').should == Time.local(2000, 1, 1, 1, 1, 1, 123456).utc
-        end
-        
-        should "always return utc" do
-          key = Key.new(:foo, Time)
-          key.set('2000-01-01 01:01:01.123456').zone.should == "UTC"
-        end
-        
-        context "with Time.zone set" do
-          should "typecast string with Time.zone if present" do
-            Time.zone = 'Hawaii'
-            key = Key.new(:foo, Time)
-            key.set('2009-08-15 14:00:00').should == Time.utc(2009, 8, 16, 0, 0, 0)
-            Time.zone = nil
-          end
-        end
-      end
-      
-      context "with Time value" do
-        should "always return utc" do
-          key = Key.new(:foo, Time)
-          key.set(Time.local(2009, 8, 15, 0, 0, 0)).zone.should == 'UTC'
-        end
-        
-        should "work with Time.zone set" do
-          Time.zone = 'Hawaii'
-          key = Key.new(:foo, Time)
-          key.set(Time.zone.local(2009, 8, 15, 14, 0, 0)).should == Time.utc(2009, 8, 16, 0, 0, 0)
-          Time.zone = nil
-        end
-      end
-    end
-    
-    context "type Date" do
-      should "correctly typecast String to Date" do
-        key = Key.new(:foo, Date)
-        value = key.set('12/01/1974')
-        value.month.should == 12
-        value.day.should == 1
-        value.year.should == 1974
-      end
-      
-      should "correctly typecast bogus String to nil" do
-        key = Key.new(:foo, Date)
-        value = key.set('jdsafop874')
-        value.should == nil
-      end
-      
-      should "correctly typecast empty String to nil" do
-        key = Key.new(:foo, Date)
-        value = key.set('')
-        value.should == nil
-      end
-      
-      should "correctly preserve Date" do
-        key = Key.new(:foo, Date)
-        value = key.set(Date.parse('12/01/1974'))
-        value.day.should == 1
-        value.month.should == 12
-        value.year.should == 1974
-      end
-    end
-
-    should "correctly typecast Boolean" do
-      key = Key.new(:foo, Boolean)
-      ['false', false, 'f', '0', 0].each do |b|
-        key.set(b).should == false
-      end
-
-      ['true', true, 't', '1', 1].each do |b|
-        key.set(b).should == true
-      end
-    end
-
-    should "correctly typecast Array" do
-      key = Key.new(:foo, Array)
-      key.set([1,2,3,4]).should == [1,2,3,4]
-      key.set({'1' => '2', '3' => '4'}).should == [['1', '2'], ['3', '4']]
-      key.set('1').should == ['1']
-    end
-
-    should "correctly typecast Hash" do
-      key = Key.new(:foo, Hash)
-      key.set(:foo => 'bar')[:foo].should == 'bar'
-      key.set(:foo => {:bar => 'baz'})[:foo][:bar].should == 'baz'
-    end
-
-    context "with a custom type" do
-      should "correctly typecast" do
-        key = Key.new(:foo, FooDate)
-        key.set("2000-01-01").should == Time.utc(2000, 1, 1)
-      end
-
-      should "correctly typecast if object of that type is given" do
-        key = Key.new(:foo, FooDate)
-        key.set(FooDate.new(2000, 1, 1)).should == Time.utc(2000, 1, 1)
-      end
+  end
+  
+  context "getting a value with a custom type" do
+    should "use #from_mongo to convert back to custom type" do
+      key = Key.new(:foo, FooType)
+      key.get('something').should == 'from_mongo'
     end
   end
 
   context "getting a value" do
-    should "work" do
+    should "work with a type" do
       key = Key.new(:foo, String)
       key.get('bar').should == 'bar'
     end
     
     should "work without type" do
       key = Key.new(:foo)
-      key.get([1,"2"]).should == [1, "2"]
-      key.get(false).should   == false
-      key.get({}).should      == {}
-    end
-
-    context "for a key with a default value set" do
-      setup do
-        @key = Key.new(:foo, String, :default => 'baz')
-      end
-
-      should "return default value if value nil" do
-        @key.get(nil).should == 'baz'
-      end
-
-      should "return value if not blank" do
-        @key.get('foobar').should == 'foobar'
-      end
-    end
-
-    context "for a boolean key" do
-      should "allow setting default to false" do
-        Key.new(:active, Boolean, :default => false).get(nil).should be_false
-      end
-
-      should "allow setting default to true" do
-        Key.new(:active, Boolean, :default => true).get(nil).should be_true
-      end
-    end
-    
-    context "of type Time" do
-      should "return time if not nil" do
-        key = Key.new(:foo, Time)
-        key.get(Time.utc(2009, 10, 1)).should == Time.utc(2009, 10, 1)
-      end
-      
-      should "return nil if nil" do
-        key = Key.new(:foo, Time)
-        key.get(nil).should be_nil
-      end
-      
-      should "return time in zone if Time.zone available" do
-        Time.zone = 'Hawaii'
-        
-        key = Key.new(:foo, Time)
-        time = key.get(Time.utc(2009, 10, 1))
-        time.should == Time.zone.local(2009, 9, 30, 14)
-        time.is_a?(ActiveSupport::TimeWithZone).should be_true
-        
-        Time.zone = nil
-      end
-    end
-    
-    context "of type Date" do
-      should "correctly typecast Dates" do
-        key = Key.new(:foo, Date)
-        value = key.get(Time.utc(1974, 12, 1))
-        value.class.should == Date
-        value.day.should == 1
-        value.month.should == 12
-        value.year.should == 1974
-      end
-      
-      should "correctly return nil" do
-        key = Key.new(:foo, Date)
-        key.get(nil).should == nil
-      end
-    end
-    
-    context "for an array" do
-      should "return array" do
-        key = Key.new(:foo, Array)
-        key.get([1,2]).should == [1,2]
-      end
-
-      should "default to empty array" do
-        key = Key.new(:foo, Array)
-        key.get(nil).should == []
-      end
-    end
-
-    context "for a hash" do
-      should "default to empty hash" do
-        key = Key.new(:foo, Hash)
-        key.get(nil).should == {}
-      end
-
-      should "use hash with indifferent access" do
-        key = Key.new(:foo, Hash)
-        key.get({:foo => 'bar'})['foo'].should == 'bar'
-        key.get({:foo => 'bar'})[:foo].should == 'bar'
-      end
-    end
-
-    context "for a custom type" do
-      should "use #from_mongo to convert back to custom type" do
-        key = Key.new(:foo, FooDate)
-        key.get(Time.utc(2000,1,1)).should == Date.new(2000, 1, 1)
-      end
+      key.get([1, '2']).should == [1, '2']
+      key.get(false).should == false
+      key.get({}).should == {}
     end
 
     context "for a embedded_document" do
@@ -346,6 +136,28 @@ class KeyTest < Test::Unit::TestCase
         key = Key.new(:foo, Address)
         key.get(address).should == address
       end
+    end
+  end
+  
+  context "getting a value with a default set" do
+    setup do
+      @key = Key.new(:foo, String, :default => 'baz')
+    end
+
+    should "return default value if value nil" do
+      @key.get(nil).should == 'baz'
+    end
+
+    should "return value if not blank" do
+      @key.get('foobar').should == 'foobar'
+    end
+    
+    should "work with Boolean type and false value" do
+      Key.new(:active, Boolean, :default => false).get(nil).should be_false
+    end
+
+    should "work with Boolean type and true value" do
+      Key.new(:active, Boolean, :default => true).get(nil).should be_true
     end
   end
 end # KeyTest

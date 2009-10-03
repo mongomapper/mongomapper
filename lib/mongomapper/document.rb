@@ -312,7 +312,6 @@ module MongoMapper
         save_to_collection
       end
 
-      # collection.save returns mongoid
       def save_to_collection
         clear_custom_id_flag
         collection.save(to_mongo)

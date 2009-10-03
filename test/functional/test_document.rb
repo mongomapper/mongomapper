@@ -811,21 +811,6 @@ class DocumentTest < Test::Unit::TestCase
         doc.date.should == Date.new(2009, 12, 1)
       end
     end
-
-    context "Saving an embedded document with Date key set" do
-      should "save the Date value as a Time object" do
-        Pet.class_eval do
-          key :date_of_birth, Date
-        end
-        
-        doc = RealPerson.new
-        doc.pets = [Pet.new(:date_of_birth => "12/01/2009")]
-        doc.save
-        
-        doc = RealPerson.find(doc.id)
-        doc.pets.last.date_of_birth.should == Date.new(2009, 12, 1)
-      end
-    end
   end
 
   context "Saving an existing document" do
@@ -851,7 +836,7 @@ class DocumentTest < Test::Unit::TestCase
       from_db.age.should == 30
     end
 
-    should "allow to update custom attributes" do
+    should "allow updating custom attributes" do
       @doc = @document.new(:first_name => 'David', :age => '26', :gender => 'male')
       @doc.gender = 'Male'
       @doc.save
@@ -887,7 +872,7 @@ class DocumentTest < Test::Unit::TestCase
       from_db.age.should == 30
     end
 
-    should "allow to update custom attributes" do
+    should "allow updating custom attributes" do
       @doc.update_attributes(:gender => 'mALe')
       from_db = @document.find(@doc.id)
       from_db.gender.should == 'mALe'
@@ -963,36 +948,6 @@ class DocumentTest < Test::Unit::TestCase
       should "raise error if assignment is attempted" do
         lambda { @doc.first_name = 'Foo' }.should raise_error(TypeError)
       end
-    end
-  end
-
-  context "embedded document persistence" do
-    setup do
-      @person = RealPerson.create
-    end
-    
-    should "save the embedded document" do
-      pet = Pet.new :name => 'sparky'
-      @person.pets << pet
-      pet.save
-      
-      doc = RealPerson.find(@person.id)
-      doc.pets.first.should == pet
-    end
-
-    should "update_attributes on the embedded document" do
-      pet = Pet.new(:name => 'sparky')
-      @person.pets << pet
-      pet.save
-      
-      doc = RealPerson.find(@person.id)
-      pet = doc.pets.first
-      pet.update_attributes :name => 'koda'
-      
-      doc = RealPerson.find(@person.id)
-      embedded = doc.pets.first
-      embedded.id.should == pet.id
-      embedded.name.should == 'koda'
     end
   end
 
