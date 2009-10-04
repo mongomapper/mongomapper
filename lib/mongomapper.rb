@@ -1,4 +1,3 @@
-require 'pathname'
 require 'rubygems'
 
 gem 'activesupport'
@@ -10,13 +9,10 @@ require 'mongo'
 require 'validatable'
 
 require 'mongomapper/support'
-
 require 'mongomapper/associations'
 require 'mongomapper/associations/base'
-
 require 'mongomapper/associations/proxy'
 require 'mongomapper/associations/many_documents_proxy'
-
 require 'mongomapper/associations/belongs_to_proxy'
 require 'mongomapper/associations/belongs_to_polymorphic_proxy'
 require 'mongomapper/associations/many_proxy'
@@ -24,7 +20,6 @@ require 'mongomapper/associations/many_polymorphic_proxy'
 require 'mongomapper/associations/many_embedded_proxy'
 require 'mongomapper/associations/many_embedded_polymorphic_proxy'
 require 'mongomapper/associations/many_documents_as_proxy'
-
 require 'mongomapper/callbacks'
 require 'mongomapper/finder_options'
 require 'mongomapper/dynamic_finder'
@@ -34,10 +29,8 @@ require 'mongomapper/pagination'
 require 'mongomapper/save_with_validation'
 require 'mongomapper/serialization'
 require 'mongomapper/validations'
-
 require 'mongomapper/rails_compatibility/document'
 require 'mongomapper/rails_compatibility/embedded_document'
-
 require 'mongomapper/embedded_document'
 require 'mongomapper/document'
 
