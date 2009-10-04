@@ -255,6 +255,12 @@ module MongoMapper
         attrs
       end
 
+      def clone
+        clone_attributes = self.attributes
+        clone_attributes.delete("_id")
+        self.class.new(clone_attributes)
+      end
+
       def [](name)
         read_attribute(name)
       end

@@ -432,7 +432,24 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       doc = document.new :start_date => "12/05/2009"
       doc.start_date.should == Date.new(2009, 12, 05)
     end
-    
+
+    context "clone" do
+      should "regenerate the id" do
+        doc = @document.new(:name => "foo", :age => 27)
+        doc_id = doc.id
+        clone = doc.clone
+        clone_id = clone.id
+        clone_id.should_not == doc_id
+      end
+
+      should "copy the attributes" do
+        doc = @document.new(:name => "foo", :age => 27)
+        clone = doc.clone
+        clone.name.should == "foo"
+        clone.age.should == 27
+      end
+    end
+
     context "key shorcut access" do
       should "be able to read key with []" do
         doc = @document.new(:name => 'string')
