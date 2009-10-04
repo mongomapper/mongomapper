@@ -82,7 +82,7 @@ end
 
 class RealPerson
   include MongoMapper::Document
-  
+
   many :pets
   key :name, String
 
