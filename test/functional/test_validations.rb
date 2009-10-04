@@ -161,19 +161,82 @@ class ValidationsTest < Test::Unit::TestCase
       doc2 = @document.new("name" => "joe")
       doc2.should have_error_on(:name)
     end
-
-    should "fail when object is not unique within scope" do
-      document = Class.new do
-        include MongoMapper::Document
-        key :name
-        key :adult
-        validates_uniqueness_of :name, :scope => :adult
+    
+    context "scoped by a single attribute" do
+      setup do
+        @document = Class.new do
+          include MongoMapper::Document
+          key :name, String
+          key :scope, String
+          validates_uniqueness_of :name, :scope => :scope
+        end
+        @document.collection.clear
       end
-      doc = document.new("name" => "joe", :adult => true)
-      doc.save.should be_true
+      
+      should "fail if the same name exists in the scope" do
+        doc = @document.new("name" => "joe", "scope" => "one")
+        doc.save.should be_true
+        
+        @document \
+          .stubs(:find) \
+          .with(:first, :conditions => {:name => 'joe', :scope => "one"}, :limit => 1) \
+          .returns(doc)
 
-      doc2 = document.new("name" => "joe", :adult => true)
-      doc2.should have_error_on(:name)
+        doc2 = @document.new("name" => "joe", "scope" => "one")
+        doc2.should have_error_on(:name)
+      end
+      
+      should "pass if the same name exists in a different scope" do
+        doc = @document.new("name" => "joe", "scope" => "one")
+        doc.save.should be_true
+        
+        @document \
+          .stubs(:find) \
+          .with(:first, :conditions => {:name => 'joe', :scope => "two"}, :limit => 1) \
+          .returns(nil)
+
+        doc2 = @document.new("name" => "joe", "scope" => "two")
+        doc2.should_not have_error_on(:name)
+      end
+    end
+    
+    context "scoped by a multiple attributes" do
+      setup do
+        @document = Class.new do
+          include MongoMapper::Document
+          key :name, String
+          key :first_scope, String
+          key :second_scope, String
+          validates_uniqueness_of :name, :scope => [:first_scope, :second_scope]
+        end
+        @document.collection.clear
+      end
+      
+      should "fail if the same name exists in the scope" do
+        doc = @document.new("name" => "joe", "first_scope" => "one", "second_scope" => "two")
+        doc.save.should be_true
+        
+        @document \
+          .stubs(:find) \
+          .with(:first, :conditions => {:name => 'joe', :first_scope => "one", :second_scope => "two"}, :limit => 1) \
+          .returns(doc)
+
+        doc2 = @document.new("name" => "joe", "first_scope" => "one", "second_scope" => "two")
+        doc2.should have_error_on(:name)
+      end
+      
+      should "pass if the same name exists in a different scope" do
+        doc = @document.new("name" => "joe", "first_scope" => "one", "second_scope" => "two")
+        doc.save.should be_true
+        
+        @document \
+          .stubs(:find) \
+          .with(:first, :conditions => {:name => 'joe', :first_scope => "one", :second_scope => "one"}, :limit => 1) \
+          .returns(nil)
+
+        doc2 = @document.new("name" => "joe", "first_scope" => "one", "second_scope" => "one")
+        doc2.should_not have_error_on(:name)
+      end
     end
   end
   

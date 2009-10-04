@@ -16,18 +16,21 @@ module MongoMapper
     
     class ValidatesUniquenessOf < Validatable::ValidationBase
       option :scope
-
+      
       def valid?(instance)
-        conditions = {self.attribute => instance[attribute]}
-        if scope
-          conditions.merge!(scope => instance[scope])
-        end
-        doc = instance.class.find(:first, :conditions => conditions, :limit => 1)
+        doc = instance.class.find(:first, :conditions => {self.attribute => instance[attribute]}.merge(scope_conditions(instance)), :limit => 1)
         doc.nil? || instance.id == doc.id
       end
 
       def message(instance)
         super || "has already been taken"
+      end
+      
+      def scope_conditions(instance)
+        return {} unless scope
+        Array(scope).inject({}) do |conditions, key|
+          conditions.merge(key => instance[key])
+        end
       end
     end
     
