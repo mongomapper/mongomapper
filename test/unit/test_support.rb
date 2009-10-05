@@ -27,6 +27,10 @@ class SupportTest < Test::Unit::TestCase
     should "be byte buffer if byte buffer" do
       Binary.to_mongo(ByteBuffer.new('asdfsadasdfs')).is_a?(ByteBuffer).should be_true
     end
+    
+    should "be nil if nil" do
+      Binary.to_mongo(nil).should be_nil
+    end
   end
   
   context "Binary#from_mongo" do

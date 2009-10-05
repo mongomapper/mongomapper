@@ -24,6 +24,18 @@ class DocumentTest < Test::Unit::TestCase
       doc.using_custom_id?.should be_false
     end
   end
+  
+  context "Saving a document with a blank binary value" do
+    setup do
+      @document.key :file, Binary
+    end
+
+    should "not fail" do
+      doc = @document.new(:file => nil)
+      doc.save
+    end
+  end
+  
 
   context "Loading a document from the database with keys that are not defined" do
     setup do

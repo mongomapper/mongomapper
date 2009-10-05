@@ -17,7 +17,7 @@ class Binary
     if value.is_a?(ByteBuffer)
       value
     else
-      ByteBuffer.new(value)
+      value.nil? ? nil : ByteBuffer.new(value)
     end
   end
   
