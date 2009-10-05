@@ -125,7 +125,7 @@ class String
   end
   
   def self.from_mongo(value)
-    value.present? ? value : nil
+    value.nil? ? nil : value.to_s
   end
 end
 

@@ -211,8 +211,8 @@ class SupportTest < Test::Unit::TestCase
       String.from_mongo(nil).should be_nil
     end
     
-    should "return nil if blank" do
-      String.from_mongo('').should be_nil
+    should "return empty string if blank" do
+      String.from_mongo('').should == ''
     end
   end
   

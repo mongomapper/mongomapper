@@ -35,7 +35,6 @@ class DocumentTest < Test::Unit::TestCase
       doc.save
     end
   end
-  
 
   context "Loading a document from the database with keys that are not defined" do
     setup do
