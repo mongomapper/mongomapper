@@ -40,6 +40,12 @@ class FinderOptionsTest < Test::Unit::TestCase
       }
     end
     
+    should "convert id to _id" do
+      FinderOptions.to_mongo_criteria(:id => '1').should == {
+        :_id => '1'
+      }
+    end
+    
     should "use $in for arrays" do
       FinderOptions.to_mongo_criteria(:foo => [1,2,3]).should == {
         :foo => {'$in' => [1,2,3]}
