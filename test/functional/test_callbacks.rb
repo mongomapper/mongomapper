@@ -29,8 +29,7 @@ class CallbacksTest < Test::Unit::TestCase
           @history = nil
         end
       end
-      
-      clear_all_collections
+      @document.collection.clear
     end
     
     should "get the order right for creating documents" do

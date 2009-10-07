@@ -13,8 +13,7 @@ class PaginationTest < Test::Unit::TestCase
         
         def self.per_page; 1 end
       end
-
-      clear_all_collections
+      @document.collection.clear
       
       @doc1 = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
       @doc2 = @document.create({:first_name => 'Steve', :last_name => 'Smith', :age => '28'})

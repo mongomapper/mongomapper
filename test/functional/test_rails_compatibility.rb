@@ -14,7 +14,7 @@ class TestRailsCompatibility < Test::Unit::TestCase
   
   context "Document" do
     setup do
-      clear_all_collections
+      Order.collection.clear
     end
   
     should "have to_param that returns id" do

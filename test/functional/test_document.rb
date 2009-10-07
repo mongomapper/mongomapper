@@ -12,8 +12,7 @@ class DocumentTest < Test::Unit::TestCase
       key :age, Integer
       key :date, Date
     end
-
-    clear_all_collections
+    @document.collection.clear
   end
 
   context "Saving a document with a custom id" do
@@ -173,6 +172,7 @@ class DocumentTest < Test::Unit::TestCase
         @document = Class.new do
           include MongoMapper::Document
         end
+        @document.collection.clear
       end
 
       should "create the document" do
@@ -532,13 +532,13 @@ class DocumentTest < Test::Unit::TestCase
         class ::Property
           include MongoMapper::Document
         end
-        Property.delete_all
+        Property.collection.clear
 
         class ::Thing
           include MongoMapper::Document
           key :name, String
         end
-        Thing.delete_all
+        Thing.collection.clear
       end
 
       teardown do
@@ -664,6 +664,7 @@ class DocumentTest < Test::Unit::TestCase
           include MongoMapper::Document
           set_collection_name 'foobarbazwickdoesnotexist'
         end
+        @document.collection.clear
 
         klass.count.should == 0
       end

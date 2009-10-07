@@ -3,7 +3,8 @@ require 'models'
 
 class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
   def setup
-    clear_all_collections
+    Catalog.collection.clear
+    TrModels::Fleet.collection.clear
   end
   
   should "default reader to empty array" do

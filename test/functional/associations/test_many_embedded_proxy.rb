@@ -3,9 +3,10 @@ require 'models'
 
 class ManyEmbeddedProxyTest < Test::Unit::TestCase
   def setup
-    clear_all_collections
+    Project.collection.clear
+    RealPerson.collection.clear
   end
-  
+    
   should "default reader to empty array" do
     Project.new.addresses.should == []
   end
@@ -43,6 +44,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       include MongoMapper::Document
       key :person, Person
     end
+    @document.collection.clear
     
     meg = Person.new(:name => "Meg")
     meg.child = Person.new(:name => "Steve")
@@ -88,6 +90,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
         include MongoMapper::Document
         many :people
       end
+      @document.collection.clear
     end
 
     should "persist all embedded documents" do

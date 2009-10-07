@@ -10,8 +10,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       key :first_name, String
       key :last_name, String
     end
-
-    clear_all_collections
+    @document.collection.clear
   end
   
   context "Saving a document with an embedded document" do

@@ -12,6 +12,7 @@ class AssociationsTest < Test::Unit::TestCase
       
       many :posts, :class_name => 'AssociationsTest::AwesomePost', :foreign_key => :creator_id
     end
+    AwesomeUser.collection.clear
     
     class AwesomeTag
       include MongoMapper::EmbeddedDocument

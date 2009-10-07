@@ -1,16 +1,13 @@
 require 'test_helper'
 
-class BinaryTest < Test::Unit::TestCase
-  def setup
-    clear_all_collections
-  end
-  
+class BinaryTest < Test::Unit::TestCase  
   should "serialize and deserialize correctly" do
     klass = Class.new do
       include MongoMapper::Document
       set_collection_name 'test'
       key :contents, Binary
     end
+    klass.collection.clear
     
     doc = klass.new(:contents => '010101')
     doc.save
