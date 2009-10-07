@@ -71,8 +71,43 @@ module MongoMapper
         end
         reset
       end
-
-      protected
+      
+      def method_missing(method, *args)
+        finder = DynamicFinder.new(method)
+        
+        if finder.found?
+          # self.class.meta_def(finder.method) { |*args| dynamic_find(finder, args) }
+          # send(finder.method, *args)
+          dynamic_find(finder, args)
+        else
+          super
+        end
+      end
+      
+      protected        
+        def dynamic_find(finder, args)
+          attributes = {}
+          find_options = args.extract_options!.deep_merge(:conditions => attributes)
+          
+          finder.attributes.each_with_index do |attr, index|
+            attributes[attr] = args[index]
+          end
+          
+          result = find(finder.finder, find_options)
+          
+          if result.nil?
+            if finder.bang
+              raise DocumentNotFound, "Couldn't find Document with #{attributes.inspect} in collection named #{klass.collection.name}"
+            end
+            
+            if finder.instantiator
+              self.send(finder.instantiator, attributes)
+            end
+          else
+            result
+          end
+        end
+        
         def scoped_conditions
           {self.foreign_key => @owner.id}
         end

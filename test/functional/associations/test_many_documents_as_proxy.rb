@@ -115,16 +115,16 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
     setup do
       @post = Post.new
 
-      @comment1 = PostComment.create(:body => 'comment1')
-      @comment2 = PostComment.create(:body => 'comment2')
-      @comment3 = PostComment.create(:body => 'comment3')
+      @comment1 = PostComment.create(:body => 'comment1', :name => 'John')
+      @comment2 = PostComment.create(:body => 'comment2', :name => 'Steve')
+      @comment3 = PostComment.create(:body => 'comment3', :name => 'John')
       @post.comments = [@comment1, @comment2]
       @post.save
 
       @post2 = Post.create(:body => "post #2")
-      @comment4 = PostComment.create(:body => 'comment4')
-      @comment5 = PostComment.create(:body => 'comment5')
-      @comment6 = PostComment.create(:body => 'comment6')
+      @comment4 = PostComment.create(:body => 'comment1', :name => 'Chas')
+      @comment5 = PostComment.create(:body => 'comment2', :name => 'Dan')
+      @comment6 = PostComment.create(:body => 'comment3', :name => 'Ed')
       @post2.comments = [@comment4, @comment5, @comment6]
       @post2.save
     end
@@ -186,10 +186,44 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
+    
+    context "dynamic finders" do
+      should "work with single key" do
+        @post.comments.find_by_body('comment1').should == @comment1
+        @post2.comments.find_by_body('comment1').should == @comment4
+      end
+      
+      should "work with multiple keys" do
+        @post.comments.find_by_body_and_name('comment1', 'John').should == @comment1
+        @post.comments.find_by_body_and_name('comment1', 'Frank').should be_nil
+      end
+      
+      should "raise error when using !" do
+        lambda {
+          @post.comments.find_by_body!('asdf')
+        }.should raise_error(MongoMapper::DocumentNotFound)
+      end
+      
+      context "find_or_create_by" do
+        should "not create document if found" do
+          lambda {
+            comment = @post.comments.find_or_create_by_name('Steve')
+            comment.commentable.should == @post
+            comment.should == @comment2
+          }.should_not change { PostComment.count }
+        end
+
+        should "create document if not found" do
+          lambda {
+            @post.comments.find_or_create_by_name('Chas')
+          }.should change { PostComment.count }.by(1)
+        end
+      end
+    end
 
     context "with #paginate" do
       setup do
-        @comments = @post2.comments.paginate(:per_page => 2, :page => 1, :order => 'created_at asc')
+        @comments = @post2.comments.paginate(:per_page => 2, :page => 1, :order => 'name')
       end
 
       should "return total pages" do

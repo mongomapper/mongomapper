@@ -139,6 +139,42 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       @hall.save
     end
     
+    context "dynamic finders" do
+      should "work with single key" do
+        @lounge.messages.find_by_position(1).should == @lm1
+        @hall.messages.find_by_position(2).should == @hm2
+      end
+      
+      should "work with multiple keys" do
+        @lounge.messages.find_by_body_and_position('Loungin!', 1).should == @lm1
+        @lounge.messages.find_by_body_and_position('Loungin!', 2).should be_nil
+      end
+      
+      should "raise error when using !" do
+        lambda {
+          @lounge.messages.find_by_position!(222)
+        }.should raise_error(MongoMapper::DocumentNotFound)
+      end
+      
+      context "find_or_create_by" do
+        should "not create document if found" do
+          lambda {
+            message = @lounge.messages.find_or_create_by_body('Loungin!')
+            message.room.should == @lounge
+            message.should == @lm1
+          }.should_not change { Message.count }
+        end
+
+        should "create document if not found" do
+          lambda {
+            message = @lounge.messages.find_or_create_by_body('Yo dawg!')
+            message.room.should == @lounge
+            message._type.should == 'Message'
+          }.should change { Message.count }.by(1)
+        end
+      end
+    end
+    
     context "with :all" do
       should "work" do
         @lounge.messages.find(:all, :order => "position").should == [@lm1, @lm2]

@@ -173,6 +173,41 @@ class ManyProxyTest < Test::Unit::TestCase
       @project2.save
     end
     
+    context "dynamic finders" do
+      should "work with single key" do
+        @project1.statuses.find_by_name('New').should == @brand_new
+        @project2.statuses.find_by_name('In Progress').should == @in_progress
+      end
+      
+      should "work with multiple keys" do
+        @project1.statuses.find_by_name_and_position('New', 1).should == @brand_new
+        @project1.statuses.find_by_name_and_position('New', 2).should be_nil
+      end
+      
+      should "raise error when using !" do
+        lambda {
+          @project1.statuses.find_by_name!('Fake')
+        }.should raise_error(MongoMapper::DocumentNotFound)
+      end
+      
+      context "find_or_create_by" do
+        should "not create document if found" do
+          lambda {
+            status = @project1.statuses.find_or_create_by_name('New')
+            status.project.should == @project1
+            status.should == @brand_new
+          }.should_not change { Status.count }
+        end
+
+        should "create document if not found" do
+          lambda {
+            status = @project1.statuses.find_or_create_by_name('Delivered')
+            status.project.should == @project1
+          }.should change { Status.count }.by(1)
+        end
+      end
+    end
+    
     context "with :all" do
       should "work" do
         @project1.statuses.find(:all, :order => "position asc").should == [@brand_new, @complete]
