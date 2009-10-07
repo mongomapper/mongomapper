@@ -1,38 +1,35 @@
 module MongoMapper
   class DynamicFinder
-    attr_reader :options
+    attr_reader :method, :attributes, :finder, :bang, :instantiator
 
-    def initialize(model, method)
-      @model = model
-      @options = {}
-      @options[:method] = method
-      match
+    def initialize(method)
+      @method = method
+      @finder = :first
+      @bang   = false
+      match()
     end
 
     def valid?
-      @options[:finder].present?
+      @finder.present?
     end
 
     protected
-      def match
-        @options[:finder] = :first
-        
-        case @options[:method].to_s
-          when /^find_(all_by|last_by|by)_([_a-zA-Z]\w*)$/
-            @options[:finder] = :last if $1 == 'last_by'
-            @options[:finder] = :all if $1 == 'all_by'
+      def match        
+        case method.to_s
+          when /^find_(all_by|by)_([_a-zA-Z]\w*)$/
+            @finder = :all if $1 == 'all_by'
             names = $2
           when /^find_by_([_a-zA-Z]\w*)\!$/
-            @options[:bang] = true
+            @bang = true
             names = $1
           when /^find_or_(initialize|create)_by_([_a-zA-Z]\w*)$/
-            @options[:instantiator] = $1 == 'initialize' ? :new : :create
+            @instantiator = $1 == 'initialize' ? :new : :create
             names = $2
           else
-            @options[:finder] = nil
+            @finder = nil
         end
         
-        @options[:attribute_names] = names && names.split('_and_')
+        @attributes = names && names.split('_and_')
       end
   end
 end

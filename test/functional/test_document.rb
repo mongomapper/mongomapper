@@ -365,11 +365,6 @@ class DocumentTest < Test::Unit::TestCase
           docs.should include(@doc3)
         end
 
-        should "find last document based on arguments" do
-          doc = @document.find_last_by_last_name('Nunemaker', :order => 'age')
-          doc.should == @doc1
-        end
-
         should "initialize document with given arguments" do
           doc = @document.find_or_initialize_by_first_name_and_last_name('David', 'Cuadrado')
           doc.should be_new

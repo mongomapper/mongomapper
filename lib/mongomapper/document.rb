@@ -159,14 +159,14 @@ module MongoMapper
       
       protected
         def method_missing(method, *args)
-          finder = DynamicFinder.new(self, method)
+          finder = DynamicFinder.new(method)
           
           if finder.valid?
-            meta_def(finder.options[:method]) do |*args|
-              find_with_args(args, finder.options)
+            meta_def(finder.method) do |*args|
+              find_with_args(args, finder)
             end
             
-            send(finder.options[:method], *args)
+            send(finder.method, *args)
           else
             super
           end
@@ -180,14 +180,14 @@ module MongoMapper
 
         def find_first(options)
           options.merge!(:limit => 1)
-          find_every({:order => '$natural asc'}.merge(options))[0]
+          options[:order] ||= '$natural'
+          find_every(options)[0]
         end
 
         def find_last(options)
           options.merge!(:limit => 1)
           options[:order] = invert_order_clause(options)
           find_every(options)[0]
-          #find_every({:order => '$natural desc'}.merge(invert_order_clause(options)))[0]
         end
 
         def invert_order_clause(options)
@@ -233,23 +233,23 @@ module MongoMapper
           end
         end
         
-        def find_with_args(args, options)
-          attributes,  = {}
+        def find_with_args(args, finder)
+          attributes = {}
           find_options = args.extract_options!.deep_merge(:conditions => attributes)
           
-          options[:attribute_names].each_with_index do |attr, index|
+          finder.attributes.each_with_index do |attr, index|
             attributes[attr] = args[index]
           end
-
-          result = find(options[:finder], find_options)
+          
+          result = find(finder.finder, find_options)
           
           if result.nil?
-            if options[:bang]
+            if finder.bang
               raise DocumentNotFound, "Couldn't find Document with #{attributes.inspect} in collection named #{collection.name}"
             end
             
-            if options[:instantiator]
-              self.send(options[:instantiator], attributes)
+            if finder.instantiator
+              self.send(finder.instantiator, attributes)
             end
           else
             result
