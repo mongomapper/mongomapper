@@ -12,7 +12,7 @@ require 'custom_matchers'
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 dir = (Pathname(__FILE__).dirname +  '..' + 'lib').expand_path
-require dir + 'mongomapper'
+require dir + 'mongo_mapper'
 
 class Test::Unit::TestCase
   include CustomMatchers

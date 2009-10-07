@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 $:.unshift File.dirname(__FILE__)+"/../lib"
 
-require 'mongomapper'
+require 'mongo_mapper'
 require 'irb'
 
 IRB.setup(nil)

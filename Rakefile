@@ -4,7 +4,7 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "mongomapper"
+    gem.name = "mongo_mapper"
     gem.summary = %Q{Awesome gem for modeling your domain and storing it in mongo}
     gem.email = "nunemaker@gmail.com"
     gem.homepage = "http://github.com/jnunemaker/mongomapper"
