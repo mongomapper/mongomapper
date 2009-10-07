@@ -28,7 +28,7 @@ module MongoMapper
       options = options.dup
       {
         :fields => to_mongo_fields(options.delete(:fields) || options.delete(:select)),
-        :offset => (options.delete(:offset) || 0).to_i,
+        :skip   => (options.delete(:skip) || options.delete(:offset) || 0).to_i,
         :limit  => (options.delete(:limit) || 0).to_i,
         :sort   => options.delete(:sort) || to_mongo_sort(options.delete(:order))
       }

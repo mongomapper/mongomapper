@@ -30,7 +30,6 @@ module MongoMapper
       def skip
         (current_page - 1) * per_page
       end
-      alias offset skip
       
       def method_missing(name, *args, &block)
         @subject.send(name, *args, &block)
