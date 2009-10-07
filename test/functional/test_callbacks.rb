@@ -5,6 +5,7 @@ class CallbacksTest < Test::Unit::TestCase
     setup do
       @document = Class.new do
         include MongoMapper::Document
+        set_collection_name 'test'
         
         key :name, String
         

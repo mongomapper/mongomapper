@@ -5,6 +5,7 @@ class ValidationsTest < Test::Unit::TestCase
     setup do
       @document = Class.new do
         include MongoMapper::Document
+        set_collection_name 'test'
         key :name, String, :required => true
       end
       @document.collection.clear
@@ -28,6 +29,7 @@ class ValidationsTest < Test::Unit::TestCase
     setup do
       @document = Class.new do
         include MongoMapper::Document
+        set_collection_name 'test'
         key :name, String, :required => true
       end
       @document.collection.clear
@@ -43,6 +45,7 @@ class ValidationsTest < Test::Unit::TestCase
     setup do
       @document = Class.new do
         include MongoMapper::Document
+        set_collection_name 'test'
         key :name, String, :required => true
       end
       @document.collection.clear
@@ -67,6 +70,8 @@ class ValidationsTest < Test::Unit::TestCase
     setup do
       @document = Class.new do
         include MongoMapper::Document
+        set_collection_name 'test'
+        
         key :action, String
         def action_present
           errors.add(:action, 'is invalid') if action.blank?
@@ -110,6 +115,8 @@ class ValidationsTest < Test::Unit::TestCase
     setup do
       @document = Class.new do
         include MongoMapper::Document
+        set_collection_name 'test'
+        
         key :name, String
         validates_uniqueness_of :name
       end
@@ -124,6 +131,8 @@ class ValidationsTest < Test::Unit::TestCase
     should "not fail when new object is out of scope" do
       document = Class.new do
         include MongoMapper::Document
+        set_collection_name 'test'
+        
         key :name
         key :adult
         validates_uniqueness_of :name, :scope => :adult
@@ -167,6 +176,8 @@ class ValidationsTest < Test::Unit::TestCase
       setup do
         @document = Class.new do
           include MongoMapper::Document
+          set_collection_name 'test'
+          
           key :name, String
           key :scope, String
           validates_uniqueness_of :name, :scope => :scope
@@ -205,6 +216,8 @@ class ValidationsTest < Test::Unit::TestCase
       setup do
         @document = Class.new do
           include MongoMapper::Document
+          set_collection_name 'test'
+          
           key :name, String
           key :first_scope, String
           key :second_scope, String
@@ -245,6 +258,8 @@ class ValidationsTest < Test::Unit::TestCase
     should "work" do
       @document = Class.new do
         include MongoMapper::Document
+        set_collection_name 'test'
+        
         key :name, String, :unique => true
       end
       @document.collection.clear

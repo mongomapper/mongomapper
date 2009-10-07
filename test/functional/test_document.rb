@@ -171,6 +171,7 @@ class DocumentTest < Test::Unit::TestCase
       setup do
         @document = Class.new do
           include MongoMapper::Document
+          set_collection_name 'test'
         end
         @document.collection.clear
       end

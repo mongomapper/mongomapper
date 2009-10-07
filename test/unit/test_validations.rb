@@ -8,6 +8,7 @@ class ValidationsTest < Test::Unit::TestCase
       setup do
         @document = Class.new do
           include MongoMapper::Document
+          set_collection_name 'test'
         end
       end
 
@@ -479,6 +480,8 @@ class ValidationsTest < Test::Unit::TestCase
     setup do
       @document = Class.new do
         include MongoMapper::Document
+        set_collection_name 'test'
+        
         key :action, String
         def action_present
           errors.add(:action, 'is invalid') if action.blank?

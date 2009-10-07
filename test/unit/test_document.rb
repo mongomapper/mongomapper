@@ -6,6 +6,7 @@ class DocumentTest < Test::Unit::TestCase
     setup do
       @document = Class.new do
         include MongoMapper::Document
+        set_collection_name 'test'
       end
     end
 
@@ -34,6 +35,7 @@ class DocumentTest < Test::Unit::TestCase
 
       another_document = Class.new do
         include MongoMapper::Document
+        set_collection_name 'test'
       end
       another_document.database.should == MongoMapper.database
     end
@@ -78,6 +80,7 @@ class DocumentTest < Test::Unit::TestCase
     setup do
       @document = Class.new do
         include MongoMapper::Document
+        set_collection_name 'test'
 
         key :name, String
         key :age, Integer
@@ -152,6 +155,7 @@ class DocumentTest < Test::Unit::TestCase
       should "not be equal if id same but class different" do
         @another_document = Class.new do
           include MongoMapper::Document
+          set_collection_name 'test'
         end
 
         (@document.new('_id' => 1) == @another_document.new('_id' => 1)).should be(false)

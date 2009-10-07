@@ -42,6 +42,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
   should "allow embedding arbitrarily deep" do
     @document = Class.new do
       include MongoMapper::Document
+      set_collection_name 'test'
       key :person, Person
     end
     @document.collection.clear
@@ -88,6 +89,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     setup do
       @document = Class.new do
         include MongoMapper::Document
+        set_collection_name 'test'
         many :people
       end
       @document.collection.clear
