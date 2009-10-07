@@ -161,11 +161,8 @@ module MongoMapper
         def method_missing(method, *args)
           finder = DynamicFinder.new(method)
           
-          if finder.valid?
-            meta_def(finder.method) do |*args|
-              find_with_args(args, finder)
-            end
-            
+          if finder.found?
+            meta_def(finder.method) { |*args| dynamic_find(finder, args) }
             send(finder.method, *args)
           else
             super
@@ -233,7 +230,7 @@ module MongoMapper
           end
         end
         
-        def find_with_args(args, finder)
+        def dynamic_find(finder, args)
           attributes = {}
           find_options = args.extract_options!.deep_merge(:conditions => attributes)
           

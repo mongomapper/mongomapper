@@ -9,7 +9,7 @@ module MongoMapper
       match()
     end
 
-    def valid?
+    def found?
       @finder.present?
     end
 

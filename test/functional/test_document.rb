@@ -382,7 +382,7 @@ class DocumentTest < Test::Unit::TestCase
           doc.first_name.should == 'David'
         end
 
-        should "raise error if document is not found" do
+        should "raise error if document is not found when using !" do
           lambda {@document.find_by_first_name_and_last_name!(1,2)}.should raise_error(MongoMapper::DocumentNotFound)
         end
       end
