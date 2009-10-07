@@ -12,6 +12,7 @@ module MongoMapper
         include RailsCompatibility::Document
         extend Validations::Macros
         extend ClassMethods
+        extend Finders
         
         def self.per_page
           25
@@ -227,29 +228,6 @@ module MongoMapper
               find_one(ids[0], options)
             else
               find_some(ids, options)
-          end
-        end
-        
-        def dynamic_find(finder, args)
-          attributes = {}
-          find_options = args.extract_options!.deep_merge(:conditions => attributes)
-          
-          finder.attributes.each_with_index do |attr, index|
-            attributes[attr] = args[index]
-          end
-          
-          result = find(finder.finder, find_options)
-          
-          if result.nil?
-            if finder.bang
-              raise DocumentNotFound, "Couldn't find Document with #{attributes.inspect} in collection named #{collection.name}"
-            end
-            
-            if finder.instantiator
-              self.send(finder.instantiator, attributes)
-            end
-          else
-            result
           end
         end
 
