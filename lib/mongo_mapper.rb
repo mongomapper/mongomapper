@@ -2,7 +2,7 @@ require 'rubygems'
 
 gem 'activesupport'
 gem 'mongodb-mongo', '0.14.1'
-gem 'jnunemaker-validatable', '1.7.2'
+gem 'jnunemaker-validatable', '1.7.3'
 
 require 'activesupport'
 require 'mongo'
