@@ -330,9 +330,13 @@ class DocumentTest < Test::Unit::TestCase
       context "with #last" do
         should "find last document based on criteria" do
           @document.last(:order => 'age').should == @doc2
-          @document.last(:conditions => {:age => 28}).should == @doc2
+          @document.last(:order => 'age', :conditions => {:age => 28}).should == @doc2
         end
-      end
+        
+        should "raise error if no order provided" do
+          lambda { @document.last() }.should raise_error
+        end
+      end      
 
       context "with :find_by" do
         should "find document based on argument" do

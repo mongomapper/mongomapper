@@ -269,7 +269,7 @@ class ManyProxyTest < Test::Unit::TestCase
       end
       
       should "work with conditions" do
-        status = @project1.statuses.find(:last, :conditions => {:name => 'New'})
+        status = @project1.statuses.find(:last, :order => 'position', :conditions => {:name => 'New'})
         status.should == @brand_new
       end
     end
@@ -280,7 +280,7 @@ class ManyProxyTest < Test::Unit::TestCase
       end
       
       should "work with conditions" do
-        status = @project1.statuses.last(:conditions => {:name => 'New'})
+        status = @project1.statuses.last(:order => 'position', :conditions => {:name => 'New'})
         status.should == @brand_new
       end
     end

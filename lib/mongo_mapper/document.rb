@@ -53,13 +53,16 @@ module MongoMapper
 
       def first(options={})
         options.merge!(:limit => 1)
-        options[:order] ||= '$natural'
         find_every(options)[0]
       end
 
       def last(options={})
+        if options[:order].blank?
+          raise ':order option must be provided when using last'
+        end
+        
         options.merge!(:limit => 1)
-        options[:order] = invert_order_clause(options)
+        options[:order] = invert_order_clause(options[:order])
         find_every(options)[0]
       end
 
@@ -180,9 +183,8 @@ module MongoMapper
           collection.find(criteria, options).to_a.map { |doc| new(doc) }
         end
 
-        def invert_order_clause(options)
-          return '$natural desc' unless options[:order]
-          options[:order].split(',').map do |order_segment| 
+        def invert_order_clause(order)
+          order.split(',').map do |order_segment| 
             if order_segment =~ /\sasc/i
               order_segment.sub /\sasc/i, ' desc'
             elsif order_segment =~ /\sdesc/i
