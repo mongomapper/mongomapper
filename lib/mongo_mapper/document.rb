@@ -31,8 +31,8 @@ module MongoMapper
         options = args.extract_options!
 
         case args.first
-          when :first then find_first(options)
-          when :last  then find_last(options)
+          when :first then first(options)
+          when :last  then last(options)
           when :all   then find_every(options)
           else             find_from_ids(args, options)
         end
@@ -44,7 +44,7 @@ module MongoMapper
         total_entries = count(options[:conditions] || {})
         collection    = Pagination::PaginationProxy.new(total_entries, page, per_page)
 
-        options[:limit]   = collection.limit
+        options[:limit] = collection.limit
         options[:skip]  = collection.skip
 
         collection.subject = find_every(options)
@@ -52,11 +52,15 @@ module MongoMapper
       end
 
       def first(options={})
-        find_first(options)
+        options.merge!(:limit => 1)
+        options[:order] ||= '$natural'
+        find_every(options)[0]
       end
 
       def last(options={})
-        find_last(options)
+        options.merge!(:limit => 1)
+        options[:order] = invert_order_clause(options)
+        find_every(options)[0]
       end
 
       def all(options={})
@@ -174,18 +178,6 @@ module MongoMapper
         def find_every(options)
           criteria, options = FinderOptions.new(options).to_a
           collection.find(criteria, options).to_a.map { |doc| new(doc) }
-        end
-
-        def find_first(options)
-          options.merge!(:limit => 1)
-          options[:order] ||= '$natural'
-          find_every(options)[0]
-        end
-
-        def find_last(options)
-          options.merge!(:limit => 1)
-          options[:order] = invert_order_clause(options)
-          find_every(options)[0]
         end
 
         def invert_order_clause(options)
