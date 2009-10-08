@@ -25,5 +25,6 @@ end
 DefaultDatabase = 'test' unless defined?(DefaultDatabase)
 AlternateDatabase = 'test2' unless defined?(AlternateDatabase)
 
-MongoMapper.connection = Mongo::Connection.new('127.0.0.1', 27017)
+logger = Logger.new(File.expand_path(File.dirname(__FILE__) + '/../tmp/test.log'))
+MongoMapper.connection = Mongo::Connection.new('127.0.0.1', 27017, :logger => logger)
 MongoMapper.database = DefaultDatabase
