@@ -10,7 +10,6 @@ require 'validatable'
 
 module MongoMapper
   DocumentNotFound  = Class.new(StandardError)
-  
   DocumentNotValid  = Class.new(StandardError) do
     def initialize(document)
       @document = document
@@ -24,6 +23,10 @@ module MongoMapper
 
   def self.connection=(new_connection)
     @@connection = new_connection
+  end
+  
+  def self.logger
+    connection.logger
   end
 
   def self.database=(name)
