@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mongo_mapper}
-  s.version = "0.5.0"
+  s.version = "0.5.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
@@ -52,6 +52,7 @@ Gem::Specification.new do |s|
      "lib/mongo_mapper/support.rb",
      "lib/mongo_mapper/validations.rb",
      "mongo_mapper.gemspec",
+     "specs.watchr",
      "test/NOTE_ON_TESTING",
      "test/custom_matchers.rb",
      "test/functional/associations/test_belongs_to_polymorphic_proxy.rb",
@@ -66,6 +67,7 @@ Gem::Specification.new do |s|
      "test/functional/test_callbacks.rb",
      "test/functional/test_document.rb",
      "test/functional/test_embedded_document.rb",
+     "test/functional/test_logger.rb",
      "test/functional/test_pagination.rb",
      "test/functional/test_rails_compatibility.rb",
      "test/functional/test_validations.rb",
@@ -107,6 +109,7 @@ Gem::Specification.new do |s|
      "test/functional/test_callbacks.rb",
      "test/functional/test_document.rb",
      "test/functional/test_embedded_document.rb",
+     "test/functional/test_logger.rb",
      "test/functional/test_pagination.rb",
      "test/functional/test_rails_compatibility.rb",
      "test/functional/test_validations.rb",
