@@ -29,12 +29,20 @@ module MongoMapper
     module ClassMethods
       def find(*args)
         options = args.extract_options!
-
         case args.first
           when :first then first(options)
           when :last  then last(options)
           when :all   then find_every(options)
-          else             find_from_ids(args, options)
+          when Array  then find_some(args, options)
+          else
+            case args.size
+              when 0
+                raise DocumentNotFound, "Couldn't find without an ID"
+              when 1
+                find_one(args[0], options)
+              else
+                find_some(args, options)
+            end
         end
       end
 
@@ -196,7 +204,9 @@ module MongoMapper
         end
 
         def find_some(ids, options={})
+          ids = ids.flatten.compact.uniq
           documents = find_every(options.deep_merge(:conditions => {'_id' => ids}))
+          
           if ids.size == documents.size
             documents
           else
@@ -209,19 +219,6 @@ module MongoMapper
             doc
           else
             raise DocumentNotFound, "Document with id of #{id} does not exist in collection named #{collection.name}"
-          end
-        end
-
-        def find_from_ids(ids, options={})
-          ids = ids.flatten.compact.uniq
-
-          case ids.size
-            when 0
-              raise(DocumentNotFound, "Couldn't find without an ID")
-            when 1
-              find_one(ids[0], options)
-            else
-              find_some(ids, options)
           end
         end
 

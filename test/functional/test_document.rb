@@ -289,6 +289,10 @@ class DocumentTest < Test::Unit::TestCase
         should "work as array" do
           @document.find([@doc1.id, @doc2.id]).should == [@doc1, @doc2]
         end
+        
+        should "return array if array only has one element" do
+          @document.find([@doc1.id]).should == [@doc1]
+        end
       end
 
       context "with :all" do
