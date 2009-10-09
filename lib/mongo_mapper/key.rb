@@ -20,6 +20,10 @@ module MongoMapper
     def embeddable?
       type.respond_to?(:embeddable?) && type.embeddable? ? true : false
     end
+    
+    def number?
+      [Integer, Float].include?(type)
+    end
 
     def get(value)
       if value.nil? && !default_value.nil?

@@ -9,6 +9,7 @@ module MongoMapper
         include Observing
         include Callbacks
         include SaveWithValidation
+        include Dirty
         include RailsCompatibility::Document
         extend Validations::Macros
         extend ClassMethods

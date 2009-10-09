@@ -91,6 +91,15 @@ class KeyTest < Test::Unit::TestCase
     should "know if it is not a embedded_document" do
       Key.new(:name, String).embeddable?.should be_false
     end
+    
+    should "know if it is a number" do
+      Key.new(:age, Integer).number?.should be_true
+      Key.new(:age, Float).number?.should be_true
+    end
+    
+    should "know if it is not a number" do
+      Key.new(:age, String).number?.should be_false
+    end
   end
 
   context "setting a value with a custom type" do

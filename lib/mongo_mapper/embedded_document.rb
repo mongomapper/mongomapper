@@ -299,6 +299,12 @@ module MongoMapper
           _root_document.save
         end
       end
+      
+      def save!
+        if _root_document
+          _root_document.save!
+        end
+      end
 
       def update_attributes(attrs={})
         self.attributes = attrs
@@ -348,7 +354,7 @@ module MongoMapper
           end.map do |name, association|
             association
           end
-        end        
+        end
     end # InstanceMethods
   end # EmbeddedDocument
 end # MongoMapper
