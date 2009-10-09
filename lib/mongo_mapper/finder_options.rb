@@ -74,14 +74,7 @@ module MongoMapper
       def self.to_mongo_sort(sort)
         return if sort.blank?
         pieces = sort.split(',')
-        pairs  = pieces.map { |s| to_mongo_sort_piece(s) }
-      
-        hash = OrderedHash.new
-        pairs.each do |pair|
-          field, sort_direction = pair
-          hash[field] = sort_direction
-        end
-        hash.symbolize_keys
+        pieces.map { |s| to_mongo_sort_piece(s) }
       end
     
       def self.to_mongo_sort_piece(str)

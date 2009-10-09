@@ -75,53 +75,42 @@ class FinderOptionsTest < Test::Unit::TestCase
   
   context "ordering" do
     should "single field with ascending direction" do
-      hash = OrderedHash.new
-      hash[:foo] = 1
-      FinderOptions.to_mongo_options(:order => 'foo asc')[:sort].should == hash
-      FinderOptions.to_mongo_options(:order => 'foo ASC')[:sort].should == hash
+      sort = [['foo', 1]]
+      FinderOptions.to_mongo_options(:order => 'foo asc')[:sort].should == sort
+      FinderOptions.to_mongo_options(:order => 'foo ASC')[:sort].should == sort
     end
     
     should "single field with descending direction" do
-      hash = OrderedHash.new
-      hash[:foo] = -1
-      FinderOptions.to_mongo_options(:order => 'foo desc')[:sort].should == hash
-      FinderOptions.to_mongo_options(:order => 'foo DESC')[:sort].should == hash
+      sort = [['foo', -1]]
+      FinderOptions.to_mongo_options(:order => 'foo desc')[:sort].should == sort
+      FinderOptions.to_mongo_options(:order => 'foo DESC')[:sort].should == sort
     end
     
     should "convert field without direction to ascending" do
-      hash = OrderedHash.new
-      hash[:foo] = 1
-      FinderOptions.to_mongo_options(:order => 'foo')[:sort].should == hash
+      sort = [['foo', 1]]
+      FinderOptions.to_mongo_options(:order => 'foo')[:sort].should == sort
     end
     
     should "convert multiple fields with directions" do
-      hash = OrderedHash.new
-      hash[:foo] = -1
-      hash[:bar] = 1
-      hash[:baz] = -1
-      FinderOptions.to_mongo_options(:order => 'foo desc, bar asc, baz desc')[:sort].should == hash
+      sort = [['foo', -1], ['bar', 1], ['baz', -1]]
+      FinderOptions.to_mongo_options(:order => 'foo desc, bar asc, baz desc')[:sort].should == sort
     end
     
     should "convert multiple fields with some missing directions" do
-      hash = OrderedHash.new
-      hash[:foo] = -1
-      hash[:bar] = 1
-      hash[:baz] = 1
-      FinderOptions.to_mongo_options(:order => 'foo desc, bar, baz')[:sort].should == hash
+      sort = [['foo', -1], ['bar', 1], ['baz', 1]]
+      FinderOptions.to_mongo_options(:order => 'foo desc, bar, baz')[:sort].should == sort
     end
     
     should "just use sort if sort and order are present" do
-      FinderOptions.to_mongo_options(:sort => {'$natural' => 1}, :order => 'foo asc')[:sort].should == {
-        '$natural' => 1
-      }
+      sort = [['$natural', 1]]
+      FinderOptions.to_mongo_options(:sort => sort, :order => 'foo asc')[:sort].should == sort
     end
     
     should "convert natural in order to proper" do
-      hash = OrderedHash.new
-      hash[:'$natural'] = 1
-      FinderOptions.to_mongo_options(:order => '$natural asc')[:sort].should == hash
-      hash[:'$natural'] = -1
-      FinderOptions.to_mongo_options(:order => '$natural desc')[:sort].should == hash
+      sort = [['$natural', 1]]
+      FinderOptions.to_mongo_options(:order => '$natural asc')[:sort].should == sort
+      sort = [['$natural', -1]]
+      FinderOptions.to_mongo_options(:order => '$natural desc')[:sort].should == sort
     end
     
     should "work for natural order ascending" do

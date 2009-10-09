@@ -155,17 +155,3 @@ class Time
     end
   end
 end
-
-# duck punch to get access to internal mongo 
-# logger instance until my patch goes thorugh
-module Mongo
-  class Connection
-    def logger
-      @options[:logger]
-    end
-  end
-  
-  class DB
-    attr_reader :logger
-  end
-end
