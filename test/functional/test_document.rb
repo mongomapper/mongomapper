@@ -968,20 +968,20 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     should "be true when at least one document exists" do
-      @document.exist?.should == true
+      @document.exists?.should == true
     end
 
     should "be false when no documents exist" do
       @doc.destroy
-      @document.exist?.should == false
+      @document.exists?.should == false
     end
 
     should "be true when at least one document exists that matches the conditions" do
-      @document.exist?(:first_name => "James").should == true
+      @document.exists?(:first_name => "James").should == true
     end
 
     should "be false when no documents exist with the provided conditions" do
-      @document.exist?(:first_name => "Jean").should == false
+      @document.exists?(:first_name => "Jean").should == false
     end
   end
 end
