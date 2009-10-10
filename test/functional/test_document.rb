@@ -956,4 +956,27 @@ class DocumentTest < Test::Unit::TestCase
       from_db.updated_at.to_i.should_not == old_updated_at.to_i
     end
   end
+
+  context "#exist?" do
+    setup do
+      @doc = @document.create(:first_name => "James", :age => 27)
+    end
+
+    should "be true when at least one document exists" do
+      @document.exist?.should == true
+    end
+
+    should "be false when no documents exist" do
+      @doc.destroy
+      @document.exist?.should == false
+    end
+
+    should "be true when at least one document exists that matches the conditions" do
+      @document.exist?(:first_name => "James").should == true
+    end
+
+    should "be false when no documents exist with the provided conditions" do
+      @document.exist?(:first_name => "Jean").should == false
+    end
+  end
 end
