@@ -90,6 +90,10 @@ module MongoMapper
         collection.find(FinderOptions.to_mongo_criteria(conditions)).count
       end
 
+      def exist?(conditions={})
+        !count(conditions).zero?
+      end
+
       def create(*docs)
         instances = []
         docs = [{}] if docs.blank?
