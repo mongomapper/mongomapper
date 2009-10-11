@@ -9,7 +9,8 @@ class BelongsToPolymorphicProxyTest < Test::Unit::TestCase
   
   should "default to nil" do
     status = Status.new
-    status.target.should be_nil
+    status.target.nil?.should be_true
+    status.target.inspect.should == "nil"
   end
 
   should "be able to replace the association" do
@@ -19,7 +20,7 @@ class BelongsToPolymorphicProxyTest < Test::Unit::TestCase
     status.save.should be_true
 
     from_db = Status.find(status.id)
-    from_db.target.should_not be_nil
+    from_db.target.nil?.should be_false
     from_db.target_id.should == project.id
     from_db.target_type.should == "Project"
     from_db.target.name.should == "mongomapper"
@@ -33,9 +34,9 @@ class BelongsToPolymorphicProxyTest < Test::Unit::TestCase
 
     from_db = Status.find(status.id)
     from_db.target = nil
-    from_db.target_type.should be_nil
-    from_db.target_id.should be_nil
-    from_db.target.should be_nil
+    from_db.target_type.nil?.should be_true
+    from_db.target_id.nil?.should be_true
+    from_db.target.nil?.should be_true
   end
   
   context "association id set but document not found" do
@@ -48,7 +49,7 @@ class BelongsToPolymorphicProxyTest < Test::Unit::TestCase
     end
 
     should "return nil instead of raising error" do
-      @status.target.should be_nil
+      @status.target.nil?.should be_true
     end
   end
 end
