@@ -131,7 +131,11 @@ end
 
 class Time
   def self.to_mongo(value)
-    to_utc_time(value)
+    if value.nil? || value == ''
+      nil
+    else
+      to_utc_time(value)
+    end
   end
   
   def self.from_mongo(value)

@@ -225,9 +225,12 @@ class SupportTest < Test::Unit::TestCase
       Time.to_mongo(Time.local(2009, 8, 15, 0, 0, 0)).zone.should == 'UTC'
     end
     
+    should "be nil if blank string" do
+      Time.to_mongo('').should be_nil
+    end
+    
     should "not be nil if nil" do
-      # Time.parse actually returns like right now
-      Time.to_mongo(nil).should_not be_nil
+      Time.to_mongo(nil).should be_nil
     end
   end
   
@@ -244,6 +247,12 @@ class SupportTest < Test::Unit::TestCase
       Time.zone = nil
     end
     
+    should "be nil if blank string" do
+      Time.zone = 'Hawaii'
+      Time.to_mongo('').should be_nil
+      Time.zone = nil
+    end
+    
     should "be nil if nil" do
       Time.zone = 'Hawaii'
       Time.to_mongo(nil).should be_nil
@@ -256,6 +265,10 @@ class SupportTest < Test::Unit::TestCase
       time = Time.now
       Time.from_mongo(time).should == time
     end
+    
+    should "be nil if nil" do
+      Time.from_mongo(nil).should be_nil
+    end
   end
   
   context "Time#from_mongo with Time.zone" do
@@ -266,6 +279,12 @@ class SupportTest < Test::Unit::TestCase
       time.should == Time.zone.local(2009, 9, 30, 14)
       time.is_a?(ActiveSupport::TimeWithZone).should be_true
       
+      Time.zone = nil
+    end
+    
+    should "be nil if nil" do
+      Time.zone = 'Hawaii'
+      Time.from_mongo(nil).should be_nil
       Time.zone = nil
     end
   end

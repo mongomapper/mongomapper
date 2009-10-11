@@ -1,3 +1,29 @@
+# custom type
+class WindowSize
+  attr_reader :width, :height
+  
+  def self.to_mongo(value)
+    value.to_a
+  end
+  
+  def self.from_mongo(value)
+    value.is_a?(self) ? value : WindowSize.new(value)
+  end
+  
+  def initialize(*args)
+    @width, @height = args.flatten
+  end
+  
+  def to_a
+    [width, height]
+  end
+  
+  def ==(other)
+    other.is_a?(self.class) && other.width == width && other.height == height
+  end
+end
+
+
 class Post
   include MongoMapper::Document
 

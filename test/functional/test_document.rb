@@ -141,6 +141,27 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
     
+    context "Using key with custom type with default" do
+      setup do
+        @document.key :window, WindowSize, :default => WindowSize.new(600, 480)
+      end
+
+      should "default to default" do
+        doc = @document.new
+        doc.window.should == WindowSize.new(600, 480)
+        
+      end
+      
+      should "save and load from mongo" do
+        doc = @document.new
+        doc.save
+        
+        from_db = @document.find(doc.id)
+        from_db.window.should == WindowSize.new(600, 480)
+      end
+    end
+    
+    
     context "Creating a single document" do
       setup do
         @doc_instance = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})

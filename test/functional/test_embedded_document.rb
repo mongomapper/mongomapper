@@ -12,7 +12,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
     @document.collection.clear
   end
-  
+    
   context "Saving a document with an embedded document" do
     setup do
       @document.class_eval do

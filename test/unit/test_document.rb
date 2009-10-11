@@ -8,8 +8,14 @@ class DocumentTest < Test::Unit::TestCase
         include MongoMapper::Document
         set_collection_name 'test'
       end
+      @document.collection.clear
     end
-
+    
+    should "have logger method" do
+      @document.logger.should == MongoMapper.logger
+      @document.logger.should be_instance_of(Logger)
+    end
+    
     should "track its descendants" do
       MongoMapper::Document.descendants.should include(@document)
     end
@@ -87,6 +93,12 @@ class DocumentTest < Test::Unit::TestCase
       end
       @document.collection.clear
     end
+    
+    should "have access to logger" do
+      doc = @document.new
+      doc.logger.should == @document.logger
+      doc.logger.should be_instance_of(Logger)
+    end
 
     should "have access to the class's collection" do
       doc = @document.new
@@ -98,6 +110,13 @@ class DocumentTest < Test::Unit::TestCase
 
       @document.new.active.should be_true
       @document.new(:active => false).active.should be_false
+    end
+    
+    should "use default values if defined even when custom data type" do
+      @document.key :window, WindowSize, :default => WindowSize.new(600, 480)
+      
+      doc = @document.new
+      doc.window.should == WindowSize.new(600, 480)
     end
 
     context "root document" do
