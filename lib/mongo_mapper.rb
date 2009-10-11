@@ -42,6 +42,21 @@ module MongoMapper
     @@database ||= MongoMapper.connection.db(@@database_name)
   end
   
+  def self.ensured_indexes
+    @@ensured_indexes ||= []
+  end
+  
+  def self.ensure_index(klass, keys, options={})
+    ensured_indexes << {:klass => klass, :keys => keys, :options => options}
+  end
+  
+  def self.ensure_indexes!
+    ensured_indexes.each do |index|
+      unique = index[:options].delete(:unique)
+      index[:klass].collection.create_index(index[:keys], unique)
+    end
+  end
+  
   module Finders
     def dynamic_find(finder, args)
       attributes = {}

@@ -45,4 +45,11 @@ module CustomMatchers
       actual == expected_message
     end
   end
+  
+  custom_matcher :have_index do |receiver, matcher, args|
+    index_name = args[0]
+    matcher.positive_failure_message = "#{receiver} does not have index named #{index_name}, but should"
+    matcher.negative_failure_message = "#{receiver} does have index named #{index_name}, but should not"
+    !receiver.collection.index_information.detect { |index| index[0] == index_name }.nil?
+  end
 end

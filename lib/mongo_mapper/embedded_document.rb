@@ -75,8 +75,8 @@ module MongoMapper
         else
           name_or_array
         end
-
-        collection.create_index(keys_to_index, options.delete(:unique))
+        
+        MongoMapper.ensure_index(self, keys_to_index, options)
       end
 
       def embeddable?
