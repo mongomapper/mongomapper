@@ -193,7 +193,14 @@ module MongoMapper
       private
         def find_every(options)
           criteria, options = FinderOptions.new(options).to_a
-          collection.find(criteria, options).to_a.map { |doc| new(doc) }
+          collection.find(criteria, options).to_a.map do |doc|
+            begin
+              klass = doc['_type'].present? ? doc['_type'].constantize : self
+              klass.new(doc)
+            rescue NameError
+              new(doc)
+            end
+          end
         end
 
         def invert_order_clause(order)

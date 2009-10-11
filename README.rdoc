@@ -2,11 +2,7 @@
 
 Awesome gem for modeling your domain and storing it in mongo.
 
-Releases are tagged on github and also released as gems on github and rubyforge. Master is pushed to whenever I add a patch or a new feature. To build from master, you can clone the code, generate the updated gemspec, build the gem and install.
-
-* rake gemspec
-* gem build mongo_mapper.gemspec
-* gem install the gem that was built
+Releases are tagged on github and released on gemcutter. Master is pushed to whenever I add a patch or a new feature, but I do not release a new gem version each time I push.
 
 == Note on Patches/Pull Requests
 
@@ -16,10 +12,25 @@ Releases are tagged on github and also released as gems on github and rubyforge.
 * Commit, do not mess with rakefile, version, or history. (if you want to have your own version, that is fine but bump version in a commit by itself in another branch so I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
+== Install
+
+MongoMapper is only released on gemcutter. To install, you can setup gemcutter as your default gem source.
+
+ $ gem install gemcutter
+ $ gem tumble
+ 
+Then you can install MM:
+ 
+ $ gem install mongo_mapper
+
+You can also just declare the source:
+
+ $ gem install mongo_mapper -s http://gemcutter.org
+
 == Dependencies
 
-* ActiveSupport (activesupport)
-* Mongo Ruby Driver (mongodb-mongo)
+* ActiveSupport (typically the latest version)
+* Mongo Ruby Driver (mongo)
 * My fork of the validatable gem (jnunemaker-validatable)
 
 == Documentation

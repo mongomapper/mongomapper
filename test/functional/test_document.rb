@@ -294,7 +294,12 @@ class DocumentTest < Test::Unit::TestCase
           @document.find([@doc1.id]).should == [@doc1]
         end
       end
-
+      
+      should "be able to find using condition auto-detection" do
+        @document.first(:first_name => 'John').should == @doc1
+        @document.all(:last_name => 'Nunemaker', :order => 'age desc').should == [@doc1, @doc3]
+      end
+      
       context "with :all" do
         should "find all documents" do
           @document.find(:all, :order => 'first_name').should == [@doc1, @doc3, @doc2]
@@ -916,6 +921,57 @@ class DocumentTest < Test::Unit::TestCase
       should "raise error if assignment is attempted" do
         lambda { @doc.first_name = 'Foo' }.should raise_error(TypeError)
       end
+    end
+  end
+  
+  context "Single collection inheritance" do
+    setup do
+      class ::DocParent
+        include MongoMapper::Document
+        key :_type, String
+      end
+      
+      class ::DocChild < ::DocParent; end
+      DocParent.collection.clear
+      
+      @parent = DocParent.new({:name => "Daddy Warbucks"})
+      @child = DocChild.new({:name => "Little Orphan Annie"})
+    end
+
+    teardown do
+      Object.send :remove_const, 'DocParent' if defined?(::DocParent)
+      Object.send :remove_const, 'DocChild' if defined?(::DocChild)
+    end
+
+    should "use the same collection in the subclass" do
+      DocChild.collection.name.should == DocParent.collection.name
+    end
+
+    should "assign the class name into the _type property" do
+      @parent._type.should == 'DocParent'
+      @child._type.should == 'DocChild'
+    end
+
+    should "load the document with the assigned type" do
+      @parent.save
+      @child.save
+
+      collection = DocParent.find(:all)
+      collection.size.should == 2
+      collection.first.should be_kind_of(DocParent)
+      collection.first.name.should == "Daddy Warbucks"
+      collection.last.should be_kind_of(DocChild)
+      collection.last.name.should == "Little Orphan Annie"
+    end
+    
+    should "gracefully handle when the type can't be constantized" do
+      doc = DocParent.new(:name => 'Nunes')
+      doc._type = 'FoobarBaz'
+      doc.save
+      
+      collection = DocParent.all
+      collection.last.should == doc
+      collection.last.should be_kind_of(DocParent)
     end
   end
 
