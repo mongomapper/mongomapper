@@ -27,7 +27,7 @@ module MongoMapper
       @descendants ||= Set.new
     end
 
-    module ClassMethods
+    module ClassMethods      
       def find(*args)
         options = args.extract_options!
         case args.first
@@ -255,7 +255,7 @@ module MongoMapper
         end
     end
 
-    module InstanceMethods
+    module InstanceMethods      
       def collection
         self.class.collection
       end

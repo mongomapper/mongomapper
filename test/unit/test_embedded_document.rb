@@ -40,6 +40,11 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
     end
     
+    should "give class access to logger" do
+      @klass.logger.should == MongoMapper.logger
+      @klass.logger.should be_instance_of(Logger)
+    end
+    
     should "add _id key" do
       @klass.keys['_id'].should_not be_nil
     end
@@ -282,6 +287,12 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         key :name, String
         key :age, Integer
       end
+    end
+    
+    should "have access to class logger" do
+      doc = @document.new
+      doc.logger.should == @document.logger
+      doc.logger.should be_instance_of(Logger)
     end
     
     should "automatically have an _id key" do

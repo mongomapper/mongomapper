@@ -10,7 +10,12 @@ class DocumentTest < Test::Unit::TestCase
       end
       @document.collection.clear
     end
-
+    
+    should "have logger method" do
+      @document.logger.should == MongoMapper.logger
+      @document.logger.should be_instance_of(Logger)
+    end
+    
     should "track its descendants" do
       MongoMapper::Document.descendants.should include(@document)
     end
@@ -87,6 +92,12 @@ class DocumentTest < Test::Unit::TestCase
         key :age, Integer
       end
       @document.collection.clear
+    end
+    
+    should "have access to logger" do
+      doc = @document.new
+      doc.logger.should == @document.logger
+      doc.logger.should be_instance_of(Logger)
     end
 
     should "have access to the class's collection" do

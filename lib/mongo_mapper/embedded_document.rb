@@ -22,6 +22,10 @@ module MongoMapper
     end
 
     module ClassMethods
+      def logger
+        MongoMapper.logger
+      end
+      
       def inherited(subclass)
         unless subclass.embeddable?
           subclass.set_collection_name(collection_name)
@@ -169,6 +173,10 @@ module MongoMapper
     end
 
     module InstanceMethods
+      def logger
+        self.class.logger
+      end
+      
       def initialize(attrs={})
         unless attrs.nil?
           self.class.associations.each_pair do |name, association|
