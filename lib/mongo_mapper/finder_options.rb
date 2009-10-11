@@ -42,10 +42,21 @@ module MongoMapper
       end
     end
     
+    OptionKeys = [:fields, :select, :skip, :offset, :limit, :sort, :order]
+    
     def initialize(options)
       raise ArgumentError, "FinderOptions must be a hash" unless options.is_a?(Hash)
-      @options = options.symbolize_keys
-      @conditions = @options.delete(:conditions) || {}
+      
+      options = options.symbolize_keys
+      @options, @conditions = {}, options.delete(:conditions) || {}
+      
+      options.each_pair do |key, value|
+        if OptionKeys.include?(key)
+          @options[key] = value
+        else
+          @conditions[key] = value
+        end
+      end
     end
     
     def criteria

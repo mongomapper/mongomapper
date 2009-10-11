@@ -8,7 +8,7 @@ class FinderOptionsTest < Test::Unit::TestCase
     lambda { FinderOptions.new(1) }.should raise_error(ArgumentError)
   end
   
-  should "have symbolize the keys of the hash provided" do
+  should "symbolize the keys of the hash provided" do
     FinderOptions.new('offset' => 1).options.keys.map do |key|
       key.should be_instance_of(Symbol)
     end
@@ -179,4 +179,83 @@ class FinderOptionsTest < Test::Unit::TestCase
       FinderOptions.new(:select => %w(a b)).options[:fields].should == %w(a b)
     end
   end
+  
+  context "Condition auto-detection" do
+    should "know :conditions are criteria" do
+      finder = FinderOptions.new(:conditions => {:foo => 'bar'})
+      finder.criteria.should == {:foo => 'bar'}
+      finder.options.keys.should_not include(:conditions)
+    end
+    
+    should "know fields is an option" do
+      finder = FinderOptions.new(:fields => ['foo'])
+      finder.options[:fields].should == ['foo']
+      finder.criteria.keys.should_not include(:fields)
+    end
+    
+    # select gets converted to fields so just checking keys
+    should "know select is an option" do
+      finder = FinderOptions.new(:select => 'foo')
+      finder.options.keys.should include(:sort)
+      finder.criteria.keys.should_not include(:select)
+      finder.criteria.keys.should_not include(:fields)
+    end
+    
+    should "know skip is an option" do
+      finder = FinderOptions.new(:skip => 10)
+      finder.options[:skip].should == 10
+      finder.criteria.keys.should_not include(:skip)
+    end
+    
+    # offset gets converted to skip so just checking keys
+    should "know offset is an option" do
+      finder = FinderOptions.new(:offset => 10)
+      finder.options.keys.should include(:skip)
+      finder.criteria.keys.should_not include(:skip)
+      finder.criteria.keys.should_not include(:offset)
+    end
+
+    should "know limit is an option" do
+      finder = FinderOptions.new(:limit => 10)
+      finder.options[:limit].should == 10
+      finder.criteria.keys.should_not include(:limit)
+    end
+
+    should "know sort is an option" do
+      finder = FinderOptions.new(:sort => [['foo', 1]])
+      finder.options[:sort].should == [['foo', 1]]
+      finder.criteria.keys.should_not include(:sort)
+    end
+
+    # order gets converted to sort so just checking keys
+    should "know order is an option" do
+      finder = FinderOptions.new(:order => 'foo')
+      finder.options.keys.should include(:sort)
+      finder.criteria.keys.should_not include(:sort)
+    end
+        
+    should "work with full range of things" do
+      finder_options = FinderOptions.new({
+        :foo => 'bar',
+        :baz => true,
+        :sort => [['foo', 1]],
+        :fields => ['foo', 'baz'],
+        :limit => 10,
+        :skip => 10,
+      })
+      
+      finder_options.criteria.should == {
+        :foo => 'bar',
+        :baz => true,
+      }
+      
+      finder_options.options.should == {
+        :sort => [['foo', 1]],
+        :fields => ['foo', 'baz'],
+        :limit => 10,
+        :skip => 10,
+      }
+    end
+  end
+  
 end # FinderOptionsTest

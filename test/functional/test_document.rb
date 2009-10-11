@@ -294,7 +294,12 @@ class DocumentTest < Test::Unit::TestCase
           @document.find([@doc1.id]).should == [@doc1]
         end
       end
-
+      
+      should "be able to find using condition auto-detection" do
+        @document.first(:first_name => 'John').should == @doc1
+        @document.all(:last_name => 'Nunemaker', :order => 'age desc').should == [@doc1, @doc3]
+      end
+      
       context "with :all" do
         should "find all documents" do
           @document.find(:all, :order => 'first_name').should == [@doc1, @doc3, @doc2]
