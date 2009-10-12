@@ -3,6 +3,7 @@ module MongoMapper
     DIRTY_SUFFIXES = ['_changed?', '_change', '_will_change!', '_was']
     
     def self.included(base)
+      base.alias_method_chain :initialize, :dirty
       base.alias_method_chain :write_attribute, :dirty
       base.alias_method_chain :save,            :dirty
       base.alias_method_chain :save!,           :dirty
@@ -50,6 +51,11 @@ module MongoMapper
     #   person.changes # => { 'name' => ['bill', 'bob'] }
     def changes
       changed.inject({}) { |h, attribute| h[attribute] = key_change(attribute); h }
+    end
+    
+    def initialize_with_dirty(attrs={})
+      initialize_without_dirty(attrs)
+      changed_keys.clear unless new?
     end
     
     # Attempts to +save+ the record and clears changed keys if successful.
