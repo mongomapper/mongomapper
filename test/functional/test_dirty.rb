@@ -29,6 +29,11 @@ class DirtyTest < Test::Unit::TestCase
       doc.phrase_change.should == [nil, 'Golly Gee Willikers Batman']
     end
     
+    should "happen when initializing" do
+      doc = @document.new(:phrase => 'Foo')
+      doc.changed?.should be_true
+    end
+    
     should "clear changes on save" do
       doc = @document.new
       doc.phrase = 'Golly Gee Willikers Batman'
@@ -45,6 +50,22 @@ class DirtyTest < Test::Unit::TestCase
       doc.save!
       doc.phrase_changed?.should_not be_true
       doc.phrase_change.should be_nil
+    end
+    
+    should "not happen when loading from database" do
+      doc = @document.create(:phrase => 'Foo')
+      
+      from_db = @document.find(doc.id)
+      from_db.changed?.should be_false
+    end
+    
+    should "happen if changed after loading from database" do
+      doc = @document.create(:phrase => 'Foo')
+      
+      from_db = @document.find(doc.id)
+      from_db.changed?.should be_false
+      from_db.phrase = 'Bar'
+      from_db.changed?.should be_true
     end
   end
   

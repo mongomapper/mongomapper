@@ -719,39 +719,31 @@ class DocumentTest < Test::Unit::TestCase
       end
 
       should "allow creating index for a key" do
-        index_name = nil
-        lambda {
-          index_name = @document.ensure_index :first_name
-        }.should change { @document.collection.index_information.size }.by(1)
-
-        index_name.should == 'first_name_1'
-        index = @document.collection.index_information[index_name]
-        index.should_not be_nil
-        index.should include(['first_name', 1])
+        @document.ensure_index :first_name
+        MongoMapper.ensure_indexes!
+        
+        @document.should have_index('first_name_1')        
       end
 
       should "allow creating unique index for a key" do
-        @document.collection.expects(:create_index).with(:first_name, true)
         @document.ensure_index :first_name, :unique => true
+        MongoMapper.ensure_indexes!
+        
+        @document.should have_index('first_name_1')
       end
 
       should "allow creating index on multiple keys" do
-        index_name = nil
-        lambda {
-          index_name = @document.ensure_index [[:first_name, 1], [:last_name, -1]]
-        }.should change { @document.collection.index_information.size }.by(1)
-
-        [ 'first_name_1_last_name_-1', 'last_name_-1_first_name_1' ].should include(index_name)
-
-        index = @document.collection.index_information[index_name]
-        index.should_not be_nil
-        index.should include(['first_name', 1])
-        index.should include(['last_name', -1])
+        @document.ensure_index [[:first_name, 1], [:last_name, -1]]
+        MongoMapper.ensure_indexes!
+        
+        @document.should have_index('last_name_-1_first_name_1')        
       end
 
       should "work with :index shortcut when defining key" do
-        @document.expects(:ensure_index).with('father').returns(nil)
         @document.key :father, String, :index => true
+        MongoMapper.ensure_indexes!
+        
+        @document.should have_index('father_1')
       end
     end
   end # Document Class Methods
