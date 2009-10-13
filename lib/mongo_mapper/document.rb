@@ -8,7 +8,6 @@ module MongoMapper
         include InstanceMethods
         include Observing
         include Callbacks
-        include SaveWithValidation
         include Dirty
         include RailsCompatibility::Document
         extend Validations::Macros
@@ -285,11 +284,11 @@ module MongoMapper
       end
 
       def save
-        create_or_update
+        valid? ? create_or_update : false
       end
 
       def save!
-        create_or_update || raise(DocumentNotValid.new(self))
+        valid? ? create_or_update : raise(DocumentNotValid.new(self))
       end
 
       def destroy
