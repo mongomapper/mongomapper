@@ -5,7 +5,7 @@ module MongoMapper
         extend Observable
         include ActiveSupport::Callbacks
 
-        define_callbacks *%w(
+        callbacks = %w(
           before_save
           after_save
           before_create
@@ -21,32 +21,14 @@ module MongoMapper
           before_destroy
           after_destroy
         )
+
+        define_callbacks(*callbacks)
+
+        callbacks.each do |callback|
+          define_method(callback.to_sym) {}
+        end
       end
     end
-
-    def before_save() end
-
-    def after_save()  end
-
-    def before_create() end
-
-    def after_create() end
-
-    def before_update() end
-
-    def after_update() end
-
-    def before_validation() end
-
-    def after_validation() end
-
-    def before_validation_on_create() end
-
-    def after_validation_on_create()  end
-
-    def before_validation_on_update() end
-
-    def after_validation_on_update()  end
 
     def valid? #:nodoc:
       return false if callback(:before_validation) == false
@@ -59,10 +41,6 @@ module MongoMapper
       new? ? callback(:after_validation_on_create) : callback(:after_validation_on_update)
       return result
     end
-
-    def before_destroy() end
-
-    def after_destroy()  end
 
     def destroy #:nodoc:
       return false if callback(:before_destroy) == false
