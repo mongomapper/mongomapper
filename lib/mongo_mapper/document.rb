@@ -204,17 +204,17 @@ module MongoMapper
         end
 
       private
-      # Initializes each document and yields each initialized document
-      def initialize_each(*docs)
-        instances = []
-        docs = [{}] if docs.blank?
-        docs.flatten.each do |attrs|
-          doc = new(attrs)
-          yield(doc)
-          instances << doc
+        # Initializes each document and yields each initialized document
+        def initialize_each(*docs)
+          instances = []
+          docs = [{}] if docs.blank?
+          docs.flatten.each do |attrs|
+            doc = new(attrs)
+            yield(doc)
+            instances << doc
+          end
+          instances.size == 1 ? instances[0] : instances
         end
-        instances.size == 1 ? instances[0] : instances
-      end
 
         def create_indexes_for(key)
           ensure_index key.name if key.options[:index]
