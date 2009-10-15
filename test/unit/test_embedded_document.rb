@@ -477,9 +477,15 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         should "create key and write value for missing key" do
           doc = @document.new
           doc[:foo] = 'string'
-          @document.keys.keys.include?('foo').should be_true
+          doc.metaclass.keys.include?('foo').should be_true
           doc[:foo].should == 'string'
         end
+
+         should "not share the new key" do
+           doc = @document.new
+           doc[:foo] = 'string'
+           @document.keys.should_not include('foo')
+         end
       end
     end
     
