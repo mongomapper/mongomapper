@@ -1,21 +1,18 @@
-require 'pp'
-require 'rubygems'
-require 'shoulda'
-require 'activesupport'
-
-gem 'timecop', '0.3.1'
-require 'timecop'
-
-gem 'mocha', '0.9.4'
-require 'mocha'
+require File.join(File.expand_path(File.dirname(__FILE__) + '/../lib/mongo_mapper'))
 
 gem 'jnunemaker-matchy', '0.4.0'
+gem 'shoulda', '2.10.2'
+gem 'timecop', '0.3.1'
+gem 'mocha', '0.9.4'
+
 require 'matchy'
+require 'shoulda'
+require 'timecop'
+require 'mocha'
+require 'pp'
 
 require 'support/custom_matchers'
 require 'support/test_timing'
-
-require File.join(File.expand_path(File.dirname(__FILE__) + '/../lib/mongo_mapper'))
 
 class Test::Unit::TestCase
   include CustomMatchers

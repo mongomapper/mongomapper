@@ -11,13 +11,14 @@ begin
     gem.authors = ["John Nunemaker"]
     gem.rubyforge_project = "mongomapper"
     
-    gem.add_dependency('activesupport')
-    gem.add_dependency('timecop', '0.3.1')
+    gem.add_dependency('activesupport', '>= 2.3')
     gem.add_dependency('mongo', '0.15.1')
     gem.add_dependency('jnunemaker-validatable', '1.7.4')
     
-    gem.add_development_dependency('mocha', '0.9.4')
     gem.add_development_dependency('jnunemaker-matchy', '0.4.0')
+    gem.add_development_dependency('shoulda', '2.10.2')
+    gem.add_development_dependency('timecop', '0.3.1')
+    gem.add_development_dependency('mocha', '0.9.4')
   end
   
   Jeweler::RubyforgeTasks.new do |rubyforge|
