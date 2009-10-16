@@ -74,6 +74,14 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       doc = RealPerson.find(person.id)
       doc.pets.first.should == pet
     end
+    
+    should "save new keys" do
+      person = RealPerson.new
+      person[:new_attribute] = 'foobar'
+      person.save
+      from_db = RealPerson.find(person.id)
+      person.new_attribute.should == 'foobar'
+    end
   end
   
   context "update_attributes" do
