@@ -8,7 +8,6 @@ module MongoMapper
         include InstanceMethods
         include Observing
         include Callbacks
-        include SaveWithValidation
         include Dirty
         include RailsCompatibility::Document
         extend Validations::Macros
@@ -111,13 +110,11 @@ module MongoMapper
       end
 
       def create(*docs)
-        instances = []
-        docs = [{}] if docs.blank?
-        docs.flatten.each do |attrs|
-          doc = new(attrs); doc.save
-          instances << doc
-        end
-        instances.size == 1 ? instances[0] : instances
+        initialize_each(*docs) { |doc| doc.save }
+      end
+
+      def create!(*docs)
+        initialize_each(*docs) { |doc| doc.save! }
       end
 
       # For updating single document
@@ -207,6 +204,18 @@ module MongoMapper
         end
 
       private
+        # Initializes each document and yields each initialized document
+        def initialize_each(*docs)
+          instances = []
+          docs = [{}] if docs.blank?
+          docs.flatten.each do |attrs|
+            doc = new(attrs)
+            yield(doc)
+            instances << doc
+          end
+          instances.size == 1 ? instances[0] : instances
+        end
+
         def create_indexes_for(key)
           ensure_index key.name if key.options[:index]
         end
@@ -285,11 +294,11 @@ module MongoMapper
       end
 
       def save
-        create_or_update
+        valid? ? create_or_update : false
       end
 
       def save!
-        create_or_update || raise(DocumentNotValid.new(self))
+        valid? ? create_or_update : raise(DocumentNotValid.new(self))
       end
 
       def destroy

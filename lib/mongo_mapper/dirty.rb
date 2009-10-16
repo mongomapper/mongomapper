@@ -2,13 +2,6 @@ module MongoMapper
   module Dirty
     DIRTY_SUFFIXES = ['_changed?', '_change', '_will_change!', '_was']
     
-    def self.included(base)
-      base.alias_method_chain :initialize, :dirty
-      base.alias_method_chain :write_attribute, :dirty
-      base.alias_method_chain :save,            :dirty
-      base.alias_method_chain :save!,           :dirty
-    end
-    
     def method_missing(method, *args, &block)
       if method.to_s =~ /(_changed\?|_change|_will_change!|_was)$/
         method_suffix = $1
@@ -53,26 +46,26 @@ module MongoMapper
       changed.inject({}) { |h, attribute| h[attribute] = key_change(attribute); h }
     end
     
-    def initialize_with_dirty(attrs={})
-      initialize_without_dirty(attrs)
+    def initialize(attrs={})
+      super(attrs)
       changed_keys.clear unless new?
     end
-    
+
     # Attempts to +save+ the record and clears changed keys if successful.
-    def save_with_dirty(*args) #:nodoc:
-      if status = save_without_dirty(*args)
+    def save(*args)
+      if status = super
         changed_keys.clear
       end
       status
     end
 
     # Attempts to <tt>save!</tt> the record and clears changed keys if successful.
-    def save_with_dirty!(*args) #:nodoc:
-      status = save_without_dirty!(*args)
+    def save!(*args)
+      status = super
       changed_keys.clear
       status
     end
-    
+
     # <tt>reload</tt> the record and clears changed keys.
     # def reload_with_dirty(*args) #:nodoc:
     #   record = reload_without_dirty(*args)
@@ -114,7 +107,7 @@ module MongoMapper
       end
 
       # Wrap write_attribute to remember original key value.
-      def write_attribute_with_dirty(attribute, value)
+      def write_attribute(attribute, value)
         attribute = attribute.to_s
 
         # The key already has an unsaved change.
@@ -127,7 +120,7 @@ module MongoMapper
         end
 
         # Carry on.
-        write_attribute_without_dirty(attribute, value)
+        super(attribute, value)
       end
       
       def value_changed?(key_name, old, value)
