@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mongo_mapper}
-  s.version = "0.5.4"
+  s.version = "0.5.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
-  s.date = %q{2009-10-11}
+  s.date = %q{2009-10-16}
   s.default_executable = %q{mmconsole}
   s.email = %q{nunemaker@gmail.com}
   s.executables = ["mmconsole"]
@@ -47,7 +47,6 @@ Gem::Specification.new do |s|
      "lib/mongo_mapper/pagination.rb",
      "lib/mongo_mapper/rails_compatibility/document.rb",
      "lib/mongo_mapper/rails_compatibility/embedded_document.rb",
-     "lib/mongo_mapper/save_with_validation.rb",
      "lib/mongo_mapper/serialization.rb",
      "lib/mongo_mapper/serializers/json_serializer.rb",
      "lib/mongo_mapper/support.rb",
@@ -55,7 +54,6 @@ Gem::Specification.new do |s|
      "mongo_mapper.gemspec",
      "specs.watchr",
      "test/NOTE_ON_TESTING",
-     "test/custom_matchers.rb",
      "test/functional/associations/test_belongs_to_polymorphic_proxy.rb",
      "test/functional/associations/test_belongs_to_proxy.rb",
      "test/functional/associations/test_many_documents_as_proxy.rb",
@@ -74,6 +72,8 @@ Gem::Specification.new do |s|
      "test/functional/test_rails_compatibility.rb",
      "test/functional/test_validations.rb",
      "test/models.rb",
+     "test/support/custom_matchers.rb",
+     "test/support/test_timing.rb",
      "test/test_helper.rb",
      "test/unit/serializers/test_json_serializer.rb",
      "test/unit/test_association_base.rb",
@@ -98,8 +98,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{Awesome gem for modeling your domain and storing it in mongo}
   s.test_files = [
-    "test/custom_matchers.rb",
-     "test/functional/associations/test_belongs_to_polymorphic_proxy.rb",
+    "test/functional/associations/test_belongs_to_polymorphic_proxy.rb",
      "test/functional/associations/test_belongs_to_proxy.rb",
      "test/functional/associations/test_many_documents_as_proxy.rb",
      "test/functional/associations/test_many_embedded_polymorphic_proxy.rb",
@@ -117,6 +116,8 @@ Gem::Specification.new do |s|
      "test/functional/test_rails_compatibility.rb",
      "test/functional/test_validations.rb",
      "test/models.rb",
+     "test/support/custom_matchers.rb",
+     "test/support/test_timing.rb",
      "test/test_helper.rb",
      "test/unit/serializers/test_json_serializer.rb",
      "test/unit/test_association_base.rb",
@@ -140,23 +141,29 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<activesupport>, [">= 0"])
+      s.add_runtime_dependency(%q<activesupport>, [">= 2.3"])
       s.add_runtime_dependency(%q<mongo>, ["= 0.15.1"])
       s.add_runtime_dependency(%q<jnunemaker-validatable>, ["= 1.7.4"])
-      s.add_development_dependency(%q<mocha>, ["= 0.9.4"])
       s.add_development_dependency(%q<jnunemaker-matchy>, ["= 0.4.0"])
+      s.add_development_dependency(%q<shoulda>, ["= 2.10.2"])
+      s.add_development_dependency(%q<timecop>, ["= 0.3.1"])
+      s.add_development_dependency(%q<mocha>, ["= 0.9.4"])
     else
-      s.add_dependency(%q<activesupport>, [">= 0"])
+      s.add_dependency(%q<activesupport>, [">= 2.3"])
       s.add_dependency(%q<mongo>, ["= 0.15.1"])
       s.add_dependency(%q<jnunemaker-validatable>, ["= 1.7.4"])
-      s.add_dependency(%q<mocha>, ["= 0.9.4"])
       s.add_dependency(%q<jnunemaker-matchy>, ["= 0.4.0"])
+      s.add_dependency(%q<shoulda>, ["= 2.10.2"])
+      s.add_dependency(%q<timecop>, ["= 0.3.1"])
+      s.add_dependency(%q<mocha>, ["= 0.9.4"])
     end
   else
-    s.add_dependency(%q<activesupport>, [">= 0"])
+    s.add_dependency(%q<activesupport>, [">= 2.3"])
     s.add_dependency(%q<mongo>, ["= 0.15.1"])
     s.add_dependency(%q<jnunemaker-validatable>, ["= 1.7.4"])
-    s.add_dependency(%q<mocha>, ["= 0.9.4"])
     s.add_dependency(%q<jnunemaker-matchy>, ["= 0.4.0"])
+    s.add_dependency(%q<shoulda>, ["= 2.10.2"])
+    s.add_dependency(%q<timecop>, ["= 0.3.1"])
+    s.add_dependency(%q<mocha>, ["= 0.9.4"])
   end
 end
