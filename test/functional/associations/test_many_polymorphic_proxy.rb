@@ -294,4 +294,31 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       end
     end
   end
+  
+  context "extending the association" do
+    should "work using a block passed to many" do
+      room = Room.new(:name => "Amazing Room")
+      messages = room.messages = [
+        Enter.new(:body => 'John entered room',  :position => 3),
+        Chat.new(:body => 'Heyyyoooo!',          :position => 4),
+        Exit.new(:body => 'John exited room',    :position => 5),
+        Enter.new(:body => 'Steve entered room', :position => 6),
+        Chat.new(:body => 'Anyone there?',       :position => 7),
+        Exit.new(:body => 'Steve exited room',   :position => 8)
+      ]
+      room.save
+      room.messages.older.should == messages[3..5]
+    end
+  
+    should "work using many's :extend option" do
+      room = Room.new(:name => "Amazing Room")
+      accounts = room.accounts = [
+        Bot.new(:last_logged_in => 3.weeks.ago),
+        User.new(:last_logged_in => nil),
+        Bot.new(:last_logged_in => 1.week.ago)
+      ]
+      room.save
+      room.accounts.inactive.should == [accounts[1]]
+    end
+  end
 end

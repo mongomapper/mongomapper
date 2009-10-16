@@ -6,6 +6,7 @@ module MongoMapper
       def initialize(owner, association)
         @owner = owner
         @association = association
+        @association.options[:extend].each {|ext| proxy_extend(ext) }
         reset
       end
 

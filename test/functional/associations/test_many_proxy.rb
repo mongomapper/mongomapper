@@ -328,4 +328,25 @@ class ManyProxyTest < Test::Unit::TestCase
       end
     end
   end
+
+  context "extending the association" do
+    should "work using a block passed to many" do
+      project = Project.new(:name => "Some Project")
+      status1 = Status.new(:name => "New")
+      status2 = Status.new(:name => "Assigned")
+      status3 = Status.new(:name => "Closed")
+      project.statuses = [status1, status2, status3]
+      project.save
+      project.statuses.open.should == [status1, status2]
+    end
+  
+    should "work using many's :extend option" do
+      project = Project.new(:name => "Some Project")
+      collaborator1 = Collaborator.new(:name => "zing")
+      collaborator2 = Collaborator.new(:name => "zang")
+      project.collaborators = [collaborator1, collaborator2]
+      project.save
+      project.collaborators.top.should == collaborator1
+    end
+  end
 end

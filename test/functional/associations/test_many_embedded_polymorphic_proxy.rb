@@ -129,4 +129,28 @@ class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
       from_db.transports[2].icu.should == true
     end
   end
+
+  context "extending the association" do
+    should "work using a block passed to many" do
+      catalog = Catalog.new
+      medias = catalog.medias = [
+        Video.new("file" => "video.mpg", "length" => 3600, :visible => true),
+        Music.new("file" => "music.mp3", "bitrate" => "128kbps", :visible => true),
+        Image.new("file" => "image.png", "width" => 800, "height" => 600, :visible => false)
+      ]
+      catalog.save
+      catalog.medias.visible.should == [medias[0], medias[1]]
+    end
+  
+    should "work using many's :extend option" do
+      fleet = TrModels::Fleet.new
+      transports = fleet.transports = [
+        TrModels::Car.new("license_plate" => "ABC1223", "model" => "Honda Civic", "year" => 2003, :purchased_on => 2.years.ago.to_date),
+        TrModels::Bus.new("license_plate" => "XYZ9090", "max_passengers" => 51, :purchased_on => 3.years.ago.to_date),
+        TrModels::Ambulance.new("license_plate" => "HDD3030", "icu" => true, :purchased_on => 1.year.ago.to_date)
+      ]
+      fleet.save
+      fleet.transports.to_be_replaced.should == [transports[1]]
+    end
+  end
 end

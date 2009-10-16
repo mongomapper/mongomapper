@@ -171,4 +171,29 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     
     meg.pets.find(sparky.id).should == sparky
   end
+  
+  context "extending the association" do
+    should "work using a block passed to many" do
+      project = Project.new(:name => "Some Project")
+      addr1 = Address.new(:address => "Gate-3 Lankershim Blvd.", :city => "Universal City", :state => "CA", :zip => "91608")
+      addr2 = Address.new(:address => "3000 W. Alameda Ave.", :city => "Burbank", :state => "CA", :zip => "91523")
+      addr3 = Address.new(:address => "111 Some Ln", :city => "Nashville", :state => "TN", :zip => "37211")
+      project.addresses = [addr1, addr2, addr3]
+      project.save
+      project.addresses.find_all_by_state("CA").should == [addr1, addr2]
+    end
+  
+    should "work using many's :extend option" do
+      project = Project.new(:name => "Some Project")
+      person1 = Person.new(:name => "Steve")
+      person2 = Person.new(:name => "Betty")
+      person3 = Person.new(:name => "Cynthia")
+
+      project.people << person1
+      project.people << person2
+      project.people << person3
+      project.save
+      project.people.find_by_name("Steve").should == person1
+    end
+  end
 end
