@@ -15,11 +15,7 @@ class TestRailsCompatibility < Test::Unit::TestCase
     key :second_only, String
   end
   
-  context "EmbeddedDocument" do
-    should "raise error for to_param as embedded do not have id's" do
-      lambda { Item.new.to_param }.should raise_error
-    end
-    
+  context "EmbeddedDocument" do    
     should "alias many to has_many" do
       FirstItem.should respond_to(:has_many)
       FirstItem.method(:has_many).should == FirstItem.method(:many)

@@ -289,6 +289,11 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
     end
     
+    should "have to_param that is id" do
+      doc = @document.new
+      doc.to_param.should == doc.id
+    end
+    
     should "have access to class logger" do
       doc = @document.new
       doc.logger.should == @document.logger

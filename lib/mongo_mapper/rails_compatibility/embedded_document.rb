@@ -18,10 +18,6 @@ module MongoMapper
           keys.keys
         end
       end
-
-      def to_param
-        raise "Missing to_param method in #{self.class}. You should implement it to return the unique identifier of this embedded document within a document."
-      end
     end
   end
 end

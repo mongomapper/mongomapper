@@ -6,10 +6,6 @@ module MongoMapper
           alias_method :new_record?, :new?
         end
       end
-            
-      def to_param
-        id
-      end
     end
   end
 end

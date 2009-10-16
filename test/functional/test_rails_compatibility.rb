@@ -16,11 +16,6 @@ class TestRailsCompatibility < Test::Unit::TestCase
     setup do
       Order.collection.clear
     end
-  
-    should "have to_param that returns id" do
-      instance = Order.create('_id' => 1234)
-      instance.to_param.should == '1234'
-    end
 
     should "alias new to new_record?" do
       instance = Order.new

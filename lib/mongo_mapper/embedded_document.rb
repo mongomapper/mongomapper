@@ -198,6 +198,10 @@ module MongoMapper
       def new?
         !!@new_document
       end
+      
+      def to_param
+        id
+      end
 
       def attributes=(attrs)
         return if attrs.blank?
