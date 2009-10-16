@@ -2,13 +2,19 @@ require 'pathname'
 require 'pp'
 require 'rubygems'
 require 'shoulda'
+require 'activesupport'
+
+gem 'timecop', '0.3.1'
+require 'timecop'
 
 gem 'mocha', '0.9.4'
-gem 'jnunemaker-matchy', '0.4.0'
-
-require 'matchy'
 require 'mocha'
-require 'custom_matchers'
+
+gem 'jnunemaker-matchy', '0.4.0'
+require 'matchy'
+
+require 'support/custom_matchers'
+require 'support/test_timing'
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 dir = (Pathname(__FILE__).dirname +  '..' + 'lib').expand_path

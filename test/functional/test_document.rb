@@ -1007,8 +1007,11 @@ class DocumentTest < Test::Unit::TestCase
       old_created_at = doc.created_at
       old_updated_at = doc.updated_at
       doc.first_name = 'Johnny'
-      sleep 1 # this annoys me
-      doc.save
+      
+      Timecop.freeze(Time.now + 5.seconds) do
+        doc.save
+      end
+      
       doc.created_at.should == old_created_at
       doc.updated_at.should_not == old_updated_at
     end
@@ -1017,12 +1020,14 @@ class DocumentTest < Test::Unit::TestCase
       doc = @document.create(:first_name => 'John', :age => 27)
       old_created_at = doc.created_at
       old_updated_at = doc.updated_at
-      sleep 1 # this annoys me
-      @document.update(doc._id, { :first_name => 'Johnny' })
+      
+      Timecop.freeze(Time.now + 5.seconds) do
+        @document.update(doc._id, { :first_name => 'Johnny' })
+      end
 
       from_db = @document.find(doc.id)
-      from_db.created_at.to_i.should == old_created_at.to_i
-      from_db.updated_at.to_i.should_not == old_updated_at.to_i
+      from_db.created_at.should == old_created_at
+      from_db.updated_at.should_not == old_updated_at
     end
   end
 

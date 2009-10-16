@@ -149,7 +149,8 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
 
     context "with #all" do
       should "work" do
-        @post.comments.all.should == [@comment1, @comment2]
+        @post.comments.all.should include(@comment1)
+        @post.comments.all.should include(@comment2)
       end
 
       should "work with conditions" do

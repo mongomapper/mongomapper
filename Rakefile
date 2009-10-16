@@ -12,6 +12,7 @@ begin
     gem.rubyforge_project = "mongomapper"
     
     gem.add_dependency('activesupport')
+    gem.add_dependency('timecop', '0.3.1')
     gem.add_dependency('mongo', '0.15.1')
     gem.add_dependency('jnunemaker-validatable', '1.7.4')
     
