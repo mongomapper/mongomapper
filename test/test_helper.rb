@@ -1,4 +1,3 @@
-require 'pathname'
 require 'pp'
 require 'rubygems'
 require 'shoulda'
@@ -16,9 +15,7 @@ require 'matchy'
 require 'support/custom_matchers'
 require 'support/test_timing'
 
-$LOAD_PATH.unshift(File.dirname(__FILE__))
-dir = (Pathname(__FILE__).dirname +  '..' + 'lib').expand_path
-require dir + 'mongo_mapper'
+require File.join(File.expand_path(File.dirname(__FILE__) + '/../lib/mongo_mapper'))
 
 class Test::Unit::TestCase
   include CustomMatchers
