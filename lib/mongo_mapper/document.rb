@@ -109,10 +109,31 @@ module MongoMapper
         !count(conditions).zero?
       end
 
+      # @overload create(doc_attributes)
+      #   Create a single new document
+      #   @param [Hash] doc_attributes key/value pairs to create a new 
+      #     document
+      #
+      # @overload create(docs_attributes)
+      #   Create many new documents
+      #   @param [Array<Hash>] provide many Hashes of key/value pairs to create 
+      #     multiple documents
+      #
+      # @example Creating a single document
+      #   MyModel.create({ :foo => "bar" })
+      #
+      # @example Creating multiple documents
+      #   MyModel.create([{ :foo => "bar" }, { :foo => "baz" })
+      #
+      # @return [Boolean] when a document is successfully created, +true+ will 
+      #   be returned. If a document fails to create, +false+ will be returned.
       def create(*docs)
         initialize_each(*docs) { |doc| doc.save }
       end
 
+      # @see Document.create
+      #
+      # @raise [DocumentNotValid] raised if a document fails to create
       def create!(*docs)
         initialize_each(*docs) { |doc| doc.save! }
       end
