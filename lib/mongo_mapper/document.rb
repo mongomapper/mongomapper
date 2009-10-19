@@ -138,10 +138,22 @@ module MongoMapper
         initialize_each(*docs) { |doc| doc.save! }
       end
 
-      # For updating single document
+      # @overload update(id, attributes)
+      #   Update a single document
+      #   @param id the ID of the document you wish to update
+      #   @param [Hash] attributes the key to update on the document with a new 
+      #     value
+      #
+      # @overload update(ids_and_attributes)
+      #   Update multiple documents
+      #   @param [Hash] ids_and_attributes each key is the ID of some document 
+      #     you wish to update. The value each key points toward are those 
+      #     applied to the target document
+      #
+      # @example Updating single document
       #   Person.update(1, {:foo => 'bar'})
       #
-      # For updating multiple documents at once:
+      # @example Updating multiple documents at once:
       #   Person.update({'1' => {:foo => 'bar'}, '2' => {:baz => 'wick'}})
       def update(*args)
         updating_multiple = args.length == 1
