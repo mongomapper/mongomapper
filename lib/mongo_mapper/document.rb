@@ -200,6 +200,19 @@ module MongoMapper
         find_some(ids.flatten).each(&:destroy)
       end
 
+      # Calls +destroy+ on any documents for which the provided +conditions+ 
+      # are true. Note that this means your defined +destroy+ call-backs will 
+      # be processed for *each* document found.
+      #
+      # @param [Hash] conditions conditions that define the set of documents 
+      #   you wish to destroy. These conditions are optional. Without them, 
+      #   all of your documents will be destroyed.
+      #
+      # @example With conditions
+      #   Person.destroy_all(:age => 45) # any Person document whose age is 45
+      # 
+      # @example Without conditions
+      #   Person.destroy_all # destroy ALL Person documents
       def destroy_all(conditions={})
         find(:all, :conditions => conditions).each(&:destroy)
       end
