@@ -87,3 +87,9 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
+
+require "yard"
+require "yard/rake/yardoc_task"
+YARD::Rake::YardocTask.new do |t|
+  t.options = ["--legacy"]
+end
