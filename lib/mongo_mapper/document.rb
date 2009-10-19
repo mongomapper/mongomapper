@@ -175,6 +175,27 @@ module MongoMapper
         collection.remove(criteria)
       end
 
+      # Iterates over each document found by the provided IDs and calls their 
+      # +destroy+ method. This has the advantage of processing your document's 
+      # +destroy+ call-backs.
+      #
+      # @overload destroy(id)
+      #   Destroy a single document by ID
+      #   @param id the ID of the document to destroy
+      #
+      # @overload destroy(ids)
+      #   Destroy many documents by their IDs
+      #   @param [Array] the IDs of each document you wish to destroy
+      #
+      # @example Destroying a single document
+      #   Person.destroy("34")
+      #
+      # @example Destroying multiple documents
+      #   Person.destroy("34", "45", ..., "54")
+      #
+      #   # OR...
+      #
+      #   Person.destroy(["34", "45", ..., "54"])
       def destroy(*ids)
         find_some(ids.flatten).each(&:destroy)
       end
