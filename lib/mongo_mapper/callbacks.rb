@@ -1,4 +1,17 @@
 module MongoMapper
+  # This module is mixed into the Document module to provide call-backs before 
+  # and after the following events:
+  #
+  # * save
+  # * create
+  # * update
+  # * validation
+  # ** every validation
+  # ** validation when created
+  # ** validation when updated
+  # * destruction
+  #
+  # @see ActiveSupport::Callbacks
   module Callbacks
     def self.included(model) #:nodoc:
       model.class_eval do
@@ -42,6 +55,11 @@ module MongoMapper
       return result
     end
 
+    # Here we override the +destroy+ method to allow for the +before_destroy+ 
+    # and +after_destroy+ call-backs. Note that the +destroy+ call is aborted 
+    # if the +before_destroy+ call-back returns +false+.
+    #
+    # @return the result of calling +destroy+ on the document
     def destroy #:nodoc:
       return false if callback(:before_destroy) == false
       result = super
