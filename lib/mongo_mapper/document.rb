@@ -43,6 +43,18 @@ module MongoMapper
         MongoMapper.ensure_index(self, keys_to_index, options)
       end
       
+      # @overload find(:first, options)
+      #   @see Document.first
+      #
+      # @overload find(:last, options)
+      #   @see Document.last
+      #
+      # @overload find(:all, options)
+      #   @see Document.all
+      #
+      # @overload find(ids, options)
+      #
+      # @raise DocumentNotFound raised when no ID or arguments are provided
       def find(*args)
         options = args.extract_options!
         case args.first
@@ -50,7 +62,7 @@ module MongoMapper
           when :last  then last(options)
           when :all   then find_every(options)
           when Array  then find_some(args, options)
-          else
+          else # TODO How do we end up here?
             case args.size
               when 0
                 raise DocumentNotFound, "Couldn't find without an ID"
@@ -75,11 +87,30 @@ module MongoMapper
         collection
       end
 
+      # @param [Hash] options any conditions understood by 
+      #   FinderOptions.to_mongo_criteria
+      #
+      # @return the first document in the ordered collection as described by 
+      #   +options+
+      #
+      # @see FinderOptions.to_mongo_criteria
       def first(options={})
         options.merge!(:limit => 1)
         find_every(options)[0]
       end
 
+      # @param [Hash] options any conditions understood by 
+      #   FinderOptions.to_mongo_criteria
+      # @option [String] :order this *mandatory* option describes how to 
+      #   identify the ordering of the documents in your collection. Note that 
+      #   the *last* document in this collection will be selected.
+      #
+      # @return the last document in the ordered collection as described by 
+      #   +options+
+      #
+      # @raise Exception when no <tt>:order</tt> option has been defined
+      #
+      # @see FinderOptions.to_mongo_criteria
       def last(options={})
         if options[:order].blank?
           raise ':order option must be provided when using last'
@@ -90,6 +121,13 @@ module MongoMapper
         find_every(options)[0]
       end
 
+      # @param [Hash] options any conditions understood by 
+      #   FinderOptions.to_mongo_criteria
+      #
+      # @return [Array] all documents in your collection that match the 
+      #   provided conditions
+      #
+      # @see FinderOptions.to_mongo_criteria
       def all(options={})
         find_every(options)
       end
@@ -101,10 +139,24 @@ module MongoMapper
         end
       end
 
+      # @param [Hash] conditions any conditions understood by 
+      #   FinderOptions.to_mongo_criteria
+      #
+      # @return [Integer] the number of documents in your collection that meet 
+      #   the specified conditions
+      #
+      # @see FinderOptions.to_mongo_criteria
       def count(conditions={})
         collection.find(FinderOptions.to_mongo_criteria(conditions)).count
       end
 
+      # @param [Hash] conditions any conditions understood by 
+      #   FinderOptions.to_mongo_criteria
+      #
+      # @return [Boolean] whether or not any records were found matching the 
+      #   provided conditions
+      #
+      # @see FinderOptions.to_mongo_criteria
       def exists?(conditions={})
         !count(conditions).zero?
       end
@@ -165,11 +217,28 @@ module MongoMapper
         end
       end
 
+      # Removes ("deletes") one or many documents from the collection. Note 
+      # that this will bypass any +destroy+ hooks defined by your class.
+      #
+      # @param [Array] ids the ID or IDs of the records you wish to delete
       def delete(*ids)
         criteria = FinderOptions.to_mongo_criteria(:_id => ids.flatten)
         collection.remove(criteria)
       end
 
+      # Removes documents from the collection according to the provided 
+      # conditions. Note that this bypasses any +destroy+ hooks defined by 
+      # your class.
+      #
+      # @overload delete_all()
+      #   Deletes all documents from the collection.
+      #
+      # @overload delete_all(conditions)
+      #   Deletes all documents that match the provided conditions
+      #   @param [Hash] conditions any option understood by 
+      #     FinderOptions.to_mongo_criteria
+      #
+      # @see FinderOptions.to_mongo_criteria
       def delete_all(conditions={})
         criteria = FinderOptions.to_mongo_criteria(conditions)
         collection.remove(criteria)
@@ -217,6 +286,14 @@ module MongoMapper
         find(:all, :conditions => conditions).each(&:destroy)
       end
 
+      # @overload connection()
+      #   @return [Mongo::Connection] the connection used by your document class
+      #
+      # @overload connection(mongo_connection)
+      #   @param [Mongo::Connection] mongo_connection a new connection for your 
+      #     document class to use
+      #   @return [Mongo::Connection] a new Mongo::Connection for yoru document 
+      #     class
       def connection(mongo_connection=nil)
         if mongo_connection.nil?
           @connection ||= MongoMapper.connection
@@ -226,6 +303,12 @@ module MongoMapper
         @connection
       end
 
+      # @overload database()
+      #   @return [Mongo] the database object used by your document class
+      #
+      # @overload database(name)
+      #   @param [String] name the name of an existing, or new, Mongo database
+      #   @return [Mongo] a Mongo database object for the specified database
       def database(name=nil)
         if name.nil?
           @database ||= MongoMapper.database
@@ -236,21 +319,27 @@ module MongoMapper
       end
       
       # Changes the collection name from the default to whatever you want
+      #
+      # @param [#to_s] name the new collection name to use. Defaults to +nil+
       def set_collection_name(name=nil)
         @collection = nil
         @collection_name = name
       end
       
-      # Returns the collection name, if not set, defaults to class name tableized
+      # @return [String] the collection name, if not set, defaults to class 
+      #   name tableized
       def collection_name
         @collection_name ||= self.to_s.demodulize.tableize
       end
 
-      # Returns the mongo ruby driver collection object
+      # @return the Mongo Ruby driver +collection+ object
       def collection
         @collection ||= database.collection(collection_name)
       end
       
+      # Defines a +created_at+ and +updated_at+ attribute (with a +Time+ 
+      # value) on your document. These attributes are updated by an 
+      # injected +update_timestamps+ +before_save+ hook.
       def timestamps!
         key :created_at, Time
         key :updated_at, Time
