@@ -1,10 +1,4 @@
-require 'rubygems'
-
-gem 'activesupport', '>= 2.3'
-gem 'mongo', '0.15.1'
-gem 'jnunemaker-validatable', '1.7.4'
-
-require 'activesupport'
+require 'active_support'
 require 'mongo'
 require 'validatable'
 
