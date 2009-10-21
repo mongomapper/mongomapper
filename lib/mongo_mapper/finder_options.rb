@@ -46,16 +46,11 @@ module MongoMapper
       criteria
     end
         
-    # @param [Hash] options a set of optoins to convert into a Mongo 
+    # @param [Hash] options a set of options to convert into a Mongo 
     #   compatible form
-    # @option [] :fields
-    # @option [] :select may be used instead of <tt>:fields</tt>
-    # @option [#to_i] :skip ..., defaults to zero (0)
-    # @option [#to_i] :offset may be be used instead of <tt>:skip</tt>
-    # @option [#to_i] :limit the number of records to limit your results to, 
-    #   defaults to zero (0)
-    # @option [] :sort
-    # @option [] :order may be used instead of <tt>:order</tt>
+    #
+    # @see FinderOptions#initialize for more information on the +options+ 
+    #   parameter
     #
     # @return [Hash] converts the provided options into a Mongo compatible 
     #   form. This Hash has four keys: <tt>:fields</tt>, <tt>:skip</tt>, 
