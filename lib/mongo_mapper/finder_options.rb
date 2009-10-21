@@ -1,5 +1,14 @@
 module MongoMapper
   # Controls the parsing and handling of options used by finders.
+  #
+  # == Important Note
+  #
+  # This class is private to MongoMapper and should not be considered part of 
+  # MongoMapper's public API. Some documentation herein, however, may prove 
+  # useful for understanding how MongoMapper handles the parsing of finder 
+  # conditions and options.
+  #
+  # @private
   class FinderOptions
     attr_reader :options
     
@@ -9,9 +18,12 @@ module MongoMapper
     #
     # @overload
     #   to_mongo_criteria(conditions, parent_key)
-    #   @param [Hash] conditions
+    #   @param [Hash] conditions field/value pairs
+    #   @param [#to_s] parent_key the name of the key that the current value 
+    #     belongs to. This is used internally by this method when recursively 
+    #     parsing nested Hash conditions.
     #
-    # @return [Hash] 
+    # @return [Hash] conditions compatible with Mongo DB
     def self.to_mongo_criteria(conditions, parent_key=nil)
       criteria = {}
       conditions.each_pair do |field, value|
@@ -34,16 +46,11 @@ module MongoMapper
       criteria
     end
         
-    # @param [Hash] options a set of optoins to convert into a Mongo 
+    # @param [Hash] options a set of options to convert into a Mongo 
     #   compatible form
-    # @option [] :fields
-    # @option [] :select may be used instead of <tt>:fields</tt>
-    # @option [#to_i] :skip ..., defaults to zero (0)
-    # @option [#to_i] :offset may be be used instead of <tt>:skip</tt>
-    # @option [#to_i] :limit the number of records to limit your results to, 
-    #   defaults to zero (0)
-    # @option [] :sort
-    # @option [] :order may be used instead of <tt>:order</tt>
+    #
+    # @see FinderOptions#initialize for more information on the +options+ 
+    #   parameter
     #
     # @return [Hash] converts the provided options into a Mongo compatible 
     #   form. This Hash has four keys: <tt>:fields</tt>, <tt>:skip</tt>, 
@@ -78,13 +85,15 @@ module MongoMapper
     # automatically discovered.
     #
     # @param [Hash] options any number of options or conditions
-    # @option [] :fields
-    # @option [] :select
-    # @option [] :skip
-    # @option [Integer] :offset
-    # @option [Integer] :limit
-    # @option [] :sort
-    # @option [String] :order
+    # @option [String, Array] :fields a list of field names to use for the 
+    #   returned documents
+    # @option [String, Array] :select equivalent to <tt>:fields</tt>
+    # @option [#to_i] :skip when returning found documents, ignore the first 
+    #   +n+ records as defined by this paramter
+    # @option [#to_i] :offset equivalent to <tt>:skip</tt>
+    # @option [Integer] :limit the number of results to maximally return
+    # @option [String] :sort a SQL-style ORDER clause
+    # @option [String] :order equivalent to <tt>:sort</tt>
     # @option [Hash] :conditions explicit conditions to initialize 
     #   with (optional)
     #
@@ -121,6 +130,7 @@ module MongoMapper
       self.class.to_mongo_options(@options)
     end
     
+    # @return [Array<Hash>] Mongo criteria and options enclosed in an Array
     def to_a
       [criteria, options]
     end
