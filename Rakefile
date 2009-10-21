@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'rake'
-
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   gem.name        = "mongo_mapper"
@@ -24,20 +23,23 @@ Jeweler::GemcutterTasks.new
 
 require 'rake/testtask'
 Rake::TestTask.new(:test) do |test|
-  test.libs << 'lib' << 'test'
+  test.libs << 'test'
+  test.ruby_opts << '-rubygems'
   test.pattern = 'test/**/test_*.rb'
   test.verbose = true
 end
 
 namespace :test do
   Rake::TestTask.new(:units) do |test|
-    test.libs << 'lib' << 'test'
+    test.libs << 'test'
+    test.ruby_opts << '-rubygems'
     test.pattern = 'test/unit/**/test_*.rb'
     test.verbose = true
   end
   
   Rake::TestTask.new(:functionals) do |test|
-    test.libs << 'lib' << 'test'
+    test.libs << 'test'
+    test.ruby_opts << '-rubygems'
     test.pattern = 'test/functional/**/test_*.rb'
     test.verbose = true
   end
@@ -45,4 +47,3 @@ end
 
 task :default  => :test
 task :test     => :check_dependencies
-task :features => :check_dependencies
