@@ -948,38 +948,43 @@ class DocumentTest < Test::Unit::TestCase
       class ::DocParent
         include MongoMapper::Document
         key :_type, String
+        key :name, String
       end
-
-      class ::DocChild < ::DocParent; end
       DocParent.collection.clear
-
+      
+      class ::DocDaughter < ::DocParent; end
+      class ::DocSon < ::DocParent; end
+      class ::DocGrandSon < ::DocSon; end
+      
       @parent = DocParent.new({:name => "Daddy Warbucks"})
-      @child = DocChild.new({:name => "Little Orphan Annie"})
+      @daughter = DocDaughter.new({:name => "Little Orphan Annie"})
     end
 
     teardown do
-      Object.send :remove_const, 'DocParent' if defined?(::DocParent)
-      Object.send :remove_const, 'DocChild' if defined?(::DocChild)
+      Object.send :remove_const, 'DocParent'   if defined?(::DocParent)
+      Object.send :remove_const, 'DocDaughter' if defined?(::DocDaughter)
+      Object.send :remove_const, 'DocSon'      if defined?(::DocSon)
+      Object.send :remove_const, 'DocGrandSon' if defined?(::DocGrandSon)
     end
 
     should "use the same collection in the subclass" do
-      DocChild.collection.name.should == DocParent.collection.name
+      DocDaughter.collection.name.should == DocParent.collection.name
     end
 
     should "assign the class name into the _type property" do
       @parent._type.should == 'DocParent'
-      @child._type.should == 'DocChild'
+      @daughter._type.should == 'DocDaughter'
     end
 
     should "load the document with the assigned type" do
       @parent.save
-      @child.save
-
+      @daughter.save
+            
       collection = DocParent.find(:all)
       collection.size.should == 2
       collection.first.should be_kind_of(DocParent)
       collection.first.name.should == "Daddy Warbucks"
-      collection.last.should be_kind_of(DocChild)
+      collection.last.should be_kind_of(DocDaughter)
       collection.last.name.should == "Little Orphan Annie"
     end
 
@@ -991,6 +996,45 @@ class DocumentTest < Test::Unit::TestCase
       collection = DocParent.all
       collection.last.should == doc
       collection.last.should be_kind_of(DocParent)
+    end
+    
+    should "find scoped to class" do
+      john = DocSon.create(:name => 'John')
+      steve = DocSon.create(:name => 'Steve')
+      steph = DocDaughter.create(:name => 'Steph')
+      carrie = DocDaughter.create(:name => 'Carrie')
+      
+      DocGrandSon.all(:order => 'name').should  == []
+      DocSon.all(:order => 'name').should       == [john, steve]
+      DocDaughter.all(:order => 'name').should  == [carrie, steph]
+      DocParent.all(:order => 'name').should    == [carrie, john, steph, steve]
+    end
+    
+    should "count scoped to class" do
+      john = DocSon.create(:name => 'John')
+      steve = DocSon.create(:name => 'Steve')
+      steph = DocDaughter.create(:name => 'Steph')
+      carrie = DocDaughter.create(:name => 'Carrie')
+      
+      DocGrandSon.count.should  == 0
+      DocSon.count.should       == 2
+      DocDaughter.count.should  == 2
+      DocParent.count.should    == 4
+    end
+    
+    should "know if it is single_collection_inherited?" do
+      DocParent.single_collection_inherited?.should be_false
+      
+      DocDaughter.single_collection_inherited?.should be_true
+      DocSon.single_collection_inherited?.should be_true
+    end
+    
+    should "know if single_collection_inherited_superclass?" do
+      DocParent.single_collection_inherited_superclass?.should be_false
+      
+      DocDaughter.single_collection_inherited_superclass?.should be_true
+      DocSon.single_collection_inherited_superclass?.should be_true
+      DocGrandSon.single_collection_inherited_superclass?.should be_true
     end
   end
 

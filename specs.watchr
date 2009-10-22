@@ -12,7 +12,7 @@ def run_all_tests
 end
 
 def related_test_files(path)
-  Dir['test/**/*.rb'].select { |file| file =~ /#{File.basename(path)}/ }
+  Dir['test/**/*.rb'].select { |file| file =~ /test_#{File.basename(path)}/ }
 end
 
 watch('test/test_helper\.rb') { run_all_tests }

@@ -1,9 +1,9 @@
 module MongoMapper
-  class FinderOptions
-    attr_reader :options
-    
-    def self.to_mongo_criteria(conditions, parent_key=nil)
+  class FinderOptions    
+    def self.to_mongo_criteria(model, conditions, parent_key=nil)
       criteria = {}
+      add_sci_scope(model, criteria)
+      
       conditions.each_pair do |field, value|
         field = field_normalized(field)
         case value
@@ -15,7 +15,7 @@ module MongoMapper
                                 {'$in' => value}
                               end
           when Hash
-            criteria[field] = to_mongo_criteria(value, field)
+            criteria[field] = to_mongo_criteria(model, value, field)
           else            
             criteria[field] = value
         end
@@ -23,8 +23,15 @@ module MongoMapper
       
       criteria
     end
+    
+    # adds _type single collection inheritance scope for models that need it
+    def self.add_sci_scope(model, criteria)
+      if model.single_collection_inherited?
+        criteria[:_type] = model.to_s
+      end
+    end
         
-    def self.to_mongo_options(options)
+    def self.to_mongo_options(model, options)
       options = options.dup
       {
         :fields => to_mongo_fields(options.delete(:fields) || options.delete(:select)),
@@ -44,8 +51,12 @@ module MongoMapper
     
     OptionKeys = [:fields, :select, :skip, :offset, :limit, :sort, :order]
     
-    def initialize(options)
+    attr_reader :model, :options
+    
+    def initialize(model, options)
       raise ArgumentError, "FinderOptions must be a hash" unless options.is_a?(Hash)
+      
+      @model = model
       
       options = options.symbolize_keys
       @options, @conditions = {}, options.delete(:conditions) || {}
@@ -60,11 +71,11 @@ module MongoMapper
     end
     
     def criteria
-      self.class.to_mongo_criteria(@conditions)
+      self.class.to_mongo_criteria(model, @conditions)
     end
     
     def options
-      self.class.to_mongo_options(@options)
+      self.class.to_mongo_options(model, @options)
     end
     
     def to_a

@@ -95,14 +95,14 @@ module MongoMapper
       end
 
       def find_by_id(id)
-        criteria = FinderOptions.to_mongo_criteria(:_id => id)
+        criteria = FinderOptions.to_mongo_criteria(self, :_id => id)
         if doc = collection.find_one(criteria)
           new(doc)
         end
       end
 
       def count(conditions={})
-        collection.find(FinderOptions.to_mongo_criteria(conditions)).count
+        collection.find(FinderOptions.to_mongo_criteria(self, conditions)).count
       end
 
       def exists?(conditions={})
@@ -133,12 +133,12 @@ module MongoMapper
       end
 
       def delete(*ids)
-        criteria = FinderOptions.to_mongo_criteria(:_id => ids.flatten)
+        criteria = FinderOptions.to_mongo_criteria(self, :_id => ids.flatten)
         collection.remove(criteria)
       end
 
       def delete_all(conditions={})
-        criteria = FinderOptions.to_mongo_criteria(conditions)
+        criteria = FinderOptions.to_mongo_criteria(self, conditions)
         collection.remove(criteria)
       end
 
@@ -191,6 +191,14 @@ module MongoMapper
         class_eval { before_save :update_timestamps }
       end
       
+      def single_collection_inherited?
+        keys.has_key?('_type') && single_collection_inherited_superclass?
+      end
+      
+      def single_collection_inherited_superclass?
+        superclass.respond_to?(:keys) && superclass.keys.has_key?('_type')
+      end
+            
       protected
         def method_missing(method, *args)
           finder = DynamicFinder.new(method)
@@ -221,7 +229,7 @@ module MongoMapper
         end
         
         def find_every(options)
-          criteria, options = FinderOptions.new(options).to_a
+          criteria, options = FinderOptions.new(self, options).to_a
           collection.find(criteria, options).to_a.map do |doc|
             begin
               klass = doc['_type'].present? ? doc['_type'].constantize : self
@@ -304,7 +312,7 @@ module MongoMapper
       def destroy
         return false if frozen?
 
-        criteria = FinderOptions.to_mongo_criteria(:_id => id)
+        criteria = FinderOptions.to_mongo_criteria(self.class, :_id => id)
         collection.remove(criteria) unless new?
         freeze
       end

@@ -68,12 +68,6 @@ class Message
   belongs_to :room
 end
 
-class Answer
-  include MongoMapper::Document
-
-  key :body, String
-end
-
 class Enter < Message; end
 class Exit < Message;  end
 class Chat < Message;  end
@@ -83,6 +77,12 @@ class Room
 
   key :name, String
   many :messages, :polymorphic => true
+end
+
+class Answer
+  include MongoMapper::Document
+
+  key :body, String
 end
 
 class Project

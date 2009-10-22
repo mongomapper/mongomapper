@@ -68,7 +68,7 @@ module MongoMapper
       end
       
       def nullify
-        criteria = FinderOptions.to_mongo_criteria(scoped_conditions)
+        criteria = FinderOptions.to_mongo_criteria(klass, scoped_conditions)
         all(criteria).each do |doc|
           doc.update_attributes self.foreign_key => nil
         end
