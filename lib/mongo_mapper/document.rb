@@ -147,7 +147,7 @@ module MongoMapper
       end
 
       def destroy_all(conditions={})
-        find(:all, :conditions => conditions).each(&:destroy)
+        all(conditions).each(&:destroy)
       end
 
       def connection(mongo_connection=nil)

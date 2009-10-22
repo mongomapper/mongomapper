@@ -1010,6 +1010,21 @@ class DocumentTest < Test::Unit::TestCase
       DocParent.all(:order => 'name').should    == [carrie, john, steph, steve]
     end
     
+    should "raise error if not found scoped to class" do
+      john = DocSon.create(:name => 'John')
+      steph = DocDaughter.create(:name => 'Steph')
+      
+      lambda {
+        DocSon.find(steph.id)
+      }.should raise_error(MongoMapper::DocumentNotFound)
+    end
+    
+    should "not raise error for find with parent" do
+      john = DocSon.create(:name => 'John')
+      
+      DocParent.find(john.id).should == john
+    end
+    
     should "count scoped to class" do
       john = DocSon.create(:name => 'John')
       steve = DocSon.create(:name => 'Steve')
@@ -1035,6 +1050,42 @@ class DocumentTest < Test::Unit::TestCase
       DocDaughter.single_collection_inherited_superclass?.should be_true
       DocSon.single_collection_inherited_superclass?.should be_true
       DocGrandSon.single_collection_inherited_superclass?.should be_true
+    end
+    
+    should "not be able to destroy each other" do
+      john = DocSon.create(:name => 'John')
+      steph = DocDaughter.create(:name => 'Steph')
+      
+      lambda {
+        DocSon.destroy(steph.id)
+      }.should raise_error(MongoMapper::DocumentNotFound)
+    end
+    
+    should "not be able to delete each other" do
+      john = DocSon.create(:name => 'John')
+      steph = DocDaughter.create(:name => 'Steph')
+      
+      lambda {
+        DocSon.delete(steph.id)
+      }.should_not change { DocParent.count }
+    end
+    
+    should "be able to destroy using parent" do
+      john = DocSon.create(:name => 'John')
+      steph = DocDaughter.create(:name => 'Steph')
+      
+      lambda {
+        DocParent.destroy_all
+      }.should change { DocParent.count }.by(-2)
+    end
+    
+    should "be able to delete using parent" do
+      john = DocSon.create(:name => 'John')
+      steph = DocDaughter.create(:name => 'Steph')
+      
+      lambda {
+        DocParent.delete_all
+      }.should change { DocParent.count }.by(-2)
     end
   end
 
