@@ -4,7 +4,7 @@ def run(cmd)
 end
 
 def run_test_file(file)
-  run "ruby -Itest #{file}"
+  run %Q(ruby -I"lib:test" -rubygems #{file})
 end
 
 def run_all_tests
