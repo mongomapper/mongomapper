@@ -41,8 +41,6 @@ module MongoMapper
           if association.options[:dependent]
             if association.many?
               define_dependent_callback_for_many(association)
-            elsif association.belongs_to?
-              define_dependent_callback_for_belongs_to(association)
             end
           end
         end
@@ -62,14 +60,6 @@ module MongoMapper
           end
         end
 
-        def define_dependent_callback_for_belongs_to(association)
-          after_destroy do |doc|
-            case association.options[:dependent]
-            when :destroy
-              doc.get_proxy(association).destroy
-            end
-          end
-        end
     end
 
     module InstanceMethods

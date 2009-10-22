@@ -23,7 +23,7 @@ class DocumentTest < Test::Unit::TestCase
       doc.using_custom_id?.should be_false
     end
   end
-  
+
   context "Saving a document with a blank binary value" do
     setup do
       @document.key :file, Binary
@@ -40,9 +40,9 @@ class DocumentTest < Test::Unit::TestCase
       @id = Mongo::ObjectID.new.to_s
       @document.collection.insert({
         :_id            => @id,
-        :first_name     => 'John', 
-        :last_name      => 'Nunemaker', 
-        :age            => 27, 
+        :first_name     => 'John',
+        :last_name      => 'Nunemaker',
+        :age            => 27,
         :favorite_color => 'red',
         :skills         => ['ruby', 'rails', 'javascript', 'xhtml', 'css']
       })
@@ -57,7 +57,7 @@ class DocumentTest < Test::Unit::TestCase
       doc.skills.should == ['ruby', 'rails', 'javascript', 'xhtml', 'css']
     end
   end
-  
+
   context "Document Class Methods" do
     context "Using key with type Array" do
       setup do
@@ -140,7 +140,7 @@ class DocumentTest < Test::Unit::TestCase
         doc.foo['baz'].should == 'bar'
       end
     end
-    
+
     context "Using key with custom type with default" do
       setup do
         @document.key :window, WindowSize, :default => WindowSize.new(600, 480)
@@ -149,19 +149,19 @@ class DocumentTest < Test::Unit::TestCase
       should "default to default" do
         doc = @document.new
         doc.window.should == WindowSize.new(600, 480)
-        
+
       end
-      
+
       should "save and load from mongo" do
         doc = @document.new
         doc.save
-        
+
         from_db = @document.find(doc.id)
         from_db.window.should == WindowSize.new(600, 480)
       end
     end
-    
-    
+
+
     context "Creating a single document" do
       setup do
         @doc_instance = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
@@ -310,17 +310,17 @@ class DocumentTest < Test::Unit::TestCase
         should "work as array" do
           @document.find([@doc1.id, @doc2.id]).should == [@doc1, @doc2]
         end
-        
+
         should "return array if array only has one element" do
           @document.find([@doc1.id]).should == [@doc1]
         end
       end
-      
+
       should "be able to find using condition auto-detection" do
         @document.first(:first_name => 'John').should == @doc1
         @document.all(:last_name => 'Nunemaker', :order => 'age desc').should == [@doc1, @doc3]
       end
-      
+
       context "with :all" do
         should "find all documents" do
           @document.find(:all, :order => 'first_name').should == [@doc1, @doc3, @doc2]
@@ -362,11 +362,11 @@ class DocumentTest < Test::Unit::TestCase
           @document.last(:order => 'age').should == @doc2
           @document.last(:order => 'age', :conditions => {:age => 28}).should == @doc2
         end
-        
+
         should "raise error if no order provided" do
           lambda { @document.last() }.should raise_error
         end
-      end      
+      end
 
       context "with :find_by" do
         should "find document based on argument" do
@@ -668,11 +668,11 @@ class DocumentTest < Test::Unit::TestCase
             @thing.properties << @property3
           end
 
-          should "destroy the thing" do
+          should "not execute on a belongs_to association" do
             Thing.count.should == 1
             @property1.destroy
-            Thing.count.should == 0
-            @property1.thing.should be_frozen
+            Thing.count.should == 1
+            @property1.should be_frozen
           end
         end
       end
@@ -789,7 +789,7 @@ class DocumentTest < Test::Unit::TestCase
       from_db = RealPerson.find(person.id)
       from_db.name.should == "David"
     end
-    
+
     context "with key of type date" do
       should "save the date value as a Time object" do
         doc = @document.new(:first_name => 'John', :age => '27', :date => "12/01/2009")
@@ -886,16 +886,16 @@ class DocumentTest < Test::Unit::TestCase
       from_db.age.should == 30
     end
   end
-  
+
   context "update_attributes" do
     setup do
       @document.key :foo, String, :required => true
     end
-    
+
     should "return true if document valid" do
       @document.new.update_attributes(:foo => 'bar').should be_true
     end
-    
+
     should "return false if document not valid" do
       @document.new.update_attributes({}).should be_false
     end
@@ -936,17 +936,17 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
   end
-  
+
   context "Single collection inheritance" do
     setup do
       class ::DocParent
         include MongoMapper::Document
         key :_type, String
       end
-      
+
       class ::DocChild < ::DocParent; end
       DocParent.collection.clear
-      
+
       @parent = DocParent.new({:name => "Daddy Warbucks"})
       @child = DocChild.new({:name => "Little Orphan Annie"})
     end
@@ -976,12 +976,12 @@ class DocumentTest < Test::Unit::TestCase
       collection.last.should be_kind_of(DocChild)
       collection.last.name.should == "Little Orphan Annie"
     end
-    
+
     should "gracefully handle when the type can't be constantized" do
       doc = DocParent.new(:name => 'Nunes')
       doc._type = 'FoobarBaz'
       doc.save
-      
+
       collection = DocParent.all
       collection.last.should == doc
       collection.last.should be_kind_of(DocParent)
@@ -992,7 +992,7 @@ class DocumentTest < Test::Unit::TestCase
     setup do
       @document.timestamps!
     end
-    
+
     should "set created_at and updated_at on create" do
       doc = @document.new(:first_name => 'John', :age => 27)
       doc.created_at.should be(nil)
@@ -1007,11 +1007,11 @@ class DocumentTest < Test::Unit::TestCase
       old_created_at = doc.created_at
       old_updated_at = doc.updated_at
       doc.first_name = 'Johnny'
-      
+
       Timecop.freeze(Time.now + 5.seconds) do
         doc.save
       end
-      
+
       doc.created_at.should == old_created_at
       doc.updated_at.should_not == old_updated_at
     end
@@ -1020,7 +1020,7 @@ class DocumentTest < Test::Unit::TestCase
       doc = @document.create(:first_name => 'John', :age => 27)
       old_created_at = doc.created_at
       old_updated_at = doc.updated_at
-      
+
       Timecop.freeze(Time.now + 5.seconds) do
         @document.update(doc._id, { :first_name => 'Johnny' })
       end
