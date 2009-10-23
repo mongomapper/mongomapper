@@ -35,7 +35,10 @@ You can also just declare the source:
 
 == Documentation
 
+Documentation is lacking right now because if you can't look through the code right now and feel comfortable, this is probably too young for you to use. Wait til it stabilizes a bit more.
+
 http://rdoc.info/projects/jnunemaker/mongomapper
+http://groups.google.com/group/mongomapper
 
 == More Info
 
