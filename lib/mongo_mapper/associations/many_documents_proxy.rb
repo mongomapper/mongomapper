@@ -27,8 +27,8 @@ module MongoMapper
         find(:last, scoped_options(options))
       end
 
-      def count(conditions={})
-        klass.count(conditions.deep_merge(scoped_conditions))
+      def count(options={})
+        klass.count(options.merge(scoped_conditions))
       end
 
       def replace(docs)
@@ -57,13 +57,13 @@ module MongoMapper
         doc
       end
 
-      def destroy_all(conditions={})
-        all(conditions).map(&:destroy)
+      def destroy_all(options={})
+        all(options).map(&:destroy)
         reset
       end
 
-      def delete_all(conditions={})
-        klass.delete_all(conditions.deep_merge(scoped_conditions))
+      def delete_all(options={})
+        klass.delete_all(options.merge(scoped_conditions))
         reset
       end
       
@@ -91,7 +91,7 @@ module MongoMapper
         end
 
         def scoped_options(options)
-          options.deep_merge(scoped_conditions)
+          options.merge(scoped_conditions)
         end
 
         def find_target

@@ -298,7 +298,9 @@ class DocumentTest < Test::Unit::TestCase
         end
 
         should "raise error if document not found" do
-          lambda { @document.find(123) }.should raise_error(MongoMapper::DocumentNotFound)
+          lambda {
+            @document.find(123)
+          }.should raise_error(MongoMapper::DocumentNotFound)
         end
       end
 

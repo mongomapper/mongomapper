@@ -58,7 +58,7 @@ module MongoMapper
         attributes[attr] = args[index]
       end
       
-      options = args.extract_options!.deep_merge(attributes)
+      options = args.extract_options!.merge(attributes)
       result  = find(finder.finder, options)
 
       if result.nil?
