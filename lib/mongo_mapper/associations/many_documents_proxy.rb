@@ -4,7 +4,7 @@ module MongoMapper
       delegate :klass, :to => :@association
       delegate :collection, :to => :klass
       
-      include MongoMapper::Finders
+      include ::MongoMapper::Finders
       
       def find(*args)
         options = args.extract_options!
