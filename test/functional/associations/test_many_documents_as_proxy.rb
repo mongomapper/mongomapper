@@ -137,7 +137,7 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
       end
 
       should "work with conditions" do
-        comments = @post.comments.find(:all, :conditions => {:body => 'comment1'})
+        comments = @post.comments.find(:all, :body => 'comment1')
         comments.should == [@comment1]
       end
 
@@ -154,7 +154,7 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
       end
 
       should "work with conditions" do
-        comments = @post.comments.all(:conditions => {:body => 'comment1'})
+        comments = @post.comments.all(:body => 'comment1')
         comments.should == [@comment1]
       end
 

@@ -54,13 +54,12 @@ module MongoMapper
   module Finders
     def dynamic_find(finder, args)
       attributes = {}
-      find_options = args.extract_options!.deep_merge(:conditions => attributes)
-
       finder.attributes.each_with_index do |attr, index|
         attributes[attr] = args[index]
       end
-
-      result = find(finder.finder, find_options)
+      
+      options = args.extract_options!.deep_merge(attributes)
+      result  = find(finder.finder, options)
 
       if result.nil?
         if finder.bang

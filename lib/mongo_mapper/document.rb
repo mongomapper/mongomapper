@@ -63,9 +63,9 @@ module MongoMapper
       end
 
       def paginate(options)
-        per_page      = options.delete(:per_page) ||  self.per_page
+        per_page      = options.delete(:per_page) || self.per_page
         page          = options.delete(:page)
-        total_entries = count(options[:conditions] || {})
+        total_entries = count(options)
         collection    = Pagination::PaginationProxy.new(total_entries, page, per_page)
 
         options[:limit] = collection.limit
@@ -95,14 +95,14 @@ module MongoMapper
       end
 
       def find_by_id(id)
-        criteria = FinderOptions.to_mongo_criteria(self, :_id => id)
+        criteria = FinderOptions.new(self, :_id => id).criteria
         if doc = collection.find_one(criteria)
           new(doc)
         end
       end
 
       def count(conditions={})
-        collection.find(FinderOptions.to_mongo_criteria(self, conditions)).count
+        collection.find(FinderOptions.new(self, conditions).criteria).count
       end
 
       def exists?(conditions={})
@@ -133,12 +133,12 @@ module MongoMapper
       end
 
       def delete(*ids)
-        criteria = FinderOptions.to_mongo_criteria(self, :_id => ids.flatten)
+        criteria = FinderOptions.new(self, :_id => ids.flatten).criteria
         collection.remove(criteria)
       end
 
       def delete_all(conditions={})
-        criteria = FinderOptions.to_mongo_criteria(self, conditions)
+        criteria = FinderOptions.new(self, conditions).criteria
         collection.remove(criteria)
       end
 
@@ -239,6 +239,25 @@ module MongoMapper
             end
           end
         end
+        
+        def find_some(ids, options={})
+          ids = ids.flatten.compact.uniq
+          documents = find_every(options.deep_merge(:_id => ids))
+          
+          if ids.size == documents.size
+            documents
+          else
+            raise DocumentNotFound, "Couldn't find all of the ids (#{ids.to_sentence}). Found #{documents.size}, but was expecting #{ids.size}"
+          end
+        end
+
+        def find_one(id, options={})
+          if doc = find_every(options.deep_merge(:_id => id)).first
+            doc
+          else
+            raise DocumentNotFound, "Document with id of #{id} does not exist in collection named #{collection.name}"
+          end
+        end
 
         def invert_order_clause(order)
           order.split(',').map do |order_segment| 
@@ -250,25 +269,6 @@ module MongoMapper
               "#{order_segment.strip} desc"
             end
           end.join(',')
-        end
-
-        def find_some(ids, options={})
-          ids = ids.flatten.compact.uniq
-          documents = find_every(options.deep_merge(:conditions => {'_id' => ids}))
-          
-          if ids.size == documents.size
-            documents
-          else
-            raise DocumentNotFound, "Couldn't find all of the ids (#{ids.to_sentence}). Found #{documents.size}, but was expecting #{ids.size}"
-          end
-        end
-
-        def find_one(id, options={})
-          if doc = find_every(options.deep_merge(:conditions => {:_id => id})).first
-            doc
-          else
-            raise DocumentNotFound, "Document with id of #{id} does not exist in collection named #{collection.name}"
-          end
         end
 
         def update_single(id, attrs)
@@ -311,8 +311,7 @@ module MongoMapper
 
       def destroy
         return false if frozen?
-
-        criteria = FinderOptions.to_mongo_criteria(self.class, :_id => id)
+        criteria = FinderOptions.new(self.class, :_id => id).criteria
         collection.remove(criteria) unless new?
         freeze
       end

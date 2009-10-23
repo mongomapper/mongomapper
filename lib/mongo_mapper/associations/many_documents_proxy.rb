@@ -58,7 +58,7 @@ module MongoMapper
       end
 
       def destroy_all(conditions={})
-        all(:conditions => conditions).map(&:destroy)
+        all(conditions).map(&:destroy)
         reset
       end
 
@@ -68,9 +68,9 @@ module MongoMapper
       end
       
       def nullify
-        criteria = FinderOptions.to_mongo_criteria(klass, scoped_conditions)
+        criteria = FinderOptions.new(klass, scoped_conditions).criteria
         all(criteria).each do |doc|
-          doc.update_attributes self.foreign_key => nil
+          doc.update_attributes(self.foreign_key => nil)
         end
         reset
       end
@@ -91,7 +91,7 @@ module MongoMapper
         end
 
         def scoped_options(options)
-          options.deep_merge({:conditions => scoped_conditions})
+          options.deep_merge(scoped_conditions)
         end
 
         def find_target

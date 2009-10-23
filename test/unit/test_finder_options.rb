@@ -15,73 +15,59 @@ class FinderOptionsTest < Test::Unit::TestCase
     end
   end
   
-  context "#criteria" do
-    should "convert conditions to criteria" do
-      FinderOptions.expects(:to_mongo_criteria).with(Room, :foo => 1).returns({})
-      FinderOptions.new(Room, :conditions => {:foo => 1}).criteria
-    end
-  end
-  
-  context "#options" do
-    should "convert options to mongo options" do
-      FinderOptions.expects(:to_mongo_options).with(Room, :order => 'foo asc', :select => 'foo,bar').returns({})
-      FinderOptions.new(Room, :order => 'foo asc', :select => 'foo,bar').options
-    end
-  end
-  
   context "Converting conditions to criteria" do
     should "not add _type to query if model does not have superclass that is single collection inherited" do
-      FinderOptions.to_mongo_criteria(Message, :foo => 'bar').should == {
+      FinderOptions.new(Message, :foo => 'bar').criteria.should == {
         :foo => 'bar'
       }
     end
     
     should "automatically add _type to query if model is single collection inherited" do
-      FinderOptions.to_mongo_criteria(Enter, :foo => 'bar').should == {
+      FinderOptions.new(Enter, :foo => 'bar').criteria.should == {
         :foo => 'bar',
         :_type => 'Enter'
       }
     end
     
     should "work with simple criteria" do
-      FinderOptions.to_mongo_criteria(Room, :foo => 'bar').should == {
+      FinderOptions.new(Room, :foo => 'bar').criteria.should == {
         :foo => 'bar'
       }
       
-      FinderOptions.to_mongo_criteria(Room, :foo => 'bar', :baz => 'wick').should == {
+      FinderOptions.new(Room, :foo => 'bar', :baz => 'wick').criteria.should == {
         :foo => 'bar', 
         :baz => 'wick'
       }
     end
     
     should "convert id to _id" do
-      FinderOptions.to_mongo_criteria(Room, :id => '1').should == {
+      FinderOptions.new(Room, :id => '1').criteria.should == {
         :_id => '1'
       }
     end
     
     should "use $in for arrays" do
-      FinderOptions.to_mongo_criteria(Room, :foo => [1,2,3]).should == {
+      FinderOptions.new(Room, :foo => [1,2,3]).criteria.should == {
         :foo => {'$in' => [1,2,3]}
       }
     end
     
     should "not use $in for arrays if already using array operator" do
-      FinderOptions.to_mongo_criteria(Room, :foo => {'$all' => [1,2,3]}).should == {
+      FinderOptions.new(Room, :foo => {'$all' => [1,2,3]}).criteria.should == {
         :foo => {'$all' => [1,2,3]}
       }
 
-      FinderOptions.to_mongo_criteria(Room, :foo => {'$any' => [1,2,3]}).should == {
+      FinderOptions.new(Room, :foo => {'$any' => [1,2,3]}).criteria.should == {
         :foo => {'$any' => [1,2,3]}
       }
     end
     
     should "work arbitrarily deep" do
-      FinderOptions.to_mongo_criteria(Room, :foo => {:bar => [1,2,3]}).should == {
+      FinderOptions.new(Room, :foo => {:bar => [1,2,3]}).criteria.should == {
         :foo => {:bar => {'$in' => [1,2,3]}}
       }
       
-      FinderOptions.to_mongo_criteria(Room, :foo => {:bar => {'$any' => [1,2,3]}}).should == {
+      FinderOptions.new(Room, :foo => {:bar => {'$any' => [1,2,3]}}).criteria.should == {
         :foo => {:bar => {'$any' => [1,2,3]}}
       }
     end
@@ -90,103 +76,103 @@ class FinderOptionsTest < Test::Unit::TestCase
   context "ordering" do
     should "single field with ascending direction" do
       sort = [['foo', 1]]
-      FinderOptions.to_mongo_options(Room, :order => 'foo asc')[:sort].should == sort
-      FinderOptions.to_mongo_options(Room, :order => 'foo ASC')[:sort].should == sort
+      FinderOptions.new(Room, :order => 'foo asc').options[:sort].should == sort
+      FinderOptions.new(Room, :order => 'foo ASC').options[:sort].should == sort
     end
     
     should "single field with descending direction" do
       sort = [['foo', -1]]
-      FinderOptions.to_mongo_options(Room, :order => 'foo desc')[:sort].should == sort
-      FinderOptions.to_mongo_options(Room, :order => 'foo DESC')[:sort].should == sort
+      FinderOptions.new(Room, :order => 'foo desc').options[:sort].should == sort
+      FinderOptions.new(Room, :order => 'foo DESC').options[:sort].should == sort
     end
     
     should "convert field without direction to ascending" do
       sort = [['foo', 1]]
-      FinderOptions.to_mongo_options(Room, :order => 'foo')[:sort].should == sort
+      FinderOptions.new(Room, :order => 'foo').options[:sort].should == sort
     end
     
     should "convert multiple fields with directions" do
       sort = [['foo', -1], ['bar', 1], ['baz', -1]]
-      FinderOptions.to_mongo_options(Room, :order => 'foo desc, bar asc, baz desc')[:sort].should == sort
+      FinderOptions.new(Room, :order => 'foo desc, bar asc, baz desc').options[:sort].should == sort
     end
     
     should "convert multiple fields with some missing directions" do
       sort = [['foo', -1], ['bar', 1], ['baz', 1]]
-      FinderOptions.to_mongo_options(Room, :order => 'foo desc, bar, baz')[:sort].should == sort
+      FinderOptions.new(Room, :order => 'foo desc, bar, baz').options[:sort].should == sort
     end
     
     should "just use sort if sort and order are present" do
       sort = [['$natural', 1]]
-      FinderOptions.to_mongo_options(Room, :sort => sort, :order => 'foo asc')[:sort].should == sort
+      FinderOptions.new(Room, :sort => sort, :order => 'foo asc').options[:sort].should == sort
     end
     
     should "convert natural in order to proper" do
       sort = [['$natural', 1]]
-      FinderOptions.to_mongo_options(Room, :order => '$natural asc')[:sort].should == sort
+      FinderOptions.new(Room, :order => '$natural asc').options[:sort].should == sort
       sort = [['$natural', -1]]
-      FinderOptions.to_mongo_options(Room, :order => '$natural desc')[:sort].should == sort
+      FinderOptions.new(Room, :order => '$natural desc').options[:sort].should == sort
     end
     
     should "work for natural order ascending" do
-      FinderOptions.to_mongo_options(Room, :sort => {'$natural' => 1})[:sort]['$natural'].should == 1
+      FinderOptions.new(Room, :sort => {'$natural' => 1}).options[:sort]['$natural'].should == 1
     end
     
     should "work for natural order descending" do
-      FinderOptions.to_mongo_options(Room, :sort => {'$natural' => -1})[:sort]['$natural'].should == -1
+      FinderOptions.new(Room, :sort => {'$natural' => -1}).options[:sort]['$natural'].should == -1
     end
   end
   
   context "skip" do
     should "default to 0" do
-      FinderOptions.to_mongo_options(Room, {})[:skip].should == 0
+      FinderOptions.new(Room, {}).options[:skip].should == 0
     end
     
     should "use skip provided" do
-      FinderOptions.to_mongo_options(Room, :skip => 2)[:skip].should == 2
+      FinderOptions.new(Room, :skip => 2).options[:skip].should == 2
     end
     
     should "covert string to integer" do
-      FinderOptions.to_mongo_options(Room, :skip => '2')[:skip].should == 2
+      FinderOptions.new(Room, :skip => '2').options[:skip].should == 2
     end
     
     should "convert offset to skip" do
-      FinderOptions.to_mongo_options(Room, :offset => 1)[:skip].should == 1
+      FinderOptions.new(Room, :offset => 1).options[:skip].should == 1
     end
   end
   
   context "limit" do
     should "default to 0" do
-      FinderOptions.to_mongo_options(Room, {})[:limit].should == 0
+      FinderOptions.new(Room, {}).options[:limit].should == 0
     end
     
     should "use limit provided" do
-      FinderOptions.to_mongo_options(Room, :limit => 2)[:limit].should == 2
+      FinderOptions.new(Room, :limit => 2).options[:limit].should == 2
     end
     
     should "covert string to integer" do
-      FinderOptions.to_mongo_options(Room, :limit => '2')[:limit].should == 2
+      FinderOptions.new(Room, :limit => '2').options[:limit].should == 2
     end
   end
   
   context "fields" do
     should "default to nil" do
-      FinderOptions.to_mongo_options(Room, {})[:fields].should be(nil)
+      FinderOptions.new(Room, {}).options[:fields].should be(nil)
     end
     
     should "be converted to nil if empty string" do
-      FinderOptions.to_mongo_options(Room, :fields => '')[:fields].should be(nil)
+      FinderOptions.new(Room, :fields => '').options[:fields].should be(nil)
     end
     
     should "be converted to nil if []" do
-      FinderOptions.to_mongo_options(Room, :fields => [])[:fields].should be(nil)
+      FinderOptions.new(Room, :fields => []).options[:fields].should be(nil)
     end
     
     should "should work with array" do
-      FinderOptions.to_mongo_options(Room, {:fields => %w(a b)})[:fields].should == %w(a b)
+      FinderOptions.new(Room, {:fields => %w(a b)}).options[:fields].should == %w(a b)
     end
     
     should "convert comma separated list to array" do
-      FinderOptions.to_mongo_options(Room, {:fields => 'a, b'})[:fields].should == %w(a b)
+      FinderOptions.new(Room, {:fields => 'a, b'}).options[:fields].should == %w(a b)
     end
     
     should "also work as select" do

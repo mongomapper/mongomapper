@@ -327,14 +327,14 @@ class DocumentTest < Test::Unit::TestCase
         end
 
         should "be able to add conditions" do
-          @document.find(:all, :conditions => {:first_name => 'John'}).should == [@doc1]
+          @document.find(:all, :first_name => 'John').should == [@doc1]
         end
       end
 
       context "with #all" do
         should "find all documents based on criteria" do
           @document.all(:order => 'first_name').should == [@doc1, @doc3, @doc2]
-          @document.all(:conditions => {:last_name => 'Nunemaker'}, :order => 'age desc').should == [@doc1, @doc3]
+          @document.all(:last_name => 'Nunemaker', :order => 'age desc').should == [@doc1, @doc3]
         end
       end
 
@@ -347,7 +347,7 @@ class DocumentTest < Test::Unit::TestCase
       context "with #first" do
         should "find first document based on criteria" do
           @document.first(:order => 'first_name').should == @doc1
-          @document.first(:conditions => {:age => 28}).should == @doc2
+          @document.first(:age => 28).should == @doc2
         end
       end
 
@@ -360,7 +360,7 @@ class DocumentTest < Test::Unit::TestCase
       context "with #last" do
         should "find last document based on criteria" do
           @document.last(:order => 'age').should == @doc2
-          @document.last(:order => 'age', :conditions => {:age => 28}).should == @doc2
+          @document.last(:order => 'age', :age => 28).should == @doc2
         end
 
         should "raise error if no order provided" do

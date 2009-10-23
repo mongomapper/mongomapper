@@ -215,7 +215,7 @@ class ManyProxyTest < Test::Unit::TestCase
       end
       
       should "work with conditions" do
-        statuses = @project1.statuses.find(:all, :conditions => {'name' => 'Complete'})
+        statuses = @project1.statuses.find(:all, :name => 'Complete')
         statuses.should == [@complete]
       end
       
@@ -231,7 +231,7 @@ class ManyProxyTest < Test::Unit::TestCase
       end
       
       should "work with conditions" do
-        statuses = @project1.statuses.all(:conditions => {'name' => 'Complete'})
+        statuses = @project1.statuses.all(:name => 'Complete')
         statuses.should == [@complete]
       end
       
@@ -247,7 +247,7 @@ class ManyProxyTest < Test::Unit::TestCase
       end
       
       should "work with conditions" do
-        status = @project1.statuses.find(:first, :conditions => {:name => 'Complete'})
+        status = @project1.statuses.find(:first, :name => 'Complete')
         status.should == @complete
       end
     end
@@ -258,7 +258,7 @@ class ManyProxyTest < Test::Unit::TestCase
       end
       
       should "work with conditions" do
-        status = @project1.statuses.first(:conditions => {:name => 'Complete'})
+        status = @project1.statuses.first(:name => 'Complete')
         status.should == @complete
       end
     end
@@ -269,7 +269,7 @@ class ManyProxyTest < Test::Unit::TestCase
       end
       
       should "work with conditions" do
-        status = @project1.statuses.find(:last, :order => 'position', :conditions => {:name => 'New'})
+        status = @project1.statuses.find(:last, :order => 'position', :name => 'New')
         status.should == @brand_new
       end
     end
@@ -280,7 +280,7 @@ class ManyProxyTest < Test::Unit::TestCase
       end
       
       should "work with conditions" do
-        status = @project1.statuses.last(:order => 'position', :conditions => {:name => 'New'})
+        status = @project1.statuses.last(:order => 'position', :name => 'New')
         status.should == @brand_new
       end
     end
