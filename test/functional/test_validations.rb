@@ -192,6 +192,27 @@ class ValidationsTest < Test::Unit::TestCase
       doc2.should have_error_on(:name)
     end
     
+    should "allow multiple blank entries if :allow_blank => true" do
+      document = Class.new do
+        include MongoMapper::Document
+        set_collection_name 'test'
+        
+        key :name
+        validates_uniqueness_of :name, :allow_blank => :true
+      end
+      
+      doc = document.new("name" => "")
+      doc.save.should be_true
+
+      document \
+        .stubs(:first) \
+        .with(:name => '') \
+        .returns(doc)
+
+      doc2 = document.new("name" => "")
+      doc2.should_not have_error_on(:name)
+    end
+    
     context "scoped by a single attribute" do
       setup do
         @document = Class.new do
