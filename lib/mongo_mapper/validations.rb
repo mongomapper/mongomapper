@@ -18,7 +18,9 @@ module MongoMapper
       option :scope
       
       def valid?(instance)
-        doc = instance.class.first({self.attribute => instance[attribute]}.merge(scope_conditions(instance)))
+        value = instance[attribute]
+        return true if allow_blank && value.blank?
+        doc = instance.class.first({self.attribute => value}.merge(scope_conditions(instance)))
         doc.nil? || instance.id == doc.id
       end
 

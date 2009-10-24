@@ -62,7 +62,7 @@ module MongoMapper
           when :last  then last(options)
           when :all   then find_every(options)
           when Array  then find_some(args, options)
-          else # TODO How do we end up here?
+          else
             case args.size
               when 0
                 raise DocumentNotFound, "Couldn't find without an ID"
@@ -77,8 +77,6 @@ module MongoMapper
       def paginate(options)
         per_page      = options.delete(:per_page) || self.per_page
         page          = options.delete(:page)
-        total_entries = count(options[:conditions] || {})
-        collection    = Pagination::PaginationProxy.new(total_entries, page, per_page)
         total_entries = count(options)
         pagination    = Pagination::PaginationProxy.new(total_entries, page, per_page)
 
