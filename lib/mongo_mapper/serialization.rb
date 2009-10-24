@@ -51,5 +51,4 @@ module MongoMapper #:nodoc:
   end
 end
 
-dir = Pathname(__FILE__).dirname.expand_path + 'serializers'
-require dir + 'json_serializer'
+require 'mongo_mapper/serializers/json_serializer'

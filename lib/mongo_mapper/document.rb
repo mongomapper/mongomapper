@@ -67,7 +67,7 @@ module MongoMapper
               when 0
                 raise DocumentNotFound, "Couldn't find without an ID"
               when 1
-                find_one(args[0], options)
+                find_one!(options.merge({:_id => args[0]}))
               else
                 find_some(args, options)
             end
@@ -75,16 +75,16 @@ module MongoMapper
       end
 
       def paginate(options)
-        per_page      = options.delete(:per_page) ||  self.per_page
+        per_page      = options.delete(:per_page) || self.per_page
         page          = options.delete(:page)
         total_entries = count(options[:conditions] || {})
         collection    = Pagination::PaginationProxy.new(total_entries, page, per_page)
+        total_entries = count(options)
+        pagination    = Pagination::PaginationProxy.new(total_entries, page, per_page)
 
-        options[:limit] = collection.limit
-        options[:skip]  = collection.skip
-
-        collection.subject = find_every(options)
-        collection
+        options.merge!(:limit => pagination.limit, :skip => pagination.skip)
+        pagination.subject = find_every(options)
+        pagination
       end
 
       # @param [Hash] options any conditions understood by 
@@ -95,8 +95,7 @@ module MongoMapper
       #
       # @see FinderOptions.to_mongo_criteria
       def first(options={})
-        options.merge!(:limit => 1)
-        find_every(options)[0]
+        find_one(options)
       end
 
       # @param [Hash] options any conditions understood by 
@@ -112,13 +111,8 @@ module MongoMapper
       #
       # @see FinderOptions.to_mongo_criteria
       def last(options={})
-        if options[:order].blank?
-          raise ':order option must be provided when using last'
-        end
-        
-        options.merge!(:limit => 1)
-        options[:order] = invert_order_clause(options[:order])
-        find_every(options)[0]
+        raise ':order option must be provided when using last' if options[:order].blank?
+        find_one(options.merge(:order => invert_order_clause(options[:order])))
       end
 
       # @param [Hash] options any conditions understood by 
@@ -133,32 +127,15 @@ module MongoMapper
       end
 
       def find_by_id(id)
-        criteria = FinderOptions.to_mongo_criteria(:_id => id)
-        if doc = collection.find_one(criteria)
-          new(doc)
-        end
+        find_one(:_id => id)
       end
 
-      # @param [Hash] conditions any conditions understood by 
-      #   FinderOptions.to_mongo_criteria
-      #
-      # @return [Integer] the number of documents in your collection that meet 
-      #   the specified conditions
-      #
-      # @see FinderOptions.to_mongo_criteria
-      def count(conditions={})
-        collection.find(FinderOptions.to_mongo_criteria(conditions)).count
+      def count(options={})
+        collection.find(to_criteria(options)).count
       end
 
-      # @param [Hash] conditions any conditions understood by 
-      #   FinderOptions.to_mongo_criteria
-      #
-      # @return [Boolean] whether or not any records were found matching the 
-      #   provided conditions
-      #
-      # @see FinderOptions.to_mongo_criteria
-      def exists?(conditions={})
-        !count(conditions).zero?
+      def exists?(options={})
+        !count(options).zero?
       end
 
       # @overload create(doc_attributes)
@@ -208,8 +185,7 @@ module MongoMapper
       # @example Updating multiple documents at once:
       #   Person.update({'1' => {:foo => 'bar'}, '2' => {:baz => 'wick'}})
       def update(*args)
-        updating_multiple = args.length == 1
-        if updating_multiple
+        if args.length == 1
           update_multiple(args[0])
         else
           id, attributes = args
@@ -222,26 +198,11 @@ module MongoMapper
       #
       # @param [Array] ids the ID or IDs of the records you wish to delete
       def delete(*ids)
-        criteria = FinderOptions.to_mongo_criteria(:_id => ids.flatten)
-        collection.remove(criteria)
+        collection.remove(to_criteria(:_id => ids.flatten))
       end
 
-      # Removes documents from the collection according to the provided 
-      # conditions. Note that this bypasses any +destroy+ hooks defined by 
-      # your class.
-      #
-      # @overload delete_all()
-      #   Deletes all documents from the collection.
-      #
-      # @overload delete_all(conditions)
-      #   Deletes all documents that match the provided conditions
-      #   @param [Hash] conditions any option understood by 
-      #     FinderOptions.to_mongo_criteria
-      #
-      # @see FinderOptions.to_mongo_criteria
-      def delete_all(conditions={})
-        criteria = FinderOptions.to_mongo_criteria(conditions)
-        collection.remove(criteria)
+      def delete_all(options={})
+        collection.remove(to_criteria(options))
       end
 
       # Iterates over each document found by the provided IDs and calls their 
@@ -269,21 +230,8 @@ module MongoMapper
         find_some(ids.flatten).each(&:destroy)
       end
 
-      # Calls +destroy+ on any documents for which the provided +conditions+ 
-      # are true. Note that this means your defined +destroy+ call-backs will 
-      # be processed for *each* document found.
-      #
-      # @param [Hash] conditions conditions that define the set of documents 
-      #   you wish to destroy. These conditions are optional. Without them, 
-      #   all of your documents will be destroyed.
-      #
-      # @example With conditions
-      #   Person.destroy_all(:age => 45) # any Person document whose age is 45
-      # 
-      # @example Without conditions
-      #   Person.destroy_all # destroy ALL Person documents
-      def destroy_all(conditions={})
-        find(:all, :conditions => conditions).each(&:destroy)
+      def destroy_all(options={})
+        all(options).each(&:destroy)
       end
 
       # @overload connection()
@@ -343,10 +291,17 @@ module MongoMapper
       def timestamps!
         key :created_at, Time
         key :updated_at, Time
-        
         class_eval { before_save :update_timestamps }
       end
       
+      def single_collection_inherited?
+        keys.has_key?('_type') && single_collection_inherited_superclass?
+      end
+      
+      def single_collection_inherited_superclass?
+        superclass.respond_to?(:keys) && superclass.keys.has_key?('_type')
+      end
+            
       protected
         def method_missing(method, *args)
           finder = DynamicFinder.new(method)
@@ -360,32 +315,57 @@ module MongoMapper
         end
 
       private
-        # Initializes each document and yields each initialized document
+        def create_indexes_for(key)
+          ensure_index key.name if key.options[:index]
+        end
+        
         def initialize_each(*docs)
           instances = []
           docs = [{}] if docs.blank?
           docs.flatten.each do |attrs|
-            doc = new(attrs)
+            doc = initialize_doc(attrs)
             yield(doc)
             instances << doc
           end
           instances.size == 1 ? instances[0] : instances
         end
-
-        def create_indexes_for(key)
-          ensure_index key.name if key.options[:index]
+        
+        def initialize_doc(doc)
+          begin
+            klass = doc['_type'].present? ? doc['_type'].constantize : self
+            klass.new(doc)
+          rescue NameError
+            new(doc)
+          end
         end
         
         def find_every(options)
-          criteria, options = FinderOptions.new(options).to_a
+          criteria, options = to_finder_options(options)
           collection.find(criteria, options).to_a.map do |doc|
-            begin
-              klass = doc['_type'].present? ? doc['_type'].constantize : self
-              klass.new(doc)
-            rescue NameError
-              new(doc)
-            end
+            initialize_doc(doc)
           end
+        end
+        
+        def find_some(ids, options={})
+          ids       = ids.flatten.compact.uniq
+          documents = find_every(options.merge(:_id => ids))
+          
+          if ids.size == documents.size
+            documents
+          else
+            raise DocumentNotFound, "Couldn't find all of the ids (#{ids.to_sentence}). Found #{documents.size}, but was expecting #{ids.size}"
+          end
+        end
+        
+        def find_one(options={})
+          criteria, options = to_finder_options(options)
+          if doc = collection.find_one(criteria, options)
+            initialize_doc(doc)
+          end
+        end
+        
+        def find_one!(options={})
+          find_one(options) || raise(DocumentNotFound, "Document match #{options.inspect} does not exist in #{collection.name} collection")
         end
 
         def invert_order_clause(order)
@@ -398,25 +378,6 @@ module MongoMapper
               "#{order_segment.strip} desc"
             end
           end.join(',')
-        end
-
-        def find_some(ids, options={})
-          ids = ids.flatten.compact.uniq
-          documents = find_every(options.deep_merge(:conditions => {'_id' => ids}))
-          
-          if ids.size == documents.size
-            documents
-          else
-            raise DocumentNotFound, "Couldn't find all of the ids (#{ids.to_sentence}). Found #{documents.size}, but was expecting #{ids.size}"
-          end
-        end
-
-        def find_one(id, options={})
-          if doc = find_every(options.deep_merge(:conditions => {:_id => id})).first
-            doc
-          else
-            raise DocumentNotFound, "Document with id of #{id} does not exist in collection named #{collection.name}"
-          end
         end
 
         def update_single(id, attrs)
@@ -437,6 +398,14 @@ module MongoMapper
           instances = []
           docs.each_pair { |id, attrs| instances << update(id, attrs) }
           instances
+        end
+        
+        def to_criteria(options={})
+          FinderOptions.new(self, options).criteria
+        end
+        
+        def to_finder_options(options={})
+          FinderOptions.new(self, options).to_a
         end
     end
 
@@ -459,9 +428,7 @@ module MongoMapper
 
       def destroy
         return false if frozen?
-
-        criteria = FinderOptions.to_mongo_criteria(:_id => id)
-        collection.remove(criteria) unless new?
+        self.class.delete(id) unless new?
         freeze
       end
 

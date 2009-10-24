@@ -10,102 +10,15 @@ module MongoMapper
   #
   # @private
   class FinderOptions
-    attr_reader :options
-    
-    # @overload
-    #   to_mongo_criteria(conditions)
-    #   @param [Hash] conditions field/value pairs
-    #
-    # @overload
-    #   to_mongo_criteria(conditions, parent_key)
-    #   @param [Hash] conditions field/value pairs
-    #   @param [#to_s] parent_key the name of the key that the current value 
-    #     belongs to. This is used internally by this method when recursively 
-    #     parsing nested Hash conditions.
-    #
-    # @return [Hash] conditions compatible with Mongo DB
-    def self.to_mongo_criteria(conditions, parent_key=nil)
-      criteria = {}
-      conditions.each_pair do |field, value|
-        field = field_normalized(field)
-        case value
-          when Array
-            operator_present = field.to_s =~ /^\$/            
-            criteria[field] = if operator_present
-                                value
-                              else
-                                {'$in' => value}
-                              end
-          when Hash
-            criteria[field] = to_mongo_criteria(value, field)
-          else            
-            criteria[field] = value
-        end
-      end
-      
-      criteria
-    end
-        
-    # @param [Hash] options a set of options to convert into a Mongo 
-    #   compatible form
-    #
-    # @see FinderOptions#initialize for more information on the +options+ 
-    #   parameter
-    #
-    # @return [Hash] converts the provided options into a Mongo compatible 
-    #   form. This Hash has four keys: <tt>:fields</tt>, <tt>:skip</tt>, 
-    #   <tt>:limit</tt>, <tt>:sort</tt>.
-    def self.to_mongo_options(options)
-      options = options.dup
-      {
-        :fields => to_mongo_fields(options.delete(:fields) || options.delete(:select)),
-        :skip   => (options.delete(:skip) || options.delete(:offset) || 0).to_i,
-        :limit  => (options.delete(:limit) || 0).to_i,
-        :sort   => options.delete(:sort) || to_mongo_sort(options.delete(:order))
-      }
-    end
-    
-    # @param [#to_s] field target field to normalize
-    #
-    # @return the normalized field
-    def self.field_normalized(field)
-      if field.to_s == 'id'
-        :_id
-      else
-        field
-      end
-    end
-    
     OptionKeys = [:fields, :select, :skip, :offset, :limit, :sort, :order]
     
-    # Extracts options and conditions from the provided argument and convert 
-    # all keys to Symbols. Options are detected via the list of acceptable 
-    # option arguments listed in OptionKeys. Conditions may be either 
-    # explicitly stated by use of a <tt>:conditions</tt> option, and/or 
-    # automatically discovered.
-    #
-    # @param [Hash] options any number of options or conditions
-    # @option [String, Array] :fields a list of field names to use for the 
-    #   returned documents
-    # @option [String, Array] :select equivalent to <tt>:fields</tt>
-    # @option [#to_i] :skip when returning found documents, ignore the first 
-    #   +n+ records as defined by this paramter
-    # @option [#to_i] :offset equivalent to <tt>:skip</tt>
-    # @option [Integer] :limit the number of results to maximally return
-    # @option [String] :sort a SQL-style ORDER clause
-    # @option [String] :order equivalent to <tt>:sort</tt>
-    # @option [Hash] :conditions explicit conditions to initialize 
-    #   with (optional)
-    #
-    # @raise ArgumentError when +options+ provided are not a Hash
-    #
-    # @see OptionKeys for a list of valid options. Note that this is not a 
-    #   list of valid *conditions*.
-    def initialize(options)
+    attr_reader :model, :options
+    
+    def initialize(model, options)
       raise ArgumentError, "FinderOptions must be a hash" unless options.is_a?(Hash)
+      options.symbolize_keys!
       
-      options = options.symbolize_keys
-      @options, @conditions = {}, options.delete(:conditions) || {}
+      @model, @options, @conditions = model, {}, options.delete(:conditions) || {}
       
       options.each_pair do |key, value|
         if OptionKeys.include?(key)
@@ -120,14 +33,14 @@ module MongoMapper
     #
     # @see FinderOptions.to_mongo_criteria
     def criteria
-      self.class.to_mongo_criteria(@conditions)
+      to_mongo_criteria(model, @conditions)
     end
     
     # @return [Hash] Mongo compatible options
     #
     # @see FinderOptions.to_mongo_options
     def options
-      self.class.to_mongo_options(@options)
+      to_mongo_options(model, @options)
     end
     
     # @return [Array<Hash>] Mongo criteria and options enclosed in an Array
@@ -136,7 +49,56 @@ module MongoMapper
     end
     
     private
-      def self.to_mongo_fields(fields)
+      def to_mongo_criteria(model, conditions, parent_key=nil)
+        criteria = {}
+        add_sci_scope(model, criteria)
+
+        conditions.each_pair do |field, value|
+          field = field_normalized(field)
+          case value
+            when Array
+              operator_present = field.to_s =~ /^\$/            
+              criteria[field] = if operator_present
+                                  value
+                                else
+                                  {'$in' => value}
+                                end
+            when Hash
+              criteria[field] = to_mongo_criteria(model, value, field)
+            else            
+              criteria[field] = value
+          end
+        end
+
+        criteria
+      end
+      
+      def field_normalized(field)
+        if field.to_s == 'id'
+          :_id
+        else
+          field
+        end
+      end
+
+      # adds _type single collection inheritance scope for models that need it
+      def add_sci_scope(model, criteria)
+        if model.single_collection_inherited?
+          criteria[:_type] = model.to_s
+        end
+      end
+
+      def to_mongo_options(model, options)
+        options = options.dup
+        {
+          :fields => to_mongo_fields(options.delete(:fields) || options.delete(:select)),
+          :skip   => (options.delete(:skip) || options.delete(:offset) || 0).to_i,
+          :limit  => (options.delete(:limit) || 0).to_i,
+          :sort   => options.delete(:sort) || to_mongo_sort(options.delete(:order))
+        }
+      end
+      
+      def to_mongo_fields(fields)
         return if fields.blank?
       
         if fields.is_a?(String)
@@ -146,13 +108,13 @@ module MongoMapper
         end
       end
     
-      def self.to_mongo_sort(sort)
+      def to_mongo_sort(sort)
         return if sort.blank?
         pieces = sort.split(',')
         pieces.map { |s| to_mongo_sort_piece(s) }
       end
     
-      def self.to_mongo_sort_piece(str)
+      def to_mongo_sort_piece(str)
         field, direction = str.strip.split(' ')
         direction ||= 'ASC'
         direction = direction.upcase == 'ASC' ? 1 : -1

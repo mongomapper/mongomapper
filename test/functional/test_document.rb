@@ -23,7 +23,7 @@ class DocumentTest < Test::Unit::TestCase
       doc.using_custom_id?.should be_false
     end
   end
-  
+
   context "Saving a document with a blank binary value" do
     setup do
       @document.key :file, Binary
@@ -40,9 +40,9 @@ class DocumentTest < Test::Unit::TestCase
       @id = Mongo::ObjectID.new.to_s
       @document.collection.insert({
         :_id            => @id,
-        :first_name     => 'John', 
-        :last_name      => 'Nunemaker', 
-        :age            => 27, 
+        :first_name     => 'John',
+        :last_name      => 'Nunemaker',
+        :age            => 27,
         :favorite_color => 'red',
         :skills         => ['ruby', 'rails', 'javascript', 'xhtml', 'css']
       })
@@ -57,7 +57,7 @@ class DocumentTest < Test::Unit::TestCase
       doc.skills.should == ['ruby', 'rails', 'javascript', 'xhtml', 'css']
     end
   end
-  
+
   context "Document Class Methods" do
     context "Using key with type Array" do
       setup do
@@ -140,7 +140,7 @@ class DocumentTest < Test::Unit::TestCase
         doc.foo['baz'].should == 'bar'
       end
     end
-    
+
     context "Using key with custom type with default" do
       setup do
         @document.key :window, WindowSize, :default => WindowSize.new(600, 480)
@@ -149,19 +149,19 @@ class DocumentTest < Test::Unit::TestCase
       should "default to default" do
         doc = @document.new
         doc.window.should == WindowSize.new(600, 480)
-        
+
       end
-      
+
       should "save and load from mongo" do
         doc = @document.new
         doc.save
-        
+
         from_db = @document.find(doc.id)
         from_db.window.should == WindowSize.new(600, 480)
       end
     end
-    
-    
+
+
     context "Creating a single document" do
       setup do
         @doc_instance = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
@@ -298,7 +298,9 @@ class DocumentTest < Test::Unit::TestCase
         end
 
         should "raise error if document not found" do
-          lambda { @document.find(123) }.should raise_error(MongoMapper::DocumentNotFound)
+          lambda {
+            @document.find(123)
+          }.should raise_error(MongoMapper::DocumentNotFound)
         end
       end
 
@@ -310,31 +312,31 @@ class DocumentTest < Test::Unit::TestCase
         should "work as array" do
           @document.find([@doc1.id, @doc2.id]).should == [@doc1, @doc2]
         end
-        
+
         should "return array if array only has one element" do
           @document.find([@doc1.id]).should == [@doc1]
         end
       end
-      
+
       should "be able to find using condition auto-detection" do
         @document.first(:first_name => 'John').should == @doc1
         @document.all(:last_name => 'Nunemaker', :order => 'age desc').should == [@doc1, @doc3]
       end
-      
+
       context "with :all" do
         should "find all documents" do
           @document.find(:all, :order => 'first_name').should == [@doc1, @doc3, @doc2]
         end
 
         should "be able to add conditions" do
-          @document.find(:all, :conditions => {:first_name => 'John'}).should == [@doc1]
+          @document.find(:all, :first_name => 'John').should == [@doc1]
         end
       end
 
       context "with #all" do
         should "find all documents based on criteria" do
           @document.all(:order => 'first_name').should == [@doc1, @doc3, @doc2]
-          @document.all(:conditions => {:last_name => 'Nunemaker'}, :order => 'age desc').should == [@doc1, @doc3]
+          @document.all(:last_name => 'Nunemaker', :order => 'age desc').should == [@doc1, @doc3]
         end
       end
 
@@ -347,7 +349,7 @@ class DocumentTest < Test::Unit::TestCase
       context "with #first" do
         should "find first document based on criteria" do
           @document.first(:order => 'first_name').should == @doc1
-          @document.first(:conditions => {:age => 28}).should == @doc2
+          @document.first(:age => 28).should == @doc2
         end
       end
 
@@ -360,13 +362,13 @@ class DocumentTest < Test::Unit::TestCase
       context "with #last" do
         should "find last document based on criteria" do
           @document.last(:order => 'age').should == @doc2
-          @document.last(:order => 'age', :conditions => {:age => 28}).should == @doc2
+          @document.last(:order => 'age', :age => 28).should == @doc2
         end
-        
+
         should "raise error if no order provided" do
           lambda { @document.last() }.should raise_error
         end
-      end      
+      end
 
       context "with :find_by" do
         should "find document based on argument" do
@@ -668,11 +670,11 @@ class DocumentTest < Test::Unit::TestCase
             @thing.properties << @property3
           end
 
-          should "destroy the thing" do
+          should "not execute on a belongs_to association" do
             Thing.count.should == 1
             @property1.destroy
-            Thing.count.should == 0
-            @property1.thing.should be_frozen
+            Thing.count.should == 1
+            @property1.should be_frozen
           end
         end
       end
@@ -721,14 +723,14 @@ class DocumentTest < Test::Unit::TestCase
       should "allow creating index for a key" do
         @document.ensure_index :first_name
         MongoMapper.ensure_indexes!
-        
-        @document.should have_index('first_name_1')        
+
+        @document.should have_index('first_name_1')
       end
 
       should "allow creating unique index for a key" do
         @document.ensure_index :first_name, :unique => true
         MongoMapper.ensure_indexes!
-        
+
         @document.should have_index('first_name_1')
       end
 
@@ -736,13 +738,19 @@ class DocumentTest < Test::Unit::TestCase
         @document.ensure_index [[:first_name, 1], [:last_name, -1]]
         MongoMapper.ensure_indexes!
         
-        @document.should have_index('last_name_-1_first_name_1')        
+        # order is different for different versions of ruby so instead of 
+        # just checking have_index('first_name_1_last_name_-1') I'm checking
+        # the values of the indexes to make sure the index creation was successful
+        @document.collection.index_information.detect do |index|
+          keys = index[1]
+          keys.include?(['first_name', 1]) && keys.include?(['last_name', -1])
+        end.should_not be_nil
       end
 
       should "work with :index shortcut when defining key" do
         @document.key :father, String, :index => true
         MongoMapper.ensure_indexes!
-        
+
         @document.should have_index('father_1')
       end
     end
@@ -789,7 +797,7 @@ class DocumentTest < Test::Unit::TestCase
       from_db = RealPerson.find(person.id)
       from_db.name.should == "David"
     end
-    
+
     context "with key of type date" do
       should "save the date value as a Time object" do
         doc = @document.new(:first_name => 'John', :age => '27', :date => "12/01/2009")
@@ -886,16 +894,16 @@ class DocumentTest < Test::Unit::TestCase
       from_db.age.should == 30
     end
   end
-  
+
   context "update_attributes" do
     setup do
       @document.key :foo, String, :required => true
     end
-    
+
     should "return true if document valid" do
       @document.new.update_attributes(:foo => 'bar').should be_true
     end
-    
+
     should "return false if document not valid" do
       @document.new.update_attributes({}).should be_false
     end
@@ -936,55 +944,150 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
   end
-  
+
   context "Single collection inheritance" do
     setup do
       class ::DocParent
         include MongoMapper::Document
         key :_type, String
+        key :name, String
       end
-      
-      class ::DocChild < ::DocParent; end
       DocParent.collection.clear
       
+      class ::DocDaughter < ::DocParent; end
+      class ::DocSon < ::DocParent; end
+      class ::DocGrandSon < ::DocSon; end
+      
       @parent = DocParent.new({:name => "Daddy Warbucks"})
-      @child = DocChild.new({:name => "Little Orphan Annie"})
+      @daughter = DocDaughter.new({:name => "Little Orphan Annie"})
     end
 
     teardown do
-      Object.send :remove_const, 'DocParent' if defined?(::DocParent)
-      Object.send :remove_const, 'DocChild' if defined?(::DocChild)
+      Object.send :remove_const, 'DocParent'   if defined?(::DocParent)
+      Object.send :remove_const, 'DocDaughter' if defined?(::DocDaughter)
+      Object.send :remove_const, 'DocSon'      if defined?(::DocSon)
+      Object.send :remove_const, 'DocGrandSon' if defined?(::DocGrandSon)
     end
 
     should "use the same collection in the subclass" do
-      DocChild.collection.name.should == DocParent.collection.name
+      DocDaughter.collection.name.should == DocParent.collection.name
     end
 
     should "assign the class name into the _type property" do
       @parent._type.should == 'DocParent'
-      @child._type.should == 'DocChild'
+      @daughter._type.should == 'DocDaughter'
     end
 
     should "load the document with the assigned type" do
       @parent.save
-      @child.save
-
+      @daughter.save
+            
       collection = DocParent.find(:all)
       collection.size.should == 2
       collection.first.should be_kind_of(DocParent)
       collection.first.name.should == "Daddy Warbucks"
-      collection.last.should be_kind_of(DocChild)
+      collection.last.should be_kind_of(DocDaughter)
       collection.last.name.should == "Little Orphan Annie"
     end
-    
+
     should "gracefully handle when the type can't be constantized" do
       doc = DocParent.new(:name => 'Nunes')
       doc._type = 'FoobarBaz'
       doc.save
-      
+
       collection = DocParent.all
       collection.last.should == doc
       collection.last.should be_kind_of(DocParent)
+    end
+    
+    should "find scoped to class" do
+      john = DocSon.create(:name => 'John')
+      steve = DocSon.create(:name => 'Steve')
+      steph = DocDaughter.create(:name => 'Steph')
+      carrie = DocDaughter.create(:name => 'Carrie')
+      
+      DocGrandSon.all(:order => 'name').should  == []
+      DocSon.all(:order => 'name').should       == [john, steve]
+      DocDaughter.all(:order => 'name').should  == [carrie, steph]
+      DocParent.all(:order => 'name').should    == [carrie, john, steph, steve]
+    end
+    
+    should "raise error if not found scoped to class" do
+      john = DocSon.create(:name => 'John')
+      steph = DocDaughter.create(:name => 'Steph')
+      
+      lambda {
+        DocSon.find(steph.id)
+      }.should raise_error(MongoMapper::DocumentNotFound)
+    end
+    
+    should "not raise error for find with parent" do
+      john = DocSon.create(:name => 'John')
+      
+      DocParent.find(john.id).should == john
+    end
+    
+    should "count scoped to class" do
+      john = DocSon.create(:name => 'John')
+      steve = DocSon.create(:name => 'Steve')
+      steph = DocDaughter.create(:name => 'Steph')
+      carrie = DocDaughter.create(:name => 'Carrie')
+      
+      DocGrandSon.count.should  == 0
+      DocSon.count.should       == 2
+      DocDaughter.count.should  == 2
+      DocParent.count.should    == 4
+    end
+    
+    should "know if it is single_collection_inherited?" do
+      DocParent.single_collection_inherited?.should be_false
+      
+      DocDaughter.single_collection_inherited?.should be_true
+      DocSon.single_collection_inherited?.should be_true
+    end
+    
+    should "know if single_collection_inherited_superclass?" do
+      DocParent.single_collection_inherited_superclass?.should be_false
+      
+      DocDaughter.single_collection_inherited_superclass?.should be_true
+      DocSon.single_collection_inherited_superclass?.should be_true
+      DocGrandSon.single_collection_inherited_superclass?.should be_true
+    end
+    
+    should "not be able to destroy each other" do
+      john = DocSon.create(:name => 'John')
+      steph = DocDaughter.create(:name => 'Steph')
+      
+      lambda {
+        DocSon.destroy(steph.id)
+      }.should raise_error(MongoMapper::DocumentNotFound)
+    end
+    
+    should "not be able to delete each other" do
+      john = DocSon.create(:name => 'John')
+      steph = DocDaughter.create(:name => 'Steph')
+      
+      lambda {
+        DocSon.delete(steph.id)
+      }.should_not change { DocParent.count }
+    end
+    
+    should "be able to destroy using parent" do
+      john = DocSon.create(:name => 'John')
+      steph = DocDaughter.create(:name => 'Steph')
+      
+      lambda {
+        DocParent.destroy_all
+      }.should change { DocParent.count }.by(-2)
+    end
+    
+    should "be able to delete using parent" do
+      john = DocSon.create(:name => 'John')
+      steph = DocDaughter.create(:name => 'Steph')
+      
+      lambda {
+        DocParent.delete_all
+      }.should change { DocParent.count }.by(-2)
     end
   end
 
@@ -992,7 +1095,7 @@ class DocumentTest < Test::Unit::TestCase
     setup do
       @document.timestamps!
     end
-    
+
     should "set created_at and updated_at on create" do
       doc = @document.new(:first_name => 'John', :age => 27)
       doc.created_at.should be(nil)
@@ -1007,11 +1110,11 @@ class DocumentTest < Test::Unit::TestCase
       old_created_at = doc.created_at
       old_updated_at = doc.updated_at
       doc.first_name = 'Johnny'
-      
+
       Timecop.freeze(Time.now + 5.seconds) do
         doc.save
       end
-      
+
       doc.created_at.should == old_created_at
       doc.updated_at.should_not == old_updated_at
     end
@@ -1020,7 +1123,7 @@ class DocumentTest < Test::Unit::TestCase
       doc = @document.create(:first_name => 'John', :age => 27)
       old_created_at = doc.created_at
       old_updated_at = doc.updated_at
-      
+
       Timecop.freeze(Time.now + 5.seconds) do
         @document.update(doc._id, { :first_name => 'Johnny' })
       end

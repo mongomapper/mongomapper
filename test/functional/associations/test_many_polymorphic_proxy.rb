@@ -181,7 +181,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       end
       
       should "work with conditions" do
-        messages = @lounge.messages.find(:all, :conditions => {:body => 'Loungin!'}, :order => "position")
+        messages = @lounge.messages.find(:all, :body => 'Loungin!', :order => "position")
         messages.should == [@lm1]
       end
       
@@ -197,7 +197,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       end
       
       should "work with conditions" do
-        messages = @lounge.messages.all(:conditions => {:body => 'Loungin!'}, :order => "position")
+        messages = @lounge.messages.all(:body => 'Loungin!', :order => "position")
         messages.should == [@lm1]
       end
       
@@ -213,7 +213,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       end
       
       should "work with conditions" do
-        message = @lounge.messages.find(:first, :conditions => {:body => 'I love loungin!'}, :order => "position asc")
+        message = @lounge.messages.find(:first, :body => 'I love loungin!', :order => "position asc")
         message.should == @lm2
       end
     end
@@ -224,7 +224,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       end
       
       should "work with conditions" do
-        message = @lounge.messages.first(:conditions => {:body => 'I love loungin!'}, :order => "position asc")
+        message = @lounge.messages.first(:body => 'I love loungin!', :order => "position asc")
         message.should == @lm2
       end
     end
@@ -235,7 +235,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       end
       
       should "work with conditions" do
-        message = @lounge.messages.find(:last, :conditions => {:body => 'Loungin!'}, :order => "position asc")
+        message = @lounge.messages.find(:last, :body => 'Loungin!', :order => "position asc")
         message.should == @lm1
       end
     end
@@ -246,7 +246,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       end
       
       should "work with conditions" do
-        message = @lounge.messages.last(:conditions => {:body => 'Loungin!'}, :order => "position asc")
+        message = @lounge.messages.last(:body => 'Loungin!', :order => "position asc")
         message.should == @lm1
       end
     end
