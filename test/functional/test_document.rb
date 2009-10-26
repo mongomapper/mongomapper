@@ -1012,6 +1012,12 @@ class DocumentTest < Test::Unit::TestCase
       DocParent.all(:order => 'name').should    == [carrie, john, steph, steve]
     end
     
+    should "work with nested hash conditions" do
+      john = DocSon.create(:name => 'John')
+      steve = DocSon.create(:name => 'Steve')
+      DocSon.all(:name => {'$ne' => 'Steve'}).should == [john]
+    end
+    
     should "raise error if not found scoped to class" do
       john = DocSon.create(:name => 'John')
       steph = DocDaughter.create(:name => 'Steph')

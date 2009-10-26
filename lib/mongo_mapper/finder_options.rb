@@ -20,6 +20,7 @@ module MongoMapper
     end
     
     def criteria
+      add_sci_scope(model, @conditions)
       to_mongo_criteria(model, @conditions)
     end
     
@@ -34,7 +35,6 @@ module MongoMapper
     private
       def to_mongo_criteria(model, conditions, parent_key=nil)
         criteria = {}
-        add_sci_scope(model, criteria)
 
         conditions.each_pair do |field, value|
           field = field_normalized(field)
