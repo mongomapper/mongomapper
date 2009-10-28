@@ -4,6 +4,7 @@ require 'models'
 class ManyPolymorphicProxyTest < Test::Unit::TestCase
   def setup
     Room.collection.clear
+    Message.collection.clear
   end
   
   should "default reader to empty array" do
@@ -260,6 +261,21 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
         lambda {
           @lounge.messages.find(@hm2.id)
         }.should raise_error(MongoMapper::DocumentNotFound)
+      end
+    end
+    
+    context "with query options/criteria" do
+      should "work with order on association" do
+        @lounge.messages.should == [@lm1, @lm2]
+      end
+      
+      should "allow overriding the order provided to the association" do
+        @lounge.messages.all(:order => 'position desc').should == [@lm2, @lm1]
+      end
+      
+      should "allow using conditions on association" do
+        Room.many :latest_messages, :class_name => 'Message', :order => 'position desc', :limit => 2
+        @hall.latest_messages.should == [@hm3, @hm2]
       end
     end
     

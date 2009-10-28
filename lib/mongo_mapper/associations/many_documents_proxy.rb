@@ -89,9 +89,9 @@ module MongoMapper
         def scoped_conditions
           {self.foreign_key => @owner.id}
         end
-
+        
         def scoped_options(options)
-          options.merge(scoped_conditions)
+          @association.finder_options.merge(options).merge(scoped_conditions)
         end
 
         def find_target

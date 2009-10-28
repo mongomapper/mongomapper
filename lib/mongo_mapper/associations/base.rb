@@ -1,10 +1,22 @@
 module MongoMapper
   module Associations
     class Base
-      attr_reader :type, :name, :options
-
+      attr_reader :type, :name, :options, :finder_options
+      
+      # Options that should not be considered MongoDB query options/criteria
+      AssociationOptions = [:as, :class_name, :dependent, :extend, :foreign_key, :polymorphic]
+      
       def initialize(type, name, options={})
-        @type, @name, @options = type, name, options
+        @type, @name = type, name
+        @options, @finder_options = {}, {}
+        
+        options.each_pair do |key, value|
+          if AssociationOptions.include?(key)
+            @options[key] = value
+          else
+            @finder_options[key] = value
+          end
+        end
       end
 
       def class_name
@@ -26,7 +38,7 @@ module MongoMapper
       def many?
         @many_type ||= @type == :many
       end
-
+      
       def belongs_to?
         @belongs_to_type ||= @type == :belongs_to
       end

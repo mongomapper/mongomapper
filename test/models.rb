@@ -23,7 +23,6 @@ class WindowSize
   end
 end
 
-
 class Post
   include MongoMapper::Document
 
@@ -90,7 +89,6 @@ end
 class User < Account; end
 class Bot < Account; end
 
-
 class Room
   include MongoMapper::Document
 
@@ -129,7 +127,7 @@ class Project
   end
   many :collaborators, :extend => CollaboratorsExtensions
   
-  many :statuses do
+  many :statuses, :order => 'position' do
     def open
       all(:name => %w(New Assigned))
     end
@@ -141,7 +139,6 @@ class Project
       find_all { |a| a.state == state }
     end
   end
-  
 end
 
 class Collaborator

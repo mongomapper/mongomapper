@@ -48,6 +48,23 @@ class AssociationBaseTest < Test::Unit::TestCase
     end
   end
   
+  context "finder_options" do
+    should "default to empty hash" do
+      base = Base.new(:many, :foos)
+      base.finder_options.should == {}
+    end
+    
+    should "work with order" do
+      base = Base.new(:many, :foos, :order => 'position')
+      base.finder_options.should == {:order => 'position'}
+    end
+    
+    should "correctly parse from options" do
+      base = Base.new(:many, :foos, :order => 'position', :somekey => 'somevalue')
+      base.finder_options.should == {:order => 'position', :somekey => 'somevalue'}
+    end
+  end
+  
   context "belongs_to?" do
     should "be true if belongs_to" do
       Base.new(:belongs_to, :foo).belongs_to?.should be_true

@@ -66,7 +66,6 @@ module MongoMapper
             end
           end
         end
-
     end
 
     module InstanceMethods
