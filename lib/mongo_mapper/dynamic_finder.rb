@@ -14,7 +14,7 @@ module MongoMapper
     end
 
     protected
-      def match        
+      def match
         case method.to_s
           when /^find_(all_by|by)_([_a-zA-Z]\w*)$/
             @finder = :all if $1 == 'all_by'

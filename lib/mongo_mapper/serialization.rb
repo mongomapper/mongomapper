@@ -5,7 +5,7 @@ module MongoMapper #:nodoc:
     class Serializer #:nodoc:
       attr_reader :options
 
-      def initialize(record, options = {})
+      def initialize(record, options={})
         @record, @options = record, options.dup
       end
 
