@@ -9,6 +9,16 @@ module MongoMapper
   # conditions and options.
   #
   # @private
+  class FinderOperator
+    def initialize(field, operator)
+      @field, @operator = field, operator
+    end
+    
+    def to_criteria(value)
+      {@field => {@operator => value}}
+    end
+  end
+  
   class FinderOptions
     OptionKeys = [:fields, :select, :skip, :offset, :limit, :sort, :order]
 
@@ -61,6 +71,10 @@ module MongoMapper
 
         conditions.each_pair do |field, value|
           field = normalized_field(field)
+          if field.is_a?(FinderOperator)
+            criteria.merge!(field.to_criteria(value))
+            next
+          end
           case value
             when Array
               operator_present = field.to_s =~ /^\$/
