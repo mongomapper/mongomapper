@@ -47,12 +47,23 @@ class DocumentTest < Test::Unit::TestCase
     end
     
     should "default collection name to class name tableized" do
-      class Item
+      class ::Item
         include MongoMapper::Document
       end
       
       Item.collection.should be_instance_of(Mongo::Collection)
       Item.collection.name.should == 'items'
+    end
+    
+    should "default collection name of namespaced class to tableized with dot separation" do
+      module ::BloggyPoo
+        class Post
+          include MongoMapper::Document
+        end
+      end
+
+      BloggyPoo::Post.collection.should be_instance_of(Mongo::Collection)
+      BloggyPoo::Post.collection.name.should == 'bloggy_poo.posts'
     end
 
     should "allow setting the collection name" do
