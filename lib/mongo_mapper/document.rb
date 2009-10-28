@@ -91,7 +91,7 @@ module MongoMapper
       # @return the first document in the ordered collection as described by 
       #   +options+
       #
-      # @see FinderOptions.to_mongo_criteria
+      # @see FinderOptions
       def first(options={})
         find_one(options)
       end
@@ -106,8 +106,6 @@ module MongoMapper
       #   +options+
       #
       # @raise Exception when no <tt>:order</tt> option has been defined
-      #
-      # @see FinderOptions.to_mongo_criteria
       def last(options={})
         raise ':order option must be provided when using last' if options[:order].blank?
         find_one(options.merge(:order => invert_order_clause(options[:order])))
@@ -119,7 +117,7 @@ module MongoMapper
       # @return [Array] all documents in your collection that match the 
       #   provided conditions
       #
-      # @see FinderOptions.to_mongo_criteria
+      # @see FinderOptions
       def all(options={})
         find_every(options)
       end
