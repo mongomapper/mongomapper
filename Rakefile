@@ -1,6 +1,9 @@
 require 'rubygems'
 require 'rake'
 require 'jeweler'
+require 'yard'
+require 'yard/rake/yardoc_task'
+
 Jeweler::Tasks.new do |gem|
   gem.name        = "mongo_mapper"
   gem.summary     = %Q{Awesome gem for modeling your domain and storing it in mongo}
@@ -47,3 +50,7 @@ end
 
 task :default  => :test
 task :test     => :check_dependencies
+
+YARD::Rake::YardocTask.new(:doc) do |t|
+  t.options = ["--legacy"]
+end
