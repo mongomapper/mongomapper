@@ -274,7 +274,6 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       end
       
       should "allow using conditions on association" do
-        Room.many :latest_messages, :class_name => 'Message', :order => 'position desc', :limit => 2
         @hall.latest_messages.should == [@hm3, @hm2]
       end
     end

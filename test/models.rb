@@ -98,6 +98,7 @@ class Room
       all(:position => {'$gt' => 5})
     end
   end
+  many :latest_messages, :class_name => 'Message', :order => 'position desc', :limit => 2
   
   many :accounts, :polymorphic => true, :extend => AccountsExtensions
 end
