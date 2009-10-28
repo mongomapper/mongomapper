@@ -737,8 +737,8 @@ class DocumentTest < Test::Unit::TestCase
       should "allow creating index on multiple keys" do
         @document.ensure_index [[:first_name, 1], [:last_name, -1]]
         MongoMapper.ensure_indexes!
-        
-        # order is different for different versions of ruby so instead of 
+
+        # order is different for different versions of ruby so instead of
         # just checking have_index('first_name_1_last_name_-1') I'm checking
         # the values of the indexes to make sure the index creation was successful
         @document.collection.index_information.detect do |index|
@@ -953,11 +953,11 @@ class DocumentTest < Test::Unit::TestCase
         key :name, String
       end
       DocParent.collection.clear
-      
+
       class ::DocDaughter < ::DocParent; end
       class ::DocSon < ::DocParent; end
       class ::DocGrandSon < ::DocSon; end
-      
+
       @parent = DocParent.new({:name => "Daddy Warbucks"})
       @daughter = DocDaughter.new({:name => "Little Orphan Annie"})
     end
@@ -981,7 +981,7 @@ class DocumentTest < Test::Unit::TestCase
     should "load the document with the assigned type" do
       @parent.save
       @daughter.save
-            
+
       collection = DocParent.find(:all)
       collection.size.should == 2
       collection.first.should be_kind_of(DocParent)
@@ -999,13 +999,13 @@ class DocumentTest < Test::Unit::TestCase
       collection.last.should == doc
       collection.last.should be_kind_of(DocParent)
     end
-    
+
     should "find scoped to class" do
       john = DocSon.create(:name => 'John')
       steve = DocSon.create(:name => 'Steve')
       steph = DocDaughter.create(:name => 'Steph')
       carrie = DocDaughter.create(:name => 'Carrie')
-      
+
       DocGrandSon.all(:order => 'name').should  == []
       DocSon.all(:order => 'name').should       == [john, steve]
       DocDaughter.all(:order => 'name').should  == [carrie, steph]
@@ -1017,80 +1017,80 @@ class DocumentTest < Test::Unit::TestCase
       steve = DocSon.create(:name => 'Steve')
       DocSon.all(:name => {'$ne' => 'Steve'}).should == [john]
     end
-    
+
     should "raise error if not found scoped to class" do
       john = DocSon.create(:name => 'John')
       steph = DocDaughter.create(:name => 'Steph')
-      
+
       lambda {
         DocSon.find(steph.id)
       }.should raise_error(MongoMapper::DocumentNotFound)
     end
-    
+
     should "not raise error for find with parent" do
       john = DocSon.create(:name => 'John')
-      
+
       DocParent.find(john.id).should == john
     end
-    
+
     should "count scoped to class" do
       john = DocSon.create(:name => 'John')
       steve = DocSon.create(:name => 'Steve')
       steph = DocDaughter.create(:name => 'Steph')
       carrie = DocDaughter.create(:name => 'Carrie')
-      
+
       DocGrandSon.count.should  == 0
       DocSon.count.should       == 2
       DocDaughter.count.should  == 2
       DocParent.count.should    == 4
     end
-    
+
     should "know if it is single_collection_inherited?" do
       DocParent.single_collection_inherited?.should be_false
-      
+
       DocDaughter.single_collection_inherited?.should be_true
       DocSon.single_collection_inherited?.should be_true
     end
-    
+
     should "know if single_collection_inherited_superclass?" do
       DocParent.single_collection_inherited_superclass?.should be_false
-      
+
       DocDaughter.single_collection_inherited_superclass?.should be_true
       DocSon.single_collection_inherited_superclass?.should be_true
       DocGrandSon.single_collection_inherited_superclass?.should be_true
     end
-    
+
     should "not be able to destroy each other" do
       john = DocSon.create(:name => 'John')
       steph = DocDaughter.create(:name => 'Steph')
-      
+
       lambda {
         DocSon.destroy(steph.id)
       }.should raise_error(MongoMapper::DocumentNotFound)
     end
-    
+
     should "not be able to delete each other" do
       john = DocSon.create(:name => 'John')
       steph = DocDaughter.create(:name => 'Steph')
-      
+
       lambda {
         DocSon.delete(steph.id)
       }.should_not change { DocParent.count }
     end
-    
+
     should "be able to destroy using parent" do
       john = DocSon.create(:name => 'John')
       steph = DocDaughter.create(:name => 'Steph')
-      
+
       lambda {
         DocParent.destroy_all
       }.should change { DocParent.count }.by(-2)
     end
-    
+
     should "be able to delete using parent" do
       john = DocSon.create(:name => 'John')
       steph = DocDaughter.create(:name => 'Steph')
-      
+
       lambda {
         DocParent.delete_all
       }.should change { DocParent.count }.by(-2)
@@ -1160,6 +1160,18 @@ class DocumentTest < Test::Unit::TestCase
 
     should "be false when no documents exist with the provided conditions" do
       @document.exists?(:first_name => "Jean").should == false
+    end
+  end
+
+  context "reload" do
+    setup do
+      @doc_instance_1 = @document.create({:first_name => 'Ryan', :last_name => 'Koopmans', :age => '37'})
+      @doc_instance_2 = @document.update(@doc_instance_1.id, {:age => '39'})
+    end
+
+    should "load fresh information from the database" do
+      @doc_instance_1.age.should == 37
+      @doc_instance_1.reload.age.should == 39
     end
   end
 end
