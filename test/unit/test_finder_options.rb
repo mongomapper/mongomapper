@@ -30,6 +30,14 @@ class FinderOptionsTest < Test::Unit::TestCase
       }
     end
     
+    %w{gt lt gte lte ne in nin mod size where exists}.each do |operator|
+      should "convert #{operator} conditions" do
+        FinderOptions.new(Room, :age.send(operator) => 21).criteria.should == {
+          :age => {"$#{operator}" => 21}
+        }
+      end
+    end
+    
     should "automatically add _type to query if model is single collection inherited" do
       FinderOptions.new(Enter, :foo => 'bar').criteria.should == {
         :foo => 'bar',
