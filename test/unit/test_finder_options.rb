@@ -22,6 +22,14 @@ class FinderOptionsTest < Test::Unit::TestCase
       }
     end
     
+    should "not add _type to nested conditions" do
+      FinderOptions.new(Enter, :foo => 'bar', :age => {'$gt' => 21}).criteria.should == {
+        :foo => 'bar',
+        :age => {'$gt' => 21},
+        :_type => 'Enter'
+      }
+    end
+    
     should "automatically add _type to query if model is single collection inherited" do
       FinderOptions.new(Enter, :foo => 'bar').criteria.should == {
         :foo => 'bar',

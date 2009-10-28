@@ -2,8 +2,6 @@ module MongoMapper
   class FinderOptions
     OptionKeys = [:fields, :select, :skip, :offset, :limit, :sort, :order]
     
-    attr_reader :model, :options
-    
     def initialize(model, options)
       raise ArgumentError, "FinderOptions must be a hash" unless options.is_a?(Hash)
       options.symbolize_keys!
@@ -17,15 +15,22 @@ module MongoMapper
           @conditions[key] = value
         end
       end
+      
+      add_sci_scope
     end
     
     def criteria
-      add_sci_scope(model, @conditions)
-      to_mongo_criteria(model, @conditions)
+      to_mongo_criteria(@conditions)
     end
     
     def options
-      to_mongo_options(model, @options)
+      options = @options.dup
+      {
+        :fields => to_mongo_fields(options.delete(:fields) || options.delete(:select)),
+        :skip   => (options.delete(:skip) || options.delete(:offset) || 0).to_i,
+        :limit  => (options.delete(:limit) || 0).to_i,
+        :sort   => options.delete(:sort) || to_mongo_sort(options.delete(:order))
+      }
     end
     
     def to_a
@@ -33,7 +38,7 @@ module MongoMapper
     end
     
     private
-      def to_mongo_criteria(model, conditions, parent_key=nil)
+      def to_mongo_criteria(conditions, parent_key=nil)
         criteria = {}
 
         conditions.each_pair do |field, value|
@@ -47,7 +52,7 @@ module MongoMapper
                                   {'$in' => value}
                                 end
             when Hash
-              criteria[field] = to_mongo_criteria(model, value, field)
+              criteria[field] = to_mongo_criteria(value, field)
             else            
               criteria[field] = value
           end
@@ -65,20 +70,10 @@ module MongoMapper
       end
 
       # adds _type single collection inheritance scope for models that need it
-      def add_sci_scope(model, criteria)
-        if model.single_collection_inherited?
-          criteria[:_type] = model.to_s
+      def add_sci_scope
+        if @model.single_collection_inherited?
+          @conditions[:_type] = @model.to_s
         end
-      end
-
-      def to_mongo_options(model, options)
-        options = options.dup
-        {
-          :fields => to_mongo_fields(options.delete(:fields) || options.delete(:select)),
-          :skip   => (options.delete(:skip) || options.delete(:offset) || 0).to_i,
-          :limit  => (options.delete(:limit) || 0).to_i,
-          :sort   => options.delete(:sort) || to_mongo_sort(options.delete(:order))
-        }
       end
       
       def to_mongo_fields(fields)
