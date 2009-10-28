@@ -13,12 +13,12 @@ module MongoMapper
         extend Validations::Macros
         extend ClassMethods
         extend Finders
-        
+
         def self.per_page
           25
         end unless respond_to?(:per_page)
       end
-      
+
       descendants << model
     end
 
@@ -32,17 +32,17 @@ module MongoMapper
         create_indexes_for(key)
         key
       end
-      
+
       def ensure_index(name_or_array, options={})
         keys_to_index = if name_or_array.is_a?(Array)
           name_or_array.map { |pair| [pair[0], pair[1]] }
         else
           name_or_array
         end
-        
+
         MongoMapper.ensure_index(self, keys_to_index, options)
       end
-      
+
       def find(*args)
         options = args.extract_options!
         case args.first
@@ -153,13 +153,13 @@ module MongoMapper
         end
         @database
       end
-      
+
       # Changes the collection name from the default to whatever you want
       def set_collection_name(name=nil)
         @collection = nil
         @collection_name = name
       end
-      
+
       # Returns the collection name, if not set, defaults to class name tableized
       def collection_name
         @collection_name ||= self.to_s.demodulize.tableize
@@ -169,25 +169,25 @@ module MongoMapper
       def collection
         @collection ||= database.collection(collection_name)
       end
-      
+
       def timestamps!
         key :created_at, Time
         key :updated_at, Time
         class_eval { before_save :update_timestamps }
       end
-      
+
       def single_collection_inherited?
         keys.has_key?('_type') && single_collection_inherited_superclass?
       end
-      
+
       def single_collection_inherited_superclass?
         superclass.respond_to?(:keys) && superclass.keys.has_key?('_type')
       end
-            
+
       protected
         def method_missing(method, *args)
           finder = DynamicFinder.new(method)
-          
+
           if finder.found?
             meta_def(finder.method) { |*args| dynamic_find(finder, args) }
             send(finder.method, *args)
@@ -200,7 +200,7 @@ module MongoMapper
         def create_indexes_for(key)
           ensure_index key.name if key.options[:index]
         end
-        
+
         def initialize_each(*docs)
           instances = []
           docs = [{}] if docs.blank?
@@ -211,7 +211,7 @@ module MongoMapper
           end
           instances.size == 1 ? instances[0] : instances
         end
-        
+
         def initialize_doc(doc)
           begin
             klass = doc['_type'].present? ? doc['_type'].constantize : self
@@ -220,38 +220,38 @@ module MongoMapper
             new(doc)
           end
         end
-        
+
         def find_every(options)
           criteria, options = to_finder_options(options)
           collection.find(criteria, options).to_a.map do |doc|
             initialize_doc(doc)
           end
         end
-        
+
         def find_some(ids, options={})
           ids       = ids.flatten.compact.uniq
           documents = find_every(options.merge(:_id => ids))
-          
+
           if ids.size == documents.size
             documents
           else
             raise DocumentNotFound, "Couldn't find all of the ids (#{ids.to_sentence}). Found #{documents.size}, but was expecting #{ids.size}"
           end
         end
-        
+
         def find_one(options={})
           criteria, options = to_finder_options(options)
           if doc = collection.find_one(criteria, options)
             initialize_doc(doc)
           end
         end
-        
+
         def find_one!(options={})
           find_one(options) || raise(DocumentNotFound, "Document match #{options.inspect} does not exist in #{collection.name} collection")
         end
 
         def invert_order_clause(order)
-          order.split(',').map do |order_segment| 
+          order.split(',').map do |order_segment|
             if order_segment =~ /\sasc/i
               order_segment.sub /\sasc/i, ' desc'
             elsif order_segment =~ /\sdesc/i
@@ -281,17 +281,17 @@ module MongoMapper
           docs.each_pair { |id, attrs| instances << update(id, attrs) }
           instances
         end
-        
+
         def to_criteria(options={})
           FinderOptions.new(self, options).criteria
         end
-        
+
         def to_finder_options(options={})
           FinderOptions.new(self, options).to_a
         end
     end
 
-    module InstanceMethods      
+    module InstanceMethods
       def collection
         self.class.collection
       end
@@ -314,6 +314,10 @@ module MongoMapper
         freeze
       end
 
+      def reload
+        self.class.find(id)
+      end
+
     private
       def create_or_update
         result = new? ? create : update
@@ -324,7 +328,7 @@ module MongoMapper
         assign_id
         save_to_collection
       end
-      
+
       def assign_id
         if read_attribute(:_id).blank?
           write_attribute(:_id, Mongo::ObjectID.new.to_s)
@@ -345,7 +349,7 @@ module MongoMapper
         write_attribute('created_at', now) if new?
         write_attribute('updated_at', now)
       end
-      
+
       def clear_custom_id_flag
         @using_custom_id = nil
       end
