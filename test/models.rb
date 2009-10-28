@@ -30,7 +30,7 @@ class Post
   key :title, String
   key :body, String
 
-  has_many :comments, :as => :commentable, :class_name => 'PostComment'
+  many :comments, :as => :commentable, :class_name => 'PostComment'
 
   timestamps!
 end
