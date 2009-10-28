@@ -74,7 +74,7 @@ class Chat < Message;  end
 
 module AccountsExtensions
   def inactive
-    find(:all, :conditions => { :last_logged_in => nil })
+    all(:last_logged_in => nil)
   end
 end
 
@@ -97,7 +97,7 @@ class Room
   key :name, String
   many :messages, :polymorphic => true do
     def older
-      find(:all, :conditions => { :position => {"$gt" => 5} })
+      all(:position => {'$gt' => 5})
     end
   end
   
@@ -117,28 +117,28 @@ class Project
   
   module PeopleExtensions
     def find_by_name(name)
-      detect {|p| p.name == name }
+      detect { |p| p.name == name }
     end
   end
   many :people, :extend => PeopleExtensions
   
   module CollaboratorsExtensions
     def top
-      find(:first)
+      first
     end
   end
   many :collaborators, :extend => CollaboratorsExtensions
   
   many :statuses do
     def open
-      find(:all, :conditions => { :name => %w(New Assigned) })
+      all(:name => %w(New Assigned))
     end
   end
   
   many :addresses do
     def find_all_by_state(state)
       # can't use select here for some reason
-      find_all {|a| a.state == state }
+      find_all { |a| a.state == state }
     end
   end
   
@@ -223,7 +223,7 @@ class Catalog
   many :medias, :polymorphic => true do
     def visible
       # for some reason we can't use select here
-      find_all {|m| m.visible? }
+      find_all { |m| m.visible? }
     end
   end
 end
@@ -262,7 +262,7 @@ module TrModels
     module TransportsExtension
       def to_be_replaced
         # for some reason we can't use select
-        find_all {|t| t.purchased_on < 2.years.ago.to_date }
+        find_all { |t| t.purchased_on < 2.years.ago.to_date }
       end
     end
     
