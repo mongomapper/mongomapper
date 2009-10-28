@@ -6,8 +6,8 @@ module MongoMapper
         self
       end
 
-      def many(association_id, options={})
-        create_association(:many, association_id, options)
+      def many(association_id, options = {}, &block)
+        create_association(:many, association_id, options, &block)
         self
       end
 
@@ -18,12 +18,19 @@ module MongoMapper
       end
 
       private
-        def create_association(type, name, options)
+        def create_association(type, name, options, &extension)
+          options[:extend] = modulized_extensions(extension, options[:extend])
           association = Associations::Base.new(type, name, options)
           associations[association.name] = association
           define_association_methods(association)
           define_dependent_callback(association)
           association
+        end
+        
+        def modulized_extensions(*extensions)
+          extensions.flatten.compact.map do |extension|
+            Proc === extension ? Module.new(&extension) : extension
+          end
         end
 
         def define_association_methods(association)
