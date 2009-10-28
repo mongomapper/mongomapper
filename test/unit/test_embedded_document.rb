@@ -465,11 +465,20 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         clone.age.should == 27
       end
     end
-
+    
     context "key shorcut access" do
-      should "be able to read key with []" do
-        doc = @document.new(:name => 'string')
-        doc[:name].should == 'string'
+      context "[]" do
+        should "work when key found" do
+          doc = @document.new(:name => 'string')
+          doc[:name].should == 'string'
+        end
+        
+        should "raise exception when key not found" do
+          doc = @document.new(:name => 'string')
+          lambda {
+            doc[:not_here]
+          }.should raise_error(MongoMapper::KeyNotFound)
+        end
       end
       
       context "[]=" do

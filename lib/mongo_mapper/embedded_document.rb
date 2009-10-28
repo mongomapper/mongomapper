@@ -332,9 +332,13 @@ module MongoMapper
         end
 
         def read_attribute(name)
-          value = _keys[name].get(instance_variable_get("@#{name}"))
-          instance_variable_set "@#{name}", value if !frozen?
-          value
+          if key = _keys[name]
+            value = key.get(instance_variable_get("@#{name}"))
+            instance_variable_set "@#{name}", value if !frozen?
+            value
+          else
+            raise KeyNotFound, "Could not find key: #{name.inspect}"
+          end
         end
 
         def read_attribute_before_typecast(name)
