@@ -16,19 +16,19 @@ module MongoMapper
       end
 
       def all(options={})
-        find(:all, scoped_options(options))
+        klass.all(scoped_options(options))
       end
 
       def first(options={})
-        find(:first, scoped_options(options))
+        klass.first(scoped_options(options))
       end
 
       def last(options={})
-        find(:last, scoped_options(options))
+        klass.last(scoped_options(options))
       end
 
       def count(options={})
-        klass.count(options.merge(scoped_conditions))
+        klass.count(scoped_options(options))
       end
 
       def replace(docs)
@@ -95,7 +95,7 @@ module MongoMapper
         end
 
         def find_target
-          find(:all)
+          all
         end
 
         def ensure_owner_saved

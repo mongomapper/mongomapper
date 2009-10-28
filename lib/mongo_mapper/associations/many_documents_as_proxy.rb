@@ -8,10 +8,8 @@ module MongoMapper
 
         def apply_scope(doc)
           ensure_owner_saved
-
           doc.send("#{as_type_name}=", @owner.class.name)
           doc.send("#{as_id_name}=", @owner.id)
-
           doc
         end
 
