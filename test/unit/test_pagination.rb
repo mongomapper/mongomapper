@@ -58,6 +58,10 @@ class PaginationTest < Test::Unit::TestCase
     should "know how many records to skip" do
       PaginationProxy.new(25, 2, 10).skip.should == 10
     end
+    
+    should "alias offset to skip" do
+      PaginationProxy.new(25, 2, 10).offset.should == 10
+    end
         
     context "previous_page" do
       should "be nil if current page 1" do
