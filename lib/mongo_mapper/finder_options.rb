@@ -1,4 +1,14 @@
 module MongoMapper
+  # Controls the parsing and handling of options used by finders.
+  #
+  # == Important Note
+  #
+  # This class is private to MongoMapper and should not be considered part of 
+  # MongoMapper's public API. Some documentation herein, however, may prove 
+  # useful for understanding how MongoMapper handles the parsing of finder 
+  # conditions and options.
+  #
+  # @private
   class FinderOptions
     OptionKeys = [:fields, :select, :skip, :offset, :limit, :sort, :order]
 
@@ -20,11 +30,15 @@ module MongoMapper
 
       add_sci_scope
     end
-
+    
+    # @return [Hash] Mongo compatible criteria options
+    #
+    # @see FinderOptions#to_mongo_criteria
     def criteria
       to_mongo_criteria(@conditions)
     end
-
+    
+    # @return [Hash] Mongo compatible options
     def options
       options = @options.dup
 
@@ -35,7 +49,8 @@ module MongoMapper
 
       {:fields => to_mongo_fields(fields), :skip => skip.to_i, :limit => limit.to_i, :sort => sort}
     end
-
+    
+    # @return [Array<Hash>] Mongo criteria and options enclosed in an Array
     def to_a
       [criteria, options]
     end
