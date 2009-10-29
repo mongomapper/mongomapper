@@ -14,7 +14,7 @@ class BelongsToProxyTest < Test::Unit::TestCase
   end
   
   should "be able to replace the association" do
-    status = Status.new
+    status = Status.new(:name => 'Foo!')
     project = Project.new(:name => "mongomapper")
     status.project = project
     status.save.should be_true
@@ -25,7 +25,7 @@ class BelongsToProxyTest < Test::Unit::TestCase
   end
   
   should "unset the association" do
-    status = Status.new
+    status = Status.new(:name => 'Foo!')
     project = Project.new(:name => "mongomapper")
     status.project = project
     status.save.should be_true

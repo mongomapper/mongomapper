@@ -14,9 +14,9 @@ class ManyProxyTest < Test::Unit::TestCase
 
   should "allow adding to association like it was an array" do
     project = Project.new
-    project.statuses <<     Status.new
-    project.statuses.push   Status.new
-    project.statuses.concat Status.new
+    project.statuses <<     Status.new(:name => 'Foo1!')
+    project.statuses.push   Status.new(:name => 'Foo2!')
+    project.statuses.concat Status.new(:name => 'Foo3!')
     project.statuses.size.should == 3
   end
 
@@ -59,14 +59,14 @@ class ManyProxyTest < Test::Unit::TestCase
   context "create" do
     should "assign foreign key" do
       project = Project.create
-      status = project.statuses.create
+      status = project.statuses.create(:name => 'Foo!')
       status.project_id.should == project.id
     end
     
     should "save record" do
       project = Project.create
       lambda {
-        project.statuses.create
+        project.statuses.create(:name => 'Foo!')
       }.should change { Status.count }
     end
     
@@ -77,13 +77,42 @@ class ManyProxyTest < Test::Unit::TestCase
     end
   end
   
+  context "create!" do
+    should "assign foreign key" do
+      project = Project.create
+      status = project.statuses.create!(:name => 'Foo!')
+      status.project_id.should == project.id
+    end
+    
+    should "save record" do
+      project = Project.create
+      lambda {
+        project.statuses.create!(:name => 'Foo!')
+      }.should change { Status.count }
+    end
+    
+    should "allow passing attributes" do
+      project = Project.create
+      status = project.statuses.create!(:name => 'Foo!')
+      status.name.should == 'Foo!'
+    end
+    
+    should "raise exception if not valid" do
+      project = Project.create
+      lambda {
+        project.statuses.create!(:name => nil)
+      }.should raise_error(MongoMapper::DocumentNotValid)
+    end
+  end
+  
+  
   context "count" do
     should "work scoped to association" do
       project = Project.create
-      3.times { project.statuses.create }
+      3.times { project.statuses.create(:name => 'Foo!') }
       
       other_project = Project.create
-      2.times { other_project.statuses.create }
+      2.times { other_project.statuses.create(:name => 'Foo!') }
       
       project.statuses.count.should == 3
       other_project.statuses.count.should == 2

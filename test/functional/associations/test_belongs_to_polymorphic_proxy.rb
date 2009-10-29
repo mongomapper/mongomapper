@@ -14,7 +14,7 @@ class BelongsToPolymorphicProxyTest < Test::Unit::TestCase
   end
 
   should "be able to replace the association" do
-    status = Status.new
+    status = Status.new(:name => 'Foo!')
     project = Project.new(:name => "mongomapper")
     status.target = project
     status.save.should be_true
@@ -27,7 +27,7 @@ class BelongsToPolymorphicProxyTest < Test::Unit::TestCase
   end
 
   should "unset the association" do
-    status = Status.new
+    status = Status.new(:name => 'Foo!')
     project = Project.new(:name => "mongomapper")
     status.target = project
     status.save.should be_true
@@ -41,7 +41,7 @@ class BelongsToPolymorphicProxyTest < Test::Unit::TestCase
   
   context "association id set but document not found" do
     setup do
-      @status = Status.new
+      @status = Status.new(:name => 'Foo!')
       project = Project.new(:name => "mongomapper")
       @status.target = project
       @status.save.should be_true

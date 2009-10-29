@@ -109,23 +109,24 @@ class Answer
   key :body, String
 end
 
+module PeopleExtensions
+  def find_by_name(name)
+    detect { |p| p.name == name }
+  end
+end
+
+module CollaboratorsExtensions
+  def top
+    first
+  end
+end
+
 class Project
   include MongoMapper::Document
 
   key :name, String
   
-  module PeopleExtensions
-    def find_by_name(name)
-      detect { |p| p.name == name }
-    end
-  end
   many :people, :extend => PeopleExtensions
-  
-  module CollaboratorsExtensions
-    def top
-      first
-    end
-  end
   many :collaborators, :extend => CollaboratorsExtensions
   
   many :statuses, :order => 'position' do
@@ -155,7 +156,7 @@ class Status
   key :project_id, String
   key :target_id, String
   key :target_type, String
-  key :name, String
+  key :name, String, :required => true
   key :position, Integer
 
   belongs_to :project

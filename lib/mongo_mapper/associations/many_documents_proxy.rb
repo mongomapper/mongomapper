@@ -56,6 +56,12 @@ module MongoMapper
         apply_scope(doc).save
         doc
       end
+      
+      def create!(attrs={})
+        doc = klass.new(attrs)
+        apply_scope(doc).save!
+        doc
+      end
 
       def destroy_all(options={})
         all(options).map(&:destroy)
