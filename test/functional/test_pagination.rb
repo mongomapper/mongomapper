@@ -13,7 +13,7 @@ class PaginationTest < Test::Unit::TestCase
         
         def self.per_page; 1 end
       end
-      @document.collection.clear
+      @document.collection.remove
       
       @doc1 = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
       @doc2 = @document.create({:first_name => 'Steve', :last_name => 'Smith', :age => '28'})

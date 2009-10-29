@@ -3,8 +3,8 @@ require 'models'
 
 class ManyProxyTest < Test::Unit::TestCase
   def setup
-    Project.collection.clear
-    Status.collection.clear
+    Project.collection.remove
+    Status.collection.remove
   end
   
   should "default reader to empty array" do

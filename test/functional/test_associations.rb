@@ -8,7 +8,7 @@ class AssociationsTest < Test::Unit::TestCase
       
       many :posts, :class_name => 'AssociationsTest::AwesomePost', :foreign_key => :creator_id
     end
-    AwesomeUser.collection.clear
+    AwesomeUser.collection.remove
     
     class AwesomeTag
       include MongoMapper::EmbeddedDocument
@@ -28,8 +28,8 @@ class AssociationsTest < Test::Unit::TestCase
       many :tags, :class_name => 'AssociationsTest::AwesomeTag', :foreign_key => :post_id
     end
     
-    AwesomeUser.collection.clear
-    AwesomePost.collection.clear
+    AwesomeUser.collection.remove
+    AwesomePost.collection.remove
     
     user = AwesomeUser.create
     tag1 = AwesomeTag.new(:name => 'awesome')

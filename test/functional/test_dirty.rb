@@ -8,10 +8,10 @@ class DirtyTest < Test::Unit::TestCase
       set_collection_name 'test'
       key :phrase, String
     end
-    @document.collection.clear
+    @document.collection.remove
     
-    Status.collection.clear
-    Project.collection.clear
+    Status.collection.remove
+    Project.collection.remove
   end
   
   context "marking changes" do

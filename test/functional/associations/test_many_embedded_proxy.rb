@@ -3,8 +3,8 @@ require 'models'
 
 class ManyEmbeddedProxyTest < Test::Unit::TestCase
   def setup
-    Project.collection.clear
-    RealPerson.collection.clear
+    Project.collection.remove
+    RealPerson.collection.remove
   end
     
   should "default reader to empty array" do
@@ -45,7 +45,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       set_collection_name 'test'
       key :person, Person
     end
-    @document.collection.clear
+    @document.collection.remove
     
     meg = Person.new(:name => "Meg")
     meg.child = Person.new(:name => "Steve")
@@ -92,7 +92,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
         set_collection_name 'test'
         many :people
       end
-      @document.collection.clear
+      @document.collection.remove
     end
 
     should "persist all embedded documents" do

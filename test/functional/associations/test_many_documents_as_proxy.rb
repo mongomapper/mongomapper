@@ -3,8 +3,8 @@ require 'models'
 
 class ManyDocumentsAsProxyTest < Test::Unit::TestCase
   def setup
-    Post.collection.clear
-    PostComment.collection.clear
+    Post.collection.remove
+    PostComment.collection.remove
   end
 
   should "default reader to empty array" do

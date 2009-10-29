@@ -8,7 +8,7 @@ class ValidationsTest < Test::Unit::TestCase
         set_collection_name 'test'
         key :name, String, :required => true
       end
-      @document.collection.clear
+      @document.collection.remove
     end
     
     should "not insert document" do
@@ -32,7 +32,7 @@ class ValidationsTest < Test::Unit::TestCase
         set_collection_name 'test'
         key :name, String, :required => true
       end
-      @document.collection.clear
+      @document.collection.remove
     end
     
     should "raise error" do
@@ -48,7 +48,7 @@ class ValidationsTest < Test::Unit::TestCase
         set_collection_name 'test'
         key :name, String, :required => true
       end
-      @document.collection.clear
+      @document.collection.remove
     end
     
     should "raise error" do
@@ -68,7 +68,7 @@ class ValidationsTest < Test::Unit::TestCase
         set_collection_name 'test'
         key :name, String, :required => true
       end
-      @document.collection.clear
+      @document.collection.remove
       
       @doc = @document.create(:name => 'John Nunemaker')
     end
@@ -97,7 +97,7 @@ class ValidationsTest < Test::Unit::TestCase
           errors.add(:action, 'is invalid') if action.blank?
         end
       end
-      @document.collection.clear
+      @document.collection.remove
     end
     
     should "work with validate_on_create callback" do
@@ -140,7 +140,7 @@ class ValidationsTest < Test::Unit::TestCase
         key :name, String
         validates_uniqueness_of :name
       end
-      @document.collection.clear
+      @document.collection.remove
     end
 
     should "not fail if object is new" do
@@ -223,7 +223,7 @@ class ValidationsTest < Test::Unit::TestCase
           key :scope, String
           validates_uniqueness_of :name, :scope => :scope
         end
-        @document.collection.clear
+        @document.collection.remove
       end
       
       should "fail if the same name exists in the scope" do
@@ -264,7 +264,7 @@ class ValidationsTest < Test::Unit::TestCase
           key :second_scope, String
           validates_uniqueness_of :name, :scope => [:first_scope, :second_scope]
         end
-        @document.collection.clear
+        @document.collection.remove
       end
       
       should "fail if the same name exists in the scope" do
@@ -303,7 +303,7 @@ class ValidationsTest < Test::Unit::TestCase
         
         key :name, String, :unique => true
       end
-      @document.collection.clear
+      @document.collection.remove
       
       doc = @document.create(:name => 'John')
       doc.should_not have_error_on(:name)

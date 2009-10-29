@@ -8,7 +8,7 @@ class DocumentTest < Test::Unit::TestCase
         include MongoMapper::Document
         set_collection_name 'test'
       end
-      @document.collection.clear
+      @document.collection.remove
     end
     
     should "have logger method" do
@@ -102,7 +102,7 @@ class DocumentTest < Test::Unit::TestCase
         key :name, String
         key :age, Integer
       end
-      @document.collection.clear
+      @document.collection.remove
     end
     
     should "have access to logger" do

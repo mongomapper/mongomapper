@@ -3,8 +3,8 @@ require 'models'
 
 class ManyPolymorphicProxyTest < Test::Unit::TestCase
   def setup
-    Room.collection.clear
-    Message.collection.clear
+    Room.collection.remove
+    Message.collection.remove
   end
   
   should "default reader to empty array" do

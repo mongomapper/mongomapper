@@ -14,7 +14,7 @@ class TestRailsCompatibility < Test::Unit::TestCase
   
   context "Document" do
     setup do
-      Order.collection.clear
+      Order.collection.remove
     end
 
     should "alias new to new_record?" do

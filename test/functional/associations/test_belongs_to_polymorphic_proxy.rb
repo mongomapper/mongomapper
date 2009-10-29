@@ -3,8 +3,8 @@ require 'models'
 
 class BelongsToPolymorphicProxyTest < Test::Unit::TestCase
   def setup
-    Status.collection.clear
-    Project.collection.clear
+    Status.collection.remove
+    Project.collection.remove
   end
   
   should "default to nil" do

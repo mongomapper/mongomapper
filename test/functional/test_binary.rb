@@ -7,7 +7,7 @@ class BinaryTest < Test::Unit::TestCase
       set_collection_name 'test'
       key :contents, Binary
     end
-    klass.collection.clear
+    klass.collection.remove
     
     doc = klass.new(:contents => '010101')
     doc.save
