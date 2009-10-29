@@ -5,13 +5,12 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mongo_mapper}
-  s.version = "0.5.7"
+  s.version = "0.5.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
-  s.date = %q{2009-10-28}
+  s.date = %q{2009-10-29}
   s.default_executable = %q{mmconsole}
-  s.description = %q{Awesome gem for modeling your domain and storing it in mongo}
   s.email = %q{nunemaker@gmail.com}
   s.executables = ["mmconsole"]
   s.extra_rdoc_files = [
@@ -142,7 +141,7 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activesupport>, [">= 2.3"])
-      s.add_runtime_dependency(%q<mongo>, ["= 0.15.1"])
+      s.add_runtime_dependency(%q<mongo>, ["= 0.16"])
       s.add_runtime_dependency(%q<jnunemaker-validatable>, ["= 1.8.0"])
       s.add_development_dependency(%q<jnunemaker-matchy>, ["= 0.4.0"])
       s.add_development_dependency(%q<shoulda>, ["= 2.10.2"])
@@ -150,7 +149,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<mocha>, ["= 0.9.4"])
     else
       s.add_dependency(%q<activesupport>, [">= 2.3"])
-      s.add_dependency(%q<mongo>, ["= 0.15.1"])
+      s.add_dependency(%q<mongo>, ["= 0.16"])
       s.add_dependency(%q<jnunemaker-validatable>, ["= 1.8.0"])
       s.add_dependency(%q<jnunemaker-matchy>, ["= 0.4.0"])
       s.add_dependency(%q<shoulda>, ["= 2.10.2"])
@@ -159,7 +158,7 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<activesupport>, [">= 2.3"])
-    s.add_dependency(%q<mongo>, ["= 0.15.1"])
+    s.add_dependency(%q<mongo>, ["= 0.16"])
     s.add_dependency(%q<jnunemaker-validatable>, ["= 1.8.0"])
     s.add_dependency(%q<jnunemaker-matchy>, ["= 0.4.0"])
     s.add_dependency(%q<shoulda>, ["= 2.10.2"])
