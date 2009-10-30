@@ -4,7 +4,7 @@ module MongoMapper
       attr_reader :type, :name, :options, :finder_options
       
       # Options that should not be considered MongoDB query options/criteria
-      AssociationOptions = [:as, :class_name, :dependent, :extend, :foreign_key, :polymorphic]
+      AssociationOptions = [:as, :class, :class_name, :dependent, :extend, :foreign_key, :polymorphic]
       
       def initialize(type, name, options={})
         @type, @name = type, name
@@ -32,7 +32,7 @@ module MongoMapper
       end
 
       def klass
-        @klass ||= class_name.constantize
+        @klass ||= options[:class] ? options[:class] : class_name.constantize
       end
 
       def many?

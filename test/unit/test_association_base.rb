@@ -36,6 +36,11 @@ class AssociationBaseTest < Test::Unit::TestCase
     should "be class_name constantized" do
       Base.new(:belongs_to, :foo_monster).klass.should == FooMonster
     end
+    
+    should "be the specified class" do
+      anonnymous_class = Class.new
+      Base.new(:belongs_to, :foo_monster, :class => anonnymous_class).klass.should == anonnymous_class
+    end
   end
   
   context "many?" do
