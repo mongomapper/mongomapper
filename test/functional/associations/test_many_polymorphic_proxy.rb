@@ -259,7 +259,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       
       should "not work for id not in association" do
         lambda {
-          @lounge.messages.find(@hm2.id)
+          @lounge.messages.find!(@hm2.id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
@@ -286,7 +286,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       
       should "not work for ids not in association" do
         lambda {
-          @lounge.messages.find(@lm1.id, @lm2.id, @hm2.id)
+          @lounge.messages.find!(@lm1.id, @lm2.id, @hm2.id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end

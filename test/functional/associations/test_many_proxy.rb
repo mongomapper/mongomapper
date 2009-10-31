@@ -321,7 +321,7 @@ class ManyProxyTest < Test::Unit::TestCase
       
       should "not work for id not in association" do
         lambda {
-          @project1.statuses.find(@archived.id)
+          @project1.statuses.find!(@archived.id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
@@ -334,7 +334,7 @@ class ManyProxyTest < Test::Unit::TestCase
       
       should "not work for ids not in association" do
         lambda {
-          @project1.statuses.find(@brand_new.id, @complete.id, @archived.id)
+          @project1.statuses.find!(@brand_new.id, @complete.id, @archived.id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end

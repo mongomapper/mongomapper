@@ -55,7 +55,7 @@ module MongoMapper
       # @overload find(ids, options)
       #
       # @raise DocumentNotFound raised when no ID or arguments are provided
-      def find(*args)
+      def find!(*args)
         options = args.extract_options!
         case args.first
           when :first then first(options)
@@ -72,6 +72,12 @@ module MongoMapper
                 find_some(args, options)
             end
         end
+      end
+      
+      def find(*args)
+        find!(*args)
+      rescue DocumentNotFound
+        nil
       end
 
       def paginate(options)

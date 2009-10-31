@@ -10,6 +10,11 @@ module MongoMapper
         options = args.extract_options!
         klass.find(*args << scoped_options(options))
       end
+      
+      def find!(*args)
+        options = args.extract_options!
+        klass.find!(*args << scoped_options(options))
+      end
 
       def paginate(options)
         klass.paginate(scoped_options(options))

@@ -171,20 +171,20 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
 
       should "not work for id not in association" do
         lambda {
-          @post.comments.find(@comment5.id)
+          @post.comments.find!(@comment5.id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
 
     context "with multiple ids" do
       should "work for ids in association" do
-        posts = @post.comments.find(@comment1.id, @comment2.id)
+        posts = @post.comments.find!(@comment1.id, @comment2.id)
         posts.should == [@comment1, @comment2]
       end
 
       should "not work for ids not in association" do
         lambda {
-          @post.comments.find(@comment1.id, @comment2.id, @comment4.id)
+          @post.comments.find!(@comment1.id, @comment2.id, @comment4.id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end

@@ -288,8 +288,12 @@ class DocumentTest < Test::Unit::TestCase
         @doc3 = @document.create({:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26'})
       end
 
-      should "raise document not found if nothing provided" do
-        lambda { @document.find }.should raise_error(MongoMapper::DocumentNotFound)
+      should "return nil if nothing provided for find" do
+        @document.find.should be_nil
+      end
+
+      should "raise document not found if nothing provided for find!" do
+        lambda { @document.find! }.should raise_error(MongoMapper::DocumentNotFound)
       end
 
       context "with a single id" do
@@ -297,9 +301,13 @@ class DocumentTest < Test::Unit::TestCase
           @document.find(@doc1.id).should == @doc1
         end
 
-        should "raise error if document not found" do
+        should "return nil if document not found with find" do
+          @document.find(123).should be_nil
+        end
+
+        should "raise error if document not found with find!" do
           lambda {
-            @document.find(123)
+            @document.find!(123)
           }.should raise_error(MongoMapper::DocumentNotFound)
         end
       end
@@ -1023,14 +1031,14 @@ class DocumentTest < Test::Unit::TestCase
       steph = DocDaughter.create(:name => 'Steph')
 
       lambda {
-        DocSon.find(steph.id)
+        DocSon.find!(steph.id)
       }.should raise_error(MongoMapper::DocumentNotFound)
     end
 
     should "not raise error for find with parent" do
       john = DocSon.create(:name => 'John')
 
-      DocParent.find(john.id).should == john
+      DocParent.find!(john.id).should == john
     end
 
     should "count scoped to class" do
