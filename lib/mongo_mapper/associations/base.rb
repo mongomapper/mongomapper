@@ -7,8 +7,7 @@ module MongoMapper
       AssociationOptions = [:as, :class, :class_name, :dependent, :extend, :foreign_key, :polymorphic]
       
       def initialize(type, name, options={})
-        @type, @name = type, name
-        @options, @finder_options = {}, {}
+        @type, @name, @options, @finder_options = type, name, {}, {}
         
         options.each_pair do |key, value|
           if AssociationOptions.include?(key)
