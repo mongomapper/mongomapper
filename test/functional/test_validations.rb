@@ -212,7 +212,39 @@ class ValidationsTest < Test::Unit::TestCase
       doc2 = document.new("name" => "")
       doc2.should_not have_error_on(:name)
     end
-    
+
+    should "allow entries that differ only in case by default" do
+      document = Class.new do
+        include MongoMapper::Document
+        set_collection_name 'test'
+
+        key :name
+        validates_uniqueness_of :name
+      end
+
+      doc = document.new("name" => "BLAMMO")
+      doc.save.should be_true
+
+      doc2 = document.new("name" => "blammo")
+      doc2.should_not have_error_on(:name)
+    end
+
+    should "fail on entries that differ only in case if :case_sensitive => false" do
+      document = Class.new do
+        include MongoMapper::Document
+        set_collection_name 'test'
+
+        key :name
+        validates_uniqueness_of :name, :case_sensitive => false
+      end
+
+      doc = document.new("name" => "BLAMMO")
+      doc.save.should be_true
+
+      doc2 = document.new("name" => "blammo")
+      doc2.should have_error_on(:name)
+    end
+
     context "scoped by a single attribute" do
       setup do
         @document = Class.new do
@@ -225,7 +257,7 @@ class ValidationsTest < Test::Unit::TestCase
         end
         @document.collection.remove
       end
-      
+
       should "fail if the same name exists in the scope" do
         doc = @document.new("name" => "joe", "scope" => "one")
         doc.save.should be_true
@@ -238,11 +270,11 @@ class ValidationsTest < Test::Unit::TestCase
         doc2 = @document.new("name" => "joe", "scope" => "one")
         doc2.should have_error_on(:name)
       end
-      
+
       should "pass if the same name exists in a different scope" do
         doc = @document.new("name" => "joe", "scope" => "one")
         doc.save.should be_true
-        
+
         @document \
           .stubs(:first) \
           .with(:name => 'joe', :scope => 'two') \
@@ -252,7 +284,7 @@ class ValidationsTest < Test::Unit::TestCase
         doc2.should_not have_error_on(:name)
       end
     end
-    
+
     context "scoped by a multiple attributes" do
       setup do
         @document = Class.new do
