@@ -5,34 +5,23 @@ module MongoMapper
         @_values = v.map { |e| e.kind_of?(EmbeddedDocument) ? e.attributes : e }
         reset
       end
-      
-      def build(opts={})
-        owner = @owner
-        child = @association.klass.new(opts)
-        assign_parent_reference(child)
-        child._root_document = owner
-        self << child
-        child
+
+      def build(attributes={})
+        doc = @association.klass.new(attributes)
+        assign_root_document(doc)
+        self << doc
+        doc
       end
-      
-      def find(opts)
-        case opts
-        when :all
-          self
-        when String
-          if load_target
-            child = @target.detect {|item| item.id == opts}
-            assign_parent_reference(child)
-            child
-          end
-        end
+
+      def find(id)
+        load_target
+        @target.detect { |item| item.id == id }
       end
 
       def <<(*docs)
         if load_target
-          root = @owner._root_document || @owner
           docs.each do |doc|
-            doc._root_document = root
+            assign_root_document(doc)
             @target << doc
           end
         end
@@ -40,28 +29,24 @@ module MongoMapper
       alias_method :push, :<<
       alias_method :concat, :<<
 
-      protected
+      private
         def find_target
           (@_values || []).map do |e|
             child = @association.klass.new(e)
-            assign_parent_reference(child)
+            assign_root_document(child)
             child
           end
         end
-        
-      private
-      
-        def assign_parent_reference(child)
-          return unless child && @owner
-          return if @owner.class.name.blank?
-          owner = @owner
-          child.class_eval do
-            define_method(owner.class.name.underscore) do
-              owner
-            end
+
+        def root_document
+          @owner._root_document || @owner
+        end
+
+        def assign_root_document(*docs)
+          docs.each do |doc|
+            doc._root_document = root_document
           end
         end
-      
     end
   end
 end

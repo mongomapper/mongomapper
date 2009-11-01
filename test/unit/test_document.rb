@@ -135,13 +135,18 @@ class DocumentTest < Test::Unit::TestCase
         @document.new._root_document.should be_nil
       end
 
-      should "set self to the root document on embedded documents" do
-        document = Class.new(RealPerson) do
-          many :pets
+      should "set self to the root document on embedded documents" do        
+        klass = Class.new do
+          include MongoMapper::Document
         end
-
-        doc = document.new 'pets' => [{}]
-        doc.pets.first._root_document.should == doc
+        
+        pets = Class.new do
+          include MongoMapper::EmbeddedDocument
+        end
+        klass.many :pets, :class => pets
+        
+        doc = klass.new(:pets => [{}])
+        doc.pets.first._root_document.should == doc        
       end
     end
 

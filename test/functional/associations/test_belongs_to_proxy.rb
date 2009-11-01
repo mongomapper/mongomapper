@@ -2,48 +2,46 @@ require 'test_helper'
 require 'models'
 
 class BelongsToProxyTest < Test::Unit::TestCase
-  def setup
-    Status.collection.remove
-    Project.collection.remove
+  def setup    
+    @post_class = Class.new do
+      include MongoMapper::Document
+    end
+    
+    @comment_class = Class.new do
+      include MongoMapper::Document
+      key :post_id, String
+    end
+    @comment_class.belongs_to :post, :class => @post_class
+    
+    @post_class.collection.remove
+    @comment_class.collection.remove
   end
   
   should "default to nil" do
-    status = Status.new
-    status.project.nil?.should == true
-    status.project.inspect.should == 'nil'
+    @comment_class.new.post.nil?.should be_true
   end
   
   should "be able to replace the association" do
-    status = Status.new(:name => 'Foo!')
-    project = Project.new(:name => "mongomapper")
-    status.project = project
-    status.save.should be_true
+    post = @post_class.new(:name => 'mongomapper')
+    comment = @comment_class.new(:name => 'Foo!', :post => post)
+    comment.save.should be_true
     
-    from_db = Status.find(status.id)
-    from_db.project.nil?.should be_false
-    from_db.project.name.should == "mongomapper"
+    comment = comment.reload
+    comment.post.should == post
+    comment.post.nil?.should be_false
   end
   
   should "unset the association" do
-    status = Status.new(:name => 'Foo!')
-    project = Project.new(:name => "mongomapper")
-    status.project = project
-    status.save.should be_true
+    post = @post_class.new(:name => 'mongomapper')
+    comment = @comment_class.new(:name => 'Foo!', :post => post)
+    comment.save.should be_true
     
-    from_db = Status.find(status.id)
-    from_db.project = nil
-    from_db.project.nil?.should be_true
-    from_db.project.inspect.should == 'nil'
+    comment = comment.reload
+    comment.post = nil
+    comment.post.nil?.should be_true
   end
   
-  context "association id set but document not found" do
-    setup do
-      @status = Status.new(:name => 'Foo', :project_id => '1234')
-    end
-
-    should "return nil instead of raising error" do
-      @status.project.nil?.should be_true
-      @status.project.inspect.should == 'nil'
-    end
+  should "return nil if id set but document not found" do
+    @comment_class.new(:name => 'Foo', :post_id => '1234').post.nil?.should be_true
   end
 end

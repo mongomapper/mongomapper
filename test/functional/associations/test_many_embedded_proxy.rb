@@ -17,13 +17,6 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     project.addresses.push Address.new
     project.addresses.size.should == 2
   end
-  
-  should "allow finding :all embedded documents" do
-    project = Project.new
-    project.addresses << Address.new
-    project.addresses << Address.new
-    project.save
-  end
 
   should "be embedded in document on save" do
     sb = Address.new(:city => 'South Bend', :state => 'IN')
@@ -130,70 +123,72 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       doc.people.first.pets.first._root_document.should == doc
     end
 
-    should "create properly-named reference to parent document when building off association proxy" do
-      person = RealPerson.new
-      pet = person.pets.build
-      person.should == pet.real_person
-    end
-
-
     should "create a reference to the root document for all embedded documents" do
-      meg = Person.new(:name => "Meg")
       sparky = Pet.new(:name => "Sparky", :species => "Dog")
-
+      meg = Person.new(:name => "Meg", :pets => [sparky])
       doc = @document.new
-
-      meg.pets << sparky
-
       doc.people << meg
       doc.save
 
-      from_db = @document.find(doc.id)
-      from_db.people.first._root_document.should == doc
-      from_db.people.first.pets.first._root_document.should == doc
+      doc = doc.reload
+      doc.people.first._root_document.should == doc
+      doc.people.first.pets.first._root_document.should == doc
     end
   end
   
-  should "allow retrieval via find(:all)" do
-    meg = Person.new(:name => "Meg")
+  should "allow finding by id" do
     sparky = Pet.new(:name => "Sparky", :species => "Dog")
-
-    meg.pets << sparky
-    
-    meg.pets.find(:all).should include(sparky)
-  end
-  
-  should "allow retrieval via find(id)" do
-    meg = Person.new(:name => "Meg")
-    sparky = Pet.new(:name => "Sparky", :species => "Dog")
-
-    meg.pets << sparky
-    
+    meg = Person.new(:name => "Meg", :pets => [sparky])
     meg.pets.find(sparky.id).should == sparky
   end
   
   context "extending the association" do
+    setup do
+      @address_class = Class.new do
+        include MongoMapper::EmbeddedDocument
+        key :address, String
+        key :city, String
+        key :state, String
+        key :zip, Integer
+      end
+      
+      @project_class = Class.new do
+        include MongoMapper::Document
+        key :name, String
+      end
+      
+      @project_class.collection.remove
+    end
+    
     should "work using a block passed to many" do
-      project = Project.new(:name => "Some Project")
-      addr1 = Address.new(:address => "Gate-3 Lankershim Blvd.", :city => "Universal City", :state => "CA", :zip => "91608")
-      addr2 = Address.new(:address => "3000 W. Alameda Ave.", :city => "Burbank", :state => "CA", :zip => "91523")
-      addr3 = Address.new(:address => "111 Some Ln", :city => "Nashville", :state => "TN", :zip => "37211")
-      project.addresses = [addr1, addr2, addr3]
-      project.save
+      @project_class.many :addresses, :class => @address_class do
+        def find_all_by_state(state)
+          find_all { |a| a.state == state }
+        end
+      end
+      
+      addr1 = @address_class.new(:address => "Gate-3 Lankershim Blvd.", :city => "Universal City", :state => "CA", :zip => "91608")
+      addr2 = @address_class.new(:address => "3000 W. Alameda Ave.", :city => "Burbank", :state => "CA", :zip => "91523")
+      addr3 = @address_class.new(:address => "111 Some Ln", :city => "Nashville", :state => "TN", :zip => "37211")
+      project = @project_class.create(:name => "Some Project", :addresses => [addr1, addr2, addr3])
+      
       project.addresses.find_all_by_state("CA").should == [addr1, addr2]
     end
   
     should "work using many's :extend option" do
-      project = Project.new(:name => "Some Project")
-      person1 = Person.new(:name => "Steve")
-      person2 = Person.new(:name => "Betty")
-      person3 = Person.new(:name => "Cynthia")
-
-      project.people << person1
-      project.people << person2
-      project.people << person3
-      project.save
-      project.people.find_by_name("Steve").should == person1
+      module FindByCity
+        def find_by_city(city)
+          find_all { |a| a.city == city }
+        end
+      end
+      @project_class.many :addresses, :class => @address_class, :extend => FindByCity
+      
+      addr1 = @address_class.new(:address => "Gate-3 Lankershim Blvd.", :city => "Universal City", :state => "CA", :zip => "91608")
+      addr2 = @address_class.new(:address => "3000 W. Alameda Ave.", :city => "Burbank", :state => "CA", :zip => "91523")
+      addr3 = @address_class.new(:address => "111 Some Ln", :city => "Nashville", :state => "TN", :zip => "37211")
+      project = @project_class.create(:name => "Some Project", :addresses => [addr1, addr2, addr3])
+      
+      project.addresses.find_by_city('Burbank').should == [addr2]
     end
   end
 end

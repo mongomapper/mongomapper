@@ -33,7 +33,7 @@ class AssociationBaseTest < Test::Unit::TestCase
   end
   
   context "klass" do
-    should "be class_name constantized" do
+    should "default to class_name constantized" do
       Base.new(:belongs_to, :foo_monster).klass.should == FooMonster
     end
     
