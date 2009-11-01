@@ -36,8 +36,9 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     should "allow setting a different database without affecting the default" do
-      @document.database AlternateDatabase
-      @document.database.name.should == AlternateDatabase
+      @document.set_database_name 'test2'
+      @document.database_name.should == 'test2'
+      @document.database.name.should == 'test2'
 
       another_document = Class.new do
         include MongoMapper::Document
@@ -113,7 +114,7 @@ class DocumentTest < Test::Unit::TestCase
 
     should "have access to the class's collection" do
       doc = @document.new
-      doc.collection.should == @document.collection
+      doc.collection.name.should == @document.collection.name
     end
 
     should "use default values if defined for keys" do

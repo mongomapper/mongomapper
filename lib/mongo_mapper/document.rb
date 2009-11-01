@@ -247,26 +247,36 @@ module MongoMapper
         @connection
       end
 
-      # @overload database()
-      #   @return [Mongo] the database object used by your document class
+      # Changes the database name from the default to whatever you want
       #
-      # @overload database(name)
-      #   @param [String] name the name of an existing, or new, Mongo database
-      #   @return [Mongo] a Mongo database object for the specified database
-      def database(name=nil)
-        if name.nil?
-          @database ||= MongoMapper.database
+      # @param [#to_s] name the new database name to use.
+      def set_database_name(name)
+        @database_name = name
+      end
+      
+      # Returns the database name
+      #
+      # @return [String] the database name
+      def database_name
+        @database_name
+      end
+
+      # Returns the database the document should use. Defaults to
+      #   MongoMapper.database if other database is not set.
+      #
+      # @return [Mongo::DB] the mongo database instance
+      def database
+        if database_name.nil?
+          MongoMapper.database
         else
-          @database = connection.db(name)
+          connection.db(database_name)
         end
-        @database
       end
 
       # Changes the collection name from the default to whatever you want
       #
-      # @param [#to_s] name the new collection name to use. Defaults to +nil+
-      def set_collection_name(name=nil)
-        @collection = nil
+      # @param [#to_s] name the new collection name to use.
+      def set_collection_name(name)
         @collection_name = name
       end
 
@@ -280,7 +290,7 @@ module MongoMapper
 
       # @return the Mongo Ruby driver +collection+ object
       def collection
-        @collection ||= database.collection(collection_name)
+        database.collection(collection_name)
       end
       
       # Defines a +created_at+ and +updated_at+ attribute (with a +Time+ 

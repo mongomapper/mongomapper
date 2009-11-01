@@ -15,9 +15,9 @@ class MongoMapperTest < Test::Unit::TestCase
   end
   
   should "be able to write and read default database" do
-    MongoMapper.database = DefaultDatabase
+    MongoMapper.database = 'test'
     MongoMapper.database.should be_instance_of(Mongo::DB)
-    MongoMapper.database.name.should == DefaultDatabase
+    MongoMapper.database.name.should == 'test'
   end
   
   should "have document not found error" do
