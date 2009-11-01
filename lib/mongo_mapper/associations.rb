@@ -1,13 +1,13 @@
 module MongoMapper
   module Associations
     module ClassMethods
-      def belongs_to(association_id, options={})
-        create_association(:belongs_to, association_id, options)
+      def belongs_to(association_id, options={}, &extension)
+        create_association(:belongs_to, association_id, options, &extension)
         self
       end
 
-      def many(association_id, options = {}, &block)
-        create_association(:many, association_id, options, &block)
+      def many(association_id, options={}, &extension)
+        create_association(:many, association_id, options, &extension)
         self
       end
 
@@ -19,18 +19,11 @@ module MongoMapper
 
       private
         def create_association(type, name, options, &extension)
-          options[:extend] = modulized_extensions(extension, options[:extend])
-          association = Associations::Base.new(type, name, options)
+          association = Associations::Base.new(type, name, options, &extension)
           associations[association.name] = association
           define_association_methods(association)
           define_dependent_callback(association)
           association
-        end
-        
-        def modulized_extensions(*extensions)
-          extensions.flatten.compact.map do |extension|
-            Proc === extension ? Module.new(&extension) : extension
-          end
         end
 
         def define_association_methods(association)
