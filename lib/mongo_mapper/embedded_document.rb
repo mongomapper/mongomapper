@@ -220,7 +220,6 @@ module MongoMapper
         attrs = HashWithIndifferentAccess.new
         
         embedded_keys.each do |key|
-          puts key.inspect
           attrs[key.name] = read_attribute(key.name).try(:attributes)
         end
         
