@@ -13,7 +13,7 @@ Jeweler::Tasks.new do |gem|
   
   gem.add_dependency('activesupport', '>= 2.3')
   gem.add_dependency('mongo', '0.16')
-  gem.add_dependency('jnunemaker-validatable', '1.8.0')
+  gem.add_dependency('jnunemaker-validatable', '1.8.1')
   
   gem.add_development_dependency('jnunemaker-matchy', '0.4.0')
   gem.add_development_dependency('shoulda', '2.10.2')
