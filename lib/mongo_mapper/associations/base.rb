@@ -37,7 +37,7 @@ module MongoMapper
       end
 
       def klass
-        @klass ||= options[:class] ? options[:class] : class_name.constantize
+        @klass ||= options[:class] || class_name.constantize
       end
 
       def many?
