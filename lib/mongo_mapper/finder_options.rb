@@ -24,8 +24,9 @@ module MongoMapper
 
     def initialize(model, options)
       raise ArgumentError, "Options must be a hash" unless options.is_a?(Hash)
+      options = options.clone
       options.symbolize_keys!
-      
+
       @model      = model
       @options    = {}
       @conditions = options.delete(:conditions) || {}

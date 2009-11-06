@@ -142,7 +142,7 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<activesupport>, [">= 2.3"])
       s.add_runtime_dependency(%q<mongo>, ["= 0.16"])
-      s.add_runtime_dependency(%q<jnunemaker-validatable>, ["= 1.8.0"])
+      s.add_runtime_dependency(%q<jnunemaker-validatable>, ["= 1.8.1"])
       s.add_development_dependency(%q<jnunemaker-matchy>, ["= 0.4.0"])
       s.add_development_dependency(%q<shoulda>, ["= 2.10.2"])
       s.add_development_dependency(%q<timecop>, ["= 0.3.1"])
