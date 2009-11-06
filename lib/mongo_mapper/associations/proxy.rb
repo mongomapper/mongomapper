@@ -6,7 +6,7 @@ module MongoMapper
       def initialize(owner, association)
         @owner = owner
         @association = association
-        @association.options[:extend].each { |ext| proxy_extend(ext) }
+        @association.options[:extend].each { |ext| class << self; self; end.instance_eval { include ext } }
         reset
       end
 
@@ -25,7 +25,8 @@ module MongoMapper
       end
 
       def send(method, *args)
-        return super if methods.include?(method.to_s)
+        meths = class << self; self; end.instance_methods
+        return __send__(method, *args) if meths.include?(method.to_s)
         load_target
         @target.send(method, *args)
       end
