@@ -26,7 +26,7 @@ module MongoMapper
 
       def send(method, *args)
         meths = class << self; self; end.instance_methods
-        stringified_method = meth.to_s
+        stringified_method = method.to_s
         return __send__(method, *args) if meths.any? { |meth| meth.to_s == stringified_method }
         load_target
         @target.send(method, *args)
