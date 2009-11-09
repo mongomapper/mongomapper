@@ -17,7 +17,7 @@ Jeweler::Tasks.new do |gem|
   
   gem.add_development_dependency('jnunemaker-matchy', '0.4.0')
   gem.add_development_dependency('shoulda', '2.10.2')
-  gem.add_development_dependency('timecop', '0.3.2')
+  gem.add_development_dependency('timecop', '0.3.1')
   gem.add_development_dependency('mocha', '0.9.8')
 end
 

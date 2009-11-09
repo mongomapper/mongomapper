@@ -432,16 +432,12 @@ module MongoMapper
         read_attribute('_id').blank? || using_custom_id?
       end
 
-      def save(perform_validation = true)
-        if perform_validation && valid? || !perform_validation
-          create_or_update
-        else
-          false
-        end
+      def save(perform_validations=true)
+        !perform_validations || valid? ? create_or_update : false
       end
 
       def save!
-        valid? ? create_or_update : raise(DocumentNotValid.new(self))
+        save || raise(DocumentNotValid.new(self))
       end
 
       def destroy
