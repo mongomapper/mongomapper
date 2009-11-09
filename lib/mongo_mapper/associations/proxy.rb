@@ -25,9 +25,12 @@ module MongoMapper
       end
 
       def send(method, *args)
-        meths = class << self; self; end.instance_methods
-        stringified_method = method.to_s
-        return __send__(method, *args) if meths.any? { |meth| meth.to_s == stringified_method }
+        metaclass_instance_methods = class << self; self; end.instance_methods
+        
+        if metaclass_instance_methods.any? { |m| m.to_s == method.to_s }
+          return __send__(method, *args)
+        end
+        
         load_target
         @target.send(method, *args)
       end
@@ -49,10 +52,10 @@ module MongoMapper
       protected
         def method_missing(method, *args, &block)
           if load_target
-            unless block.nil?
-              @target.send(method, *args)  { |*block_args| block.call(*block_args) }
-            else
+            if block.nil?
               @target.send(method, *args)
+            else
+              @target.send(method, *args)  { |*block_args| block.call(*block_args) }
             end
           end
         end

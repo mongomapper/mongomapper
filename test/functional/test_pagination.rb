@@ -51,12 +51,11 @@ class PaginationTest < Test::Unit::TestCase
       result.should == [@doc1, @doc3]
       result.first.age.should == 27
 
-
       result = @document.paginate({
         :conditions => {:last_name => 'Nunemaker'},
-          :order     => "age DESC",
-          :per_page  => 2,
-          :page      => 1} )
+        :order      => "age DESC",
+        :per_page   => 2,
+        :page       => 1} )
       result.should == [@doc1, @doc3]
       result.first.age.should == 27
     end

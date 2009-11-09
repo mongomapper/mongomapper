@@ -89,11 +89,11 @@ module MongoMapper
       
     private
       def accessors_module
-        module_defined = if method(:const_defined?).arity == 1
-                          const_defined?('MongoMapperKeys')
-                        else
-                          const_defined?('MongoMapperKeys', false)
-                        end
+        module_defined =  if method(:const_defined?).arity == 1 # Ruby 1.9 compat check
+                            const_defined?('MongoMapperKeys')
+                          else
+                            const_defined?('MongoMapperKeys', false)
+                          end
 
         if module_defined
           const_get 'MongoMapperKeys'
