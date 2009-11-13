@@ -4,6 +4,10 @@ module MongoMapper
       def self.included(model)
         model.class_eval do
           alias_method :new_record?, :new?
+          
+          def human_name
+            self.name.demodulize.humanize
+          end
         end
       end
     end

@@ -1,6 +1,10 @@
 require 'test_helper'
 
 class TestRailsCompatibility < Test::Unit::TestCase
+  class Stuff
+    include MongoMapper::Document
+  end
+  
   class Item
     include MongoMapper::EmbeddedDocument
     key :for_all, String
@@ -30,6 +34,16 @@ class TestRailsCompatibility < Test::Unit::TestCase
     should "alias new to new_record?" do
       instance = Item.new
       instance.new_record?.should == instance.new?
+    end
+    
+    should "implement human_name" do
+      Item.human_name.should == 'Item'
+    end
+  end
+  
+  context "Document" do
+    should "implement human_name" do
+      Stuff.human_name.should == 'Stuff'
     end
   end
 end
