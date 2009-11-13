@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class TestRailsCompatibility < Test::Unit::TestCase
-  class Stuff
+  class BigStuff
     include MongoMapper::Document
   end
   
@@ -43,7 +43,7 @@ class TestRailsCompatibility < Test::Unit::TestCase
   
   context "Document" do
     should "implement human_name" do
-      Stuff.human_name.should == 'Stuff'
+      BigStuff.human_name.should == 'Big Stuff'
     end
   end
 end

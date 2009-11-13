@@ -6,7 +6,7 @@ module MongoMapper
           alias_method :new_record?, :new?
           
           def human_name
-            self.name.demodulize.humanize
+            self.name.demodulize.titleize
           end
         end
       end
