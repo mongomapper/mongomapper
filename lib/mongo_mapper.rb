@@ -15,7 +15,7 @@ module MongoMapper
   # raised when document not valid and using !
   class DocumentNotValid < MongoMapperError
     def initialize(document)
-      super("Validation failed: #{@document.errors.full_messages.join(", ")}")
+      super("Validation failed: #{document.errors.full_messages.join(", ")}")
     end
   end
   
