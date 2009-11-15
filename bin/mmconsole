@@ -1,8 +1,13 @@
 #!/usr/bin/env ruby
-$:.unshift File.dirname(__FILE__)+"/../lib"
+$:.unshift(File.dirname(__FILE__) + '/../lib')
 
-require 'mongo_mapper'
-require 'irb'
+begin
+  require 'mongo_mapper'
+  require 'irb'
+rescue LoadError
+  require 'rubygems'
+  retry
+end
 
 IRB.setup(nil)
 irb = IRB::Irb.new
@@ -43,12 +48,12 @@ Example 2:
 
   all_things = Thing.all
   puts all_things.map { |object| object.name }.inspect
-
 @
 
 trap("SIGINT") do
   irb.signal_handle
 end
+
 catch(:IRB_EXIT) do
   irb.eval_input
 end

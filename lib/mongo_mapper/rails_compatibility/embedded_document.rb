@@ -17,6 +17,10 @@ module MongoMapper
         def column_names
           keys.keys
         end
+        
+        def human_name
+          self.name.demodulize.titleize
+        end
       end
     end
   end
