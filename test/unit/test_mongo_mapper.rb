@@ -49,4 +49,17 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.time_class.should == Time
     end
   end
+  
+  context "normalize_object_id" do
+    should "turn string into object id" do
+      id = Mongo::ObjectID.new
+      MongoMapper.normalize_object_id(id.to_s).should == id
+    end
+    
+    should "leave object id alone" do
+      id = Mongo::ObjectID.new
+      MongoMapper.normalize_object_id(id).should == id
+    end
+  end
+  
 end

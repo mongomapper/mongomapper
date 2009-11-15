@@ -49,6 +49,15 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @klass.keys['_id'].should_not be_nil
     end
     
+    should "know it is using object id" do
+      @klass.using_object_id?.should be_true
+    end
+    
+    should "know it is not using object id if _id type is changed" do
+      @klass.key :_id, String
+      @klass.using_object_id?.should be_false
+    end
+    
     context "#to_mongo" do
       should "be nil if nil" do
         @klass.to_mongo(nil).should be_nil
@@ -317,6 +326,24 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     should "have id method that sets _id" do
       doc = @document.new
       doc.id.should == doc._id.to_s
+    end
+    
+    context "assigning id with _id ObjectId type" do
+      should "not set custom id flag" do
+        doc = @document.new
+        doc.using_custom_id?.should be_false
+        doc.id = Mongo::ObjectID.new
+        doc.using_custom_id?.should be_false
+      end
+      
+      should "convert string object id to mongo object id" do
+        id = Mongo::ObjectID.new
+        doc = @document.new
+        doc.id = id.to_s
+        doc._id.should == id
+        doc.id.should == id.to_s
+        doc.using_custom_id?.should be_false
+      end
     end
 
     should "have a nil _root_document" do

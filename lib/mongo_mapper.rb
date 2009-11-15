@@ -102,6 +102,10 @@ module MongoMapper
   def self.time_class
     use_time_zone? ? Time.zone : Time
   end
+  
+  def self.normalize_object_id(value)
+    value.is_a?(String) ? Mongo::ObjectID.from_string(value) : value
+  end
 end
 
 require 'mongo_mapper/support'

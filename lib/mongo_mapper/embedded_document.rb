@@ -57,6 +57,10 @@ module MongoMapper
         key
       end
       
+      def using_object_id?
+        object_id_key?(:_id)
+      end
+      
       def object_id_key?(name)
         key = keys[name.to_s]
         key && key.type == ObjectId
@@ -283,7 +287,12 @@ module MongoMapper
       end
 
       def id=(value)
-        @using_custom_id = true
+        if self.class.using_object_id?
+          value = MongoMapper.normalize_object_id(value)
+        else
+          @using_custom_id = true
+        end
+        
         write_attribute :_id, value
       end
 
