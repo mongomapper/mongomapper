@@ -48,16 +48,11 @@ module MongoMapper
 
       def key(*args)
         key = Key.new(*args)
+        keys[key.name] = key
 
-        if keys[key.name].blank?
-          keys[key.name] = key
-
-          create_accessors_for(key)
-          create_key_in_subclasses(*args)
-          create_validations_for(key)
-
-          key
-        end
+        create_accessors_for(key)
+        create_key_in_subclasses(*args)
+        create_validations_for(key)
 
         key
       end

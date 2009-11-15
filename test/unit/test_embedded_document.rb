@@ -159,11 +159,11 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @document.keys['age'].type.should == Integer
     end
     
-    should "not be redefinable" do
+    should "be redefinable" do
       @document.key(:foo, String)
       @document.keys['foo'].type.should == String
       @document.key(:foo, Integer)
-      @document.keys['foo'].type.should == String
+      @document.keys['foo'].type.should == Integer
     end
     
     should "create reader method" do
