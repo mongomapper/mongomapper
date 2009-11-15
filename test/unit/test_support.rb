@@ -215,6 +215,26 @@ class SupportTest < Test::Unit::TestCase
     end
   end
   
+  context "Set#to_mongo" do
+    should "convert value to_a" do
+      Set.to_mongo(Set.new([1,2,3])).should == [1,2,3]
+    end
+
+    should "convert to empty array if nil" do
+      Set.to_mongo(nil).should == []
+    end
+  end
+
+  context "Set#from_mongo" do
+    should "be a set if array" do
+      Set.from_mongo([1,2,3]).should == Set.new([1,2,3])
+    end
+
+    should "be empty set if nil" do
+      Set.from_mongo(nil).should == Set.new([])
+    end
+  end
+  
   context "String#to_mongo" do
     should "convert value to_s" do
       [21, '21'].each do |value|

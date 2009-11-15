@@ -1,3 +1,5 @@
+require 'set'
+
 class BasicObject #:nodoc:
   instance_methods.each { |m| undef_method m unless m =~ /(^__|instance_eval)/ }
 end unless defined?(BasicObject)
@@ -89,6 +91,16 @@ class Object
   
   def self.from_mongo(value)
     value
+  end
+end
+
+class Set
+  def self.to_mongo(value)
+    value.to_a
+  end
+  
+  def self.from_mongo(value)
+    Set.new(value || [])
   end
 end
 
