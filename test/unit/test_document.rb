@@ -156,7 +156,8 @@ class DocumentTest < Test::Unit::TestCase
         @document.new.new?.should be_true
       end
       
-      should_eventually "be true if id but using custom id and not saved yet" do
+      should "be true if id but using custom id and not saved yet" do
+        @document.key :_id, String
         doc = @document.new
         doc.id = '1234'
         doc.new?.should be_true

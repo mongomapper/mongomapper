@@ -16,7 +16,8 @@ class DocumentTest < Test::Unit::TestCase
   end
 
   context "Saving a document with a custom id" do
-    should_eventually "clear custom id flag when saved" do
+    should "clear custom id flag when saved" do
+      @document.key :_id, String
       doc = @document.new(:id => '1234')
       doc.using_custom_id?.should be_true
       doc.save.should be_true

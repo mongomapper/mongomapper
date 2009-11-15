@@ -241,6 +241,23 @@ class SupportTest < Test::Unit::TestCase
     end
   end
   
+  context "StringId#to_mongo" do
+    should "be same as String#to_mongo" do
+      id = Mongo::ObjectID.new
+      StringId.to_mongo(nil).should == String.to_mongo(nil)
+      StringId.to_mongo(id).should == String.to_mongo(id.to_s)
+      StringId.to_mongo('asdf').should == String.to_mongo('asdf')
+    end
+  end
+  
+  context "StringId#from_mongo" do
+    should "be same as String#from_mongo" do
+      StringId.from_mongo(nil).should == String.from_mongo(nil)
+      StringId.from_mongo('').should == String.from_mongo('')
+      StringId.from_mongo('asdf').should == String.from_mongo('asdf')
+    end
+  end
+  
   context "Time#to_mongo without Time.zone" do
     should "be time if string" do
       Time.to_mongo('2000-01-01 01:01:01.123456').should == Time.local(2000, 1, 1, 1, 1, 1, 123456).utc

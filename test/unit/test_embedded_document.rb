@@ -324,12 +324,14 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
 
     context "setting custom id" do
-      should_eventually "set _id" do
+      should "set _id" do
+        @document.key :_id, String
         doc = @document.new(:id => '1234')
         doc._id.should == '1234'
       end
       
-      should_eventually "know that custom id is set" do
+      should "know that custom id is set" do
+        @document.key :_id, String
         doc = @document.new
         doc.using_custom_id?.should be_false
         doc.id = '1234'
