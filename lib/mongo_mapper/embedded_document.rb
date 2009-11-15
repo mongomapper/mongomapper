@@ -16,7 +16,7 @@ module MongoMapper
 
         extend Validations::Macros
 
-        key :_id, Mongo::ObjectID
+        key :_id, ObjectId
         attr_accessor :_root_document
       end
     end
@@ -25,7 +25,7 @@ module MongoMapper
       def logger
         MongoMapper.logger
       end
-      
+
       def inherited(subclass)
         unless subclass.embeddable?
           subclass.set_collection_name(collection_name)
@@ -55,16 +55,16 @@ module MongoMapper
           create_accessors_for(key)
           create_key_in_subclasses(*args)
           create_validations_for(key)
-          
+
           key
         end
-        
+
         key
       end
       
       def object_id_key?(name)
         key = keys[name.to_s]
-        key && key.type == Mongo::ObjectID
+        key && key.type == ObjectId
       end
 
       def embeddable?
@@ -205,7 +205,7 @@ module MongoMapper
           end
         end
       end
-      
+
       def new?
         !!@new_document
       end
@@ -289,11 +289,6 @@ module MongoMapper
 
       def id=(value)
         @using_custom_id = true
-        
-        if self.class.object_id_key?(:_id)
-          value = value.is_a?(String) ? Mongo::ObjectID.from_string(value) : value
-        end
-        
         write_attribute :_id, value
       end
 

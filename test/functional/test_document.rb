@@ -16,7 +16,7 @@ class DocumentTest < Test::Unit::TestCase
   end
 
   context "Saving a document with a custom id" do
-    should "clear custom id flag when saved" do
+    should_eventually "clear custom id flag when saved" do
       doc = @document.new(:id => '1234')
       doc.using_custom_id?.should be_true
       doc.save.should be_true
@@ -595,7 +595,7 @@ class DocumentTest < Test::Unit::TestCase
       context "many" do
         context "=> destroy" do
           setup do
-            Property.key :thing_id, Mongo::ObjectID
+            Property.key :thing_id, ObjectId
             Property.belongs_to :thing, :dependent => :destroy
             Thing.many :properties, :dependent => :destroy
 
@@ -618,7 +618,7 @@ class DocumentTest < Test::Unit::TestCase
 
         context "=> delete_all" do
           setup do
-            Property.key :thing_id, Mongo::ObjectID
+            Property.key :thing_id, ObjectId
             Property.belongs_to :thing
             Thing.has_many :properties, :dependent => :delete_all
 
@@ -641,7 +641,7 @@ class DocumentTest < Test::Unit::TestCase
 
         context "=> nullify" do
           setup do
-            Property.key :thing_id, Mongo::ObjectID
+            Property.key :thing_id, ObjectId
             Property.belongs_to :thing
             Thing.has_many :properties, :dependent => :nullify
 
@@ -666,7 +666,7 @@ class DocumentTest < Test::Unit::TestCase
       context "belongs_to" do
         context "=> destroy" do
           setup do
-            Property.key :thing_id, Mongo::ObjectID
+            Property.key :thing_id, ObjectId
             Property.belongs_to :thing, :dependent => :destroy
             Thing.has_many :properties
 

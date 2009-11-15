@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class SupportTest < Test::Unit::TestCase
+  include MongoMapper::Types
+  
   context "Array#to_mongo" do
     should "convert value to_a" do
       Array.to_mongo([1, 2, 3, 4]).should == [1, 2, 3, 4]
@@ -159,6 +161,29 @@ class SupportTest < Test::Unit::TestCase
       [9223372036854775807, '9223372036854775807'].each do |value|
         Integer.to_mongo(value).should == 9223372036854775807
       end
+    end
+  end
+  
+  context "ObjectId#to_mongo" do
+    should "return nil for nil" do
+      ObjectId.to_mongo(nil).should be_nil
+    end
+    
+    should "return value if object id" do
+      id = Mongo::ObjectID.new
+      ObjectId.to_mongo(id).should be(id)
+    end
+    
+    should "return object id if string" do
+      id = Mongo::ObjectID.new
+      ObjectId.to_mongo(id.to_s).should be(id)
+    end
+  end
+  
+  context "ObjectId#from_mongo" do
+    should "return value" do
+      id = Mongo::ObjectID.new
+      ObjectId.from_mongo(id).should == id
     end
   end
   

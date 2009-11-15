@@ -14,7 +14,7 @@ class AssociationsTest < Test::Unit::TestCase
       include MongoMapper::EmbeddedDocument
       
       key :name, String
-      key :post_id, Mongo::ObjectID
+      key :post_id, ObjectId
       
       belongs_to :post, :class_name => 'AssociationsTest::AwesomeUser'
     end
@@ -22,7 +22,7 @@ class AssociationsTest < Test::Unit::TestCase
     class AwesomePost
       include MongoMapper::Document
       
-      key :creator_id, Mongo::ObjectID
+      key :creator_id, ObjectId
       
       belongs_to :creator, :class_name => 'AssociationsTest::AwesomeUser'
       many :tags, :class_name => 'AssociationsTest::AwesomeTag', :foreign_key => :post_id

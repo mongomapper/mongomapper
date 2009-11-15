@@ -38,9 +38,10 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
     
     post = post.reload
     post.comments.size.should == 3
-    post.comments[0].body.should == 'foo'
-    post.comments[1].body.should == 'bar'
-    post.comments[2].body.should == 'baz'
+    bodies = post.comments.collect(&:body)
+    bodies.should include('foo')
+    bodies.should include('bar')
+    bodies.should include('baz')
   end
 
   context "build" do

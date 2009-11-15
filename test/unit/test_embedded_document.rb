@@ -80,6 +80,15 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
   end
   
+  context "looking up type constants" do
+    should "not raise an error" do
+      klass = Class.new do
+        include MongoMapper::EmbeddedDocument
+        key :file, Binary
+      end
+    end
+  end
+  
   context "parent_model" do
     should "be nil if none of parents ancestors include EmbeddedDocument" do
       parent = Class.new
@@ -315,12 +324,12 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
 
     context "setting custom id" do
-      should "set _id" do
+      should_eventually "set _id" do
         doc = @document.new(:id => '1234')
         doc._id.should == '1234'
       end
       
-      should "know that custom id is set" do
+      should_eventually "know that custom id is set" do
         doc = @document.new
         doc.using_custom_id?.should be_false
         doc.id = '1234'
@@ -657,12 +666,15 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
     
     context "equality" do
+      setup do
+        @oid = Mongo::ObjectID.new
+      end
       should "be equal if id and class are the same" do
-        (@document.new('_id' => 1) == @document.new('_id' => 1)).should be(true)
+        (@document.new('_id' => @oid) == @document.new('_id' => @oid)).should be(true)
       end
 
       should "not be equal if class same but id different" do
-        (@document.new('_id' => 1) == @document.new('_id' => 2)).should be(false)
+        (@document.new('_id' => @oid) == @document.new('_id' => Mongo::ObjectID.new)).should be(false)
       end
 
       should "not be equal if id same but class different" do
@@ -670,7 +682,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
           include MongoMapper::Document
         end
 
-        (@document.new('_id' => 1) == @another_document.new('_id' => 1)).should be(false)
+        (@document.new('_id' => @oid) == @another_document.new('_id' => @oid)).should be(false)
       end
     end
   end # instance of a embedded document

@@ -156,7 +156,7 @@ class DocumentTest < Test::Unit::TestCase
         @document.new.new?.should be_true
       end
       
-      should "be true if id but using custom id and not saved yet" do
+      should_eventually "be true if id but using custom id and not saved yet" do
         doc = @document.new
         doc.id = '1234'
         doc.new?.should be_true
@@ -178,14 +178,16 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
 
-    
     context "equality" do
+      setup do
+        @oid = Mongo::ObjectID.new
+      end
       should "be equal if id and class are the same" do
-        (@document.new('_id' => 1) == @document.new('_id' => 1)).should be(true)
+        (@document.new('_id' => @oid) == @document.new('_id' => @oid)).should be(true)
       end
 
       should "not be equal if class same but id different" do
-        (@document.new('_id' => 1) == @document.new('_id' => 2)).should be(false)
+        (@document.new('_id' => @oid) == @document.new('_id' => Mongo::ObjectID.new)).should be(false)
       end
 
       should "not be equal if id same but class different" do
@@ -194,7 +196,7 @@ class DocumentTest < Test::Unit::TestCase
           set_collection_name 'test'
         end
 
-        (@document.new('_id' => 1) == @another_document.new('_id' => 1)).should be(false)
+        (@document.new('_id' => @oid) == @another_document.new('_id' => @oid)).should be(false)
       end
     end
   end # instance of a document
