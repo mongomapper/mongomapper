@@ -34,8 +34,8 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       ]
     }.should change { Message.count }.by(3)
     
-    from_db = Room.find(room.id)
-    messages = from_db.messages.all :order => "position"
+    room = room.reload
+    messages = room.messages.all :order => "position"
     messages.size.should == 3
     messages[0].body.should == 'John entered room'
     messages[1].body.should == 'Heyyyoooo!'
@@ -48,8 +48,8 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     room.messages.push    Exit.new(:body => 'John entered the room', :position => 2)
     room.messages.concat  Chat.new(:body => 'Holla!'             , :position => 3)
     
-    from_db = Room.find(room.id)
-    messages = from_db.messages.all :order => "position"
+    room = room.reload
+    messages = room.messages.all :order => "position"
     messages[0]._type.should == 'Enter'
     messages[1]._type.should == 'Exit'
     messages[2]._type.should == 'Chat'
@@ -59,7 +59,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     should "assign foreign key" do
       room = Room.create
       message = room.messages.build
-      message.room_id.should == room.id
+      message.room_id.should == room._id
     end
     
     should "assign _type" do
@@ -79,7 +79,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     should "assign foreign key" do
       room = Room.create
       message = room.messages.create
-      message.room_id.should == room.id
+      message.room_id.should == room._id
     end
     
     should "assign _type" do
@@ -254,12 +254,12 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     
     context "with one id" do
       should "work for id in association" do
-        @lounge.messages.find(@lm2.id).should == @lm2
+        @lounge.messages.find(@lm2._id).should == @lm2
       end
       
       should "not work for id not in association" do
         lambda {
-          @lounge.messages.find!(@hm2.id)
+          @lounge.messages.find!(@hm2._id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
@@ -280,13 +280,13 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     
     context "with multiple ids" do
       should "work for ids in association" do
-        messages = @lounge.messages.find(@lm1.id, @lm2.id)
+        messages = @lounge.messages.find(@lm1._id, @lm2._id)
         messages.should == [@lm1, @lm2]
       end
       
       should "not work for ids not in association" do
         lambda {
-          @lounge.messages.find!(@lm1.id, @lm2.id, @hm2.id)
+          @lounge.messages.find!(@lm1._id, @lm2._id, @hm2._id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end

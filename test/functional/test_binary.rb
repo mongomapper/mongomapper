@@ -12,7 +12,7 @@ class BinaryTest < Test::Unit::TestCase
     doc = klass.new(:contents => '010101')
     doc.save
     
-    doc = klass.find(doc.id)
+    doc = doc.reload
     doc.contents.to_s.should == ByteBuffer.new('010101').to_s
   end
 end

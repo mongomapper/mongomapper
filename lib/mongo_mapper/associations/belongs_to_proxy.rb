@@ -4,7 +4,7 @@ module MongoMapper
       def replace(doc)
         if doc
           doc.save if doc.new?
-          id = doc.id
+          id = doc._id
         end
 
         @owner.send("#{@association.foreign_key}=", id)

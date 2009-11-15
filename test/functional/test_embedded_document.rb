@@ -28,9 +28,9 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @doc.foo.city.should == 'South Bend'
       @doc.foo.state.should == 'IN'
 
-      from_db = @document.find(@doc.id)
-      from_db.foo.city.should == 'South Bend'
-      from_db.foo.state.should == 'IN'
+      doc = @doc.reload
+      doc.foo.city.should == 'South Bend'
+      doc.foo.state.should == 'IN'
     end
   end
   
@@ -58,8 +58,9 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       address = Address.new(:city => 'South Bend', :state => 'IN')
       doc = @document.new(:foo => address)
       doc.save
-      read_doc = @document.find(doc.id)
-      read_doc.foo.new?.should == false
+      
+      doc = doc.reload
+      doc.foo.new?.should == false
     end
   end
   
@@ -71,15 +72,16 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       person.pets << pet
       pet.save
 
-      doc = RealPerson.find(person.id)
-      doc.pets.first.should == pet
+      person = person.reload
+      person.pets.first.should == pet
     end
     
     should "save new keys" do
       person = RealPerson.new
       person[:new_attribute] = 'foobar'
       person.save
-      from_db = RealPerson.find(person.id)
+      
+      person = person.reload
       person.new_attribute.should == 'foobar'
     end
   end
@@ -92,14 +94,13 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       person.pets << pet
       pet.save
 
-      doc = RealPerson.find(person.id)
-      pet = doc.pets.first
+      person = person.reload
+      pet = person.pets.first
       pet.update_attributes :name => 'koda'
 
-      doc = RealPerson.find(person.id)
-      embedded = doc.pets.first
-      embedded.id.should == pet.id
-      embedded.name.should == 'koda'
+      person = person.reload
+      person.pets.first._id.should == pet._id
+      person.pets.first.name.should == 'koda'
     end
   end  
 end

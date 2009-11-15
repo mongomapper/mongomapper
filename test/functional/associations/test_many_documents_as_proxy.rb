@@ -35,19 +35,19 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
         PostComment.new(:body => 'baz')
       ]
     }.should change { PostComment.count }.by(3)
-
-    from_db = Post.find(post.id)
-    from_db.comments.size.should == 3
-    from_db.comments[0].body.should == 'foo'
-    from_db.comments[1].body.should == 'bar'
-    from_db.comments[2].body.should == 'baz'
+    
+    post = post.reload
+    post.comments.size.should == 3
+    post.comments[0].body.should == 'foo'
+    post.comments[1].body.should == 'bar'
+    post.comments[2].body.should == 'baz'
   end
 
   context "build" do
     should "assign foreign key" do
       post = Post.new
       comment = post.comments.build
-      comment.commentable_id.should == post.id
+      comment.commentable_id.should == post._id
     end
 
     should "assign _type" do
@@ -67,7 +67,7 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
     should "assign foreign key" do
       post = Post.new
       comment = post.comments.create
-      comment.commentable_id.should == post.id
+      comment.commentable_id.should == post._id
     end
 
     should "assign _type" do
@@ -166,25 +166,25 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
 
     context "with one id" do
       should "work for id in association" do
-        @post.comments.find(@comment2.id).should == @comment2
+        @post.comments.find(@comment2._id).should == @comment2
       end
 
       should "not work for id not in association" do
         lambda {
-          @post.comments.find!(@comment5.id)
+          @post.comments.find!(@comment5._id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
 
     context "with multiple ids" do
       should "work for ids in association" do
-        posts = @post.comments.find!(@comment1.id, @comment2.id)
+        posts = @post.comments.find!(@comment1._id, @comment2._id)
         posts.should == [@comment1, @comment2]
       end
 
       should "not work for ids not in association" do
         lambda {
-          @post.comments.find!(@comment1.id, @comment2.id, @comment4.id)
+          @post.comments.find!(@comment1._id, @comment2._id, @comment4._id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end

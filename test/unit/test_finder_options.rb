@@ -57,9 +57,28 @@ class FinderOptionsTest < Test::Unit::TestCase
     end
     
     should "convert id to _id" do
-      FinderOptions.new(Room, :id => '1').criteria.should == {
-        :_id => '1'
-      }
+      id = Mongo::ObjectID.new
+      FinderOptions.new(Room, :id => id).criteria.should == {:_id => id}
+    end
+    
+    should "make sure that _id's are object ids" do
+      id = Mongo::ObjectID.new
+      FinderOptions.new(Room, :_id => id.to_s).criteria.should == {:_id => id}
+    end
+    
+    should "work fine with _id's that are object ids" do
+      id = Mongo::ObjectID.new
+      FinderOptions.new(Room, :_id => id).criteria.should == {:_id => id}
+    end
+    
+    should "make sure other object id typed keys get converted" do
+      id = Mongo::ObjectID.new
+      FinderOptions.new(Message, :room_id => id.to_s).criteria.should == {:room_id => id}
+    end
+    
+    should "work fine with object ids for object id typed keys" do
+      id = Mongo::ObjectID.new
+      FinderOptions.new(Message, :room_id => id).criteria.should == {:room_id => id}
     end
     
     should "use $in for arrays" do

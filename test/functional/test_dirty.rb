@@ -55,17 +55,17 @@ class DirtyTest < Test::Unit::TestCase
     should "not happen when loading from database" do
       doc = @document.create(:phrase => 'Foo')
       
-      from_db = @document.find(doc.id)
-      from_db.changed?.should be_false
+      doc = doc.reload
+      doc.changed?.should be_false
     end
     
     should "happen if changed after loading from database" do
       doc = @document.create(:phrase => 'Foo')
       
-      from_db = @document.find(doc.id)
-      from_db.changed?.should be_false
-      from_db.phrase = 'Bar'
-      from_db.changed?.should be_true
+      doc = doc.reload
+      doc.changed?.should be_false
+      doc.phrase = 'Bar'
+      doc.changed?.should be_true
     end
   end
   

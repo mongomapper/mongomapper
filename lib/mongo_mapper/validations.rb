@@ -15,7 +15,7 @@ module MongoMapper
         return true if allow_blank && value.blank?
         base_conditions = case_sensitive ? {self.attribute => value} : {}
         doc = instance.class.first(base_conditions.merge(scope_conditions(instance)).merge(where_conditions(instance)))
-        doc.nil? || instance.id == doc.id
+        doc.nil? || instance._id == doc._id
       end
 
       def message(instance)

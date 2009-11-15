@@ -20,23 +20,28 @@ module MongoMapper
     end
   end
   
+  # @api public
   def self.connection
     @@connection ||= Mongo::Connection.new
   end
-
+  
+  # @api public
   def self.connection=(new_connection)
     @@connection = new_connection
   end
   
+  # @api public
   def self.logger
     connection.logger
   end
-
+  
+  # @api public
   def self.database=(name)
     @@database = nil
     @@database_name = name
   end
-
+  
+  # @api public
   def self.database
     if @@database_name.blank?
       raise 'You forgot to set the default database name: MongoMapper.database = "foobar"'
@@ -45,14 +50,17 @@ module MongoMapper
     @@database ||= MongoMapper.connection.db(@@database_name)
   end
   
+  # @api private
   def self.ensured_indexes
     @@ensured_indexes ||= []
   end
   
+  # @api private
   def self.ensure_index(klass, keys, options={})
     ensured_indexes << {:klass => klass, :keys => keys, :options => options}
   end
   
+  # @api public
   def self.ensure_indexes!
     ensured_indexes.each do |index|
       unique = index[:options].delete(:unique)
@@ -60,6 +68,7 @@ module MongoMapper
     end
   end
   
+  # @api private
   module Finders
     def dynamic_find(finder, args)
       attributes = {}
@@ -82,6 +91,16 @@ module MongoMapper
         result
       end
     end
+  end
+  
+  # @api private
+  def self.use_time_zone?
+    Time.respond_to?(:zone) && Time.zone ? true : false
+  end
+  
+  # @api private
+  def self.time_class
+    use_time_zone? ? Time.zone : Time
   end
 end
 

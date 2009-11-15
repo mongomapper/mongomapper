@@ -14,7 +14,7 @@ class AssociationsTest < Test::Unit::TestCase
       include MongoMapper::EmbeddedDocument
       
       key :name, String
-      key :post_id, String
+      key :post_id, Mongo::ObjectID
       
       belongs_to :post, :class_name => 'AssociationsTest::AwesomeUser'
     end
@@ -22,7 +22,7 @@ class AssociationsTest < Test::Unit::TestCase
     class AwesomePost
       include MongoMapper::Document
       
-      key :creator_id, String
+      key :creator_id, Mongo::ObjectID
       
       belongs_to :creator, :class_name => 'AssociationsTest::AwesomeUser'
       many :tags, :class_name => 'AssociationsTest::AwesomeTag', :foreign_key => :post_id
@@ -38,7 +38,7 @@ class AssociationsTest < Test::Unit::TestCase
     post2 = AwesomePost.create(:creator => user, :tags => [tag2])
     user.posts.should == [post1, post2]
     
-    post1_from_db = AwesomePost.find(post1.id)
-    post1_from_db.tags.should == [tag1]
+    post1 = post1.reload
+    post1.tags.should == [tag1]
   end  
 end

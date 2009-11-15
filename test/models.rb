@@ -40,7 +40,7 @@ class PostComment
   key :username, String, :default => 'Anonymous'
   key :body, String
 
-  key :commentable_id, String
+  key :commentable_id, Mongo::ObjectID
   key :commentable_type, String
   belongs_to :commentable, :polymorphic => true
 
@@ -62,7 +62,7 @@ class Message
   key :body, String
   key :position, Integer
   key :_type, String
-  key :room_id, String
+  key :room_id, Mongo::ObjectID
 
   belongs_to :room
 end
@@ -81,7 +81,7 @@ class Account
   include MongoMapper::Document
   
   key :_type, String
-  key :room_id, String
+  key :room_id, Mongo::ObjectID
   key :last_logged_in, Time
   
   belongs_to :room
@@ -145,7 +145,7 @@ end
 
 class Collaborator
   include MongoMapper::Document
-  key :project_id, String
+  key :project_id, Mongo::ObjectID
   key :name, String
   belongs_to :project
 end
@@ -153,8 +153,8 @@ end
 class Status
   include MongoMapper::Document
 
-  key :project_id, String
-  key :target_id, String
+  key :project_id, Mongo::ObjectID
+  key :target_id, Mongo::ObjectID
   key :target_type, String
   key :name, String, :required => true
   key :position, Integer
@@ -166,7 +166,7 @@ end
 class RealPerson
   include MongoMapper::Document
 
-  key :room_id, String
+  key :room_id, Mongo::ObjectID
   key :name, String
   
   belongs_to :room

@@ -442,12 +442,12 @@ module MongoMapper
 
       def destroy
         return false if frozen?
-        self.class.delete(id) unless new?
+        self.class.delete(_id) unless new?
         freeze
       end
 
       def reload
-        self.class.find(id)
+        self.class.find(_id)
       end
 
     private
@@ -463,7 +463,7 @@ module MongoMapper
 
       def assign_id
         if read_attribute(:_id).blank?
-          write_attribute(:_id, Mongo::ObjectID.new.to_s)
+          write_attribute :_id, Mongo::ObjectID.new
         end
       end
 

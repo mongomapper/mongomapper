@@ -16,7 +16,7 @@ module MongoMapper
 
         extend Validations::Macros
 
-        key :_id, String
+        key :_id, Mongo::ObjectID
         attr_accessor :_root_document
       end
     end
@@ -60,6 +60,11 @@ module MongoMapper
         end
         
         key
+      end
+      
+      def object_id_key?(name)
+        key = keys[name.to_s]
+        key && key.type == Mongo::ObjectID
       end
 
       def embeddable?
@@ -193,7 +198,7 @@ module MongoMapper
 
         if self.class.embeddable? 
           if read_attribute(:_id).blank?
-            write_attribute :_id, Mongo::ObjectID.new.to_s
+            write_attribute :_id, Mongo::ObjectID.new
             @new_document = true
           else
             @new_document = false
@@ -275,15 +280,20 @@ module MongoMapper
       end
 
       def ==(other)
-        other.is_a?(self.class) && id == other.id
+        other.is_a?(self.class) && _id == other._id
       end
 
       def id
-        read_attribute(:_id)
+        read_attribute(:_id).to_s
       end
 
       def id=(value)
         @using_custom_id = true
+        
+        if self.class.object_id_key?(:_id)
+          value = value.is_a?(String) ? Mongo::ObjectID.from_string(value) : value
+        end
+        
         write_attribute :_id, value
       end
 

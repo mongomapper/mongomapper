@@ -93,7 +93,7 @@ class ValidationsTest < Test::Unit::TestCase
     should "not update document" do
       @doc.name = nil
       @doc.save
-      @document.find(@doc.id).name.should == 'John Nunemaker'
+      @doc.reload.name.should == 'John Nunemaker'
     end
     
     should "populate document's errors" do

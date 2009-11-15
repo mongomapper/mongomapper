@@ -98,7 +98,7 @@ module MongoMapper
       
       protected
         def scoped_conditions
-          {self.foreign_key => @owner.id}
+          {self.foreign_key => @owner._id}
         end
         
         def scoped_options(options)
@@ -115,7 +115,7 @@ module MongoMapper
 
         def apply_scope(doc)
           ensure_owner_saved
-          doc.send("#{self.foreign_key}=", @owner.id)
+          doc.send("#{self.foreign_key}=", @owner._id)
           doc
         end
 

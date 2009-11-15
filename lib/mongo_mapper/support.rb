@@ -138,33 +138,21 @@ class Symbol
   end
 end
 
-class Time
+class Time  
   def self.to_mongo(value)
     if value.nil? || value == ''
       nil
     else
-      to_utc_time(value)
+      time = MongoMapper.time_class.parse(value.to_s)
+      time && time.utc
     end
   end
   
   def self.from_mongo(value)
-    if Time.respond_to?(:zone) && Time.zone && value.present?
+    if MongoMapper.use_time_zone? && value.present?
       value.in_time_zone(Time.zone)
     else
       value
-    end
-  end
-  
-  def self.to_utc_time(value)
-    to_local_time(value).try(:utc)
-  end
-  
-  # make sure we have a time and that it is local
-  def self.to_local_time(value)
-    if Time.respond_to?(:zone) && Time.zone
-      Time.zone.parse(value.to_s)
-    else
-      Time.parse(value.to_s)
     end
   end
 end

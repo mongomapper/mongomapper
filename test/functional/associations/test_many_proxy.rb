@@ -25,9 +25,9 @@ class ManyProxyTest < Test::Unit::TestCase
     project.statuses = [Status.new("name" => "ready")]
     project.save.should be_true
 
-    from_db = Project.find(project.id)
-    from_db.statuses.size.should == 1
-    from_db.statuses[0].name.should == "ready"
+    project = project.reload
+    project.statuses.size.should == 1
+    project.statuses[0].name.should == "ready"
   end
   
   should "correctly assign foreign key when using <<, push and concat" do
@@ -36,17 +36,17 @@ class ManyProxyTest < Test::Unit::TestCase
     project.statuses.push   Status.new(:name => 'push')
     project.statuses.concat Status.new(:name => 'concat')
     
-    from_db = Project.find(project.id)
-    from_db.statuses[0].project_id.should == project.id
-    from_db.statuses[1].project_id.should == project.id
-    from_db.statuses[2].project_id.should == project.id
+    project = project.reload
+    project.statuses[0].project_id.should == project._id
+    project.statuses[1].project_id.should == project._id
+    project.statuses[2].project_id.should == project._id
   end
   
   context "build" do
     should "assign foreign key" do
       project = Project.create
       status = project.statuses.build
-      status.project_id.should == project.id
+      status.project_id.should == project._id
     end
 
     should "allow assigning attributes" do
@@ -60,7 +60,7 @@ class ManyProxyTest < Test::Unit::TestCase
     should "assign foreign key" do
       project = Project.create
       status = project.statuses.create(:name => 'Foo!')
-      status.project_id.should == project.id
+      status.project_id.should == project._id
     end
     
     should "save record" do
@@ -81,7 +81,7 @@ class ManyProxyTest < Test::Unit::TestCase
     should "assign foreign key" do
       project = Project.create
       status = project.statuses.create!(:name => 'Foo!')
-      status.project_id.should == project.id
+      status.project_id.should == project._id
     end
     
     should "save record" do
@@ -104,7 +104,6 @@ class ManyProxyTest < Test::Unit::TestCase
       }.should raise_error(MongoMapper::DocumentNotValid)
     end
   end
-  
   
   context "count" do
     should "work scoped to association" do
@@ -316,25 +315,25 @@ class ManyProxyTest < Test::Unit::TestCase
     
     context "with one id" do
       should "work for id in association" do
-        @project1.statuses.find(@complete.id).should == @complete
+        @project1.statuses.find(@complete._id).should == @complete
       end
       
       should "not work for id not in association" do
         lambda {
-          @project1.statuses.find!(@archived.id)
+          @project1.statuses.find!(@archived._id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
     
     context "with multiple ids" do
       should "work for ids in association" do
-        statuses = @project1.statuses.find(@brand_new.id, @complete.id)
+        statuses = @project1.statuses.find(@brand_new._id, @complete._id)
         statuses.should == [@brand_new, @complete]
       end
       
       should "not work for ids not in association" do
         lambda {
-          @project1.statuses.find!(@brand_new.id, @complete.id, @archived.id)
+          @project1.statuses.find!(@brand_new._id, @complete._id, @archived._id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
