@@ -34,6 +34,25 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
   end
   
+  context "Instantiating single collection inherited embedded documents" do
+    setup do
+      @document = Class.new do
+        include MongoMapper::Document
+        key :message, Message
+      end
+    end
+
+    should "work" do
+      doc1 = @document.create(:message => Enter.new)
+      doc2 = @document.create(:message => Exit.new)
+      doc3 = @document.create(:message => Chat.new)
+
+      doc1.reload.message.class.should be(Enter)
+      doc2.reload.message.class.should be(Exit)
+      doc3.reload.message.class.should be(Chat)
+    end
+  end
+  
   context "new?" do
     setup do
       @document.class_eval do

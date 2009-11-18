@@ -87,11 +87,20 @@ module MongoMapper
         if instance_or_hash.is_a?(self)
           instance_or_hash
         else
-          new(instance_or_hash)
+          initialize_doc(instance_or_hash)
         end
       end
       
     private
+      def initialize_doc(doc)
+        begin
+          klass = doc['_type'].present? ? doc['_type'].constantize : self
+          klass.new(doc)
+        rescue NameError
+          new(doc)
+        end
+      end
+      
       def accessors_module
         module_defined =  if method(:const_defined?).arity == 1 # Ruby 1.9 compat check
                             const_defined?('MongoMapperKeys')
@@ -195,7 +204,7 @@ module MongoMapper
           end
         end
 
-        if self.class.embeddable? 
+        if self.class.embeddable?
           if read_attribute(:_id).blank?
             write_attribute :_id, Mongo::ObjectID.new
             @new_document = true
@@ -362,7 +371,7 @@ module MongoMapper
         def write_attribute(name, value)
           key = _keys[name]
           instance_variable_set "@#{name}_before_typecast", value
-          instance_variable_set "@#{name}", key.set(value)          
+          instance_variable_set "@#{name}", key.set(value)
         end
         
         def embedded_associations

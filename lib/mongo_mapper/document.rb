@@ -344,15 +344,6 @@ module MongoMapper
           instances.size == 1 ? instances[0] : instances
         end
 
-        def initialize_doc(doc)
-          begin
-            klass = doc['_type'].present? ? doc['_type'].constantize : self
-            klass.new(doc)
-          rescue NameError
-            new(doc)
-          end
-        end
-
         def find_every(options)
           criteria, options = to_finder_options(options)
           collection.find(criteria, options).to_a.map do |doc|
