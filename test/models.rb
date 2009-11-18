@@ -23,6 +23,12 @@ class WindowSize
   end
 end
 
+module AccountsExtensions
+  def inactive
+    all(:last_logged_in => nil)
+  end
+end
+
 class Post
   include MongoMapper::Document
 
@@ -71,10 +77,18 @@ class Enter < Message; end
 class Exit < Message;  end
 class Chat < Message;  end
 
-module AccountsExtensions
-  def inactive
-    all(:last_logged_in => nil)
+class Room
+  include MongoMapper::Document
+
+  key :name, String
+  many :messages, :polymorphic => true, :order => 'position' do
+    def older
+      all(:position => {'$gt' => 5})
+    end
   end
+  many :latest_messages, :class_name => 'Message', :order => 'position desc', :limit => 2
+  
+  many :accounts, :polymorphic => true, :extend => AccountsExtensions
 end
 
 class Account
@@ -88,20 +102,6 @@ class Account
 end
 class User < Account; end
 class Bot < Account; end
-
-class Room
-  include MongoMapper::Document
-
-  key :name, String
-  many :messages, :polymorphic => true do
-    def older
-      all(:position => {'$gt' => 5})
-    end
-  end
-  many :latest_messages, :class_name => 'Message', :order => 'position desc', :limit => 2
-  
-  many :accounts, :polymorphic => true, :extend => AccountsExtensions
-end
 
 class Answer
   include MongoMapper::Document
