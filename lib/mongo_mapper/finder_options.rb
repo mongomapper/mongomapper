@@ -14,8 +14,7 @@ module MongoMapper
 
     def initialize(model, options)
       raise ArgumentError, "Options must be a hash" unless options.is_a?(Hash)
-      options = options.clone
-      options.symbolize_keys!
+      options = options.symbolize_keys
 
       @model      = model
       @options    = {}
@@ -41,12 +40,10 @@ module MongoMapper
     
     # @return [Hash] Mongo compatible options
     def options
-      options = @options.dup
-
-      fields = options.delete(:fields) || options.delete(:select)
-      skip   = options.delete(:skip)   || options.delete(:offset) || 0
-      limit  = options.delete(:limit)  || 0
-      sort   = options.delete(:sort)   || convert_order_to_sort(options.delete(:order))
+      fields = @options.delete(:fields) || @options.delete(:select)
+      skip   = @options.delete(:skip)   || @options.delete(:offset) || 0
+      limit  = @options.delete(:limit)  || 0
+      sort   = @options.delete(:sort)   || convert_order_to_sort(@options.delete(:order))
 
       {:fields => to_mongo_fields(fields), :skip => skip.to_i, :limit => limit.to_i, :sort => sort}
     end
@@ -74,7 +71,6 @@ module MongoMapper
           
           case value
             when Array
-              operator_present = field.to_s =~ /^\$/
               criteria[field] = operator?(field) ? value : {'$in' => value}
             when Hash
               criteria[field] = to_mongo_criteria(value, field)
