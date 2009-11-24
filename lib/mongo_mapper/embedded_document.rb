@@ -219,7 +219,7 @@ module MongoMapper
       end
       
       def to_param
-        id
+        id.to_s
       end
 
       def attributes=(attrs)
@@ -292,7 +292,7 @@ module MongoMapper
       end
 
       def id
-        read_attribute(:_id).to_s
+        read_attribute(:_id)
       end
 
       def id=(value)

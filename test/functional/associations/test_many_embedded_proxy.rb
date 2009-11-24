@@ -138,8 +138,10 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
   
   should "allow finding by id" do
     sparky = Pet.new(:name => "Sparky", :species => "Dog")
-    meg = Person.new(:name => "Meg", :pets => [sparky])
-    meg.pets.find(sparky._id).should == sparky
+    meg    = Person.new(:name => "Meg", :pets => [sparky])
+    
+    meg.pets.find(sparky._id).should     == sparky  # oid
+    meg.pets.find(sparky.id.to_s).should == sparky  # string
   end
   
   context "extending the association" do

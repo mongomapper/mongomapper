@@ -307,9 +307,9 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
     end
     
-    should "have to_param that is id" do
+    should "have to_param that is string representation of id" do
       doc = @document.new
-      doc.to_param.should == doc.id
+      doc.to_param.should == doc.id.to_s
       doc.to_param.should be_instance_of(String)
     end
     
@@ -323,9 +323,10 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @document.keys.keys.should include('_id')
     end
     
-    should "have id method that sets _id" do
-      doc = @document.new
-      doc.id.should == doc._id.to_s
+    should "have id method returns _id" do
+      id = Mongo::ObjectID.new
+      doc = @document.new(:_id => id)
+      doc.id.should == id
     end
     
     context "assigning id with _id ObjectId type" do
@@ -338,16 +339,11 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       
       should "convert string object id to mongo object id" do
         id = Mongo::ObjectID.new
-        doc = @document.new
-        doc.id = id.to_s
+        doc = @document.new(:id => id.to_s)
         doc._id.should == id
-        doc.id.should == id.to_s
+        doc.id.should == id
         doc.using_custom_id?.should be_false
       end
-    end
-
-    should "have a nil _root_document" do
-      @document.new._root_document.should be_nil
     end
 
     context "setting custom id" do
@@ -364,6 +360,10 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.id = '1234'
         doc.using_custom_id?.should be_true
       end
+    end
+
+    should "have a nil _root_document" do
+      @document.new._root_document.should be_nil
     end
 
     context "being initialized" do

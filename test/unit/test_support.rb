@@ -331,4 +331,12 @@ class SupportTest < Test::Unit::TestCase
       Time.zone = nil
     end
   end
+  
+  context "Mongo::ObjectID.to_json" do
+    should "convert object id to string" do
+      id = Mongo::ObjectID.new
+      id.to_json.should == id.to_s
+    end
+  end
+  
 end

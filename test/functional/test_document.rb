@@ -172,9 +172,7 @@ class DocumentTest < Test::Unit::TestCase
       end
 
       should "automatically set id" do
-        @doc_instance.id.should_not be_nil
-        @doc_instance.id.size.should == 24
-        @doc_instance.id.should be_instance_of(String)
+        @doc_instance.id.should be_instance_of(Mongo::ObjectID)
         @doc_instance._id.should be_instance_of(Mongo::ObjectID)
       end
 
@@ -777,8 +775,7 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     should "assign an id for the document" do
-      @doc.id.should_not be(nil)
-      @doc.id.size.should == 24
+      @doc.id.should be_instance_of(Mongo::ObjectID)
     end
 
     should "save attributes" do
@@ -858,8 +855,7 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     should "assign an id for the document" do
-      @doc.id.should_not be(nil)
-      @doc.id.size.should == 24
+      @doc.id.should be_instance_of(Mongo::ObjectID)
     end
 
     should "save attributes" do

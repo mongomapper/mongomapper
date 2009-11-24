@@ -16,7 +16,7 @@ module MongoMapper
       # TODO: test that both string and oid version work
       def find(id)
         load_target
-        @target.detect { |item| item.id == id || item._id == id }
+        @target.detect { |item| item.id.to_s == id || item.id == id }
       end
 
       def <<(*docs)
