@@ -365,7 +365,11 @@ class ManyProxyTest < Test::Unit::TestCase
       status3 = Status.new(:name => "Closed")
       project.statuses = [status1, status2, status3]
       project.save
-      project.statuses.open.should == [status1, status2]
+      
+      open_statuses = project.statuses.open
+      open_statuses.should include(status1)
+      open_statuses.should include(status2)
+      open_statuses.should_not include(status3)
     end
   
     should "work using many's :extend option" do
