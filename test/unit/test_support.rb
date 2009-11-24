@@ -1,8 +1,6 @@
 require 'test_helper'
 
 class SupportTest < Test::Unit::TestCase
-  include MongoMapper::Types
-  
   context "Array#to_mongo" do
     should "convert value to_a" do
       Array.to_mongo([1, 2, 3, 4]).should == [1, 2, 3, 4]

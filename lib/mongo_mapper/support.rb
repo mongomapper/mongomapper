@@ -15,6 +15,34 @@ class Array
   end
 end
 
+class Binary
+  def self.to_mongo(value)
+    if value.is_a?(ByteBuffer)
+      value
+    else
+      value.nil? ? nil : ByteBuffer.new(value)
+    end
+  end
+
+  def self.from_mongo(value)
+    value
+  end
+end
+
+class Boolean
+  def self.to_mongo(value)
+    if value.is_a?(Boolean)
+      value
+    else
+      ['true', 't', '1'].include?(value.to_s.downcase)
+    end
+  end
+
+  def self.from_mongo(value)
+    !!value
+  end
+end
+
 class Date
   def self.to_mongo(value)
     date = Date.parse(value.to_s)
@@ -87,6 +115,22 @@ class Object
   
   def self.to_mongo(value)
     value
+  end
+  
+  def self.from_mongo(value)
+    value
+  end
+end
+
+class ObjectId
+  def self.to_mongo(value)
+    if value.nil?
+      nil
+    elsif value.is_a?(Mongo::ObjectID)
+      value
+    else
+      Mongo::ObjectID.from_string(value.to_s)
+    end
   end
   
   def self.from_mongo(value)
