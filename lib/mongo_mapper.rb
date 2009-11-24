@@ -108,7 +108,6 @@ module MongoMapper
 end
 
 require 'mongo_mapper/support'
-require 'mongo_mapper/types'
 require 'mongo_mapper/associations'
 require 'mongo_mapper/associations/base'
 require 'mongo_mapper/associations/proxy'
