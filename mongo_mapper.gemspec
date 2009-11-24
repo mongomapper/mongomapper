@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mongo_mapper}
-  s.version = "0.6.1"
+  s.version = "0.6.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
-  s.date = %q{2009-11-17}
+  s.date = %q{2009-11-24}
   s.default_executable = %q{mmconsole}
   s.email = %q{nunemaker@gmail.com}
   s.executables = ["mmconsole"]
@@ -50,7 +50,6 @@ Gem::Specification.new do |s|
      "lib/mongo_mapper/serialization.rb",
      "lib/mongo_mapper/serializers/json_serializer.rb",
      "lib/mongo_mapper/support.rb",
-     "lib/mongo_mapper/types.rb",
      "lib/mongo_mapper/validations.rb",
      "mongo_mapper.gemspec",
      "specs.watchr",
