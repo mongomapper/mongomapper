@@ -333,6 +333,11 @@ module MongoMapper
         save
       end
 
+      def update_attributes!(attrs={})
+        self.attributes = attrs
+        save!
+      end
+
       private
         def _keys
           self.metaclass.keys

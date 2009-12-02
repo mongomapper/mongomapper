@@ -122,4 +122,14 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       person.pets.first.name.should == 'koda'
     end
   end  
+
+  context "update_attributes!" do
+    should "pass the attributes to self.attributes" do
+      person = RealPerson.create
+      attributes = { :foo => 'bar' }
+      person.expects(:attributes=).with(attributes)
+      person.expects(:save!)
+      person.update_attributes!(attributes)
+    end
+  end  
 end
