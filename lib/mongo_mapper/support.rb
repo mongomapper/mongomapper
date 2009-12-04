@@ -188,6 +188,6 @@ end
 # TODO: Remove when patch accepted into driver
 class Mongo::ObjectID
   def to_json(options = nil)
-    to_s
+    "\"#{to_s}\""
   end
 end
