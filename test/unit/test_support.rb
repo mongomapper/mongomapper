@@ -335,7 +335,7 @@ class SupportTest < Test::Unit::TestCase
   context "Mongo::ObjectID.to_json" do
     should "convert object id to string" do
       id = Mongo::ObjectID.new
-      id.to_json.should == "\"#{id}\""
+      id.to_json.should == %Q("#{id}")
     end
   end
   
