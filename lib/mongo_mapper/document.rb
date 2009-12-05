@@ -469,7 +469,7 @@ module MongoMapper
 
       def update_timestamps
         now = Time.now.utc
-        write_attribute('created_at', now) if new?
+        write_attribute('created_at', now) if new? && read_attribute('created_at').blank?
         write_attribute('updated_at', now)
       end
 
