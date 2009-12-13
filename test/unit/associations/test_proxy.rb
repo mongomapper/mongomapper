@@ -7,10 +7,13 @@ class FakeProxy < MongoMapper::Associations::Proxy
 end
 
 class ProxyTest < Test::Unit::TestCase
+  def setup
+    @owner = mock('owner')
+    @association = mock('association', :options => {:extend => []})
+  end
+  
   should 'return true for === target' do
-    Struct.new('Owner', :name)
-    Struct.new('Association', :options)
-    proxy = FakeProxy.new(Struct::Owner.new('owner'), Struct::Association.new({:extend => []}))
+    proxy = FakeProxy.new(@owner, @association)
     proxy.should === Array
   end
 end
