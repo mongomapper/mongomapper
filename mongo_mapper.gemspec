@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mongo_mapper}
-  s.version = "0.6.6"
+  s.version = "0.6.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["John Nunemaker"]
-  s.date = %q{2009-12-05}
+  s.date = %q{2009-12-13}
   s.default_executable = %q{mmconsole}
   s.email = %q{nunemaker@gmail.com}
   s.executables = ["mmconsole"]
@@ -29,12 +29,12 @@ Gem::Specification.new do |s|
      "lib/mongo_mapper/associations/base.rb",
      "lib/mongo_mapper/associations/belongs_to_polymorphic_proxy.rb",
      "lib/mongo_mapper/associations/belongs_to_proxy.rb",
+     "lib/mongo_mapper/associations/collection.rb",
      "lib/mongo_mapper/associations/many_documents_as_proxy.rb",
      "lib/mongo_mapper/associations/many_documents_proxy.rb",
      "lib/mongo_mapper/associations/many_embedded_polymorphic_proxy.rb",
      "lib/mongo_mapper/associations/many_embedded_proxy.rb",
      "lib/mongo_mapper/associations/many_polymorphic_proxy.rb",
-     "lib/mongo_mapper/associations/many_proxy.rb",
      "lib/mongo_mapper/associations/proxy.rb",
      "lib/mongo_mapper/callbacks.rb",
      "lib/mongo_mapper/dirty.rb",
@@ -57,10 +57,10 @@ Gem::Specification.new do |s|
      "test/functional/associations/test_belongs_to_polymorphic_proxy.rb",
      "test/functional/associations/test_belongs_to_proxy.rb",
      "test/functional/associations/test_many_documents_as_proxy.rb",
+     "test/functional/associations/test_many_documents_proxy.rb",
      "test/functional/associations/test_many_embedded_polymorphic_proxy.rb",
      "test/functional/associations/test_many_embedded_proxy.rb",
      "test/functional/associations/test_many_polymorphic_proxy.rb",
-     "test/functional/associations/test_many_proxy.rb",
      "test/functional/test_associations.rb",
      "test/functional/test_binary.rb",
      "test/functional/test_callbacks.rb",
@@ -76,8 +76,9 @@ Gem::Specification.new do |s|
      "test/support/custom_matchers.rb",
      "test/support/timing.rb",
      "test/test_helper.rb",
+     "test/unit/associations/test_base.rb",
+     "test/unit/associations/test_proxy.rb",
      "test/unit/serializers/test_json_serializer.rb",
-     "test/unit/test_association_base.rb",
      "test/unit/test_document.rb",
      "test/unit/test_dynamic_finder.rb",
      "test/unit/test_embedded_document.rb",
@@ -101,10 +102,10 @@ Gem::Specification.new do |s|
     "test/functional/associations/test_belongs_to_polymorphic_proxy.rb",
      "test/functional/associations/test_belongs_to_proxy.rb",
      "test/functional/associations/test_many_documents_as_proxy.rb",
+     "test/functional/associations/test_many_documents_proxy.rb",
      "test/functional/associations/test_many_embedded_polymorphic_proxy.rb",
      "test/functional/associations/test_many_embedded_proxy.rb",
      "test/functional/associations/test_many_polymorphic_proxy.rb",
-     "test/functional/associations/test_many_proxy.rb",
      "test/functional/test_associations.rb",
      "test/functional/test_binary.rb",
      "test/functional/test_callbacks.rb",
@@ -120,8 +121,9 @@ Gem::Specification.new do |s|
      "test/support/custom_matchers.rb",
      "test/support/timing.rb",
      "test/test_helper.rb",
+     "test/unit/associations/test_base.rb",
+     "test/unit/associations/test_proxy.rb",
      "test/unit/serializers/test_json_serializer.rb",
-     "test/unit/test_association_base.rb",
      "test/unit/test_document.rb",
      "test/unit/test_dynamic_finder.rb",
      "test/unit/test_embedded_document.rb",
