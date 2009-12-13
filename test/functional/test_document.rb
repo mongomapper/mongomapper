@@ -1180,13 +1180,47 @@ class DocumentTest < Test::Unit::TestCase
 
   context "reload" do
     setup do
-      @doc_instance_1 = @document.create({:first_name => 'Ryan', :last_name => 'Koopmans', :age => '37'})
-      @doc_instance_2 = @document.update(@doc_instance_1._id, {:age => '39'})
+      @foo_class = Class.new do
+        include MongoMapper::Document
+        key :name
+      end
+      @foo_class.collection.remove
+      
+      @bar_class = Class.new do
+        include MongoMapper::EmbeddedDocument
+        key :name
+      end
+      
+      @document.many :foos, :class => @foo_class
+      @document.many :bars, :class => @bar_class
+      
+      @instance = @document.create({
+        :age => 39,
+        :foos => [@foo_class.new(:name => '1')],
+        :bars => [@bar_class.new(:name => '1')],
+      })
     end
 
-    should "load fresh information from the database" do
-      @doc_instance_1.age.should == 37
-      @doc_instance_1.reload.age.should == 39
+    should "reload keys from the database" do
+      @instance.age = 37
+      @instance.age.should == 37
+      @instance.reload
+      @instance.age.should == 39
+    end
+    
+    should "reset all associations" do
+      @instance.foos.expects(:reset).at_least_once
+      @instance.bars.expects(:reset).at_least_once
+      @instance.reload
+    end
+    
+    should "reinstantiate embedded associations" do
+      @instance.reload
+      @instance.bars.first.name.should == '1'
+    end
+    
+    should "return self" do
+      @instance.reload.object_id.should == @instance.object_id
     end
   end
 end

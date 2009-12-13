@@ -438,7 +438,10 @@ module MongoMapper
       end
 
       def reload
-        self.class.find(_id)
+        doc = self.class.find(_id)
+        self.class.associations.each { |name, assoc| send(name).reset }
+        self.attributes = doc.attributes
+        self
       end
 
     private

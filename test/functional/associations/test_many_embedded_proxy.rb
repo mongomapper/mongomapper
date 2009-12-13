@@ -26,7 +26,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     project.addresses << chi
     project.save
 
-    project = project.reload
+    project.reload
     project.addresses.size.should == 2
     project.addresses[0].should == sb
     project.addresses[1].should == chi
@@ -47,7 +47,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     doc = @document.new(:person => meg)
     doc.save
     
-    doc = doc.reload
+    doc.reload
     doc.person.name.should == 'Meg'
     doc.person.child.name.should == 'Steve'
     doc.person.child.child.name.should == 'Linda'
@@ -70,7 +70,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     pet_lover.pets[1].species.should == "Siberian Husky"
     pet_lover.save.should be_true
     
-    pet_lover = pet_lover.reload
+    pet_lover.reload
     pet_lover.name.should == "Mr. Pet Lover"
     pet_lover.pets[0].name.should == "Jimmy"
     pet_lover.pets[0].species.should == "Cocker Spainel"
@@ -89,19 +89,17 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     end
 
     should "persist all embedded documents" do
-      meg = Person.new(:name => "Meg")
+      meg    = Person.new(:name => "Meg")
       sparky = Pet.new(:name => "Sparky", :species => "Dog")
-      koda = Pet.new(:name => "Koda", :species => "Dog")
+      koda   = Pet.new(:name => "Koda", :species => "Dog")
 
       doc = @document.new
-
       meg.pets << sparky
       meg.pets << koda
-
       doc.people << meg
       doc.save
 
-      doc = doc.reload
+      doc.reload
       doc.people.first.name.should == "Meg"
       doc.people.first.pets.should_not == []
       doc.people.first.pets.first.name.should == "Sparky"
@@ -111,11 +109,9 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     end
 
     should "create a reference to the root document for all embedded documents before save" do
-      meg = Person.new(:name => "Meg")
+      meg    = Person.new(:name => "Meg")
       sparky = Pet.new(:name => "Sparky", :species => "Dog")
-
-      doc = @document.new
-
+      doc    = @document.new
       doc.people << meg
       meg.pets << sparky
 
@@ -125,12 +121,12 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
 
     should "create a reference to the root document for all embedded documents" do
       sparky = Pet.new(:name => "Sparky", :species => "Dog")
-      meg = Person.new(:name => "Meg", :pets => [sparky])
-      doc = @document.new
+      meg    = Person.new(:name => "Meg", :pets => [sparky])
+      doc    = @document.new
       doc.people << meg
       doc.save
 
-      doc = doc.reload
+      doc.reload
       doc.people.first._root_document.should == doc
       doc.people.first.pets.first._root_document.should == doc
     end
