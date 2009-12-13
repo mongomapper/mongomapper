@@ -32,7 +32,9 @@ class DocumentTest < Test::Unit::TestCase
 
     should "not fail" do
       doc = @document.new(:file => nil)
-      doc.save
+      lambda {
+        doc.save
+      }.should_not raise_error
     end
   end
 
