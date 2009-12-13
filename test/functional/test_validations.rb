@@ -246,20 +246,29 @@ class ValidationsTest < Test::Unit::TestCase
       doc2.should_not have_error_on(:name)
     end
 
-    should "fail on entries that differ only in case if :case_sensitive => false" do
-      document = Class.new do
-        include MongoMapper::Document
-        set_collection_name 'test'
+    context "with :case_sensitive => false" do
+      setup do
+        @document = Class.new do
+          include MongoMapper::Document
+          set_collection_name 'test'
 
-        key :name
-        validates_uniqueness_of :name, :case_sensitive => false
+          key :name
+          validates_uniqueness_of :name, :case_sensitive => false
+        end
+      end
+      
+      should "fail on entries that differ only in case" do
+        doc = @document.new("name" => "BLAMMO")
+        doc.save.should be_true
+
+        doc2 = @document.new("name" => "blammo")
+        doc2.should have_error_on(:name)
       end
 
-      doc = document.new("name" => "BLAMMO")
-      doc.save.should be_true
-
-      doc2 = document.new("name" => "blammo")
-      doc2.should have_error_on(:name)
+      should "not raise an error if value is nil" do
+        doc = @document.new("name" => nil)
+        lambda { doc.valid? }.should_not raise_error
+      end
     end
 
     context "scoped by a single attribute" do
