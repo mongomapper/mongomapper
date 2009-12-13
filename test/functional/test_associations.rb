@@ -40,5 +40,5 @@ class AssociationsTest < Test::Unit::TestCase
     
     post1 = post1.reload
     post1.tags.should == [tag1]
-  end  
+  end
 end

@@ -49,6 +49,11 @@ module MongoMapper
         @target.nil?
       end
       
+      def ===(other)
+        load_target
+        other === @target
+      end
+      
       protected
         def method_missing(method, *args, &block)
           if load_target
