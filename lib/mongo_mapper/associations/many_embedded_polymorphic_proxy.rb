@@ -1,16 +1,14 @@
 module MongoMapper
   module Associations
-    class ManyEmbeddedPolymorphicProxy < Proxy
-      def replace(v)
-        @_values = v.map do |doc_or_hash|
-          if doc_or_hash.kind_of?(EmbeddedDocument)
-            doc = doc_or_hash
-            {@association.type_key_name => doc.class.name}.merge(doc.attributes)
+    class ManyEmbeddedPolymorphicProxy < Collection
+      def replace(values)
+        @_values = values.map do |v|
+          if v.kind_of?(EmbeddedDocument)
+            v.attributes.merge(reflection.type_key_name => v.class.name)
           else
-            doc_or_hash
+            v
           end
         end
-        
         reset
       end
 
@@ -22,10 +20,10 @@ module MongoMapper
         end
         
         def polymorphic_class(doc)
-          if class_name = doc[@association.type_key_name]
+          if class_name = doc[reflection.type_key_name]
             class_name.constantize
           else
-            @association.klass
+            klass
           end
         end
     end

@@ -1,6 +1,8 @@
 module MongoMapper
   module Pagination
-    class PaginationProxy < BasicObject
+    class PaginationProxy
+      instance_methods.each { |m| undef_method m unless m =~ /(^__|^nil\?$|proxy_|^object_id$)/ }
+      
       attr_accessor :subject
       attr_reader :total_entries, :per_page, :current_page
       alias limit per_page

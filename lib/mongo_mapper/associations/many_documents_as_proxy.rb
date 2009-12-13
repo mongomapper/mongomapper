@@ -3,22 +3,23 @@ module MongoMapper
     class ManyDocumentsAsProxy < ManyDocumentsProxy
       protected
         def scoped_conditions
-          {as_type_name => @owner.class.name, as_id_name => @owner._id}
+          {type_key_name => owner.class.name, id_key_name => owner.id}
         end
 
         def apply_scope(doc)
           ensure_owner_saved
-          doc.send("#{as_type_name}=", @owner.class.name)
-          doc.send("#{as_id_name}=", @owner._id)
+          doc[type_key_name] = owner.class.name
+          doc[id_key_name] = owner.id
           doc
         end
-
-        def as_type_name
-          @as_type_name ||= @association.options[:as].to_s + "_type"
+        
+      private
+        def type_key_name
+          "#{options[:as]}_type"
         end
-
-        def as_id_name
-          @as_id_name ||= @association.options[:as].to_s + "_id"
+        
+        def id_key_name
+          "#{options[:as]}_id"
         end
     end
   end

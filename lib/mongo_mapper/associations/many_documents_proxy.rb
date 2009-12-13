@@ -1,9 +1,6 @@
 module MongoMapper
   module Associations
-    class ManyDocumentsProxy < Proxy
-      delegate :klass, :to => :@association
-      delegate :collection, :to => :klass
-      
+    class ManyDocumentsProxy < Collection
       include ::MongoMapper::Finders
       
       def find(*args)
@@ -37,7 +34,8 @@ module MongoMapper
       end
 
       def replace(docs)
-        @target.map(&:destroy) if load_target
+        load_target
+        target.map(&:destroy)
         docs.each { |doc| apply_scope(doc).save }
         reset
       end
@@ -85,24 +83,14 @@ module MongoMapper
         end
         reset
       end
-      
-      def method_missing(method, *args)
-        finder = DynamicFinder.new(method)
-        
-        if finder.found?
-          dynamic_find(finder, args)
-        else
-          super
-        end
-      end
-      
+
       protected
         def scoped_conditions
-          {self.foreign_key => @owner._id}
+          {self.foreign_key => owner.id}
         end
         
         def scoped_options(options)
-          @association.finder_options.merge(options).merge(scoped_conditions)
+          reflection.finder_options.merge(options).merge(scoped_conditions)
         end
 
         def find_target
@@ -110,17 +98,17 @@ module MongoMapper
         end
 
         def ensure_owner_saved
-          @owner.save if @owner.new?
+          owner.save if owner.new?
         end
 
         def apply_scope(doc)
           ensure_owner_saved
-          doc.send("#{self.foreign_key}=", @owner._id)
+          doc[foreign_key] = owner.id
           doc
         end
 
         def foreign_key
-          @association.options[:foreign_key] || @owner.class.name.underscore.gsub("/", "_") + "_id"
+          options[:foreign_key] || owner.class.name.underscore.gsub("/", "_") + "_id"
         end
     end
   end

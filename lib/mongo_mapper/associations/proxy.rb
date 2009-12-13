@@ -1,72 +1,100 @@
 module MongoMapper
   module Associations
-    class Proxy < BasicObject
-      attr_reader :owner, :association
+    class Proxy
+      alias :proxy_respond_to? :respond_to?
+      alias :proxy_extend :extend
       
-      def initialize(owner, association)
-        @owner = owner
-        @association = association
-        @association.options[:extend].each { |ext| class << self; self; end.instance_eval { include ext } }
+      instance_methods.each { |m| undef_method m unless m =~ /(^__|^nil\?$|^send$|proxy_|^object_id$)/ }
+      
+      attr_reader :owner, :reflection, :target
+      
+      alias :proxy_owner :owner
+      alias :proxy_target :target
+      alias :proxy_reflection :reflection
+      
+      delegate :klass, :to => :proxy_reflection
+      delegate :options, :to => :proxy_reflection
+      delegate :collection, :to => :klass
+      
+      def initialize(owner, reflection)
+        @owner, @reflection = owner, reflection
+        Array(reflection.options[:extend]).each { |ext| proxy_extend(ext) }
         reset
-      end
-
-      def respond_to?(*methods)
-        (load_target && @target.respond_to?(*methods))
-      end
-
-      def reset
-        @target = nil
-      end
-
-      def reload_target
-        reset
-        load_target
-        self
-      end
-
-      def send(method, *args)
-        metaclass_instance_methods = class << self; self; end.instance_methods
-        
-        if metaclass_instance_methods.any? { |m| m.to_s == method.to_s }
-          return __send__(method, *args)
-        end
-        
-        load_target
-        @target.send(method, *args)
-      end
-
-      def replace(v)
-        raise NotImplementedError
       end
       
       def inspect
         load_target
-        @target.inspect
+        target.inspect
       end
       
+      def loaded?
+        @loaded
+      end
+      
+      def loaded
+        @loaded = true
+      end
+            
       def nil?
         load_target
-        @target.nil?
+        target.nil?
+      end
+      
+      def blank?
+        load_target
+        target.blank?
+      end
+      
+      def reload
+        reset
+        load_target
+        self unless target.nil?
+      end
+      
+      def replace(v)
+        raise NotImplementedError
+      end
+
+      def reset
+        @loaded = false
+        target = nil
+      end
+
+      def respond_to?(*args)
+        proxy_respond_to?(*args) || (load_target && target.respond_to?(*args))
+      end
+
+      def send(method, *args)
+        if proxy_respond_to?(method)
+          super
+        else
+          load_target
+          target.send(method, *args)
+        end
       end
       
       def ===(other)
         load_target
-        other === @target
+        other === target
       end
       
       protected
         def method_missing(method, *args, &block)
           if load_target
-            if block.nil?
-              @target.send(method, *args)
+            if block_given?
+              target.send(method, *args)  { |*block_args| block.call(*block_args) }
             else
-              @target.send(method, *args)  { |*block_args| block.call(*block_args) }
+              target.send(method, *args)
             end
           end
         end
 
         def load_target
-          @target ||= find_target
+          @target = find_target unless loaded?
+          loaded
+          @target
+        rescue MongoMapper::DocumentNotFound
+          reset
         end
 
         def find_target

@@ -132,9 +132,9 @@ class AssociationBaseTest < Test::Unit::TestCase
   end
   
   context "proxy_class" do
-    should "be ManyProxy for many" do      
+    should "be ManyDocumentsProxy for many" do      
       base = Base.new(:many, :statuses)
-      base.proxy_class.should == ManyProxy
+      base.proxy_class.should == ManyDocumentsProxy
     end
     
     should "be ManyPolymorphicProxy for polymorphic many" do

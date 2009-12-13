@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'models'
 
-class ManyProxyTest < Test::Unit::TestCase
+class ManyDocumentsProxyTest < Test::Unit::TestCase
   def setup
     Project.collection.remove
     Status.collection.remove
@@ -37,16 +37,16 @@ class ManyProxyTest < Test::Unit::TestCase
     project.statuses.concat Status.new(:name => 'concat')
     
     project = project.reload
-    project.statuses[0].project_id.should == project._id
-    project.statuses[1].project_id.should == project._id
-    project.statuses[2].project_id.should == project._id
+    project.statuses[0].project_id.should == project.id
+    project.statuses[1].project_id.should == project.id
+    project.statuses[2].project_id.should == project.id
   end
   
   context "build" do
     should "assign foreign key" do
       project = Project.create
       status = project.statuses.build
-      status.project_id.should == project._id
+      status.project_id.should == project.id
     end
 
     should "allow assigning attributes" do
@@ -60,7 +60,7 @@ class ManyProxyTest < Test::Unit::TestCase
     should "assign foreign key" do
       project = Project.create
       status = project.statuses.create(:name => 'Foo!')
-      status.project_id.should == project._id
+      status.project_id.should == project.id
     end
     
     should "save record" do
@@ -81,7 +81,7 @@ class ManyProxyTest < Test::Unit::TestCase
     should "assign foreign key" do
       project = Project.create
       status = project.statuses.create!(:name => 'Foo!')
-      status.project_id.should == project._id
+      status.project_id.should == project.id
     end
     
     should "save record" do
@@ -205,11 +205,14 @@ class ManyProxyTest < Test::Unit::TestCase
     context "dynamic finders" do
       should "work with single key" do
         @project1.statuses.find_by_name('New').should == @brand_new
+        @project1.statuses.find_by_name!('New').should == @brand_new
         @project2.statuses.find_by_name('In Progress').should == @in_progress
+        @project2.statuses.find_by_name!('In Progress').should == @in_progress
       end
       
       should "work with multiple keys" do
         @project1.statuses.find_by_name_and_position('New', 1).should == @brand_new
+        @project1.statuses.find_by_name_and_position!('New', 1).should == @brand_new
         @project1.statuses.find_by_name_and_position('New', 2).should be_nil
       end
       
@@ -315,25 +318,25 @@ class ManyProxyTest < Test::Unit::TestCase
     
     context "with one id" do
       should "work for id in association" do
-        @project1.statuses.find(@complete._id).should == @complete
+        @project1.statuses.find(@complete.id).should == @complete
       end
       
       should "not work for id not in association" do
         lambda {
-          @project1.statuses.find!(@archived._id)
+          @project1.statuses.find!(@archived.id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
     
     context "with multiple ids" do
       should "work for ids in association" do
-        statuses = @project1.statuses.find(@brand_new._id, @complete._id)
+        statuses = @project1.statuses.find(@brand_new.id, @complete.id)
         statuses.should == [@brand_new, @complete]
       end
       
       should "not work for ids not in association" do
         lambda {
-          @project1.statuses.find!(@brand_new._id, @complete._id, @archived._id)
+          @project1.statuses.find!(@brand_new.id, @complete.id, @archived.id)
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end

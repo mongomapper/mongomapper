@@ -4,18 +4,17 @@ module MongoMapper
       def replace(doc)
         if doc
           doc.save if doc.new?
-          id = doc._id
+          id = doc.id
         end
-
-        @owner.send("#{@association.foreign_key}=", id)
+        
+        owner[reflection.foreign_key] = id
         reset
       end
 
       protected
         def find_target
-          if association_id = @owner.send(@association.foreign_key)
-            @association.klass.find_by_id(association_id)
-          end
+          return nil if owner[reflection.foreign_key].nil?
+          klass.first(:id => owner[reflection.foreign_key])
         end
     end
   end

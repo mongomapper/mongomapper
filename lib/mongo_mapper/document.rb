@@ -316,18 +316,6 @@ module MongoMapper
         superclass.respond_to?(:keys) && superclass.keys.has_key?('_type')
       end
 
-      protected
-        def method_missing(method, *args)
-          finder = DynamicFinder.new(method)
-
-          if finder.found?
-            meta_def(finder.method) { |*args| dynamic_find(finder, args) }
-            send(finder.method, *args)
-          else
-            super
-          end
-        end
-
       private
         def create_indexes_for(key)
           ensure_index key.name if key.options[:index]

@@ -87,7 +87,7 @@ module MongoMapper
               elsif as?
                 ManyDocumentsAsProxy
               else
-                ManyProxy
+                ManyDocumentsProxy
               end
             end
           else

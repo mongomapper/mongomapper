@@ -1,9 +1,5 @@
 require 'set'
 
-class BasicObject #:nodoc:
-  instance_methods.each { |m| undef_method m unless m =~ /(^__|instance_eval)/ }
-end unless defined?(BasicObject)
-
 class Array
   def self.to_mongo(value)
     value = value.respond_to?(:lines) ? value.lines : value
