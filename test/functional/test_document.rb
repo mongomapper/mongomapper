@@ -962,6 +962,8 @@ class DocumentTest < Test::Unit::TestCase
       class ::DocDaughter < ::DocParent; end
       class ::DocSon < ::DocParent; end
       class ::DocGrandSon < ::DocSon; end
+      
+      DocSon.many :children, :class_name => 'DocGrandSon'
 
       @parent = DocParent.new({:name => "Daddy Warbucks"})
       @daughter = DocDaughter.new({:name => "Little Orphan Annie"})
@@ -1099,6 +1101,13 @@ class DocumentTest < Test::Unit::TestCase
       lambda {
         DocParent.delete_all
       }.should change { DocParent.count }.by(-2)
+    end
+    
+    should "be able to reload parent inherited class" do
+      brian = DocParent.create(:name => 'Brian')
+      brian.name = 'B-Dawg'
+      brian.reload
+      brian.name.should == 'Brian'
     end
   end
 

@@ -427,7 +427,7 @@ module MongoMapper
 
       def reload
         doc = self.class.find(_id)
-        self.class.associations.each { |name, assoc| send(name).reset }
+        self.class.associations.each { |name, assoc| send(name).reset if respond_to?(name) }
         self.attributes = doc.attributes
         self
       end
