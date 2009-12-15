@@ -67,8 +67,8 @@ module MongoMapper
     end
 
     # <tt>reload</tt> the record and clears changed keys.
-    # def reload_with_dirty(*args) #:nodoc:
-    #   record = reload_without_dirty(*args)
+    # def reload(*args) #:nodoc:
+    #   record = super
     #   changed_keys.clear
     #   record
     # end
