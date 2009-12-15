@@ -1,12 +1,10 @@
-require 'observer'
-
 module MongoMapper
   module EmbeddedDocument
     def self.included(model)
       model.class_eval do
         extend ClassMethods
         include InstanceMethods
-
+        
         extend Associations::ClassMethods
         include Associations::InstanceMethods
 
@@ -81,14 +79,9 @@ module MongoMapper
         instance.to_mongo
       end
       
-      def from_mongo(instance_or_hash)
-        return nil if instance_or_hash.nil?
-        
-        if instance_or_hash.is_a?(self)
-          instance_or_hash
-        else
-          initialize_doc(instance_or_hash)
-        end
+      def from_mongo(value)
+        return nil if value.nil?
+        value.is_a?(self) ? value : initialize_doc(value)
       end
       
     private
@@ -179,13 +172,9 @@ module MongoMapper
     end
 
     module InstanceMethods
-      def logger
-        self.class.logger
-      end
-      
       def initialize(attrs={})
         unless attrs.nil?
-          self.class.associations.each_pair do |name, association|
+          associations.each do |name, association|
             if collection = attrs.delete(name)
               if association.many? && association.klass.embeddable?
                 root_document = attrs[:_root_document] || self
@@ -337,6 +326,10 @@ module MongoMapper
         self.attributes = attrs
         save!
       end
+      
+      def logger
+        self.class.logger
+      end
 
       private
         def _keys
@@ -380,7 +373,7 @@ module MongoMapper
         end
         
         def embedded_associations
-          self.class.associations.select do |name, association|
+          associations.select do |name, association|
             association.embeddable?
           end.map do |name, association|
             association
