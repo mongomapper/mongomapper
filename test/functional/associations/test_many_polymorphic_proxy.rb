@@ -134,8 +134,8 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       
       @hall = Room.create(:name => 'Hall')
       @hm1 = Message.create(:body => 'Do not fall in the hall', :position => 1)
-      @hm2 = Message.create(:body => 'Hall the king!', :position => 2)
       @hm3 = Message.create(:body => 'Loungin!', :position => 3)
+      @hm2 = Message.create(:body => 'Hall the king!', :position => 2)
       @hall.messages = [@hm1, @hm2, @hm3]
       @hall.save
     end
@@ -270,7 +270,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       end
       
       should "allow overriding the order provided to the association" do
-        @lounge.messages.all(:order => 'position desc').should == [@lm2, @lm1]
+        @lounge.messages.all(:order => 'position').should == [@lm1, @lm2]
       end
       
       should "allow using conditions on association" do
