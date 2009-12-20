@@ -18,6 +18,9 @@ module MongoMapper
         end unless respond_to?(:per_page)
       end
 
+      extra_extensions.each { |extension| model.extend(extension) }
+      extra_inclusions.each { |inclusion| model.send(:include, inclusion) }
+
       descendants << model
     end
 
@@ -25,6 +28,62 @@ module MongoMapper
       @descendants ||= Set.new
     end
 
+    # Extends all descendants with the given module after Document has been included.
+    #
+    # @param [Module] extensions
+    #   List of modules that will extend the model after it is extended by Document
+    #
+    # @return [Boolean]
+    #   whether or not the inclusions have been successfully appended to the list
+    #
+    # @api public
+    def self.append_extensions(*extensions)
+      extra_extensions.concat extensions
+
+      # Add the extension to existing descendants
+      descendants.each do |model|
+        extensions.each { |extension| model.extend(extension) }
+      end
+      true
+    end
+
+    # The current registered extra extensions
+    #
+    # @return [Set]
+    #
+    # @api private
+    def self.extra_extensions
+      @extra_extensions ||= []
+    end
+
+    # Appends a module for inclusion into the model class after Document.
+    #
+    # @param [Module] inclusions
+    #   the modules that are to be appended to the module after Document.
+    #
+    # @return [Boolean]
+    #   true if the inclusions have been successfully appended to the list
+    #
+    # @api public
+    def self.append_inclusions(*inclusions)
+      extra_inclusions.concat inclusions
+
+      # Add the inclusion to existing descendants
+      descendants.each do |model|
+        inclusions.each { |inclusion| model.send :include, inclusion }
+      end
+      true
+    end
+
+    # The current registered extra inclusions
+    #
+    # @return [Set]
+    #
+    # @api private
+    def self.extra_inclusions
+      @extra_inclusions ||= []
+    end
+    
     module ClassMethods
       def key(*args)
         key = super

@@ -72,6 +72,46 @@ class DocumentTest < Test::Unit::TestCase
       @document.collection.should be_instance_of(Mongo::Collection)
       @document.collection.name.should == 'foobar'
     end
+
+    should 'allow extensions to Document to be appended' do
+      module Extension
+        def test_this_extension; end
+      end
+      MongoMapper::Document.append_extensions(Extension)
+      article = Class.new
+      article.send(:include, MongoMapper::Document)
+      article.should respond_to(:test_this_extension)
+    end
+
+    should 'add appended extensions to classes that include Document before they are added' do
+      module Extension
+        def test_this_extension; end
+      end
+      article = Class.new
+      article.send(:include, MongoMapper::Document)
+      MongoMapper::Document.append_extensions(Extension)
+      article.should respond_to(:test_this_extension)
+    end
+
+    should 'allow inclusions to Document to be appended' do
+      module Inclusion
+        def test_this_inclusion; end
+      end
+      MongoMapper::Document.append_inclusions(Inclusion)
+      article = Class.new
+      article.send(:include, MongoMapper::Document)
+      article.new.should respond_to(:test_this_inclusion)
+    end
+
+    should 'add appended inclusions to classes that include Document before they are added' do
+      module Inclusion
+        def test_this_inclusion; end
+      end
+      article = Class.new
+      article.send(:include, MongoMapper::Document)
+      MongoMapper::Document.append_inclusions(Inclusion)
+      article.new.should respond_to(:test_this_inclusion)
+    end
   end # Document class
   
   context "Documents that inherit from other documents" do
