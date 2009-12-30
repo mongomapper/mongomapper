@@ -8,10 +8,13 @@ module MongoMapper
   # useful for understanding how MongoMapper handles the parsing of finder 
   # conditions and options.
   #
-  # @private  
   class FinderOptions
     OptionKeys = [:fields, :select, :skip, :offset, :limit, :sort, :order]
-
+    
+    def self.normalized_field(field)
+      field.to_s == 'id' ? :_id : field
+    end
+    
     def initialize(model, options)
       raise ArgumentError, "Options must be a hash" unless options.is_a?(Hash)
       options = options.symbolize_keys
@@ -58,14 +61,14 @@ module MongoMapper
         criteria = {}
 
         conditions.each_pair do |field, value|
-          field = normalized_field(field)
+          field = self.class.normalized_field(field)
           
           if @model.object_id_key?(field) && value.is_a?(String)
             value = Mongo::ObjectID.from_string(value)
           end
           
           if field.is_a?(FinderOperator)
-            criteria.merge!(field.to_criteria(value))
+            criteria.update(field.to_criteria(value))
             next
           end
           
@@ -84,10 +87,6 @@ module MongoMapper
 
       def operator?(field)
         field.to_s =~ /^\$/
-      end
-
-      def normalized_field(field)
-        field.to_s == 'id' ? :_id : field
       end
 
       # adds _type single collection inheritance scope for models that need it
@@ -127,7 +126,7 @@ module MongoMapper
     end
     
     def to_criteria(value)
-      {@field => {@operator => value}}
+      {FinderOptions.normalized_field(@field) => {@operator => value}}
     end
   end
 end

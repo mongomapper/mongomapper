@@ -61,6 +61,13 @@ class FinderOptionsTest < Test::Unit::TestCase
       FinderOptions.new(Room, :id => id).criteria.should == {:_id => id}
     end
     
+    should "convert id with symbol operator to _id with modifier" do
+      id = Mongo::ObjectID.new
+      FinderOptions.new(Room, :id.ne => id).criteria.should == {
+        :_id => {'$ne' => id}
+      }
+    end
+    
     should "make sure that _id's are object ids" do
       id = Mongo::ObjectID.new
       FinderOptions.new(Room, :_id => id.to_s).criteria.should == {:_id => id}
