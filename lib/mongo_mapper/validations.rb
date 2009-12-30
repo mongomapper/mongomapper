@@ -31,9 +31,7 @@ module MongoMapper
 
       def where_conditions(instance)
         conditions = {}
-        unless case_sensitive
-          conditions.merge!({'$where' => "this.#{attribute}.toLowerCase() == '#{instance[attribute].to_s.downcase}'"})
-        end
+        conditions[attribute] = /#{instance[attribute].to_s}/i unless case_sensitive
         conditions
       end
     end
