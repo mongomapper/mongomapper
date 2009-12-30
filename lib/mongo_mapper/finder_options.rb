@@ -15,6 +15,11 @@ module MongoMapper
       field.to_s == 'id' ? :_id : field
     end
     
+    def self.normalized_order_direction(direction)
+      direction ||= 'ASC'
+      direction.upcase == 'ASC' ? 1 : -1
+    end
+    
     def initialize(model, options)
       raise ArgumentError, "Options must be a hash" unless options.is_a?(Hash)
       options = options.symbolize_keys
@@ -108,14 +113,20 @@ module MongoMapper
 
       def convert_order_to_sort(sort)
         return if sort.blank?
-        pieces = sort.split(',')
-        pieces.map { |s| to_mongo_sort_piece(s) }
+        
+        if sort.respond_to?(:all?) && sort.all? { |s| s.respond_to?(:to_order) }
+          sort.map { |s| s.to_order }
+        elsif sort.respond_to?(:to_order)
+          [sort.to_order]
+        else
+          pieces = sort.split(',')
+          pieces.map { |s| to_mongo_sort_piece(s) }
+        end
       end
 
       def to_mongo_sort_piece(str)
         field, direction = str.strip.split(' ')
-        direction ||= 'ASC'
-        direction = direction.upcase == 'ASC' ? 1 : -1
+        direction = FinderOptions.normalized_order_direction(direction)
         [field, direction]
       end
   end
@@ -127,6 +138,16 @@ module MongoMapper
     
     def to_criteria(value)
       {FinderOptions.normalized_field(@field) => {@operator => value}}
+    end
+  end
+  
+  class OrderOperator
+    def initialize(field, direction)
+      @field, @direction = field, direction
+    end
+    
+    def to_order
+      [@field.to_s, FinderOptions.normalized_order_direction(@direction)]
     end
   end
 end

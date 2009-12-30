@@ -160,6 +160,9 @@ class Symbol
       MongoMapper::FinderOperator.new(self, "$#{operator}")
     end
   end
+  
+  def asc;  MongoMapper::OrderOperator.new(self, 'asc') end
+  def desc; MongoMapper::OrderOperator.new(self, 'desc') end
 end
 
 class Time  

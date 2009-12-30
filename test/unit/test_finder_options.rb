@@ -128,6 +128,15 @@ class FinderOptionsTest < Test::Unit::TestCase
       FinderOptions.new(Room, :order => 'foo DESC').options[:sort].should == sort
     end
     
+    should "convert order operators to mongo sort" do
+      FinderOptions.new(Room, :order => :foo.asc).options[:sort].should == [['foo', 1]]
+      FinderOptions.new(Room, :order => :foo.desc).options[:sort].should == [['foo', -1]]
+    end
+    
+    should "convert array of order operators to mongo sort" do
+      FinderOptions.new(Room, :order => [:foo.asc, :bar.desc]).options[:sort].should == [['foo', 1], ['bar', -1]]
+    end
+    
     should "convert field without direction to ascending" do
       sort = [['foo', 1]]
       FinderOptions.new(Room, :order => 'foo').options[:sort].should == sort
