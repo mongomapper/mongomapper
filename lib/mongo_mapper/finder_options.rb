@@ -104,10 +104,10 @@ module MongoMapper
       def to_mongo_fields(fields)
         return if fields.blank?
 
-        if fields.is_a?(String)
-          fields.split(',').map { |field| field.strip }
-        else
+        if fields.respond_to?(:flatten, :compact)
           fields.flatten.compact
+        else
+          fields.split(',').map { |field| field.strip }
         end
       end
 
