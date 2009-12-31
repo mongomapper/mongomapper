@@ -1,8 +1,5 @@
 module MongoMapper
   module Associations
-    # Base class for keeping track of associations.
-    #
-    # @private
     class Base
       attr_reader :type, :name, :options, :finder_options
 

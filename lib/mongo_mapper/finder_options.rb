@@ -1,25 +1,20 @@
 module MongoMapper
-  # Controls the parsing and handling of options used by finders.
-  #
-  # == Important Note
-  #
+  # = Important Note
   # This class is private to MongoMapper and should not be considered part of 
-  # MongoMapper's public API. Some documentation herein, however, may prove 
-  # useful for understanding how MongoMapper handles the parsing of finder 
-  # conditions and options.
+  # MongoMapper's public API.
   #
   class FinderOptions
     OptionKeys = [:fields, :select, :skip, :offset, :limit, :sort, :order]
-    
+
     def self.normalized_field(field)
       field.to_s == 'id' ? :_id : field
     end
-    
+
     def self.normalized_order_direction(direction)
       direction ||= 'ASC'
       direction.upcase == 'ASC' ? 1 : -1
     end
-    
+
     def initialize(model, options)
       raise ArgumentError, "Options must be a hash" unless options.is_a?(Hash)
       options = options.symbolize_keys
@@ -38,15 +33,11 @@ module MongoMapper
 
       add_sci_scope
     end
-    
-    # @return [Hash] Mongo compatible criteria options
-    #
-    # @see FinderOptions#to_mongo_criteria
+
     def criteria
       to_mongo_criteria(@conditions)
     end
-    
-    # @return [Hash] Mongo compatible options
+
     def options
       fields = @options.delete(:fields) || @options.delete(:select)
       skip   = @options.delete(:skip)   || @options.delete(:offset) || 0
@@ -55,8 +46,7 @@ module MongoMapper
 
       {:fields => to_mongo_fields(fields), :skip => skip.to_i, :limit => limit.to_i, :sort => sort}
     end
-    
-    # @return [Array<Hash>] Mongo criteria and options enclosed in an Array
+
     def to_a
       [criteria, options]
     end

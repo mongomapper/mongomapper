@@ -30,18 +30,10 @@ module MongoMapper
       !changed_keys.empty?
     end
 
-    # List of keys with unsaved changes.
-    #   person.changed # => []
-    #   person.name = 'bob'
-    #   person.changed # => ['name']
     def changed
       changed_keys.keys
     end
 
-    # Map of changed attrs => [original value, new value].
-    #   person.changes # => {}
-    #   person.name = 'bob'
-    #   person.changes # => { 'name' => ['bill', 'bob'] }
     def changes
       changed.inject({}) { |h, attribute| h[attribute] = key_change(attribute); h }
     end
@@ -51,7 +43,6 @@ module MongoMapper
       changed_keys.clear unless new?
     end
 
-    # Attempts to +save+ the record and clears changed keys if successful.
     def save(*args)
       if status = super
         changed_keys.clear
@@ -59,19 +50,17 @@ module MongoMapper
       status
     end
 
-    # Attempts to <tt>save!</tt> the record and clears changed keys if successful.
     def save!(*args)
       status = super
       changed_keys.clear
       status
     end
 
-    # <tt>reload</tt> the record and clears changed keys.
-    # def reload(*args) #:nodoc:
-    #   record = super
-    #   changed_keys.clear
-    #   record
-    # end
+    def reload(*args) #:nodoc:
+      record = super
+      changed_keys.clear
+      record
+    end
 
     private
       def clone_key_value(attribute_name)
@@ -81,36 +70,29 @@ module MongoMapper
         value
       end
       
-      # Map of change <tt>attr => original value</tt>.
       def changed_keys
         @changed_keys ||= {}
       end
 
-      # Handle <tt>*_changed?</tt> for +method_missing+.
       def key_changed?(attribute)
         changed_keys.include?(attribute)
       end
 
-      # Handle <tt>*_change</tt> for +method_missing+.
       def key_change(attribute)
         [changed_keys[attribute], __send__(attribute)] if key_changed?(attribute)
       end
 
-      # Handle <tt>*_was</tt> for +method_missing+.
       def key_was(attribute)
         key_changed?(attribute) ? changed_keys[attribute] : __send__(attribute)
       end
 
-      # Handle <tt>*_will_change!</tt> for +method_missing+.
       def key_will_change!(attribute)
         changed_keys[attribute] = clone_key_value(attribute)
       end
 
-      # Wrap write_attribute to remember original key value.
       def write_attribute(attribute, value)
         attribute = attribute.to_s
 
-        # The key already has an unsaved change.
         if changed_keys.include?(attribute)
           old = changed_keys[attribute]
           changed_keys.delete(attribute) unless value_changed?(attribute, old, value)
@@ -119,7 +101,6 @@ module MongoMapper
           changed_keys[attribute] = old if value_changed?(attribute, old, value)
         end
 
-        # Carry on.
         super(attribute, value)
       end
       
