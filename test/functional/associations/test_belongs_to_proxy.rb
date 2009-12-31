@@ -45,4 +45,47 @@ class BelongsToProxyTest < Test::Unit::TestCase
     id = Mongo::ObjectID.new
     @comment_class.new(:name => 'Foo', :post_id => id).post.nil?.should be_true
   end
+  
+  context ":dependent" do
+    setup do
+      # FIXME: make use of already defined models
+      class ::Property
+        include MongoMapper::Document
+      end
+      Property.collection.remove
+
+      class ::Thing
+        include MongoMapper::Document
+        key :name, String
+      end
+      Thing.collection.remove
+    end
+
+    teardown do
+      Object.send :remove_const, 'Property' if defined?(::Property)
+      Object.send :remove_const, 'Thing' if defined?(::Thing)
+    end
+    
+    context "=> destroy" do
+      setup do
+        Property.key :thing_id, ObjectId
+        Property.belongs_to :thing, :dependent => :destroy
+        Thing.has_many :properties
+
+        @thing = Thing.create(:name => "Tree")
+        @property1 = Property.create
+        @property2 = Property.create
+        @property3 = Property.create
+        @thing.properties << @property1
+        @thing.properties << @property2
+        @thing.properties << @property3
+      end
+
+      should "not execute on a belongs_to association" do
+        Thing.count.should == 1
+        @property1.destroy
+        Thing.count.should == 1
+      end
+    end
+  end
 end

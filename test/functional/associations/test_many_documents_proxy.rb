@@ -384,4 +384,94 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       project.collaborators.top.should == collaborator1
     end
   end
+  
+  context ":dependent" do
+    setup do
+      # FIXME: make use of already defined models
+      class ::Property
+        include MongoMapper::Document
+      end
+      Property.collection.remove
+
+      class ::Thing
+        include MongoMapper::Document
+        key :name, String
+      end
+      Thing.collection.remove
+    end
+
+    teardown do
+      Object.send :remove_const, 'Property' if defined?(::Property)
+      Object.send :remove_const, 'Thing' if defined?(::Thing)
+    end
+
+    context "=> destroy" do
+      setup do
+        Property.key :thing_id, ObjectId
+        Property.belongs_to :thing, :dependent => :destroy
+        Thing.many :properties, :dependent => :destroy
+
+        @thing = Thing.create(:name => "Tree")
+        @property1 = Property.create
+        @property2 = Property.create
+        @property3 = Property.create
+        @thing.properties << @property1
+        @thing.properties << @property2
+        @thing.properties << @property3
+      end
+
+      should "should destroy the associated documents" do
+        @thing.properties.count.should == 3
+        @thing.destroy
+        @thing.properties.count.should == 0
+        Property.count.should == 0
+      end
+    end
+
+    context "=> delete_all" do
+      setup do
+        Property.key :thing_id, ObjectId
+        Property.belongs_to :thing
+        Thing.has_many :properties, :dependent => :delete_all
+
+        @thing = Thing.create(:name => "Tree")
+        @property1 = Property.create
+        @property2 = Property.create
+        @property3 = Property.create
+        @thing.properties << @property1
+        @thing.properties << @property2
+        @thing.properties << @property3
+      end
+
+      should "should delete associated documents" do
+        @thing.properties.count.should == 3
+        @thing.destroy
+        @thing.properties.count.should == 0
+        Property.count.should == 0
+      end
+    end
+
+    context "=> nullify" do
+      setup do
+        Property.key :thing_id, ObjectId
+        Property.belongs_to :thing
+        Thing.has_many :properties, :dependent => :nullify
+
+        @thing = Thing.create(:name => "Tree")
+        @property1 = Property.create
+        @property2 = Property.create
+        @property3 = Property.create
+        @thing.properties << @property1
+        @thing.properties << @property2
+        @thing.properties << @property3
+      end
+
+      should "should nullify relationship but not destroy associated documents" do
+        @thing.properties.count.should == 3
+        @thing.destroy
+        @thing.properties.count.should == 0
+        Property.count.should == 3
+      end
+    end
+  end
 end
