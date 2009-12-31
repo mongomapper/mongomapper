@@ -30,19 +30,19 @@ class FinderOptionsTest < Test::Unit::TestCase
       }
     end
     
+    should "automatically add _type to query if model is single collection inherited" do
+      FinderOptions.new(Enter, :foo => 'bar').criteria.should == {
+        :foo => 'bar',
+        :_type => 'Enter'
+      }
+    end
+    
     %w{gt lt gte lte ne in nin mod size where exists}.each do |operator|
       should "convert #{operator} conditions" do
         FinderOptions.new(Room, :age.send(operator) => 21).criteria.should == {
           :age => {"$#{operator}" => 21}
         }
       end
-    end
-    
-    should "automatically add _type to query if model is single collection inherited" do
-      FinderOptions.new(Enter, :foo => 'bar').criteria.should == {
-        :foo => 'bar',
-        :_type => 'Enter'
-      }
     end
     
     should "work with simple criteria" do
@@ -86,6 +86,19 @@ class FinderOptionsTest < Test::Unit::TestCase
     should "work fine with object ids for object id typed keys" do
       id = Mongo::ObjectID.new
       FinderOptions.new(Message, :room_id => id).criteria.should == {:room_id => id}
+    end
+    
+    should "convert times to utc if they aren't already" do
+      time = Time.now.in_time_zone('Indiana (East)')
+      criteria = FinderOptions.new(Room, :created_at => time).criteria
+      criteria[:created_at].utc?.should be_true
+    end
+    
+    should "not funk with times already in utc" do
+      time = Time.now.utc
+      criteria = FinderOptions.new(Room, :created_at => time).criteria
+      criteria[:created_at].utc?.should be_true
+      criteria[:created_at].should == time
     end
     
     should "use $in for arrays" do

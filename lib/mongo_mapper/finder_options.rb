@@ -82,6 +82,8 @@ module MongoMapper
               criteria[field] = operator?(field) ? value : {'$in' => value}
             when Hash
               criteria[field] = to_mongo_criteria(value, field)
+            when Time
+              criteria[field] = value.utc
             else            
               criteria[field] = value
           end
