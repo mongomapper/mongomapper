@@ -727,6 +727,7 @@ class DocumentTest < Test::Unit::TestCase
 
     context "Indexing" do
       setup do
+        MongoMapper.ensured_indexes = []
         @document.collection.drop_indexes
       end
 

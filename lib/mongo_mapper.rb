@@ -65,6 +65,11 @@ module MongoMapper
   end
   
   # @api private
+  def self.ensured_indexes=(value)
+    @@ensured_indexes = value
+  end
+  
+  # @api private
   def self.ensure_index(klass, keys, options={})
     ensured_indexes << {:klass => klass, :keys => keys, :options => options}
   end
