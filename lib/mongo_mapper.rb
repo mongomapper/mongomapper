@@ -4,7 +4,7 @@
 # if there is a better way to do this, please enlighten me!
 if self.class.const_defined?(:Gem)
   gem 'activesupport', '>= 2.3'
-  gem 'mongo', '0.18.1'
+  gem 'mongo', '0.18.2'
   gem 'jnunemaker-validatable', '1.8.1'
 end
 
