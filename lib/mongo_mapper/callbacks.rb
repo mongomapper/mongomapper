@@ -2,7 +2,6 @@ module MongoMapper
   module Callbacks
     def self.included(model) #:nodoc:
       model.class_eval do
-        extend Observable
         include ActiveSupport::Callbacks
 
         callbacks = %w(
@@ -31,60 +30,44 @@ module MongoMapper
     end
 
     def valid? #:nodoc:
-      return false if callback(:before_validation) == false
-      result = new? ? callback(:before_validation_on_create) : callback(:before_validation_on_update)
-      return false if false == result
-
+      action = new? ? 'create' : 'update'
+      
+      run_callbacks(:before_validation)
+      run_callbacks("before_validation_on_#{action}".to_sym)
       result = super
-      callback(:after_validation)
-
-      new? ? callback(:after_validation_on_create) : callback(:after_validation_on_update)
-      return result
+      run_callbacks("after_validation_on_#{action}".to_sym)
+      run_callbacks(:after_validation)
+      
+      result
     end
 
     def destroy #:nodoc:
-      return false if callback(:before_destroy) == false
+      run_callbacks(:before_destroy)
       result = super
-      callback(:after_destroy)
+      run_callbacks(:after_destroy)
       result
     end
 
     private
-      def callback(method)
-        result = run_callbacks(method) { |result, object| false == result }
-
-        if result != false && respond_to?(method)
-          result = send(method)
-        end
-
-        notify(method)
-        return result
-      end
-
-      def notify(method) #:nodoc:
-        self.class.changed
-        self.class.notify_observers(method, self)
-      end
-
       def create_or_update(*args) #:nodoc:
-        return false if callback(:before_save) == false
+        run_callbacks(:before_save)
         if result = super
-          callback(:after_save)
+          run_callbacks(:after_save)
         end
         result
       end
 
       def create(*args) #:nodoc:
-        return false if callback(:before_create) == false
+        run_callbacks(:before_create)
         result = super
-        callback(:after_create)
+        run_callbacks(:after_create)
         result
       end
 
       def update(*args) #:nodoc:
-        return false if callback(:before_update) == false
+        run_callbacks(:before_update)
         result = super
-        callback(:after_update)
+        run_callbacks(:after_update)
         result
       end
   end
