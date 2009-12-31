@@ -22,9 +22,9 @@ if false
     run_test_file('test/functional/test_modifiers.rb')
   end
 else
-  watch('test/test_helper\.rb') { run_all_tests }
-  watch('test/.*/test_.*\.rb') { |m| run_test_file(m[0]) }
-  watch('lib/.*') { |m| related_test_files(m[0]).each { |file| run_test_file(file) } }
+  watch('test/test_helper\.rb') { system('clear'); run_all_tests }
+  watch('test/.*/test_.*\.rb') { |m| system('clear'); run_test_file(m[0]) }
+  watch('lib/.*') { |m| related_test_files(m[0]).each { |file| system('clear'); run_test_file(file) } }
 end
 
 # Ctrl-\
