@@ -235,6 +235,27 @@ module MongoMapper
       def destroy_all(options={})
         all(options).each(&:destroy)
       end
+      
+      def increment(*args)
+        criteria, keys = criteria_and_keys_from_args(args)
+        modifiers      = {'$inc' => keys}
+        collection.update(criteria, modifiers, :multi => true)
+      end
+      
+      def decrement(*args)
+        criteria, keys = criteria_and_keys_from_args(args)
+        # to make sure that counts are always negative
+        keys           = keys.inject({}) { |hash, h| hash[h[0]] = -h[1].abs; hash }
+        modifiers      = {'$inc' => keys}
+        collection.update(criteria, modifiers, :multi => true)
+      end
+      
+      def criteria_and_keys_from_args(args)
+        keys     = args.pop
+        criteria = args[0].is_a?(Hash) ? args[0] : {:id => args}
+        [to_criteria(criteria), keys]
+      end
+      private :criteria_and_keys_from_args
 
       # @overload connection()
       #   @return [Mongo::Connection] the connection used by your document class
