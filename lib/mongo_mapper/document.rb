@@ -237,18 +237,48 @@ module MongoMapper
       end
       
       def increment(*args)
-        criteria, keys = criteria_and_keys_from_args(args)
-        modifiers      = {'$inc' => keys}
-        collection.update(criteria, modifiers, :multi => true)
+        modifier_update('$inc', args)
       end
       
       def decrement(*args)
         criteria, keys = criteria_and_keys_from_args(args)
-        # to make sure that counts are always negative
-        keys           = keys.inject({}) { |hash, h| hash[h[0]] = -h[1].abs; hash }
-        modifiers      = {'$inc' => keys}
+        values, to_decrement = keys.values, {}
+        keys.keys.each_with_index { |k, i| to_decrement[k] = -values[i].abs }
+        collection.update(criteria, {'$inc' => to_decrement}, :multi => true)
+      end
+      
+      def set(*args)
+        modifier_update('$set', args)
+      end
+      
+      def push(*args)
+        modifier_update('$push', args)
+      end
+      
+      def push_all(*args)
+        modifier_update('$pushAll', args)
+      end
+      
+      def push_uniq(*args)
+        criteria, keys = criteria_and_keys_from_args(args)
+        keys.each { |key, value | criteria[key] = {'$ne' => value} }
+        collection.update(criteria, {'$push' => keys}, :multi => true)
+      end
+      
+      def pull(*args)
+        modifier_update('$pull', args)
+      end
+      
+      def pull_all(*args)
+        modifier_update('$pullAll', args)
+      end
+      
+      def modifier_update(modifier, args)
+        criteria, keys = criteria_and_keys_from_args(args)
+        modifiers = {modifier => keys}
         collection.update(criteria, modifiers, :multi => true)
       end
+      private :modifier_update
       
       def criteria_and_keys_from_args(args)
         keys     = args.pop
