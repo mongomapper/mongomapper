@@ -1018,6 +1018,28 @@ class DocumentTest < Test::Unit::TestCase
     end
   end
 
+  context "userstamping" do
+    setup do
+      @document.userstamps!
+    end
+    
+    should "add creator_id key" do
+      @document.keys.keys.should include('creator_id')
+    end
+    
+    should "add updater_id key" do
+      @document.keys.keys.should include('updater_id')
+    end
+    
+    should "add belongs_to creator" do
+      @document.associations.keys.should include('creator')
+    end
+    
+    should "add belongs_to updater" do
+      @document.associations.keys.should include('updater')
+    end
+  end
+
   context "#exist?" do
     setup do
       @doc = @document.create(:first_name => "James", :age => 27)

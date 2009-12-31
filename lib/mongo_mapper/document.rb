@@ -328,6 +328,13 @@ module MongoMapper
         key :updated_at, Time
         class_eval { before_save :update_timestamps }
       end
+      
+      def userstamps!
+        key :creator_id, ObjectId
+        key :updater_id, ObjectId
+        belongs_to :creator, :class_name => 'User'
+        belongs_to :updater, :class_name => 'User'
+      end
 
       def single_collection_inherited?
         keys.has_key?('_type') && single_collection_inherited_superclass?
