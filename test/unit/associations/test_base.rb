@@ -50,6 +50,17 @@ class AssociationBaseTest < Test::Unit::TestCase
     
     should "be false if not many" do
       Base.new(:belongs_to, :foo).many?.should be_false
+      Base.new(:one, :foo).many?.should be_false
+    end
+  end
+  
+  context "one?" do
+    should "be true if one" do
+      Base.new(:one, :foo).one?.should be_true
+    end
+    
+    should "be false if not one" do
+      Base.new(:many, :foo).one?.should be_false
     end
   end
   
@@ -101,7 +112,7 @@ class AssociationBaseTest < Test::Unit::TestCase
   end
   
   context "foreign_key" do
-    should "default to assocation_name_id" do
+    should "default to assocation name _id for belongs to" do
       base = Base.new(:belongs_to, :foo)
       base.foreign_key.should == 'foo_id'
     end
@@ -160,6 +171,11 @@ class AssociationBaseTest < Test::Unit::TestCase
     should "be BelongsToPolymorphicProxy for polymorphic belongs_to" do
       base = Base.new(:belongs_to, :target, :polymorphic => true)
       base.proxy_class.should == BelongsToPolymorphicProxy
+    end
+    
+    should "be OneProxy for one" do
+      base = Base.new(:one, :target, :polymorphic => true)
+      base.proxy_class.should == OneProxy
     end
   end
   

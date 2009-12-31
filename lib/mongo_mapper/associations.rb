@@ -3,12 +3,14 @@ module MongoMapper
     module ClassMethods
       def belongs_to(association_id, options={}, &extension)
         create_association(:belongs_to, association_id, options, &extension)
-        self
       end
 
       def many(association_id, options={}, &extension)
         create_association(:many, association_id, options, &extension)
-        self
+      end
+      
+      def one(association_id, options={}, &extension)
+        create_association(:one, association_id, options, &extension)
       end
       
       def associations

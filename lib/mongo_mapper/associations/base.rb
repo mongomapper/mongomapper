@@ -47,6 +47,10 @@ module MongoMapper
       def belongs_to?
         @belongs_to_type ||= @type == :belongs_to
       end
+      
+      def one?
+        @one_type ||= @type == :one
+      end
 
       def polymorphic?
         !!@options[:polymorphic]
@@ -90,6 +94,8 @@ module MongoMapper
                 ManyDocumentsProxy
               end
             end
+          elsif one?
+            OneProxy
           else
             polymorphic? ? BelongsToPolymorphicProxy : BelongsToProxy
           end
