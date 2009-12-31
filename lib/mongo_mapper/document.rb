@@ -6,7 +6,6 @@ module MongoMapper
       model.class_eval do
         include EmbeddedDocument
         include InstanceMethods
-        include Observing
         include Callbacks
         include Dirty
         include RailsCompatibility::Document
