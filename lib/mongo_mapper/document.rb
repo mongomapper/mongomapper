@@ -427,6 +427,10 @@ module MongoMapper
       def collection
         self.class.collection
       end
+      
+      def database
+        self.class.database
+      end
 
       def new?
         read_attribute('_id').blank? || using_custom_id?

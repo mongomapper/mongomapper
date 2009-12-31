@@ -766,6 +766,14 @@ class DocumentTest < Test::Unit::TestCase
     end
   end # Document Class Methods
 
+  should "have instance method for collection" do
+    @document.new.collection.name.should == @document.collection.name
+  end
+  
+  should "have instance method for database" do
+    @document.new.database.should == @document.database
+  end
+
   context "Saving a new document" do
     setup do
       @doc = @document.new(:first_name => 'John', :age => '27')
