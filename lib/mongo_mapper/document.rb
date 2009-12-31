@@ -420,9 +420,7 @@ module MongoMapper
       end
 
       def destroy
-        return false if frozen?
         self.class.delete(_id) unless new?
-        freeze
       end
       
       def delete

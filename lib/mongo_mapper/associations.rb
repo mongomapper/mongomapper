@@ -63,7 +63,7 @@ module MongoMapper
       def get_proxy(association)
         unless proxy = self.instance_variable_get(association.ivar)
           proxy = association.proxy_class.new(self, association)
-          self.instance_variable_set(association.ivar, proxy) if !frozen?
+          self.instance_variable_set(association.ivar, proxy)
         end
         proxy
       end

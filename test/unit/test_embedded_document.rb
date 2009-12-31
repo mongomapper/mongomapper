@@ -580,15 +580,6 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.instance_variable_get("@foo").should == []
       end
       
-      should "not set instance variable if frozen" do
-        @document.key :foo, Array
-        doc = @document.new
-        doc.instance_variable_get("@foo").should be_nil
-        doc.freeze
-        doc.foo
-        doc.instance_variable_get("@foo").should be_nil
-      end
-      
       should "be overrideable by modules" do
         @document = Class.new do
           include MongoMapper::Document

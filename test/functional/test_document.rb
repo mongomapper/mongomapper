@@ -684,7 +684,6 @@ class DocumentTest < Test::Unit::TestCase
             Thing.count.should == 1
             @property1.destroy
             Thing.count.should == 1
-            @property1.should be_frozen
           end
         end
       end
@@ -923,14 +922,6 @@ class DocumentTest < Test::Unit::TestCase
 
     should "remove the document from the collection" do
       @document.count.should == 0
-    end
-
-    should "raise error if assignment is attempted" do
-      lambda { @doc.first_name = 'Foo' }.should raise_error(TypeError)
-    end
-
-    should "do nothing if destroy is called again" do
-      @doc.destroy.should be_false
     end
   end
 
