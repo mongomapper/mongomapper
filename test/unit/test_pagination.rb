@@ -62,6 +62,12 @@ class PaginationTest < Test::Unit::TestCase
     should "alias offset to skip" do
       PaginationProxy.new(25, 2, 10).offset.should == 10
     end
+    
+    should "return true for === Array" do
+      collection = PaginationProxy.new(25, 2, 10)
+      collection.subject = [1, 2]
+      collection.should === Array
+    end
         
     context "previous_page" do
       should "be nil if current page 1" do
