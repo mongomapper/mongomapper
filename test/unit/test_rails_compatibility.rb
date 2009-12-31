@@ -22,7 +22,10 @@ class TestRailsCompatibility < Test::Unit::TestCase
   context "EmbeddedDocument" do    
     should "alias many to has_many" do
       FirstItem.should respond_to(:has_many)
-      FirstItem.method(:has_many).should == FirstItem.method(:many)
+    end
+    
+    should "alias one to has_one" do
+      FirstItem.should respond_to(:has_one)
     end
     
     should "have column names" do

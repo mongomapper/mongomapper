@@ -10,6 +10,7 @@ module MongoMapper
 
         class << model
           alias has_many many
+          alias has_one one
         end
       end
 
