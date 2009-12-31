@@ -432,8 +432,14 @@ module MongoMapper
         read_attribute('_id').blank? || using_custom_id?
       end
 
-      def save(perform_validations=true)
-        !perform_validations || valid? ? create_or_update : false
+      def save(options={})
+        if options === false
+          ActiveSupport::Deprecation.warn "save with true/false is deprecated. You should now use :validate => true/false."
+          options = {:validate => false}
+        end
+        options.reverse_merge!(:validate => true)
+        perform_validations = options.delete(:validate)
+        !perform_validations || valid? ? create_or_update(options) : false
       end
 
       def save!
@@ -441,11 +447,11 @@ module MongoMapper
       end
 
       def destroy
-        self.class.delete(_id) unless new?
+        self.class.delete(id) unless new?
       end
       
       def delete
-        self.class.delete(_id) unless new?
+        self.class.delete(id) unless new?
       end
 
       def reload
@@ -456,14 +462,14 @@ module MongoMapper
       end
 
     private
-      def create_or_update
-        result = new? ? create : update
+      def create_or_update(options={})
+        result = new? ? create(options) : update(options)
         result != false
       end
 
-      def create
+      def create(options={})
         assign_id
-        save_to_collection
+        save_to_collection(options)
       end
 
       def assign_id
@@ -472,13 +478,14 @@ module MongoMapper
         end
       end
 
-      def update
-        save_to_collection
+      def update(options={})
+        save_to_collection(options)
       end
 
-      def save_to_collection
+      def save_to_collection(options={})
         clear_custom_id_flag
-        collection.save(to_mongo)
+        safe = options.delete(:safe) || false
+        collection.save(to_mongo, :safe => safe)
       end
 
       def update_timestamps

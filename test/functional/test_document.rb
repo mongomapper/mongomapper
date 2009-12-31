@@ -913,6 +913,54 @@ class DocumentTest < Test::Unit::TestCase
       @document.new.update_attributes({}).should be_false
     end
   end
+  
+  context "Skipping validations when saving" do
+    setup do
+      @document = Class.new do
+        include MongoMapper::Document
+        set_collection_name 'test'
+        key :name, String, :required => true
+      end
+      @document.collection.remove
+    end
+
+    should "insert document" do
+      doc = @document.new
+      doc.save(:validate => false)
+      @document.count.should == 1
+    end
+    
+    should "work with false passed to save" do
+      doc = @document.new
+      doc.save(false)
+      @document.count.should == 1
+    end
+  end
+  
+  context "Saving a document with options" do
+    setup do
+      MongoMapper.ensured_indexes = []
+      
+      @document = Class.new do
+        include MongoMapper::Document
+        set_collection_name 'test'
+        key :name, String
+        ensure_index :name, :unique => true
+      end
+      @document.collection.drop_indexes
+      
+      MongoMapper.ensure_indexes!
+    end
+    
+    should "allow passing safe" do
+      doc = @document.new(:name => 'John')
+      doc.save
+      
+      assert_raises(Mongo::OperationFailure) do
+        @document.new(:name => 'John').save(:safe => true)
+      end
+    end
+  end
 
   context "Destroying a document that exists" do
     setup do

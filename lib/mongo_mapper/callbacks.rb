@@ -84,7 +84,7 @@ module MongoMapper
         self.class.notify_observers(method, self)
       end
 
-      def create_or_update #:nodoc:
+      def create_or_update(*args) #:nodoc:
         return false if callback(:before_save) == false
         if result = super
           callback(:after_save)
@@ -92,7 +92,7 @@ module MongoMapper
         result
       end
 
-      def create #:nodoc:
+      def create(*args) #:nodoc:
         return false if callback(:before_create) == false
         result = super
         callback(:after_create)

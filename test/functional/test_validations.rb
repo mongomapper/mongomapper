@@ -25,23 +25,6 @@ class ValidationsTest < Test::Unit::TestCase
     end
   end
 
-  context "Skipping validations when saving" do
-    setup do
-      @document = Class.new do
-        include MongoMapper::Document
-        set_collection_name 'test'
-        key :name, String, :required => true
-      end
-      @document.collection.remove
-    end
-
-    should "insert document" do
-      doc = @document.new
-      doc.save(false)
-      @document.count.should == 1
-    end
-  end
-
   context "Saving a document that is invalid (destructive)" do
     setup do
       @document = Class.new do
