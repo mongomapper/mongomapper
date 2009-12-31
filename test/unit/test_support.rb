@@ -167,6 +167,10 @@ class SupportTest < Test::Unit::TestCase
       ObjectId.to_mongo(nil).should be_nil
     end
     
+    should "return nil if blank string" do
+      ObjectId.to_mongo('').should be_nil
+    end
+    
     should "return value if object id" do
       id = Mongo::ObjectID.new
       ObjectId.to_mongo(id).should be(id)
