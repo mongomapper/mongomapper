@@ -949,6 +949,36 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
   end
+  
+  context "#delete" do
+    setup do
+      @doc1 = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
+      @doc2 = @document.create({:first_name => 'Steve', :last_name => 'Smith', :age => '28'})
+      
+      @document.class_eval do
+        before_destroy :before_destroy_callback
+        after_destroy :after_destroy_callback
+        
+        def history; @history ||= [] end
+        def before_destroy_callback; history << :after_destroy end
+        def after_destroy_callback;  history << :after_destroy end
+      end
+      
+      @doc1.delete
+    end
+
+    should "remove document from collection" do
+      @document.count.should == 1
+    end
+    
+    should "not remove other documents" do
+      @document.find(@doc2.id).should_not be(nil)
+    end
+    
+    should "not call before/after destroy callbacks" do
+      @doc1.history.should == []
+    end
+  end
 
   context "Single collection inheritance" do
     setup do

@@ -424,6 +424,10 @@ module MongoMapper
         self.class.delete(_id) unless new?
         freeze
       end
+      
+      def delete
+        self.class.delete(_id) unless new?
+      end
 
       def reload
         doc = self.class.find(_id)
