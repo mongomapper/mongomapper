@@ -30,11 +30,8 @@ http://groups.google.com/group/mongomapper
 
 == More Info
 
-You can learn more about mongo here:
-http://www.mongodb.org/
-
-You can learn more about the mongo ruby driver here:
-http://github.com/mongodb/mongo-ruby-driver/tree/master
+* http://www.mongodb.org/
+* http://github.com/mongodb/mongo-ruby-driver/
 
 == Copyright
 
