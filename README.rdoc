@@ -13,19 +13,8 @@ Releases are tagged on github and released on gemcutter. Master is pushed to whe
 * Send me a pull request. Bonus points for topic branches.
 
 == Install
-
-MongoMapper is only released on gemcutter. To install, you can setup gemcutter as your default gem source.
-
- $ gem install gemcutter
- $ gem tumble
- 
-Then you can install MM:
  
  $ gem install mongo_mapper
-
-You can also just declare the source:
-
- $ gem install mongo_mapper -s http://gemcutter.org
 
 == Dependencies
 
@@ -37,7 +26,6 @@ You can also just declare the source:
 
 Documentation is lacking right now because if you can't look through the code right now and feel comfortable, this is probably too young for you to use. Wait til it stabilizes a bit more.
 
-http://rdoc.info/projects/jnunemaker/mongomapper
 http://groups.google.com/group/mongomapper
 
 == More Info
