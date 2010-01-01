@@ -56,7 +56,7 @@ module MongoMapper
       status
     end
 
-    def reload(*args) #:nodoc:
+    def reload(*args)
       record = super
       changed_keys.clear
       record

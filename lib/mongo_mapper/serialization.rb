@@ -1,8 +1,8 @@
 require 'active_support/json'
 
-module MongoMapper #:nodoc:
+module MongoMapper
   module Serialization
-    class Serializer #:nodoc:
+    class Serializer
       attr_reader :options
 
       def initialize(record, options={})

@@ -1,4 +1,4 @@
-module MongoMapper #:nodoc:
+module MongoMapper
   module Serialization
     def self.included(base)
       base.cattr_accessor :include_root_in_json, :instance_writer => false
@@ -20,7 +20,7 @@ module MongoMapper #:nodoc:
       self
     end
 
-    class JsonSerializer < MongoMapper::Serialization::Serializer #:nodoc:
+    class JsonSerializer < MongoMapper::Serialization::Serializer
       def serialize
         serializable_record.to_json
       end
