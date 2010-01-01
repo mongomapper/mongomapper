@@ -1,35 +1,22 @@
 module MongoMapper
   module Callbacks
-    def self.included(model) #:nodoc:
+    def self.included(model)
       model.class_eval do
         include ActiveSupport::Callbacks
 
-        callbacks = %w(
-          before_save
-          after_save
-          before_create
-          after_create
-          before_update
-          after_update
-          before_validation
-          after_validation
-          before_validation_on_create
-          after_validation_on_create
-          before_validation_on_update
-          after_validation_on_update
-          before_destroy
-          after_destroy
+        define_callbacks(
+          :before_save, :after_save, 
+          :before_create, :after_create, 
+          :before_update, :after_update, 
+          :before_validation, :after_validation, 
+          :before_validation_on_create, :after_validation_on_create, 
+          :before_validation_on_update, :after_validation_on_update, 
+          :before_destroy, :after_destroy
         )
-
-        define_callbacks(*callbacks)
-
-        callbacks.each do |callback|
-          define_method(callback.to_sym) {}
-        end
       end
     end
 
-    def valid? #:nodoc:
+    def valid?
       action = new? ? 'create' : 'update'
       
       run_callbacks(:before_validation)
@@ -41,7 +28,7 @@ module MongoMapper
       result
     end
 
-    def destroy #:nodoc:
+    def destroy
       run_callbacks(:before_destroy)
       result = super
       run_callbacks(:after_destroy)
@@ -49,7 +36,7 @@ module MongoMapper
     end
 
     private
-      def create_or_update(*args) #:nodoc:
+      def create_or_update(*args)
         run_callbacks(:before_save)
         if result = super
           run_callbacks(:after_save)
@@ -57,14 +44,14 @@ module MongoMapper
         result
       end
 
-      def create(*args) #:nodoc:
+      def create(*args)
         run_callbacks(:before_create)
         result = super
         run_callbacks(:after_create)
         result
       end
 
-      def update(*args) #:nodoc:
+      def update(*args)
         run_callbacks(:before_update)
         result = super
         run_callbacks(:after_update)
