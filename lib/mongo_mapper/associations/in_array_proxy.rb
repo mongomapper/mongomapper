@@ -94,7 +94,9 @@ module MongoMapper
       def <<(*docs)
         flatten_deeper(docs).each do |doc|
           doc.save if doc.new?
-          ids << doc.id
+          unless ids.include?(doc.id)
+            ids << doc.id
+          end
         end
         reset
       end
@@ -106,7 +108,7 @@ module MongoMapper
           doc.save if doc.new?
           doc.id
         end
-        ids.replace(doc_ids)
+        ids.replace(doc_ids.uniq)
         reset
       end
       

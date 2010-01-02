@@ -34,6 +34,17 @@ class InArrayProxyTest < Test::Unit::TestCase
       user.lists.concat List.new(:name => 'Foo3!')
       user.lists.size.should == 3
     end
+    
+    should "ignore adding duplicate ids" do
+      user = User.create(:name => 'John')
+      list = List.create(:name => 'Foo')
+      user.lists << list
+      user.lists << list
+      user.lists << list
+      
+      user.list_ids.should == [list.id]
+      user.lists.count.should == 1
+    end
 
     should "be able to replace the association" do
       user = User.new(:name => 'John')
