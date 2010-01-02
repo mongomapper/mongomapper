@@ -22,10 +22,10 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
 
   should "be able to replace the association" do
     project = Project.new
-    project.statuses = [Status.new("name" => "ready")]
+    project.statuses = [Status.new(:name => "ready")]
     project.save.should be_true
 
-    project = project.reload
+    project.reload
     project.statuses.size.should == 1
     project.statuses[0].name.should == "ready"
   end
@@ -36,7 +36,7 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
     project.statuses.push   Status.new(:name => 'push')
     project.statuses.concat Status.new(:name => 'concat')
     
-    project = project.reload
+    project.reload
     project.statuses[0].project_id.should == project.id
     project.statuses[1].project_id.should == project.id
     project.statuses[2].project_id.should == project.id
@@ -235,84 +235,44 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
           lambda {
             status = @project1.statuses.find_or_create_by_name('Delivered')
             status.project.should == @project1
-          }.should change { Status.count }.by(1)
+          }.should change { Status.count }
         end
       end
     end
     
-    context "with :all" do
+    context "all" do
       should "work" do
         @project1.statuses.find(:all, :order => "position asc").should == [@brand_new, @complete]
-      end
-      
-      should "work with conditions" do
-        statuses = @project1.statuses.find(:all, :name => 'Complete')
-        statuses.should == [@complete]
-      end
-      
-      should "work with order" do
-        statuses = @project1.statuses.find(:all, :order => 'name asc')
-        statuses.should == [@complete, @brand_new]
-      end
-    end
-
-    context "with #all" do
-      should "work" do
         @project1.statuses.all(:order => "position asc").should == [@brand_new, @complete]
       end
       
       should "work with conditions" do
-        statuses = @project1.statuses.all(:name => 'Complete')
-        statuses.should == [@complete]
-      end
-      
-      should "work with order" do
-        statuses = @project1.statuses.all(:order => 'name asc')
-        statuses.should == [@complete, @brand_new]
+        @project1.statuses.find(:all, :name => 'Complete').should == [@complete]
+        @project1.statuses.all(:name => 'Complete').should == [@complete]
       end
     end
     
-    context "with :first" do
+    context "first" do
       should "work" do
         @project1.statuses.find(:first, :order => 'name').should == @complete
-      end
-      
-      should "work with conditions" do
-        status = @project1.statuses.find(:first, :name => 'Complete')
-        status.should == @complete
-      end
-    end
-    
-    context "with #first" do
-      should "work" do
         @project1.statuses.first(:order => 'name').should == @complete
       end
       
       should "work with conditions" do
-        status = @project1.statuses.first(:name => 'Complete')
-        status.should == @complete
+        @project1.statuses.find(:first, :name => 'Complete').should == @complete
+        @project1.statuses.first(:name => 'Complete').should == @complete
       end
     end
     
-    context "with :last" do
+    context "last" do
       should "work" do
         @project1.statuses.find(:last, :order => "position asc").should == @complete
-      end
-      
-      should "work with conditions" do
-        status = @project1.statuses.find(:last, :order => 'position', :name => 'New')
-        status.should == @brand_new
-      end
-    end
-    
-    context "with #last" do
-      should "work" do
         @project1.statuses.last(:order => "position asc").should == @complete
       end
       
       should "work with conditions" do
-        status = @project1.statuses.last(:order => 'position', :name => 'New')
-        status.should == @brand_new
+        @project1.statuses.find(:last, :order => 'position', :name => 'New').should == @brand_new
+        @project1.statuses.last(:order => 'position', :name => 'New').should == @brand_new
       end
     end
     

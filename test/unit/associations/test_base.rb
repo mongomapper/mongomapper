@@ -64,23 +64,6 @@ class AssociationBaseTest < Test::Unit::TestCase
     end
   end
   
-  context "finder_options" do
-    should "default to empty hash" do
-      base = Base.new(:many, :foos)
-      base.finder_options.should == {}
-    end
-    
-    should "work with order" do
-      base = Base.new(:many, :foos, :order => 'position')
-      base.finder_options.should == {:order => 'position'}
-    end
-    
-    should "correctly parse from options" do
-      base = Base.new(:many, :foos, :order => 'position', :somekey => 'somevalue')
-      base.finder_options.should == {:order => 'position', :somekey => 'somevalue'}
-    end
-  end
-  
   context "belongs_to?" do
     should "be true if belongs_to" do
       Base.new(:belongs_to, :foo).belongs_to?.should be_true
@@ -98,6 +81,43 @@ class AssociationBaseTest < Test::Unit::TestCase
     
     should "be false if not polymorphic" do
       Base.new(:many, :bars).polymorphic?.should be_false
+    end
+  end
+  
+  context "as?" do
+    should "be true if one" do
+      Base.new(:one, :foo, :as => :commentable).as?.should be_true
+    end
+    
+    should "be false if not one" do
+      Base.new(:many, :foo).as?.should be_false
+    end
+  end
+  
+  context "in_array?" do
+    should "be true if one" do
+      Base.new(:one, :foo, :in => :list_ids).in_array?.should be_true
+    end
+    
+    should "be false if not one" do
+      Base.new(:many, :foo).in_array?.should be_false
+    end
+  end
+  
+  context "finder_options" do
+    should "default to empty hash" do
+      base = Base.new(:many, :foos)
+      base.finder_options.should == {}
+    end
+    
+    should "work with order" do
+      base = Base.new(:many, :foos, :order => 'position')
+      base.finder_options.should == {:order => 'position'}
+    end
+    
+    should "correctly parse from options" do
+      base = Base.new(:many, :foos, :order => 'position', :somekey => 'somevalue')
+      base.finder_options.should == {:order => 'position', :somekey => 'somevalue'}
     end
   end
   
@@ -176,6 +196,11 @@ class AssociationBaseTest < Test::Unit::TestCase
     should "be OneProxy for one" do
       base = Base.new(:one, :target, :polymorphic => true)
       base.proxy_class.should == OneProxy
+    end
+    
+    should "be InArrayProxy for many with :in option" do
+      base = Base.new(:many, :messages, :in => :message_ids)
+      base.proxy_class.should == InArrayProxy
     end
   end
   
