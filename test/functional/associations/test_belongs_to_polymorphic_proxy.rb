@@ -12,6 +12,14 @@ class BelongsToPolymorphicProxyTest < Test::Unit::TestCase
     status.target.nil?.should be_true
     status.target.inspect.should == "nil"
   end
+  
+  should "have boolean presence method" do
+    status = Status.new
+    status.target?.should be_false
+    
+    status.target = Project.new(:name => 'mongomapper')
+    status.target?.should be_true
+  end
 
   should "be able to replace the association" do
     status = Status.new(:name => 'Foo!')

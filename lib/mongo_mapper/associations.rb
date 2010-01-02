@@ -40,7 +40,7 @@ module MongoMapper
             value
           end
           
-          if association.one?
+          if association.one? || association.belongs_to?
             define_method("#{association.name}?") do
               get_proxy(association).present?
             end

@@ -21,6 +21,14 @@ class BelongsToProxyTest < Test::Unit::TestCase
     @comment_class.new.post.nil?.should be_true
   end
   
+  should "have boolean presence method" do
+    comment = @comment_class.new(:name => 'Foo!')
+    comment.post?.should be_false
+    
+    comment.post = @post_class.new(:name => 'mongomapper')
+    comment.post?.should be_true
+  end
+  
   should "be able to replace the association" do
     post = @post_class.new(:name => 'mongomapper')
     comment = @comment_class.new(:name => 'Foo!', :post => post)
