@@ -40,6 +40,12 @@ module MongoMapper
             value
           end
           
+          if association.one?
+            define_method("#{association.name}?") do
+              get_proxy(association).present?
+            end
+          end
+          
           if association.options[:dependent] && association.many? && !association.embeddable?
             after_destroy do |doc|
               case association.options[:dependent]

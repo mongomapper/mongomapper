@@ -23,6 +23,7 @@ class OneProxyTest < Test::Unit::TestCase
   
   should "be able to replace the association" do
     @post_class.one :author, :class => @author_class
+    
     post = @post_class.new
     author = @author_class.new(:name => 'Frank')
     post.author = author
@@ -34,6 +35,16 @@ class OneProxyTest < Test::Unit::TestCase
     new_author = @author_class.new(:name => 'Emily')
     post.author = new_author
     post.author.should == new_author
+  end
+  
+  should "have boolean method for testing presence" do
+    @post_class.one :author, :class => @author_class
+    
+    post = @post_class.new
+    post.author?.should be_false
+    
+    post.author = @author_class.new(:name => 'Frank')
+    post.author?.should be_true
   end
   
   should "unset the association" do
