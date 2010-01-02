@@ -16,25 +16,28 @@ module MongoMapper
       def replace(doc)
         load_target
         
-        if !@target.nil? && @target != doc
-          if options[:dependent] && !@target.new?
+        if !target.nil? && target != doc
+          if options[:dependent] && !target.new?
             case options[:dependent]
               when :delete
-                @target.delete
+                target.delete
               when :destroy
-                @target.destroy
+                target.destroy
               when :nullify
-                @target[foreign_key] = nil
-                @target.save
+                target[foreign_key] = nil
+                target.save
             end
           end
         end
         
-        if doc
+        reset
+        
+        unless doc.nil?
           owner.save if owner.new?
           doc[foreign_key] = owner.id
           doc.save if doc.new?
-          reset
+          loaded
+          @target = doc
         end
       end
 

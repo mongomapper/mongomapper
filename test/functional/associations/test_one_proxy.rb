@@ -24,12 +24,16 @@ class OneProxyTest < Test::Unit::TestCase
   should "be able to replace the association" do
     @post_class.one :author, :class => @author_class
     post = @post_class.new
-    author = @author_class.new
+    author = @author_class.new(:name => 'Frank')
     post.author = author
     post.reload
     
     post.author.should == author
     post.author.nil?.should be_false
+    
+    new_author = @author_class.new(:name => 'Emily')
+    post.author = new_author
+    post.author.should == new_author
   end
   
   should "unset the association" do
