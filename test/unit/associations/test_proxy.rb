@@ -53,10 +53,22 @@ class ProxyTest < Test::Unit::TestCase
   context "blank?" do
     should "be true if blank" do
       @blank_proxy.blank?.should be_true
+      @nil_proxy.blank?.should be_true
     end
     
     should "be false if not blank" do
       @proxy.blank?.should be_false
+    end
+  end
+  
+  context "present?" do
+    should "be true if present" do
+      @proxy.present?.should be_true
+    end
+    
+    should "be false if not present" do
+      @blank_proxy.present?.should be_false
+      @nil_proxy.present?.should be_false
     end
   end
   

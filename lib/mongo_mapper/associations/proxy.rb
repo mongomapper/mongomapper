@@ -45,6 +45,11 @@ module MongoMapper
         target.blank?
       end
       
+      def present?
+        load_target
+        target.present?
+      end
+      
       def reload
         reset
         load_target
