@@ -79,8 +79,8 @@ module MongoMapper
           when :first then first(options)
           when :last  then last(options)
           when :all   then find_every(options)
+          when Array  then find_some(args, options)
           else
-            args.flatten!
             case args.size
               when 0
                 raise DocumentNotFound, "Couldn't find without an ID"

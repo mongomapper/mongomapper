@@ -100,7 +100,7 @@ class Account
   
   belongs_to :room
 end
-class User < Account; end
+class AccountUser < Account; end
 class Bot < Account; end
 
 class Answer

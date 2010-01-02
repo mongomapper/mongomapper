@@ -326,10 +326,11 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
     end
   
     should "work using many's :extend option" do
+      
       room = Room.new(:name => "Amazing Room")
       accounts = room.accounts = [
         Bot.new(:last_logged_in => 3.weeks.ago),
-        User.new(:last_logged_in => nil),
+        AccountUser.new(:last_logged_in => nil),
         Bot.new(:last_logged_in => 1.week.ago)
       ]
       room.save
