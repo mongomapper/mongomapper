@@ -36,7 +36,6 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     @document = Doc do
       key :person, Person
     end
-    @document.collection.remove
     
     meg = Person.new(:name => "Meg")
     meg.child = Person.new(:name => "Steve")
@@ -81,7 +80,6 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       @document = Doc do
         many :people
       end
-      @document.collection.remove
     end
 
     should "persist all embedded documents" do
@@ -148,8 +146,6 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       @project_class = Doc do
         key :name, String
       end
-      
-      @project_class.collection.remove
     end
     
     should "work using a block passed to many" do

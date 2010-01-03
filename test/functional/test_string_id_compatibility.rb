@@ -20,9 +20,6 @@ class StringIdCompatibilityTest < Test::Unit::TestCase
     @task_class.belongs_to :project, :class => @project_class
     @project_class.many :notes, :class => @note_class
     @project_class.many :tasks, :class => @task_class, :foreign_key => 'project_id'
-    
-    @project_class.collection.remove
-    @task_class.collection.remove
   end
   
   should "assign correct _id for documents" do
