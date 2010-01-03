@@ -53,7 +53,7 @@ module MongoMapper
         end
         
         def target_class
-          @target_class ||= options[:class] || (options[:class_name] || association.name.to_s.camelize).constantize
+          @target_class ||= options[:class] || (options[:class_name] || reflection.name.to_s.camelize).constantize
         end
         
         def foreign_key
