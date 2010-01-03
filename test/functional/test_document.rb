@@ -3,8 +3,7 @@ require 'models'
 
 class DocumentTest < Test::Unit::TestCase
   def setup
-    @document = Class.new do
-      include MongoMapper::Document
+    @document = Doc do
       set_collection_name 'users'
 
       key :first_name, String
@@ -12,7 +11,6 @@ class DocumentTest < Test::Unit::TestCase
       key :age, Integer
       key :date, Date
     end
-    @document.collection.remove
   end
   
   context "Using key with type Array" do
@@ -143,12 +141,7 @@ class DocumentTest < Test::Unit::TestCase
     end
     
     should "not fail if no attributes provided" do
-      document = Class.new do
-        include MongoMapper::Document
-        set_collection_name 'test'
-      end
-      document.collection.remove
-      
+      document = Doc()
       lambda { document.create }.should change { document.count }.by(1)
     end
   end
@@ -541,11 +534,9 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     should "return 0 if the collection does not exist" do
-      klass = Class.new do
-        include MongoMapper::Document
+      klass = Doc do
         set_collection_name 'foobarbazwickdoesnotexist'
       end
-      @document.collection.remove
 
       klass.count.should == 0
     end
@@ -717,12 +708,9 @@ class DocumentTest < Test::Unit::TestCase
   
   context "#save (with validations off)" do
     setup do
-      @document = Class.new do
-        include MongoMapper::Document
-        set_collection_name 'test'
+      @document = Doc do
         key :name, String, :required => true
       end
-      @document.collection.remove
     end
 
     should "insert document" do
@@ -742,13 +730,14 @@ class DocumentTest < Test::Unit::TestCase
     setup do
       MongoMapper.ensured_indexes = []
       
-      @document = Class.new do
-        include MongoMapper::Document
-        set_collection_name 'test'
+      @document = Doc do
         key :name, String
+        set_collection_name 'test_indexes'
         ensure_index :name, :unique => true
       end
-      @document.collection.drop_indexes
+      if @document.database.collection_names.include?(@document.collection.name)
+        @document.collection.drop_indexes
+      end
       
       MongoMapper.ensure_indexes!
     end
@@ -1065,14 +1054,11 @@ class DocumentTest < Test::Unit::TestCase
 
   context "#reload" do
     setup do
-      @foo_class = Class.new do
-        include MongoMapper::Document
+      @foo_class = Doc do
         key :name
       end
-      @foo_class.collection.remove
       
-      @bar_class = Class.new do
-        include MongoMapper::EmbeddedDocument
+      @bar_class = EDoc do
         key :name
       end
       

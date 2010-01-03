@@ -2,17 +2,13 @@ require 'test_helper'
 
 class ModifierTest < Test::Unit::TestCase
   def setup
-    @page_class = Class.new do
-      include MongoMapper::Document
-      
+    @page_class = Doc do
       key :title, String
       key :day_count, Integer, :default => 0
       key :week_count, Integer, :default => 0
       key :month_count, Integer, :default => 0
       key :tags, Array
     end
-    
-    @page_class.collection.remove
   end
   
   def assert_page_counts(page, day_count, week_count, month_count)

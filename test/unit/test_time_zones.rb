@@ -3,8 +3,7 @@ require 'test_helper'
 class TimeZonesTest < Test::Unit::TestCase
   context "An instance of an embedded document" do
     setup do      
-      @document = Class.new do
-        include MongoMapper::EmbeddedDocument
+      @document = EDoc do
         key :name, String
         key :created_at, Time
       end

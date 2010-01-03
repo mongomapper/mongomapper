@@ -16,6 +16,34 @@ require 'support/timing'
 
 class Test::Unit::TestCase
   include CustomMatchers
+  
+  cattr_accessor :mm_document_count
+  self.mm_document_count = 0
+  
+  def Doc(name=nil, &block)
+    Test::Unit::TestCase.mm_document_count += 1
+    
+    klass = Class.new do
+      include MongoMapper::Document
+      set_collection_name "test#{rand(20)}"
+      
+      if name
+        class_eval "def self.name; '#{name}' end"
+        class_eval "def self.to_s; '#{name}' end"
+      end
+      
+      class_eval(&block) if block_given?
+    end
+    klass.collection.remove
+    klass
+  end
+  
+  def EDoc(&block)
+    Class.new do
+      include MongoMapper::EmbeddedDocument
+      instance_eval(&block) if block_given?
+    end
+  end
 end
 
 test_dir = File.expand_path(File.dirname(__FILE__) + '/../tmp')

@@ -35,9 +35,7 @@ end
 class EmbeddedDocumentTest < Test::Unit::TestCase 
   context "Including MongoMapper::EmbeddedDocument in a class" do
     setup do
-      @klass = Class.new do
-        include MongoMapper::EmbeddedDocument
-      end
+      @klass = EDoc()
     end
     
     should "give class access to logger" do
@@ -89,29 +87,16 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
   end
   
-  context "looking up type constants" do
-    should "not raise an error" do
-      klass = Class.new do
-        include MongoMapper::EmbeddedDocument
-        key :file, Binary
-      end
-    end
-  end
-  
   context "parent_model" do
     should "be nil if none of parents ancestors include EmbeddedDocument" do
       parent = Class.new
-      document = Class.new(parent) do
-        include MongoMapper::EmbeddedDocument
-      end
+      document = Class.new(parent) { include MongoMapper::EmbeddedDocument }
       document.parent_model.should be_nil
     end
 
     should "work when other modules have been included" do
       grandparent = Class.new
-      parent = Class.new grandparent do
-        include MongoMapper::EmbeddedDocument
-      end
+      parent = Class.new(grandparent) { include MongoMapper::EmbeddedDocument }
       
       example_module = Module.new
       document = Class.new(parent) do
@@ -130,9 +115,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
   
   context "defining a key" do
     setup do
-      @document = Class.new do
-        include MongoMapper::EmbeddedDocument
-      end
+      @document = EDoc()
     end
     
     should "work with name" do
@@ -226,8 +209,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
 
   context "#inspect" do
     setup do
-      @document = Class.new do
-        include MongoMapper::Document
+      @document = Doc do
         key :animals
       end
     end
@@ -252,9 +234,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
   
   context "Applying default values for keys" do
     setup do
-      @document = Class.new do
-        include MongoMapper::EmbeddedDocument
-        
+      @document = EDoc do
         key :name,      String,   :default => 'foo'
         key :age,       Integer,  :default => 20
         key :net_worth, Float,    :default => 100.00
@@ -299,9 +279,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
 
   context "An instance of an embedded document" do
     setup do
-      @document = Class.new do
-        include MongoMapper::EmbeddedDocument
-
+      @document = EDoc do
         key :name, String
         key :age, Integer
       end
@@ -398,8 +376,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     
     context "initialized when _type key present" do
       setup do
-        ::FooBar = Class.new do
-          include MongoMapper::EmbeddedDocument
+        ::FooBar = EDoc do
           key :_type, String
         end
       end
@@ -581,8 +558,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
       
       should "be overrideable by modules" do
-        @document = Class.new do
-          include MongoMapper::Document
+        @document = Doc do
           key :other_child, String
         end
         
@@ -656,8 +632,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
       
       should "be overrideable by modules" do
-        @document = Class.new do
-          include MongoMapper::Document
+        @document = Doc do
           key :other_child, String
         end
         
@@ -690,19 +665,16 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         @oid = Mongo::ObjectID.new
       end
       should "be equal if id and class are the same" do
-        (@document.new('_id' => @oid) == @document.new('_id' => @oid)).should be(true)
+        (@document.new('_id' => @oid) == @document.new('_id' => @oid)).should be_true
       end
 
       should "not be equal if class same but id different" do
-        (@document.new('_id' => @oid) == @document.new('_id' => Mongo::ObjectID.new)).should be(false)
+        (@document.new('_id' => @oid) == @document.new('_id' => Mongo::ObjectID.new)).should be_false
       end
 
       should "not be equal if id same but class different" do
-        @another_document = Class.new do
-          include MongoMapper::Document
-        end
-
-        (@document.new('_id' => @oid) == @another_document.new('_id' => @oid)).should be(false)
+        another_document = Doc()
+        (@document.new('_id' => @oid) == another_document.new('_id' => @oid)).should be_false
       end
     end
   end # instance of a embedded document

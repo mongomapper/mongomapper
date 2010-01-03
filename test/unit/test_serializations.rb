@@ -2,8 +2,7 @@ require 'test_helper'
 
 class SerializationTest < Test::Unit::TestCase
   def setup
-    @document = Class.new do
-      include MongoMapper::EmbeddedDocument
+    @document = EDoc do
       key :name, String
       key :age, Integer
       key :awesome, Boolean

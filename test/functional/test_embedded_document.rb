@@ -3,14 +3,11 @@ require 'models'
 
 class EmbeddedDocumentTest < Test::Unit::TestCase
   def setup
-    @document = Class.new do
-      include MongoMapper::Document
+    @document = Doc do
       set_collection_name 'users'
-
       key :first_name, String
       key :last_name, String
     end
-    @document.collection.remove
   end
     
   context "Saving a document with an embedded document" do
@@ -34,23 +31,13 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
   end
   
-  context "Instantiating single collection inherited embedded documents" do
-    setup do
-      @document = Class.new do
-        include MongoMapper::Document
-        key :message, Message
-      end
+  should "correctly instantiate single collection inherited embedded documents" do
+    document = Doc('Foo') do
+      key :message, Message
     end
-
-    should "work" do
-      doc1 = @document.create(:message => Enter.new)
-      doc2 = @document.create(:message => Exit.new)
-      doc3 = @document.create(:message => Chat.new)
-
-      doc1.reload.message.class.should be(Enter)
-      doc2.reload.message.class.should be(Exit)
-      doc3.reload.message.class.should be(Chat)
-    end
+    
+    doc1 = document.create(:message => Enter.new)
+    doc1.reload.message.class.should be(Enter)
   end
   
   context "new?" do

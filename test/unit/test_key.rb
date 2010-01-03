@@ -82,10 +82,7 @@ class KeyTest < Test::Unit::TestCase
     end
     
     should "know if it is a embedded_document" do
-      klass = Class.new do
-        include MongoMapper::EmbeddedDocument
-      end
-      Key.new(:name, klass).embeddable?.should be_true
+      Key.new(:name, EDoc()).embeddable?.should be_true
     end
 
     should "know if it is not a embedded_document" do

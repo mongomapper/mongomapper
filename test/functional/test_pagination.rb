@@ -3,8 +3,7 @@ require 'test_helper'
 class PaginationTest < Test::Unit::TestCase
   context "Paginating" do
     setup do
-      @document = Class.new do
-        include MongoMapper::Document
+      @document = Doc do
         set_collection_name 'users'
 
         key :first_name, String
@@ -13,7 +12,6 @@ class PaginationTest < Test::Unit::TestCase
         
         def self.per_page; 1 end
       end
-      @document.collection.remove
       
       @doc1 = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
       @doc2 = @document.create({:first_name => 'Steve', :last_name => 'Smith', :age => '28'})

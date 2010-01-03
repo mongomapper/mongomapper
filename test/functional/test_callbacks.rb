@@ -3,10 +3,7 @@ require 'test_helper'
 class CallbacksTest < Test::Unit::TestCase
   context "Defining and running callbacks" do
     setup do
-      @document = Class.new do
-        include MongoMapper::Document
-        set_collection_name 'test'
-        
+      @document = Doc do
         key :name, String
         
         [ :before_validation_on_create, :before_validation_on_update,
@@ -30,7 +27,6 @@ class CallbacksTest < Test::Unit::TestCase
           @history = nil
         end
       end
-      @document.collection.remove
     end
     
     should "get the order right for creating documents" do

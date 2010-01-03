@@ -2,14 +2,9 @@ require 'test_helper'
 
 class ValidationsTest < Test::Unit::TestCase
   context "Validations" do
-    
     context "on a Document" do
-    
       setup do
-        @document = Class.new do
-          include MongoMapper::Document
-          set_collection_name 'test'
-        end
+        @document = Doc()
       end
 
       context "Validating acceptance of" do
@@ -240,11 +235,8 @@ class ValidationsTest < Test::Unit::TestCase
     end # End on a Document
     
     context "On an EmbeddedDocument" do
-
       setup do
-        @embedded_doc = Class.new do
-          include MongoMapper::EmbeddedDocument
-        end
+        @embedded_doc = EDoc()
       end
 
       context "Validating acceptance of" do
@@ -478,10 +470,7 @@ class ValidationsTest < Test::Unit::TestCase
    
   context "Adding validation errors" do
     setup do
-      @document = Class.new do
-        include MongoMapper::Document
-        set_collection_name 'test'
-        
+      @document = Doc do
         key :action, String
         def action_present
           errors.add(:action, 'is invalid') if action.blank?

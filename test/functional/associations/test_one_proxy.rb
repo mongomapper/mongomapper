@@ -2,18 +2,10 @@ require 'test_helper'
 
 class OneProxyTest < Test::Unit::TestCase
   def setup
-    @post_class = Class.new do
-      include MongoMapper::Document
-      def self.name; 'Post' end
-    end
-    
-    @author_class = Class.new do
-      include MongoMapper::Document
+    @post_class = Doc('Post')
+    @author_class = Doc do
       key :post_id, ObjectId
     end
-    
-    @post_class.collection.remove
-    @author_class.collection.remove
   end
   
   should "default to nil" do

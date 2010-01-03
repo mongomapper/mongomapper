@@ -2,12 +2,9 @@ require 'test_helper'
 
 class BinaryTest < Test::Unit::TestCase  
   should "serialize and deserialize correctly" do
-    klass = Class.new do
-      include MongoMapper::Document
-      set_collection_name 'test'
+    klass = Doc do
       key :contents, Binary
     end
-    klass.collection.remove
     
     doc = klass.new(:contents => '010101')
     doc.save
@@ -18,12 +15,9 @@ class BinaryTest < Test::Unit::TestCase
   
   context "Saving a document with a blank binary value" do
     setup do
-      @document = Class.new do
-        include MongoMapper::Document
-        set_collection_name 'test'
+      @document = Doc do
         key :file, Binary
       end
-      @document.collection.remove
     end
 
     should "not fail" do

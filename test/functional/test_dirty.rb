@@ -3,12 +3,9 @@ require 'models'
 
 class DirtyTest < Test::Unit::TestCase
   def setup
-    @document = Class.new do
-      include MongoMapper::Document
-      set_collection_name 'test'
+    @document = Doc do
       key :phrase, String
     end
-    @document.collection.remove
     
     Status.collection.remove
     Project.collection.remove
