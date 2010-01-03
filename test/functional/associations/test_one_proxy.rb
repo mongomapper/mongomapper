@@ -47,6 +47,17 @@ class OneProxyTest < Test::Unit::TestCase
     post.author?.should be_true
   end
   
+  should "work with criteria" do
+    @post_class.one :primary_author, :class => @author_class, :primary => true
+    @post_class.one :author, :class => @author_class
+    
+    post = @post_class.create
+    author = @author_class.create(:name => 'Frank', :primary => false, :post_id => post.id)
+    primary = @author_class.create(:name => 'Bill', :primary => true, :post_id => post.id)
+    post.author.should == author
+    post.primary_author.should == primary
+  end
+  
   should "unset the association" do
     @post_class.one :author, :class => @author_class
     post = @post_class.new

@@ -43,7 +43,7 @@ module MongoMapper
 
       protected
         def find_target
-          target_class.first(foreign_key => owner.id)
+          target_class.first(reflection.finder_options.merge(foreign_key => owner.id))
         end
         
         def instantiate_target(instantiator, attrs={})
