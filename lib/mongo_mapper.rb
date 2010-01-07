@@ -110,12 +110,12 @@ require 'mongo_mapper/dynamic_finder'
 require 'mongo_mapper/key'
 require 'mongo_mapper/pagination'
 require 'mongo_mapper/serialization'
-require 'mongo_mapper/validations'
 require 'mongo_mapper/rails_compatibility/document'
 require 'mongo_mapper/rails_compatibility/embedded_document'
 
 require 'mongo_mapper/plugins'
 require 'mongo_mapper/plugins/logger'
+require 'mongo_mapper/plugins/validations'
 
 require 'mongo_mapper/embedded_document'
 require 'mongo_mapper/document'

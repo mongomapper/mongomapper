@@ -1,14 +1,16 @@
 module MongoMapper
-  module Logger
-    module ClassMethods
-      def logger
-        MongoMapper.logger
+  module Plugins
+    module Logger
+      module ClassMethods
+        def logger
+          MongoMapper.logger
+        end
       end
-    end
-    
-    module InstanceMethods
-      def logger
-        self.class.logger
+
+      module InstanceMethods
+        def logger
+          self.class.logger
+        end
       end
     end
   end

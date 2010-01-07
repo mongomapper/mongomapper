@@ -6,18 +6,16 @@ module MongoMapper
       model.class_eval do
         extend ClassMethods
         include InstanceMethods
-        extend Plugins
         
-        plugin ::MongoMapper::Logger
+        extend Plugins
+        plugin Plugins::Logger
+        plugin Plugins::Validations
         
         extend Associations::ClassMethods
         include Associations::InstanceMethods
 
         include RailsCompatibility::EmbeddedDocument
-        include Validatable
         include Serialization
-
-        extend Validations::Macros
 
         key :_id, ObjectId
         attr_accessor :_root_document
