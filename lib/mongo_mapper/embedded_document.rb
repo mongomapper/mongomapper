@@ -1,9 +1,14 @@
 module MongoMapper
   module EmbeddedDocument
+    extend DescendantAppends
+    
     def self.included(model)
       model.class_eval do
         extend ClassMethods
         include InstanceMethods
+        extend Plugins
+        
+        plugin ::MongoMapper::Logger
         
         extend Associations::ClassMethods
         include Associations::InstanceMethods
@@ -17,13 +22,11 @@ module MongoMapper
         key :_id, ObjectId
         attr_accessor :_root_document
       end
+      
+      add_descendant(model)
     end
 
     module ClassMethods
-      def logger
-        MongoMapper.logger
-      end
-
       def inherited(subclass)
         unless subclass.embeddable?
           subclass.set_collection_name(collection_name)
@@ -321,10 +324,6 @@ module MongoMapper
       def update_attributes!(attrs={})
         self.attributes = attrs
         save!
-      end
-      
-      def logger
-        self.class.logger
       end
 
       private

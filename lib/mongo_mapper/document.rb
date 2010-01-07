@@ -1,11 +1,15 @@
-require 'set'
-
 module MongoMapper
   module Document
+    extend DescendantAppends
+    
     def self.included(model)
       model.class_eval do
         include EmbeddedDocument
         include InstanceMethods
+        
+        extend Plugins
+        plugin ::MongoMapper::Logger
+        
         include Callbacks
         include Dirty
         include RailsCompatibility::Document
@@ -18,42 +22,7 @@ module MongoMapper
         end unless respond_to?(:per_page)
       end
 
-      extra_extensions.each { |extension| model.extend(extension) }
-      extra_inclusions.each { |inclusion| model.send(:include, inclusion) }
-
-      descendants << model
-    end
-
-    def self.descendants
-      @descendants ||= Set.new
-    end
-
-    def self.append_extensions(*extensions)
-      extra_extensions.concat extensions
-
-      # Add the extension to existing descendants
-      descendants.each do |model|
-        extensions.each { |extension| model.extend(extension) }
-      end
-    end
-
-    # @api private
-    def self.extra_extensions
-      @extra_extensions ||= []
-    end
-
-    def self.append_inclusions(*inclusions)
-      extra_inclusions.concat inclusions
-
-      # Add the inclusion to existing descendants
-      descendants.each do |model|
-        inclusions.each { |inclusion| model.send :include, inclusion }
-      end
-    end
-
-    # @api private
-    def self.extra_inclusions
-      @extra_inclusions ||= []
+      add_descendant(model)
     end
     
     module ClassMethods

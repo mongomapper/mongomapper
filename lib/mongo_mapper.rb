@@ -1,3 +1,5 @@
+require 'set'
+
 # if Gem is defined i'll assume you are using rubygems and lock specific versions
 # call me crazy but a plain old require will just get the latest version you have installed
 # so i want to make sure that if you are using gems you do in fact have the correct versions
@@ -99,6 +101,8 @@ module MongoMapper
 end
 
 require 'mongo_mapper/support'
+require 'mongo_mapper/descendant_appends'
+
 require 'mongo_mapper/callbacks'
 require 'mongo_mapper/finder_options'
 require 'mongo_mapper/dirty'
@@ -109,8 +113,13 @@ require 'mongo_mapper/serialization'
 require 'mongo_mapper/validations'
 require 'mongo_mapper/rails_compatibility/document'
 require 'mongo_mapper/rails_compatibility/embedded_document'
+
+require 'mongo_mapper/plugins'
+require 'mongo_mapper/plugins/logger'
+
 require 'mongo_mapper/embedded_document'
 require 'mongo_mapper/document'
+
 require 'mongo_mapper/associations'
 require 'mongo_mapper/associations/base'
 require 'mongo_mapper/associations/proxy'

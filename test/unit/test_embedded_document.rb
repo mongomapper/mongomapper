@@ -32,15 +32,10 @@ class OtherChild < Parent
   key :other_child, String
 end
 
-class EmbeddedDocumentTest < Test::Unit::TestCase 
+class EmbeddedDocumentTest < Test::Unit::TestCase
   context "Including MongoMapper::EmbeddedDocument in a class" do
     setup do
       @klass = EDoc()
-    end
-    
-    should "give class access to logger" do
-      @klass.logger.should == MongoMapper.logger
-      @klass.logger.should be_instance_of(Logger)
     end
     
     should "add _id key" do
@@ -55,8 +50,18 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @klass.key :_id, String
       @klass.using_object_id?.should be_false
     end
+  end
+  
+  context "Class Methods" do
+    should "include logger" do
+      @klass = EDoc()
+      @klass.logger.should == MongoMapper.logger
+      @klass.logger.should be_instance_of(Logger)
+    end
     
     context "#to_mongo" do
+      setup { @klass = EDoc() }
+      
       should "be nil if nil" do
         @klass.to_mongo(nil).should be_nil
       end
@@ -70,6 +75,8 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
     
     context "#from_mongo" do
+      setup { @klass = EDoc() }
+      
       should "be nil if nil" do
         @klass.from_mongo(nil).should be_nil
       end
@@ -85,195 +92,136 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.foo.should == 'bar'
       end
     end
-  end
-  
-  context "parent_model" do
-    should "be nil if none of parents ancestors include EmbeddedDocument" do
-      parent = Class.new
-      document = Class.new(parent) { include MongoMapper::EmbeddedDocument }
-      document.parent_model.should be_nil
-    end
-
-    should "work when other modules have been included" do
-      grandparent = Class.new
-      parent = Class.new(grandparent) { include MongoMapper::EmbeddedDocument }
-      
-      example_module = Module.new
-      document = Class.new(parent) do
-        include MongoMapper::EmbeddedDocument
-        include example_module
+    
+    context "parent_model" do
+      should "be nil if none of parents ancestors include EmbeddedDocument" do
+        parent = Class.new
+        document = Class.new(parent) { include MongoMapper::EmbeddedDocument }
+        document.parent_model.should be_nil
       end
-      
-      document.parent_model.should == parent
-    end
-    
-    should "find parent" do
-      Parent.parent_model.should == Grandparent
-      Child.parent_model.should == Parent
-    end
-  end
-  
-  context "defining a key" do
-    setup do
-      @document = EDoc()
-    end
-    
-    should "work with name" do
-      key = @document.key(:name)
-      key.name.should == 'name'
-    end
-    
-    should "work with name and type" do
-      key = @document.key(:name, String)
-      key.name.should == 'name'
-      key.type.should == String
-    end
-    
-    should "work with name, type and options" do
-      key = @document.key(:name, String, :required => true)
-      key.name.should == 'name'
-      key.type.should == String
-      key.options[:required].should be_true
-    end
-    
-    should "work with name and options" do
-      key = @document.key(:name, :required => true)
-      key.name.should == 'name'
-      key.options[:required].should be_true
-    end
-    
-    should "be tracked per document" do
-      @document.key(:name, String)
-      @document.key(:age, Integer)
-      @document.keys['name'].name.should == 'name'
-      @document.keys['name'].type.should == String
-      @document.keys['age'].name.should == 'age'
-      @document.keys['age'].type.should == Integer
-    end
-    
-    should "be redefinable" do
-      @document.key(:foo, String)
-      @document.keys['foo'].type.should == String
-      @document.key(:foo, Integer)
-      @document.keys['foo'].type.should == Integer
-    end
-    
-    should "create reader method" do
-      @document.new.should_not respond_to(:foo)
-      @document.key(:foo, String)
-      @document.new.should respond_to(:foo)
-    end
-    
-    should "create reader before typecast method" do
-      @document.new.should_not respond_to(:foo_before_typecast)
-      @document.key(:foo, String)
-      @document.new.should respond_to(:foo_before_typecast)
-    end
-    
-    should "create writer method" do
-      @document.new.should_not respond_to(:foo=)
-      @document.key(:foo, String)
-      @document.new.should respond_to(:foo=)
-    end
-    
-    should "create boolean method" do
-      @document.new.should_not respond_to(:foo?)
-      @document.key(:foo, String)
-      @document.new.should respond_to(:foo?)
-    end
-  end
-  
-  context "keys" do
-    should "be inherited" do
-      Grandparent.keys.keys.sort.should == ['_id', 'grandparent']
-      Parent.keys.keys.sort.should == ['_id', 'grandparent', 'parent']
-      Child.keys.keys.sort.should  == ['_id', 'child', 'grandparent', 'parent']
-    end
-    
-    should "propogate to subclasses if key added after class definition" do
-      Grandparent.key :_type, String
-      
-      Grandparent.keys.keys.sort.should == ['_id', '_type', 'grandparent']
-      Parent.keys.keys.sort.should      == ['_id', '_type', 'grandparent', 'parent']
-      Child.keys.keys.sort.should       == ['_id', '_type', 'child', 'grandparent', 'parent']
-    end
 
-    should "not add anonymous objects to the ancestor tree" do
-      OtherChild.ancestors.any? { |a| a.name.blank? }.should be_false
-    end
+      should "work when other modules have been included" do
+        grandparent = Class.new
+        parent = Class.new(grandparent) { include MongoMapper::EmbeddedDocument }
 
-    should "not include descendant keys" do
-      lambda { Parent.new.other_child }.should raise_error
-    end
-  end
+        example_module = Module.new
+        document = Class.new(parent) do
+          include MongoMapper::EmbeddedDocument
+          include example_module
+        end
 
-  context "#inspect" do
-    setup do
-      @document = Doc do
-        key :animals
+        document.parent_model.should == parent
+      end
+
+      should "find parent" do
+        Parent.parent_model.should == Grandparent
+        Child.parent_model.should == Parent
       end
     end
-
-    should "call inspect on the document's attributes instead of to_s" do
-      doc = @document.new
-      doc.animals = %w(dog cat)
-      doc.inspect.should include(%(animals: ["dog", "cat"]))
-    end
-  end
-  
-  context "subclasses" do
-    should "default to nil" do
-      Child.subclasses.should be_nil
-    end
     
-    should "be recorded" do
-      Grandparent.subclasses.should == [Parent]
-      Parent.subclasses.should      == [Child, OtherChild]
-    end
-  end
-  
-  context "Applying default values for keys" do
-    setup do
-      @document = EDoc do
-        key :name,      String,   :default => 'foo'
-        key :age,       Integer,  :default => 20
-        key :net_worth, Float,    :default => 100.00
-        key :active,    Boolean,  :default => true
-        key :smart,     Boolean,  :default => false
-        key :skills,    Array,    :default => [1]
-        key :options,   Hash,     :default => {'foo' => 'bar'}
+    context "defining a key" do
+      setup do
+        @document = EDoc()
       end
-      
-      @doc = @document.new
+
+      should "work with name" do
+        key = @document.key(:name)
+        key.name.should == 'name'
+      end
+
+      should "work with name and type" do
+        key = @document.key(:name, String)
+        key.name.should == 'name'
+        key.type.should == String
+      end
+
+      should "work with name, type and options" do
+        key = @document.key(:name, String, :required => true)
+        key.name.should == 'name'
+        key.type.should == String
+        key.options[:required].should be_true
+      end
+
+      should "work with name and options" do
+        key = @document.key(:name, :required => true)
+        key.name.should == 'name'
+        key.options[:required].should be_true
+      end
+
+      should "be tracked per document" do
+        @document.key(:name, String)
+        @document.key(:age, Integer)
+        @document.keys['name'].name.should == 'name'
+        @document.keys['name'].type.should == String
+        @document.keys['age'].name.should == 'age'
+        @document.keys['age'].type.should == Integer
+      end
+
+      should "be redefinable" do
+        @document.key(:foo, String)
+        @document.keys['foo'].type.should == String
+        @document.key(:foo, Integer)
+        @document.keys['foo'].type.should == Integer
+      end
+
+      should "create reader method" do
+        @document.new.should_not respond_to(:foo)
+        @document.key(:foo, String)
+        @document.new.should respond_to(:foo)
+      end
+
+      should "create reader before typecast method" do
+        @document.new.should_not respond_to(:foo_before_typecast)
+        @document.key(:foo, String)
+        @document.new.should respond_to(:foo_before_typecast)
+      end
+
+      should "create writer method" do
+        @document.new.should_not respond_to(:foo=)
+        @document.key(:foo, String)
+        @document.new.should respond_to(:foo=)
+      end
+
+      should "create boolean method" do
+        @document.new.should_not respond_to(:foo?)
+        @document.key(:foo, String)
+        @document.new.should respond_to(:foo?)
+      end
     end
     
-    should "work for strings" do
-      @doc.name.should == 'foo'
+    context "keys" do
+      should "be inherited" do
+        Grandparent.keys.keys.sort.should == ['_id', 'grandparent']
+        Parent.keys.keys.sort.should == ['_id', 'grandparent', 'parent']
+        Child.keys.keys.sort.should  == ['_id', 'child', 'grandparent', 'parent']
+      end
+
+      should "propogate to subclasses if key added after class definition" do
+        Grandparent.key :_type, String
+
+        Grandparent.keys.keys.sort.should == ['_id', '_type', 'grandparent']
+        Parent.keys.keys.sort.should      == ['_id', '_type', 'grandparent', 'parent']
+        Child.keys.keys.sort.should       == ['_id', '_type', 'child', 'grandparent', 'parent']
+      end
+
+      should "not add anonymous objects to the ancestor tree" do
+        OtherChild.ancestors.any? { |a| a.name.blank? }.should be_false
+      end
+
+      should "not include descendant keys" do
+        lambda { Parent.new.other_child }.should raise_error
+      end
     end
     
-    should "work for integers" do
-      @doc.age.should == 20
-    end
-    
-    should "work for floats" do
-      @doc.net_worth.should == 100.00
-    end
-    
-    should "work for booleans" do
-      @doc.active.should == true
-      @doc.smart.should == false
-    end
-    
-    should "work for arrays" do
-      @doc.skills.should == [1]
-      @doc.skills << 2
-      @doc.skills.should == [1, 2]
-    end
-    
-    should "work for hashes" do
-      @doc.options['foo'].should == 'bar'
-      @doc.options['baz'] = 'wick'
-      @doc.options['baz'].should == 'wick'
+    context "subclasses" do
+      should "default to nil" do
+        Child.subclasses.should be_nil
+      end
+
+      should "be recorded" do
+        Grandparent.subclasses.should == [Parent]
+        Parent.subclasses.should      == [Child, OtherChild]
+      end
     end
   end
 
@@ -660,6 +608,11 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
     end
     
+    should "call inspect on the document's attributes instead of to_s" do
+      doc = @document.new(:animals => %w(dog cat))
+      doc.inspect.should include(%(animals: ["dog", "cat"]))
+    end
+    
     context "equality" do
       setup do
         @oid = Mongo::ObjectID.new
@@ -675,6 +628,51 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       should "not be equal if id same but class different" do
         another_document = Doc()
         (@document.new('_id' => @oid) == another_document.new('_id' => @oid)).should be_false
+      end
+    end
+    
+    context "default values" do
+      setup do
+        @document = EDoc do
+          key :name,      String,   :default => 'foo'
+          key :age,       Integer,  :default => 20
+          key :net_worth, Float,    :default => 100.00
+          key :active,    Boolean,  :default => true
+          key :smart,     Boolean,  :default => false
+          key :skills,    Array,    :default => [1]
+          key :options,   Hash,     :default => {'foo' => 'bar'}
+        end
+
+        @doc = @document.new
+      end
+
+      should "work for strings" do
+        @doc.name.should == 'foo'
+      end
+
+      should "work for integers" do
+        @doc.age.should == 20
+      end
+
+      should "work for floats" do
+        @doc.net_worth.should == 100.00
+      end
+
+      should "work for booleans" do
+        @doc.active.should == true
+        @doc.smart.should == false
+      end
+
+      should "work for arrays" do
+        @doc.skills.should == [1]
+        @doc.skills << 2
+        @doc.skills.should == [1, 2]
+      end
+
+      should "work for hashes" do
+        @doc.options['foo'].should == 'bar'
+        @doc.options['baz'] = 'wick'
+        @doc.options['baz'].should == 'wick'
       end
     end
   end # instance of a embedded document

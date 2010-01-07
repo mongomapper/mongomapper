@@ -1,5 +1,3 @@
-require 'set'
-
 class Array
   def self.to_mongo(value)
     value = value.respond_to?(:lines) ? value.lines : value
