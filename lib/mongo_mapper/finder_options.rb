@@ -17,15 +17,17 @@ module MongoMapper
 
     def initialize(model, options)
       raise ArgumentError, "Options must be a hash" unless options.is_a?(Hash)
-      options = options.symbolize_keys
 
       @model      = model
       @options    = {}
-      @conditions = options.delete(:conditions) || {}
+      @conditions = {}
 
       options.each_pair do |key, value|
+        key = key.respond_to?(:to_sym) ? key.to_sym : key
         if OptionKeys.include?(key)
           @options[key] = value
+        elsif key == :conditions
+          @conditions.merge!(value)
         else
           @conditions[key] = value
         end
@@ -39,10 +41,10 @@ module MongoMapper
     end
 
     def options
-      fields = @options.delete(:fields) || @options.delete(:select)
-      skip   = @options.delete(:skip)   || @options.delete(:offset) || 0
-      limit  = @options.delete(:limit)  || 0
-      sort   = @options.delete(:sort)   || convert_order_to_sort(@options.delete(:order))
+      fields = @options[:fields] || @options[:select]
+      skip   = @options[:skip]   || @options[:offset] || 0
+      limit  = @options[:limit]  || 0
+      sort   = @options[:sort]   || convert_order_to_sort(@options[:order])
 
       {:fields => to_mongo_fields(fields), :skip => skip.to_i, :limit => limit.to_i, :sort => sort}
     end
