@@ -105,15 +105,15 @@ module MongoMapper
       def create_accessors_for(key)
         accessors_module.module_eval <<-end_eval
           def #{key.name}
-            read_attribute(:'#{key.name}')
+            read_attribute(:#{key.name})
           end
 
           def #{key.name}_before_typecast
-            read_attribute_before_typecast(:'#{key.name}')
+            read_attribute_before_typecast(:#{key.name})
           end
 
           def #{key.name}=(value)
-            write_attribute(:'#{key.name}', value)
+            write_attribute(:#{key.name}, value)
           end
 
           def #{key.name}?
@@ -340,9 +340,9 @@ module MongoMapper
 
         def read_attribute(name)
           if key = _keys[name]
-            value = key.get(instance_variable_get("@#{name}"))
-            instance_variable_set "@#{name}", value
-            value
+            var_name = "@#{name}"
+            value = key.get(instance_variable_get(var_name))
+            instance_variable_set(var_name, value)
           else
             raise KeyNotFound, "Could not find key: #{name.inspect}"
           end
