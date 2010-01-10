@@ -721,15 +721,10 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
 
-    should "insert document" do
+    should "insert invalid document" do
       doc = @document.new
+      doc.expects(:valid?).never
       doc.save(:validate => false)
-      @document.count.should == 1
-    end
-    
-    should "work with false passed to save" do
-      doc = @document.new
-      doc.save(false)
       @document.count.should == 1
     end
   end

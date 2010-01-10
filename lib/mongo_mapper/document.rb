@@ -341,10 +341,6 @@ module MongoMapper
       end
 
       def save(options={})
-        if options === false
-          ActiveSupport::Deprecation.warn "save with true/false is deprecated. You should now use :validate => true/false."
-          options = {:validate => false}
-        end
         options.reverse_merge!(:validate => true)
         perform_validations = options.delete(:validate)
         !perform_validations || valid? ? create_or_update(options) : false
