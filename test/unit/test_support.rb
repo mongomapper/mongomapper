@@ -90,6 +90,10 @@ class SupportTest < Test::Unit::TestCase
       Date.to_mongo(Date.new(2009, 10, 1)).should == Time.utc(2009, 10, 1)
     end
     
+    should "be date if time" do
+      Date.to_mongo(Time.parse("2009-10-1T12:30:00")).should == Time.utc(2009, 10, 1)
+    end
+    
     should "be nil if bogus string" do
       Date.to_mongo('jdsafop874').should be_nil
     end
@@ -264,8 +268,8 @@ class SupportTest < Test::Unit::TestCase
   end
   
   context "Time#to_mongo without Time.zone" do
-    should "be time if string" do
-      Time.to_mongo('2000-01-01 01:01:01.123456').should == Time.local(2000, 1, 1, 1, 1, 1, 123456).utc
+    should "be time to milliseconds if string" do
+      Time.to_mongo('2000-01-01 01:01:01.123456').should == Time.local(2000, 1, 1, 1, 1, 1, 123000).utc
     end
     
     should "be time in utc if time" do
@@ -282,15 +286,15 @@ class SupportTest < Test::Unit::TestCase
   end
   
   context "Time#to_mongo with Time.zone" do
-    should "be time if time" do
+    should "be time to milliseconds if time" do
       Time.zone = 'Hawaii'
-      Time.to_mongo(Time.zone.local(2009, 8, 15, 14, 0, 0)).should == Time.utc(2009, 8, 16, 0, 0, 0)
+      Time.to_mongo(Time.zone.local(2009, 8, 15, 14, 0, 0, 123456)).should == Time.utc(2009, 8, 16, 0, 0, 0, 123000)
       Time.zone = nil
     end
 
-    should "be time if string" do
+    should "be time to milliseconds if string" do
       Time.zone = 'Hawaii'
-      Time.to_mongo('2009-08-15 14:00:00').should == Time.utc(2009, 8, 16, 0, 0, 0)
+      Time.to_mongo('2009-08-15 14:00:00.123456').should == Time.utc(2009, 8, 16, 0, 0, 0, 123000)
       Time.zone = nil
     end
     

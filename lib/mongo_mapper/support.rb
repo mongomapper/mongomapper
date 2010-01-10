@@ -24,11 +24,18 @@ class Binary
 end
 
 class Boolean
+  BOOLEAN_MAPPING = {
+    true => true, 'true' => true, 'TRUE' => true, 'True' => true, 't' => true, 'T' => true, '1' => true, 1 => true, 1.0 => true,
+    false => false, 'false' => false, 'FALSE' => false, 'False' => false, 'f' => false, 'F' => false, '0' => false, 0 => false, 0.0 => false, nil => false
+  }
+  
   def self.to_mongo(value)
     if value.is_a?(Boolean)
       value
     else
-      ['true', 't', '1'].include?(value.to_s.downcase)
+      v = BOOLEAN_MAPPING[value]
+      v = value.to_s.downcase == 'true' if v.nil? # Check all mixed case spellings for true
+      v
     end
   end
 
@@ -39,8 +46,12 @@ end
 
 class Date
   def self.to_mongo(value)
-    date = Date.parse(value.to_s)
-    Time.utc(date.year, date.month, date.day)
+    if value.nil? || value == ''
+      nil
+    else
+      date = value.is_a?(Date) || value.is_a?(Time) ? value : Date.parse(value.to_s)
+      Time.utc(date.year, date.month, date.day)
+    end
   rescue
     nil
   end
@@ -69,7 +80,7 @@ end
 class Integer
   def self.to_mongo(value)
     value_to_i = value.to_i
-    if value_to_i == 0
+    if value_to_i == 0 && value != value_to_i
       value.to_s =~ /^(0x|0b)?0+/ ? 0 : nil
     else
       value_to_i
@@ -168,8 +179,9 @@ class Time
     if value.nil? || value == ''
       nil
     else
-      time = MongoMapper.time_class.parse(value.to_s)
-      time && time.utc
+      time = value.is_a?(Time) ? value : MongoMapper.time_class.parse(value.to_s)
+      # Convert time to milliseconds since BSON stores dates with that accurracy, but Ruby uses microseconds
+      Time.at((time.to_f * 1000).round / 1000.0).utc if time
     end
   end
   
