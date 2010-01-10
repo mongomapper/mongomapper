@@ -64,7 +64,7 @@ module MongoMapper
 
         private
           def clone_key_value(attribute_name)
-            value = send(:read_attribute, attribute_name)
+            value = self[attribute_name]
             value.duplicable? ? value.clone : value
           rescue TypeError, NoMethodError
             value
@@ -90,7 +90,7 @@ module MongoMapper
             changed_keys[attribute] = clone_key_value(attribute)
           end
 
-          def write_attribute(attribute, value)
+          def write_key(attribute, value)
             attribute = attribute.to_s
 
             if changed_keys.include?(attribute)
@@ -105,7 +105,7 @@ module MongoMapper
           end
 
           def value_changed?(key_name, old, value)
-            key = _keys[key_name]
+            key = keys[key_name]
 
             if key.number? && value.blank?
               value = nil

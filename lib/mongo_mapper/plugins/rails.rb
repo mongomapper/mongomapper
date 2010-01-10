@@ -5,6 +5,18 @@ module MongoMapper
         def new_record?
           new?
         end
+        
+        def read_attribute(name)
+          self[name]
+        end
+        
+        def read_attribute_before_typecast(name)
+          read_key_before_typecast(name)
+        end
+        
+        def write_attribute(name, value)
+          self[name] = value
+        end
       end
       
       module ClassMethods

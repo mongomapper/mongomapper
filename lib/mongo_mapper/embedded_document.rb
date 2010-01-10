@@ -105,19 +105,19 @@ module MongoMapper
       def create_accessors_for(key)
         accessors_module.module_eval <<-end_eval
           def #{key.name}
-            read_attribute(:#{key.name})
+            read_key(:#{key.name})
           end
 
           def #{key.name}_before_typecast
-            read_attribute_before_typecast(:#{key.name})
+            read_key_before_typecast(:#{key.name})
           end
 
           def #{key.name}=(value)
-            write_attribute(:#{key.name}, value)
+            write_key(:#{key.name}, value)
           end
 
           def #{key.name}?
-            read_attribute(:#{key.name}).present?
+            read_key(:#{key.name}).present?
           end
         end_eval
         include accessors_module
@@ -188,11 +188,11 @@ module MongoMapper
         end
 
         if self.class.embeddable?
-          if read_attribute(:_id).blank?
-            write_attribute :_id, Mongo::ObjectID.new
-            @new_document = true
-          else
+          if _id?
             @new_document = false
+          else
+            write_key :_id, Mongo::ObjectID.new
+            @new_document = true
           end
         end
       end
@@ -222,11 +222,11 @@ module MongoMapper
         attrs = HashWithIndifferentAccess.new
         
         embedded_keys.each do |key|
-          attrs[key.name] = read_attribute(key.name).try(:attributes)
+          attrs[key.name] = self[key.name].try(:attributes)
         end
         
         non_embedded_keys.each do |key|
-          attrs[key.name] = read_attribute(key.name)
+          attrs[key.name] = self[key.name]
         end
         
         embedded_associations.each do |association|
@@ -241,8 +241,8 @@ module MongoMapper
       def to_mongo
         attrs = HashWithIndifferentAccess.new
         
-        _keys.each_pair do |name, key|
-          value = key.set(read_attribute(key.name))
+        keys.each_pair do |name, key|
+          value = key.set(self[key.name])
           attrs[name] = value unless value.nil?
         end
         
@@ -262,12 +262,12 @@ module MongoMapper
       end
 
       def [](name)
-        read_attribute(name)
+        read_key(name)
       end
 
       def []=(name, value)
         ensure_key_exists(name)
-        write_attribute(name, value)
+        write_key(name, value)
       end
 
       def ==(other)
@@ -294,7 +294,7 @@ module MongoMapper
 
       def inspect
         attributes_as_nice_string = key_names.collect do |name|
-          "#{name}: #{read_attribute(name).inspect}"
+          "#{name}: #{self[name].inspect}"
         end.join(", ")
         "#<#{self.class} #{attributes_as_nice_string}>"
       end
@@ -317,29 +317,29 @@ module MongoMapper
         save!
       end
 
+      def keys
+        self.metaclass.keys
+      end
+      
       private
-        def _keys
-          self.metaclass.keys
-        end
-        
         def key_names
-          _keys.keys
+          keys.keys
         end
         
         def non_embedded_keys
-          _keys.values.select { |key| !key.embeddable? }
+          keys.values.select { |key| !key.embeddable? }
         end
         
         def embedded_keys
-          _keys.values.select { |key| key.embeddable? }
+          keys.values.select { |key| key.embeddable? }
         end
         
         def ensure_key_exists(name)
           self.metaclass.key(name) unless respond_to?("#{name}=")
         end
 
-        def read_attribute(name)
-          if key = _keys[name]
+        def read_key(name)
+          if key = keys[name]
             var_name = "@#{name}"
             value = key.get(instance_variable_get(var_name))
             instance_variable_set(var_name, value)
@@ -348,12 +348,12 @@ module MongoMapper
           end
         end
 
-        def read_attribute_before_typecast(name)
+        def read_key_before_typecast(name)
           instance_variable_get("@#{name}_before_typecast")
         end
 
-        def write_attribute(name, value)
-          key = _keys[name]
+        def write_key(name, value)
+          key = keys[name]
           instance_variable_set "@#{name}_before_typecast", value
           instance_variable_set "@#{name}", key.set(value)
         end

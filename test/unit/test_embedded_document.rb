@@ -17,7 +17,7 @@ end
 
 module KeyOverride
   def other_child
-    read_attribute(:other_child) || "special result"
+    self[:other_child] || "special result"
   end
   
   def other_child=(value)
@@ -287,9 +287,26 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.using_custom_id?.should be_true
       end
     end
+    
+    context "_root_document" do
+      should "default to nil" do
+        @document.new._root_document.should be_nil
+      end
 
-    should "have a nil _root_document" do
-      @document.new._root_document.should be_nil
+      should "allow setting when initialized" do
+        root = Doc().new
+        doc  = @document.new :_root_document => root
+        
+        doc._root_document.should be(root)
+      end
+
+      should "also be set on many embedded documents" do
+        root  = Doc().new
+        klass = EDoc { many :children }
+        doc   = klass.new(:_root_document => root, :children => [{}])
+        
+        doc.children.first._root_document.should == root
+      end
     end
 
     context "being initialized" do
@@ -306,43 +323,26 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.skills.should == ['ruby', 'rails']
       end
 
-      should "set the root on embedded documents" do
-        document = Class.new(@document) do
-          many :children
-        end
-
-        doc = document.new :_root_document => 'document', 'children' => [{}]
-        doc.children.first._root_document.should == 'document'
-      end
-
       should "not throw error if initialized with nil" do
-        lambda {
-          @document.new(nil)
-        }.should_not raise_error
+        assert_nothing_raised { @document.new(nil) }
       end
     end
     
     context "initialized when _type key present" do
       setup do
-        ::FooBar = EDoc do
-          key :_type, String
-        end
-      end
-      
-      teardown do
-        Object.send(:remove_const, :FooBar)
+        @klass = EDoc('FooBar') { key :_type, String }
       end
 
       should "set _type to class name" do
-        FooBar.new._type.should == 'FooBar'
+        @klass.new._type.should == 'FooBar'
       end
       
       should "not change _type if already set" do
-        FooBar.new(:_type => 'Foo')._type.should == 'Foo'
+        @klass.new(:_type => 'Foo')._type.should == 'Foo'
       end
     end
 
-    context "mass assigning keys" do
+    context "attributes=" do
       should "update values for keys provided" do
         doc = @document.new(:name => 'foobar', :age => 10)
         doc.attributes = {:name => 'new value', :age => 5}
@@ -357,7 +357,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.attributes[:age].should == 10
       end
 
-      should "not ignore keys that have methods defined" do
+      should "work with pre-defined methods" do
         @document.class_eval do
           attr_writer :password
 
@@ -389,6 +389,12 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.attributes.values.should include('string')
         doc.attributes.values.should include(nil)
       end
+      
+      should "have indifferent access" do
+        doc = @document.new(:name => 'string')
+        doc.attributes[:name].should == 'string'
+        doc.attributes['name'].should == 'string'
+      end
     end
     
     context "to_mongo" do
@@ -403,14 +409,6 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.to_mongo.values.should include('string')
         doc.to_mongo.values.should_not include(nil)
       end
-    end
-    
-    should "convert dates into times" do
-      document = Class.new(@document) do
-        key :start_date, Date
-      end
-      doc = document.new :start_date => "12/05/2009"
-      doc.start_date.should == Date.new(2009, 12, 05)
     end
 
     context "clone" do
@@ -439,9 +437,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         
         should "raise exception when key not found" do
           doc = @document.new(:name => 'string')
-          lambda {
-            doc[:not_here]
-          }.should raise_error(MongoMapper::KeyNotFound)
+          assert_raises(MongoMapper::KeyNotFound) { doc[:not_here] }
         end
       end
       
@@ -466,16 +462,8 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
          end
       end
     end
-    
-    context "indifferent access" do
-      should "be enabled for keys" do
-        doc = @document.new(:name => 'string')
-        doc.attributes[:name].should == 'string'
-        doc.attributes['name'].should == 'string'
-      end
-    end
 
-    context "reading an attribute" do
+    context "reading a key" do
       should "work for defined keys" do
         doc = @document.new(:name => 'string')
         doc.name.should == 'string'
@@ -489,7 +477,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       should "be accessible for use in the model" do
         @document.class_eval do
           def name_and_age
-            "#{read_attribute(:name)} (#{read_attribute(:age)})"
+            "#{self[:name]} (#{self[:age]})"
           end
         end
 
@@ -520,7 +508,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
     end
 
-    context "reading an attribute before typcasting" do
+    context "reading a key before typcasting" do
       should "work for defined keys" do
         doc = @document.new(:name => 12)
         doc.name_before_typecast.should == 12
@@ -534,7 +522,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       should "be accessible for use in a document" do
         @document.class_eval do
           def untypcasted_name
-            read_attribute_before_typecast(:name)
+            read_key_before_typecast(:name)
           end
         end
 
@@ -544,7 +532,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
     end
 
-    context "writing an attribute" do
+    context "writing a key" do
       should "work for defined keys" do
         doc = @document.new
         doc.name = 'John'
@@ -568,8 +556,8 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         @document.class_eval do
           def name_and_age=(new_value)
             new_value.match(/([^\(\s]+) \((.*)\)/)
-            write_attribute :name, $1
-            write_attribute :age, $2
+            write_key :name, $1
+            write_key :age, $2
           end
         end
 
@@ -592,9 +580,9 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         overriden_child = @document.new(:other_child => 'foo')
         overriden_child.other_child.should == 'foo modified'
       end
-    end # writing an attribute
+    end # writing a key
     
-    context "checking if an attributes value is present" do
+    context "checking if a keys value is present" do
       should "work for defined keys" do
         doc = @document.new
         doc.name?.should be_false
@@ -631,7 +619,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
     end
     
-    context "default values" do
+    context "reading keys with default values" do
       setup do
         @document = EDoc do
           key :name,      String,   :default => 'foo'

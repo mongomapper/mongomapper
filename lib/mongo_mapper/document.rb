@@ -337,7 +337,7 @@ module MongoMapper
       end
 
       def new?
-        read_attribute('_id').blank? || using_custom_id?
+        !_id? || using_custom_id?
       end
 
       def save(options={})
@@ -381,9 +381,7 @@ module MongoMapper
       end
 
       def assign_id
-        if read_attribute(:_id).blank?
-          write_attribute :_id, Mongo::ObjectID.new
-        end
+        self[:_id] = Mongo::ObjectID.new unless _id?
       end
 
       def update(options={})
@@ -398,8 +396,8 @@ module MongoMapper
 
       def update_timestamps
         now = Time.now.utc
-        write_attribute('created_at', now) if new? && read_attribute('created_at').blank?
-        write_attribute('updated_at', now)
+        self[:created_at] = now if new? && !created_at?
+        self[:updated_at] = now
       end
 
       def clear_custom_id_flag
