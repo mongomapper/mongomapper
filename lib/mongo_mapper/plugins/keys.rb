@@ -17,6 +17,7 @@ module MongoMapper
 
           create_accessors_for(key)
           create_key_in_descendants(*args)
+          create_indexes_for(key) unless key.embeddable?
           create_validations_for(key)
 
           key
@@ -44,9 +45,13 @@ module MongoMapper
         def load(attrs)
           begin
             klass = attrs['_type'].present? ? attrs['_type'].constantize : self
-            klass.new(attrs)
+            doc = klass.new(attrs)
+            doc.instance_variable_set("@new", false)
+            doc
           rescue NameError
-            new(attrs)
+            doc = new(attrs)
+            doc.instance_variable_set("@new", false)
+            doc
           end
         end
 
@@ -92,6 +97,10 @@ module MongoMapper
             descendants.each { |descendant| descendant.key(*args) }
           end
 
+          def create_indexes_for(key)
+            ensure_index key.name if key.options[:index]
+          end
+
           def create_validations_for(key)
             attribute = key.name.to_sym
 
@@ -133,41 +142,24 @@ module MongoMapper
         
         def initialize(attrs={})
           unless attrs.nil?
-            associations.each do |name, association|
-              if collection = attrs.delete(name)
-                if association.many? && association.klass.embeddable?
-                  root_document = attrs[:_root_document] || self
-                  collection.each do |doc|
-                    doc[:_root_document] = root_document
-                  end
-                end
-                send("#{association.name}=", collection)
-              end
-            end
-
-            self.attributes = attrs
-
-            if respond_to?(:_type=) && self['_type'].blank?
-              self._type = self.class.name
-            end
-          end
-
-          if self.class.embeddable?
-            if _id?
-              @new = false
-            else
+            provided_keys = attrs.keys.map { |k| k.to_s }
+            unless provided_keys.include?('_id') || provided_keys.include?('id')
               write_key :_id, Mongo::ObjectID.new
-              @new = true
             end
           end
+          
+          @new = true
+          self._type = self.class.name if respond_to?(:_type=)
+          self.attributes = attrs
         end
         
         def new?
-          !!@new
+          @new
         end
         
         def attributes=(attrs)
           return if attrs.blank?
+          
           attrs.each_pair do |name, value|
             writer_method = "#{name}="
 
@@ -196,24 +188,20 @@ module MongoMapper
           attrs
         end
         alias :to_mongo :attributes
-
+        
         def id
-          self[:_id]
+          _id
         end
-
+        
         def id=(value)
           if self.class.using_object_id?
             value = MongoMapper.normalize_object_id(value)
-          else
-            @using_custom_id = true
           end
 
           self[:_id] = value
         end
-
-        def using_custom_id?
-          !!@using_custom_id
-        end
+        
+        alias :_id :id
 
         def [](name)
           read_key(name)

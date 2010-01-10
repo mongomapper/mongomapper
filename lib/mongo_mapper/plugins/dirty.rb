@@ -35,12 +35,12 @@ module MongoMapper
         end
 
         def changes
-          changed.inject({}) { |h, attribute| h[attribute] = key_change(attribute); h }
+          changed.inject({}) { |h, key| h[key] = key_change(key); h }
         end
 
         def initialize(attrs={})
-          super(attrs)
-          changed_keys.clear unless new?
+          super
+          changed_keys.clear if attrs.blank?
         end
 
         def save(*args)
@@ -57,14 +57,14 @@ module MongoMapper
         end
 
         def reload(*args)
-          record = super
+          document = super
           changed_keys.clear
-          record
+          document
         end
 
         private
-          def clone_key_value(attribute_name)
-            value = self[attribute_name]
+          def clone_key_value(key)
+            value = read_key(key)
             value.duplicable? ? value.clone : value
           rescue TypeError, NoMethodError
             value
@@ -74,34 +74,34 @@ module MongoMapper
             @changed_keys ||= {}
           end
 
-          def key_changed?(attribute)
-            changed_keys.include?(attribute)
+          def key_changed?(key)
+            changed_keys.include?(key)
           end
 
-          def key_change(attribute)
-            [changed_keys[attribute], __send__(attribute)] if key_changed?(attribute)
+          def key_change(key)
+            [changed_keys[key], __send__(key)] if key_changed?(key)
           end
 
-          def key_was(attribute)
-            key_changed?(attribute) ? changed_keys[attribute] : __send__(attribute)
+          def key_was(key)
+            key_changed?(key) ? changed_keys[key] : __send__(key)
           end
 
-          def key_will_change!(attribute)
-            changed_keys[attribute] = clone_key_value(attribute)
+          def key_will_change!(key)
+            changed_keys[key] = clone_key_value(key)
           end
 
-          def write_key(attribute, value)
-            attribute = attribute.to_s
+          def write_key(key, value)
+            key = key.to_s
 
-            if changed_keys.include?(attribute)
-              old = changed_keys[attribute]
-              changed_keys.delete(attribute) unless value_changed?(attribute, old, value)
+            if changed_keys.include?(key)
+              old = changed_keys[key]
+              changed_keys.delete(key) unless value_changed?(key, old, value)
             else
-              old = clone_key_value(attribute)
-              changed_keys[attribute] = old if value_changed?(attribute, old, value)
+              old = clone_key_value(key)
+              changed_keys[key] = old if value_changed?(key, old, value)
             end
 
-            super(attribute, value)
+            super(key, value)
           end
 
           def value_changed?(key_name, old, value)

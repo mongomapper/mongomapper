@@ -9,7 +9,6 @@ module MongoMapper
           doc
         end
 
-        # TODO: test that both string and oid version work
         def find(id)
           load_target
           target.detect { |item| item.id.to_s == id || item.id == id }
@@ -32,7 +31,11 @@ module MongoMapper
 
         private
           def _root_document
-            owner._root_document || owner
+            if owner.respond_to?(:_root_document)
+              owner._root_document
+            else
+              owner
+            end
           end
 
           def assign_root_document(*docs)

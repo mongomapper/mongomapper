@@ -112,7 +112,7 @@ class DirtyTest < Test::Unit::TestCase
     should "be hash of keys with values of changes if there are changes" do
       doc = @document.new
       doc.phrase = 'A penny saved is a penny earned.'
-      doc.changes.should == {'phrase' => [nil, 'A penny saved is a penny earned.']}
+      doc.changes['phrase'].should == [nil, 'A penny saved is a penny earned.']
     end
   end
   

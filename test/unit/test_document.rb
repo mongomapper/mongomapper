@@ -133,10 +133,6 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     context "root document" do
-      should "have a nil _root_document" do
-        @document.new._root_document.should be_nil
-      end
-
       should "set self to the root document on embedded documents" do        
         klass = Doc()
         pets = EDoc()
@@ -162,7 +158,7 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     context "clone" do
-      should "not set the id" do
+      should "be new" do
         doc = @document.create(:name => "foo", :age => 27)
         clone = doc.clone
         clone.should be_new

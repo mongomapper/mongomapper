@@ -4,25 +4,24 @@ module MongoMapper
 
     def self.included(model)
       model.class_eval do
-        include EmbeddedDocument
         include InstanceMethods
         extend  ClassMethods
         extend  Finders
 
         extend Plugins
         plugin Plugins::Associations
-        plugin Plugins::Callbacks
         plugin Plugins::Clone
         plugin Plugins::Descendants
-        plugin Plugins::Dirty
         plugin Plugins::Equality
         plugin Plugins::Inspect
         plugin Plugins::Keys
+        plugin Plugins::Dirty # for now dirty needs to be after keys
         plugin Plugins::Logger
         plugin Plugins::Pagination
         plugin Plugins::Rails
         plugin Plugins::Serialization
         plugin Plugins::Validations
+        plugin Plugins::Callbacks # for now callbacks needs to be after validations
         extend Plugins::Validations::DocumentMacros
       end
       
@@ -33,12 +32,6 @@ module MongoMapper
       def inherited(subclass)
         subclass.set_collection_name(collection_name)
         super
-      end
-      
-      def key(*args)
-        key = super
-        create_indexes_for(key)
-        key
       end
 
       def ensure_index(name_or_array, options={})
@@ -244,23 +237,19 @@ module MongoMapper
       end
 
       def single_collection_inherited?
-        keys.has_key?('_type') && single_collection_inherited_superclass?
+        keys.key?(:_type) && single_collection_inherited_superclass?
       end
 
       def single_collection_inherited_superclass?
-        superclass.respond_to?(:keys) && superclass.keys.has_key?('_type')
+        superclass.respond_to?(:keys) && superclass.keys.key?(:_type)
       end
 
       private
-        def create_indexes_for(key)
-          ensure_index key.name if key.options[:index]
-        end
-
         def initialize_each(*docs)
           instances = []
           docs = [{}] if docs.blank?
           docs.flatten.each do |attrs|
-            doc = load(attrs)
+            doc = new(attrs)
             yield(doc)
             instances << doc
           end
@@ -346,10 +335,6 @@ module MongoMapper
         self.class.database
       end
 
-      def new?
-        !_id? || using_custom_id?
-      end
-      
       def save(options={})
         options.reverse_merge!(:validate => true)
         perform_validations = options.delete(:validate)
@@ -359,9 +344,19 @@ module MongoMapper
       def save!
         save || raise(DocumentNotValid.new(self))
       end
+      
+      def update_attributes(attrs={})
+        self.attributes = attrs
+        save
+      end
+
+      def update_attributes!(attrs={})
+        self.attributes = attrs
+        save!
+      end
 
       def destroy
-        self.class.delete(id) unless new?
+        delete
       end
       
       def delete
@@ -382,12 +377,7 @@ module MongoMapper
       end
 
       def create(options={})
-        assign_id
         save_to_collection(options)
-      end
-
-      def assign_id
-        self[:_id] = Mongo::ObjectID.new unless _id?
       end
 
       def update(options={})
@@ -395,8 +385,8 @@ module MongoMapper
       end
 
       def save_to_collection(options={})
-        clear_custom_id_flag
         safe = options.delete(:safe) || false
+        @new = false
         collection.save(to_mongo, :safe => safe)
       end
 
@@ -404,10 +394,6 @@ module MongoMapper
         now = Time.now.utc
         self[:created_at] = now if new? && !created_at?
         self[:updated_at] = now
-      end
-
-      def clear_custom_id_flag
-        @using_custom_id = nil
       end
     end
   end # Document

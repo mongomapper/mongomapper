@@ -233,39 +233,18 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       doc.id.should == id
     end
     
-    context "assigning id with _id ObjectId type" do
-      should "not set custom id flag" do
-        doc = @document.new
-        doc.using_custom_id?.should be_false
-        doc.id = Mongo::ObjectID.new
-        doc.using_custom_id?.should be_false
-      end
+    should "convert string object id to mongo object id when assigning id with _id object id type" do
+      id = Mongo::ObjectID.new
       
-      should "convert string object id to mongo object id" do
-        id = Mongo::ObjectID.new
-        doc = @document.new(:id => id.to_s)
-        doc._id.should == id
-        doc.id.should == id
-        doc.using_custom_id?.should be_false
-      end
+      doc = @document.new(:id => id.to_s)
+      doc._id.should == id
+      doc.id.should == id
+      
+      doc = @document.new(:_id => id.to_s)
+      doc._id.should == id
+      doc.id.should == id
     end
 
-    context "setting custom id" do
-      should "set _id" do
-        @document.key :_id, String
-        doc = @document.new(:id => '1234')
-        doc._id.should == '1234'
-      end
-      
-      should "know that custom id is set" do
-        @document.key :_id, String
-        doc = @document.new
-        doc.using_custom_id?.should be_false
-        doc.id = '1234'
-        doc.using_custom_id?.should be_true
-      end
-    end
-    
     context "_root_document" do
       should "default to nil" do
         @document.new._root_document.should be_nil
