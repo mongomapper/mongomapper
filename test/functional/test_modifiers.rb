@@ -235,4 +235,18 @@ class ModifierTest < Test::Unit::TestCase
     page2.reload
     page.tags.should == %w(foo)
   end
+  
+  should "be able to remove the last element the array" do
+    page  = @page_class.create(:title => 'Home', :tags => %w(foo bar))
+    @page_class.pop(page.id, :tags => 1)
+    page.reload
+    page.tags.should == %w(foo)
+  end
+
+  should "be able to remove the first element of the array" do
+    page  = @page_class.create(:title => 'Home', :tags => %w(foo bar))
+    @page_class.pop(page.id, :tags => -1)
+    page.reload
+    page.tags.should == %w(bar)
+  end
 end

@@ -165,6 +165,10 @@ module MongoMapper
         modifier_update('$pullAll', args)
       end
       
+      def pop(*args)
+        modifier_update('$pop', args)
+      end
+      
       def modifier_update(modifier, args)
         criteria, keys = criteria_and_keys_from_args(args)
         modifiers = {modifier => keys}
