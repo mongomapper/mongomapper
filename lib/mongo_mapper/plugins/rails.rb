@@ -2,6 +2,10 @@ module MongoMapper
   module Plugins
     module Rails
       module InstanceMethods
+        def to_param
+          id.to_s
+        end
+        
         def new_record?
           new?
         end

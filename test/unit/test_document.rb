@@ -101,6 +101,12 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
     
+    should "have to_param that is string representation of id" do
+      doc = @document.new(:id => Mongo::ObjectID.new)
+      doc.to_param.should == doc.id.to_s
+      doc.to_param.should be_instance_of(String)
+    end
+    
     should "have access to logger" do
       doc = @document.new
       doc.logger.should == @document.logger
@@ -168,6 +174,11 @@ class DocumentTest < Test::Unit::TestCase
         clone.name.should == "foo"
         clone.age.should == 27
       end
+    end
+
+    should "call inspect on the document's attributes instead of to_s when inspecting the document" do
+      doc = @document.new(:animals => %w(dog cat))
+      doc.inspect.should include(%(animals: ["dog", "cat"]))
     end
 
     context "equality" do

@@ -4,7 +4,7 @@ module MongoMapper
       class ManyEmbeddedProxy < EmbeddedCollection
         def replace(values)
           @_values = values.map do |v|
-            v.kind_of?(EmbeddedDocument) ? v.attributes : v
+            v.respond_to?(:attributes) ? v.attributes : v
           end
           reset
         end

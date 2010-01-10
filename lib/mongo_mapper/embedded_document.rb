@@ -9,13 +9,16 @@ module MongoMapper
         
         extend Plugins
         plugin Plugins::Associations
+        plugin Plugins::Clone
         plugin Plugins::Descendants
+        plugin Plugins::Equality
+        plugin Plugins::Inspect
+        plugin Plugins::Keys
         plugin Plugins::Logger
         plugin Plugins::Rails
         plugin Plugins::Serialization
         plugin Plugins::Validations
 
-        key :_id, ObjectId
         attr_accessor :_root_document
       end
       
@@ -23,267 +26,12 @@ module MongoMapper
     end
 
     module ClassMethods
-      def inherited(descendant)
-        descendant.instance_variable_set(:@keys, keys.dup)
-      end
-
-      def keys
-        @keys ||= HashWithIndifferentAccess.new
-      end
-
-      def key(*args)
-        key = Key.new(*args)
-        keys[key.name] = key
-
-        create_accessors_for(key)
-        create_key_in_descendants(*args)
-        create_validations_for(key)
-
-        key
-      end
-      
-      def using_object_id?
-        object_id_key?(:_id)
-      end
-      
-      def object_id_key?(name)
-        key = keys[name.to_s]
-        key && key.type == ObjectId
-      end
-
       def embeddable?
         true
-      end
-
-      def to_mongo(instance)
-        return nil if instance.nil?
-        instance.to_mongo
-      end
-      
-      def from_mongo(value)
-        return nil if value.nil?
-        value.is_a?(self) ? value : initialize_doc(value)
-      end
-      
-    private
-      def initialize_doc(doc)
-        begin
-          klass = doc['_type'].present? ? doc['_type'].constantize : self
-          klass.new(doc)
-        rescue NameError
-          new(doc)
-        end
-      end
-      
-      def accessors_module
-        module_defined =  if method(:const_defined?).arity == 1 # Ruby 1.9 compat check
-                            const_defined?('MongoMapperKeys')
-                          else
-                            const_defined?('MongoMapperKeys', false)
-                          end
-
-        if module_defined
-          const_get 'MongoMapperKeys'
-        else
-          const_set 'MongoMapperKeys', Module.new
-        end
-      end
-
-      def create_accessors_for(key)
-        accessors_module.module_eval <<-end_eval
-          def #{key.name}
-            read_key(:#{key.name})
-          end
-
-          def #{key.name}_before_typecast
-            read_key_before_typecast(:#{key.name})
-          end
-
-          def #{key.name}=(value)
-            write_key(:#{key.name}, value)
-          end
-
-          def #{key.name}?
-            read_key(:#{key.name}).present?
-          end
-        end_eval
-        
-        include accessors_module
-      end
-      
-      def create_key_in_descendants(*args)
-        return if descendants.blank?
-        descendants.each { |descendant| descendant.key(*args) }
-      end
-
-      def create_validations_for(key)
-        attribute = key.name.to_sym
-
-        if key.options[:required]
-          validates_presence_of(attribute)
-        end
-
-        if key.options[:unique]
-          validates_uniqueness_of(attribute)
-        end
-
-        if key.options[:numeric]
-          number_options = key.type == Integer ? {:only_integer => true} : {}
-          validates_numericality_of(attribute, number_options)
-        end
-
-        if key.options[:format]
-          validates_format_of(attribute, :with => key.options[:format])
-        end
-
-        if key.options[:length]
-          length_options = case key.options[:length]
-          when Integer
-            {:minimum => 0, :maximum => key.options[:length]}
-          when Range
-            {:within => key.options[:length]}
-          when Hash
-            key.options[:length]
-          end
-          validates_length_of(attribute, length_options)
-        end
       end
     end
 
     module InstanceMethods
-      def initialize(attrs={})
-        unless attrs.nil?
-          associations.each do |name, association|
-            if collection = attrs.delete(name)
-              if association.many? && association.klass.embeddable?
-                root_document = attrs[:_root_document] || self
-                collection.each do |doc|
-                  doc[:_root_document] = root_document
-                end
-              end
-              send("#{association.name}=", collection)
-            end
-          end
-
-          self.attributes = attrs
-          
-          if respond_to?(:_type=) && self['_type'].blank?
-            self._type = self.class.name
-          end
-        end
-
-        if self.class.embeddable?
-          if _id?
-            @new_document = false
-          else
-            write_key :_id, Mongo::ObjectID.new
-            @new_document = true
-          end
-        end
-      end
-
-      def new?
-        !!@new_document
-      end
-      
-      def to_param
-        id.to_s
-      end
-
-      def attributes=(attrs)
-        return if attrs.blank?
-        attrs.each_pair do |name, value|
-          writer_method = "#{name}="
-
-          if respond_to?(writer_method)
-            self.send(writer_method, value)
-          else
-            self[name.to_s] = value
-          end
-        end
-      end
-
-      def attributes
-        attrs = HashWithIndifferentAccess.new
-        
-        embedded_keys.each do |key|
-          attrs[key.name] = self[key.name].try(:attributes)
-        end
-        
-        non_embedded_keys.each do |key|
-          attrs[key.name] = self[key.name]
-        end
-        
-        embedded_associations.each do |association|
-          documents = instance_variable_get(association.ivar)
-          next if documents.nil?
-          attrs[association.name] = documents.collect { |doc| doc.attributes }
-        end
-        
-        attrs
-      end
-      
-      def to_mongo
-        attrs = HashWithIndifferentAccess.new
-        
-        keys.each_pair do |name, key|
-          value = key.set(self[key.name])
-          attrs[name] = value unless value.nil?
-        end
-        
-        embedded_associations.each do |association|
-          if documents = instance_variable_get(association.ivar)
-            attrs[association.name] = documents.map { |document| document.to_mongo }
-          end
-        end
-        
-        attrs
-      end
-
-      def clone
-        clone_attributes = self.attributes
-        clone_attributes.delete("_id")
-        self.class.new(clone_attributes)
-      end
-
-      def [](name)
-        read_key(name)
-      end
-
-      def []=(name, value)
-        ensure_key_exists(name)
-        write_key(name, value)
-      end
-
-      def ==(other)
-        other.is_a?(self.class) && _id == other._id
-      end
-
-      def id
-        self[:_id]
-      end
-
-      def id=(value)
-        if self.class.using_object_id?
-          value = MongoMapper.normalize_object_id(value)
-        else
-          @using_custom_id = true
-        end
-        
-        self[:_id] = value
-      end
-
-      def using_custom_id?
-        !!@using_custom_id
-      end
-
-      def inspect
-        attributes_as_nice_string = key_names.collect do |name|
-          "#{name}: #{self[name].inspect}"
-        end.join(", ")
-        "#<#{self.class} #{attributes_as_nice_string}>"
-      end
-
       def save(options={})
         _root_document.try(:save, options)
       end
@@ -301,55 +49,6 @@ module MongoMapper
         self.attributes = attrs
         save!
       end
-
-      def keys
-        self.class.keys
-      end
-      
-      private
-        def key_names
-          keys.keys
-        end
-        
-        def non_embedded_keys
-          keys.values.select { |key| !key.embeddable? }
-        end
-        
-        def embedded_keys
-          keys.values.select { |key| key.embeddable? }
-        end
-        
-        def ensure_key_exists(name)
-          self.class.key(name) unless respond_to?("#{name}=")
-        end
-
-        def read_key(name)
-          if key = keys[name]
-            var_name = "@#{name}"
-            value = key.get(instance_variable_get(var_name))
-            instance_variable_set(var_name, value)
-          else
-            raise KeyNotFound, "Could not find key: #{name.inspect}"
-          end
-        end
-
-        def read_key_before_typecast(name)
-          instance_variable_get("@#{name}_before_typecast")
-        end
-
-        def write_key(name, value)
-          key = keys[name]
-          instance_variable_set "@#{name}_before_typecast", value
-          instance_variable_set "@#{name}", key.set(value)
-        end
-        
-        def embedded_associations
-          associations.select do |name, association|
-            association.embeddable?
-          end.map do |name, association|
-            association
-          end
-        end
     end # InstanceMethods
   end # EmbeddedDocument
 end # MongoMapper

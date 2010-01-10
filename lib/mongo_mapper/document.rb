@@ -10,10 +10,19 @@ module MongoMapper
         extend  Finders
 
         extend Plugins
+        plugin Plugins::Associations
         plugin Plugins::Callbacks
+        plugin Plugins::Clone
+        plugin Plugins::Descendants
         plugin Plugins::Dirty
+        plugin Plugins::Equality
+        plugin Plugins::Inspect
+        plugin Plugins::Keys
+        plugin Plugins::Logger
         plugin Plugins::Pagination
-
+        plugin Plugins::Rails
+        plugin Plugins::Serialization
+        plugin Plugins::Validations
         extend Plugins::Validations::DocumentMacros
       end
       
@@ -22,10 +31,7 @@ module MongoMapper
     
     module ClassMethods
       def inherited(subclass)
-        if subclass.respond_to?(:set_collection_name)
-          subclass.set_collection_name(collection_name)
-        end
-        
+        subclass.set_collection_name(collection_name)
         super
       end
       
@@ -254,7 +260,7 @@ module MongoMapper
           instances = []
           docs = [{}] if docs.blank?
           docs.flatten.each do |attrs|
-            doc = initialize_doc(attrs)
+            doc = load(attrs)
             yield(doc)
             instances << doc
           end
@@ -264,7 +270,7 @@ module MongoMapper
         def find_every(options)
           criteria, options = to_finder_options(options)
           collection.find(criteria, options).to_a.map do |doc|
-            initialize_doc(doc)
+            load(doc)
           end
         end
 
@@ -282,7 +288,7 @@ module MongoMapper
         def find_one(options={})
           criteria, options = to_finder_options(options)
           if doc = collection.find_one(criteria, options)
-            initialize_doc(doc)
+            load(doc)
           end
         end
 
@@ -335,7 +341,7 @@ module MongoMapper
       def collection
         self.class.collection
       end
-      
+
       def database
         self.class.database
       end
@@ -343,7 +349,7 @@ module MongoMapper
       def new?
         !_id? || using_custom_id?
       end
-
+      
       def save(options={})
         options.reverse_merge!(:validate => true)
         perform_validations = options.delete(:validate)

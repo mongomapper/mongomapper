@@ -66,6 +66,15 @@ module MongoMapper
         def associations
           self.class.associations
         end
+        
+        # @api private?
+        def embedded_associations
+          associations.select do |name, association|
+            association.embeddable?
+          end.map do |name, association|
+            association
+          end
+        end
 
         def get_proxy(association)
           unless proxy = self.instance_variable_get(association.ivar)

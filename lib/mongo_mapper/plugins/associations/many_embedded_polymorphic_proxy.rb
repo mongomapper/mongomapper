@@ -4,11 +4,7 @@ module MongoMapper
       class ManyEmbeddedPolymorphicProxy < EmbeddedCollection
         def replace(values)
           @_values = values.map do |v|
-            if v.kind_of?(EmbeddedDocument)
-              v.attributes.merge(reflection.type_key_name => v.class.name)
-            else
-              v
-            end
+            v.respond_to?(:attributes) ? v.attributes.merge(reflection.type_key_name => v.class.name) : v
           end
           reset
         end
