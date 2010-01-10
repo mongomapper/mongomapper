@@ -21,6 +21,14 @@ module MongoMapper
     end
     
     module ClassMethods
+      def inherited(subclass)
+        if subclass.respond_to?(:set_collection_name)
+          subclass.set_collection_name(collection_name)
+        end
+        
+        super
+      end
+      
       def key(*args)
         key = super
         create_indexes_for(key)

@@ -56,8 +56,8 @@ class StringIdCompatibilityTest < Test::Unit::TestCase
   
   should "be able to associate records" do
     t1 = @task_class.new(:body => 'First task', :position => 1)
-    t2 = @task_class.new(:body => 'Second task', :position => 1)
-    t3 = @task_class.new(:body => 'Third task', :position => 1)
+    t2 = @task_class.new(:body => 'Second task', :position => 2)
+    t3 = @task_class.new(:body => 'Third task', :position => 3)
     project = @project_class.create(:name => 'MM', :tasks => [t1, t2, t3])
     
     project = project.reload
