@@ -186,6 +186,19 @@ class ValidationsTest < Test::Unit::TestCase
       doc2.should_not have_error_on(:name)
     end
 
+    should "allow multiple nil entries if :allow_nil => true" do
+      document = Doc do
+        key :name
+        validates_uniqueness_of :name, :allow_nil => :true
+      end
+
+      doc = document.new('name' => nil)
+      doc.save.should be_true
+
+      doc2 = document.new('name' => nil)
+      doc2.should_not have_error_on(:name)
+    end
+
     should "allow entries that differ only in case by default" do
       document = Doc do
         key :name
