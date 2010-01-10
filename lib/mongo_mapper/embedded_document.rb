@@ -10,12 +10,10 @@ module MongoMapper
         extend Plugins
         plugin Plugins::Logger
         plugin Plugins::Validations
-        
-        extend Associations::ClassMethods
-        include Associations::InstanceMethods
+        plugin Plugins::Serialization
+        plugin Plugins::Associations
 
         include RailsCompatibility::EmbeddedDocument
-        include Serialization
 
         key :_id, ObjectId
         attr_accessor :_root_document

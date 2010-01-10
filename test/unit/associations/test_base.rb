@@ -4,7 +4,7 @@ require 'models'
 class FooMonster; end
 
 class AssociationBaseTest < Test::Unit::TestCase
-  include MongoMapper::Associations
+  include MongoMapper::Plugins::Associations
   
   should "initialize with type and name" do
     base = Base.new(:many, :foos)

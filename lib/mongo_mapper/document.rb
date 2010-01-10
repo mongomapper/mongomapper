@@ -8,13 +8,11 @@ module MongoMapper
         include InstanceMethods
         
         extend Plugins
-        plugin Plugins::Logger
-        plugin Plugins::Validations
+        plugin Plugins::Callbacks
+        plugin Plugins::Dirty
         
         extend Plugins::Validations::DocumentMacros
         
-        include Callbacks
-        include Dirty
         include RailsCompatibility::Document
         extend ClassMethods
         extend Finders

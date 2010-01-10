@@ -3,9 +3,7 @@ module MongoMapper
     module Validations
       module InstanceMethods
         def self.included(model)
-          model.class_eval do
-            include Validatable
-          end
+          model.class_eval { include Validatable }
         end
       end
       
