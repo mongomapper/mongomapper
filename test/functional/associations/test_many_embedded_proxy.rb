@@ -4,7 +4,11 @@ require 'models'
 class ManyEmbeddedProxyTest < Test::Unit::TestCase
   def setup
     Project.collection.remove
-    RealPerson.collection.remove
+    
+    @person_class = Doc() do
+      key :name, String
+      many :pets
+    end
   end
     
   should "default reader to empty array" do
@@ -59,7 +63,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       ] 
     }
     
-    pet_lover = RealPerson.new(person_attributes)
+    pet_lover = @person_class.new(person_attributes)
     pet_lover.name.should == "Mr. Pet Lover"
     pet_lover.pets[0].name.should == "Jimmy"
     pet_lover.pets[0].species.should == "Cocker Spainel"

@@ -593,7 +593,15 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     should "allow to use custom methods to assign properties" do
-      person = RealPerson.new(:realname => 'David')
+      klass = Doc do
+        key :name, String
+        
+        def realname=(value)
+          self.name = value
+        end
+      end
+      
+      person = klass.new(:realname => 'David')
       person.save
       person.reload.name.should == 'David'
     end

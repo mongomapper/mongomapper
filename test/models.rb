@@ -163,21 +163,6 @@ class Status
   belongs_to :target, :polymorphic => true
 end
 
-class RealPerson
-  include MongoMapper::Document
-
-  key :room_id, ObjectId
-  key :name, String
-  
-  belongs_to :room
-  
-  many :pets
-  
-  def realname=(n)
-    self.name = n
-  end
-end
-
 class Person
   include MongoMapper::EmbeddedDocument
 
