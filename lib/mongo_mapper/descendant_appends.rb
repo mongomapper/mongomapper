@@ -1,13 +1,8 @@
 module MongoMapper
   module DescendantAppends
-    # To be called whenever module using 
-    # descendant appends is included in another class
-    #
-    # @api private
-    def descendant_append(model)
+    def included(model)
       extra_extensions.each { |extension| model.extend(extension) }
       extra_inclusions.each { |inclusion| model.send(:include, inclusion) }
-      
       descendants << model
     end
     

@@ -19,7 +19,7 @@ module MongoMapper
         attr_accessor :_root_document
       end
       
-      descendant_append(model)
+      super
     end
 
     module ClassMethods

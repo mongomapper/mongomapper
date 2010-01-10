@@ -16,8 +16,8 @@ module MongoMapper
 
         extend Plugins::Validations::DocumentMacros
       end
-
-      descendant_append(model)
+      
+      super
     end
     
     module ClassMethods
