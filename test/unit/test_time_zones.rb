@@ -26,10 +26,10 @@ class TimeZonesTest < Test::Unit::TestCase
       Time.zone = nil
     end
     
-    should_eventually "work with timezones that are not UTC" do
+    should "work with timezones that are not UTC" do
       Time.zone = 'Hawaii'
       
-      doc = @document.new(:created_at => @original_time)
+      doc = @document.new(:created_at => "2009-08-15 14:00:00")
       doc.created_at.is_a?(ActiveSupport::TimeWithZone).should be_true
       doc.created_at.should == Time.utc(2009, 8, 16)
       
