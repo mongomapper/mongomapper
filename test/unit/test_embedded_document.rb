@@ -227,6 +227,10 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @document.keys.keys.should include('_id')
     end
     
+    should "create id during initialization" do
+      @document.new._id.should be_instance_of(Mongo::ObjectID)
+    end
+    
     should "have id method returns _id" do
       id = Mongo::ObjectID.new
       doc = @document.new(:_id => id)

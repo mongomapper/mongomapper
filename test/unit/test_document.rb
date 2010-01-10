@@ -101,6 +101,10 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
     
+    should "create id during initialization" do
+      @document.new._id.should be_instance_of(Mongo::ObjectID)
+    end
+    
     should "have to_param that is string representation of id" do
       doc = @document.new(:id => Mongo::ObjectID.new)
       doc.to_param.should == doc.id.to_s
