@@ -83,6 +83,7 @@ end
 require 'mongo_mapper/plugins/associations/base'
 require 'mongo_mapper/plugins/associations/proxy'
 require 'mongo_mapper/plugins/associations/collection'
+require 'mongo_mapper/plugins/associations/embedded_collection'
 require 'mongo_mapper/plugins/associations/many_documents_proxy'
 require 'mongo_mapper/plugins/associations/belongs_to_proxy'
 require 'mongo_mapper/plugins/associations/belongs_to_polymorphic_proxy'

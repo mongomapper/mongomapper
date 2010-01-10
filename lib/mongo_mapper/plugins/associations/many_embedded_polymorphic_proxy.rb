@@ -1,7 +1,7 @@
 module MongoMapper
   module Plugins
     module Associations
-      class ManyEmbeddedPolymorphicProxy < Collection
+      class ManyEmbeddedPolymorphicProxy < EmbeddedCollection
         def replace(values)
           @_values = values.map do |v|
             if v.kind_of?(EmbeddedDocument)
@@ -16,7 +16,9 @@ module MongoMapper
         protected
           def find_target
             (@_values || []).map do |hash|
-              polymorphic_class(hash).new(hash)
+              child = polymorphic_class(hash).new(hash)
+              assign_root_document(child)
+              child
             end
           end
 

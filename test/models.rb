@@ -109,12 +109,6 @@ class Answer
   key :body, String
 end
 
-module PeopleExtensions
-  def find_by_name(name)
-    detect { |p| p.name == name }
-  end
-end
-
 module CollaboratorsExtensions
   def top
     first
@@ -126,9 +120,7 @@ class Project
 
   key :name, String
   
-  many :people, :extend => PeopleExtensions
   many :collaborators, :extend => CollaboratorsExtensions
-  
   many :statuses, :order => 'position' do
     def open
       all(:name => %w(New Assigned))
@@ -161,22 +153,6 @@ class Status
 
   belongs_to :project
   belongs_to :target, :polymorphic => true
-end
-
-class Person
-  include MongoMapper::EmbeddedDocument
-
-  key :name, String
-  key :child, Person
-
-  many :pets
-end
-
-class Pet
-  include MongoMapper::EmbeddedDocument
-
-  key :name, String
-  key :species, String
 end
 
 class Media
