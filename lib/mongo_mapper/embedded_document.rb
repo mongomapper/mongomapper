@@ -33,21 +33,27 @@ module MongoMapper
 
     module InstanceMethods
       def save(options={})
-        _root_document.try(:save, options)
+        if result = _root_document.try(:save, options)
+          @new = false
+        end
+        result
       end
       
       def save!(options={})
-        _root_document.try(:save!, options)
+        if result = _root_document.try(:save!, options)
+          @new = false
+        end
+        result
       end
 
       def update_attributes(attrs={})
         self.attributes = attrs
-        save
+        self.save
       end
 
       def update_attributes!(attrs={})
         self.attributes = attrs
-        save!
+        self.save!
       end
     end # InstanceMethods
   end # EmbeddedDocument

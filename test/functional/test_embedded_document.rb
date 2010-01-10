@@ -81,7 +81,9 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     
     pet = @pet_klass.new(:name => 'sparky')
     person.pets << pet
+    pet.should be_new
     pet.save
+    pet.should_not be_new
     
     person.reload
     person.pets.first.should == pet
@@ -99,11 +101,12 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
   end
   
   should "be able to update_attributes" do
-    person = @klass.create(:pets => [@pet_klass.new(:name => 'sparky')])
+    pet = @pet_klass.new(:name => 'sparky')
+    person = @klass.create(:pets => [pet])
     person.reload
     pet = person.pets.first
     
-    pet.update_attributes(:name => 'koda')
+    pet.update_attributes(:name => 'koda').should be_true
     person.reload
     person.pets.first._id.should == pet._id
     person.pets.first.name.should == 'koda'
