@@ -17,7 +17,7 @@ module MongoMapper
         extend Plugins::Validations::DocumentMacros
       end
 
-      add_descendant(model)
+      descendant_append(model)
     end
     
     module ClassMethods
@@ -182,6 +182,10 @@ module MongoMapper
         [to_criteria(criteria), keys]
       end
       private :criteria_and_keys_from_args
+
+      def embeddable?
+        false
+      end
 
       def connection(mongo_connection=nil)
         if mongo_connection.nil?

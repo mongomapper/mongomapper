@@ -7,6 +7,10 @@ class DocumentTest < Test::Unit::TestCase
       @document = Doc()
     end
     
+    should "return false for embeddable" do
+      Doc().embeddable?.should be_false
+    end
+    
     should "have logger method" do
       @document.logger.should == MongoMapper.logger
       @document.logger.should be_instance_of(Logger)
@@ -70,16 +74,22 @@ class DocumentTest < Test::Unit::TestCase
       Exit.collection_name.should    == 'messages'
       Chat.collection_name.should    == 'messages'
     end
-    
+
     should "default associations to inherited class" do
-     Message.associations.keys.should include("room")
-     Enter.associations.keys.should   include("room")
-     Exit.associations.keys.should    include("room")
-     Chat.associations.keys.should    include("room")
-   end
-    
-    should "track subclasses" do
-      Message.subclasses.should == [Enter, Exit, Chat]
+      Message.associations.keys.should include("room")
+      Enter.associations.keys.should   include("room")
+      Exit.associations.keys.should    include("room")
+      Chat.associations.keys.should    include("room")
+    end
+  end
+  
+  context "descendants" do
+    should "default to nil" do
+      Enter.descendants.should be_nil
+    end
+
+    should "be recorded" do
+      Message.descendants.should == [Enter, Exit, Chat]
     end
   end
 

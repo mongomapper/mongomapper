@@ -59,6 +59,10 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @klass.logger.should be_instance_of(Logger)
     end
     
+    should "return false for embeddable" do
+      EDoc().embeddable?.should be_true
+    end
+    
     context "#to_mongo" do
       setup { @klass = EDoc() }
       
@@ -92,33 +96,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         doc.foo.should == 'bar'
       end
     end
-    
-    context "parent_model" do
-      should "be nil if none of parents ancestors include EmbeddedDocument" do
-        parent = Class.new
-        document = Class.new(parent) { include MongoMapper::EmbeddedDocument }
-        document.parent_model.should be_nil
-      end
 
-      should "work when other modules have been included" do
-        grandparent = Class.new
-        parent = Class.new(grandparent) { include MongoMapper::EmbeddedDocument }
-
-        example_module = Module.new
-        document = Class.new(parent) do
-          include MongoMapper::EmbeddedDocument
-          include example_module
-        end
-
-        document.parent_model.should == parent
-      end
-
-      should "find parent" do
-        Parent.parent_model.should == Grandparent
-        Child.parent_model.should == Parent
-      end
-    end
-    
     context "defining a key" do
       setup do
         @document = EDoc()
@@ -196,7 +174,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         Child.keys.keys.sort.should  == ['_id', 'child', 'grandparent', 'parent']
       end
 
-      should "propogate to subclasses if key added after class definition" do
+      should "propogate to descendants if key added after class definition" do
         Grandparent.key :_type, String
 
         Grandparent.keys.keys.sort.should == ['_id', '_type', 'grandparent']
@@ -213,14 +191,14 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
     end
     
-    context "subclasses" do
+    context "descendants" do
       should "default to nil" do
-        Child.subclasses.should be_nil
+        Child.descendants.should be_nil
       end
 
       should "be recorded" do
-        Grandparent.subclasses.should == [Parent]
-        Parent.subclasses.should      == [Child, OtherChild]
+        Grandparent.descendants.should == [Parent]
+        Parent.descendants.should      == [Child, OtherChild]
       end
     end
   end
@@ -451,14 +429,14 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         should "create key and write value for missing key" do
           doc = @document.new
           doc[:foo] = 'string'
-          doc.metaclass.keys.include?('foo').should be_true
+          doc.class.keys.include?('foo').should be_true
           doc[:foo].should == 'string'
         end
 
-         should "not share the new key" do
+         should "share the new key with the class" do
            doc = @document.new
            doc[:foo] = 'string'
-           @document.keys.should_not include('foo')
+           @document.keys.should include('foo')
          end
       end
     end

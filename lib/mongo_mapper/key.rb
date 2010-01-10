@@ -13,10 +13,6 @@ module MongoMapper
       @name == other.name && @type == other.type
     end
 
-    def set(value)
-      type.to_mongo(value)
-    end
-
     def embeddable?
       type.respond_to?(:embeddable?) && type.embeddable? ? true : false
     end
@@ -31,6 +27,10 @@ module MongoMapper
       end
       
       type.from_mongo(value)
+    end
+
+    def set(value)
+      type.to_mongo(value)
     end
   end
 end

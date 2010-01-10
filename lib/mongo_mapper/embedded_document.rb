@@ -9,6 +9,7 @@ module MongoMapper
         
         extend Plugins
         plugin Plugins::Associations
+        plugin Plugins::Descendants
         plugin Plugins::Logger
         plugin Plugins::Rails
         plugin Plugins::Serialization
@@ -18,24 +19,16 @@ module MongoMapper
         attr_accessor :_root_document
       end
       
-      add_descendant(model)
+      descendant_append(model)
     end
 
     module ClassMethods
-      def inherited(subclass)
-        (@subclasses ||= []) << subclass
-      end
-
-      def subclasses
-        @subclasses
+      def inherited(descendant)
+        descendant.instance_variable_set(:@keys, keys.dup)
       end
 
       def keys
-        @keys ||= if parent = parent_model
-          parent.keys.dup
-        else
-          HashWithIndifferentAccess.new
-        end
+        @keys ||= HashWithIndifferentAccess.new
       end
 
       def key(*args)
@@ -43,7 +36,7 @@ module MongoMapper
         keys[key.name] = key
 
         create_accessors_for(key)
-        create_key_in_subclasses(*args)
+        create_key_in_descendants(*args)
         create_validations_for(key)
 
         key
@@ -59,15 +52,9 @@ module MongoMapper
       end
 
       def embeddable?
-        !self.ancestors.include?(Document)
+        true
       end
 
-      def parent_model
-        (ancestors - [self,EmbeddedDocument]).find do |parent_class|
-          parent_class.ancestors.include?(EmbeddedDocument)
-        end
-      end
-      
       def to_mongo(instance)
         return nil if instance.nil?
         instance.to_mongo
@@ -120,15 +107,13 @@ module MongoMapper
             read_key(:#{key.name}).present?
           end
         end_eval
+        
         include accessors_module
       end
       
-      def create_key_in_subclasses(*args)
-        return if subclasses.blank?
-
-        subclasses.each do |subclass|
-          subclass.key(*args)
-        end
+      def create_key_in_descendants(*args)
+        return if descendants.blank?
+        descendants.each { |descendant| descendant.key(*args) }
       end
 
       def create_validations_for(key)
@@ -318,7 +303,7 @@ module MongoMapper
       end
 
       def keys
-        self.metaclass.keys
+        self.class.keys
       end
       
       private
@@ -335,7 +320,7 @@ module MongoMapper
         end
         
         def ensure_key_exists(name)
-          self.metaclass.key(name) unless respond_to?("#{name}=")
+          self.class.key(name) unless respond_to?("#{name}=")
         end
 
         def read_key(name)

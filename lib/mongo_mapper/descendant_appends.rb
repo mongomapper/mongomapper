@@ -4,7 +4,7 @@ module MongoMapper
     # descendant appends is included in another class
     #
     # @api private
-    def add_descendant(model)
+    def descendant_append(model)
       extra_extensions.each { |extension| model.extend(extension) }
       extra_inclusions.each { |inclusion| model.send(:include, inclusion) }
       
