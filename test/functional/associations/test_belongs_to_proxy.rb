@@ -72,7 +72,7 @@ class BelongsToProxyTest < Test::Unit::TestCase
       setup do
         Property.key :thing_id, ObjectId
         Property.belongs_to :thing, :dependent => :destroy
-        Thing.has_many :properties
+        Thing.many :properties
 
         @thing = Thing.create(:name => "Tree")
         @property1 = Property.create

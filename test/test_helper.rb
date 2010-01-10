@@ -38,10 +38,16 @@ class Test::Unit::TestCase
     klass
   end
   
-  def EDoc(&block)
+  def EDoc(name=nil, &block)
     Class.new do
       include MongoMapper::EmbeddedDocument
-      instance_eval(&block) if block_given?
+      
+      if name
+        class_eval "def self.name; '#{name}' end"
+        class_eval "def self.to_s; '#{name}' end"
+      end
+      
+      class_eval(&block) if block_given?
     end
   end
 end

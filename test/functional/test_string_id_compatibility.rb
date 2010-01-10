@@ -62,6 +62,6 @@ class StringIdCompatibilityTest < Test::Unit::TestCase
     
     project = project.reload
     project.tasks.count.should == 3
-    project.tasks.should == [t1, t2, t3]
+    project.tasks.map(&:body).should == [t1, t2, t3].map(&:body)
   end
 end

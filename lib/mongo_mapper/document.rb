@@ -1,21 +1,19 @@
 module MongoMapper
   module Document
     extend DescendantAppends
-    
+
     def self.included(model)
       model.class_eval do
         include EmbeddedDocument
         include InstanceMethods
-        
+        extend  ClassMethods
+        extend  Finders
+
         extend Plugins
         plugin Plugins::Callbacks
         plugin Plugins::Dirty
-        
+
         extend Plugins::Validations::DocumentMacros
-        
-        include RailsCompatibility::Document
-        extend ClassMethods
-        extend Finders
 
         def self.per_page
           25

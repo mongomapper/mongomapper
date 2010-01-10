@@ -4,16 +4,15 @@ module MongoMapper
     
     def self.included(model)
       model.class_eval do
-        extend ClassMethods
         include InstanceMethods
+        extend  ClassMethods
         
         extend Plugins
-        plugin Plugins::Logger
-        plugin Plugins::Validations
-        plugin Plugins::Serialization
         plugin Plugins::Associations
-
-        include RailsCompatibility::EmbeddedDocument
+        plugin Plugins::Logger
+        plugin Plugins::Rails
+        plugin Plugins::Serialization
+        plugin Plugins::Validations
 
         key :_id, ObjectId
         attr_accessor :_root_document
