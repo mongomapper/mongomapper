@@ -12,12 +12,9 @@ module MongoMapper
         extend Plugins
         plugin Plugins::Callbacks
         plugin Plugins::Dirty
+        plugin Plugins::Pagination
 
         extend Plugins::Validations::DocumentMacros
-
-        def self.per_page
-          25
-        end unless respond_to?(:per_page)
       end
 
       add_descendant(model)
@@ -63,17 +60,6 @@ module MongoMapper
         find!(*args)
       rescue DocumentNotFound
         nil
-      end
-
-      def paginate(options)
-        per_page      = options.delete(:per_page) || self.per_page
-        page          = options.delete(:page)
-        total_entries = count(options)
-        pagination    = Pagination::PaginationProxy.new(total_entries, page, per_page)
-
-        options.merge!(:limit => pagination.limit, :skip => pagination.skip)
-        pagination.subject = find_every(options)
-        pagination
       end
 
       def first(options={})

@@ -19,7 +19,7 @@ class StringIdCompatibilityTest < Test::Unit::TestCase
     
     @task_class.belongs_to :project, :class => @project_class
     @project_class.many :notes, :class => @note_class
-    @project_class.many :tasks, :class => @task_class, :foreign_key => 'project_id'
+    @project_class.many :tasks, :class => @task_class, :foreign_key => 'project_id', :order => :position.asc
   end
   
   should "assign correct _id for documents" do
@@ -55,13 +55,13 @@ class StringIdCompatibilityTest < Test::Unit::TestCase
   end
   
   should "be able to associate records" do
-    t1 = @task_class.new(:body => 'First task')
-    t2 = @task_class.new(:body => 'Second task')
-    t3 = @task_class.new(:body => 'Third task')
+    t1 = @task_class.new(:body => 'First task', :position => 1)
+    t2 = @task_class.new(:body => 'Second task', :position => 1)
+    t3 = @task_class.new(:body => 'Third task', :position => 1)
     project = @project_class.create(:name => 'MM', :tasks => [t1, t2, t3])
     
     project = project.reload
     project.tasks.count.should == 3
-    project.tasks.map(&:body).should == [t1, t2, t3].map(&:body)
+    project.tasks.should == [t1, t2, t3]
   end
 end
