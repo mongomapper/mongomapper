@@ -200,8 +200,6 @@ module MongoMapper
 
           self[:_id] = value
         end
-        
-        alias :_id :id
 
         def [](name)
           read_key(name)
