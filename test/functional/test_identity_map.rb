@@ -13,16 +13,24 @@ class IdentityMapTest < Test::Unit::TestCase
   
   context "Document" do
     setup do
-      @person_class = Doc('Person') { key :name, String }
-      @post_class   = Doc('Post')   { key :title, String }
+      @person_class = Doc('Person') do
+        key :name, String
+        plugin MongoMapper::Plugins::IdentityMap
+      end
+      
+      @post_class = Doc('Post') do
+        key :title, String
+        plugin MongoMapper::Plugins::IdentityMap
+      end
       
       @person_class.identity_map = {}
       @post_class.identity_map   = {}
     end
 
     should "default identity map to hash" do
-      map = Doc().identity_map
-      map.should == {}
+      Doc() do
+        plugin MongoMapper::Plugins::IdentityMap
+      end.identity_map.should == {}
     end
 
     should "share identity map with other classes" do
