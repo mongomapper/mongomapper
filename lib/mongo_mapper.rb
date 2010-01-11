@@ -8,13 +8,11 @@ if self.class.const_defined?(:Gem)
   gem 'activesupport', '>= 2.3'
   gem 'mongo', '0.18.2'
   gem 'jnunemaker-validatable', '1.8.1'
-  gem 'moneta', '0.6.0'
 end
 
 require 'active_support'
 require 'mongo'
 require 'validatable'
-require 'moneta'
 
 module MongoMapper
   # generic MM error
