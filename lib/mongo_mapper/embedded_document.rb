@@ -19,7 +19,7 @@ module MongoMapper
         plugin Plugins::Serialization
         plugin Plugins::Validations
 
-        attr_accessor :_root_document
+        attr_accessor :_root_document, :_owner
       end
       
       super

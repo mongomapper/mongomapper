@@ -133,6 +133,17 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       doc.people.first._root_document.should == doc
       doc.people.first.pets.first._root_document.should == doc
     end
+    should "create a reference to the owning document for all embedded documents before save" do
+      doc = @klass.new
+      meg = @person_class.new(:name => 'Meg')
+      pet = @pet_class.new(:name => 'Sparky', :species => 'Dog')
+      
+      doc.people << meg
+      meg.pets << pet
+
+      doc.people.first._owner.should == doc
+      doc.people.first.pets.first._owner.should == doc.people.first
+    end
 
     should "create a reference to the root document for all embedded documents" do
       sparky = @pet_class.new(:name => 'Sparky', :species => 'Dog')
@@ -144,6 +155,19 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       doc.reload
       doc.people.first._root_document.should == doc
       doc.people.first.pets.first._root_document.should == doc
+    end
+    should "create a reference to the owning document for all embedded documents" do
+      doc = @klass.new
+      meg = @person_class.new(:name => 'Meg')
+      pet = @pet_class.new(:name => 'Sparky', :species => 'Dog')
+      
+      doc.people << meg
+      meg.pets << pet
+      doc.save
+
+      doc.reload
+      doc.people.first._owner.should == doc
+      doc.people.first.pets.first._owner.should == doc.people.first
     end
   end
   
