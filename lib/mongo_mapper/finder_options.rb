@@ -64,8 +64,8 @@ module MongoMapper
             value = Mongo::ObjectID.from_string(value)
           end
           
-          if field.is_a?(FinderOperator)
-            criteria.update(field.to_criteria(value))
+          if field.is_a?(SymbolOperator)
+            criteria.update(field.to_mm_criteria(value))
             next
           end
           
@@ -108,10 +108,10 @@ module MongoMapper
       def convert_order_to_sort(sort)
         return if sort.blank?
         
-        if sort.respond_to?(:all?) && sort.all? { |s| s.respond_to?(:to_order) }
-          sort.map { |s| s.to_order }
-        elsif sort.respond_to?(:to_order)
-          [sort.to_order]
+        if sort.respond_to?(:all?) && sort.all? { |s| s.respond_to?(:to_mm_order) }
+          sort.map { |s| s.to_mm_order }
+        elsif sort.respond_to?(:to_mm_order)
+          [sort.to_mm_order]
         else
           pieces = sort.split(',')
           pieces.map { |s| to_mongo_sort_piece(s) }
@@ -123,25 +123,5 @@ module MongoMapper
         direction = FinderOptions.normalized_order_direction(direction)
         [field, direction]
       end
-  end
-  
-  class FinderOperator
-    def initialize(field, operator)
-      @field, @operator = field, operator
-    end
-    
-    def to_criteria(value)
-      {FinderOptions.normalized_field(@field) => {@operator => value}}
-    end
-  end
-  
-  class OrderOperator
-    def initialize(field, direction)
-      @field, @direction = field, direction
-    end
-    
-    def to_order
-      [@field.to_s, FinderOptions.normalized_order_direction(@direction)]
-    end
   end
 end

@@ -163,15 +163,26 @@ class String
   end
 end
 
-class Symbol
-  %w{gt lt gte lte ne in nin mod size where exists}.each do |operator|
-    define_method operator do
-      MongoMapper::FinderOperator.new(self, "$#{operator}")
-    end
+class SymbolOperator
+  def initialize(field, operator, options={})
+    @field, @operator = field, operator
+  end unless method_defined?(:initialize)
+  
+  def to_mm_criteria(value)
+    {MongoMapper::FinderOptions.normalized_field(@field) => {"$#{@operator}" => value}}
   end
   
-  def asc;  MongoMapper::OrderOperator.new(self, 'asc') end
-  def desc; MongoMapper::OrderOperator.new(self, 'desc') end
+  def to_mm_order
+    [@field.to_s, MongoMapper::FinderOptions.normalized_order_direction(@operator)]
+  end
+end
+
+class Symbol
+  %w(gt lt gte lte ne in nin mod size where exists asc desc).each do |operator|
+    define_method(operator) do
+      SymbolOperator.new(self, operator)
+    end unless method_defined?(operator)
+  end
 end
 
 class Time
