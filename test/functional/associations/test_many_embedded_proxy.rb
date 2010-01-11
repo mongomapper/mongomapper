@@ -15,6 +15,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     @pet_class = EDoc do
       key :name, String
     end
+    @pet_class.embedded_in :person
     @person_class = EDoc do
       key :name, String
     end
@@ -168,6 +169,19 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       doc.reload
       doc.people.first._owner.should == doc
       doc.people.first.pets.first._owner.should == doc.people.first
+    end
+
+    should "create embedded_in relationship for embedded docs" do
+      doc = @klass.new
+      meg = @person_class.new(:name => 'Meg')
+      pet = @pet_class.new(:name => 'Sparky', :species => 'Dog')
+      
+      doc.people << meg
+      meg.pets << pet
+      doc.save
+
+      doc.reload
+      doc.people.first.pets.first.person.should == doc.people.first
     end
   end
   
