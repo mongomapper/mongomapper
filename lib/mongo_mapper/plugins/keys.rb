@@ -17,7 +17,7 @@ module MongoMapper
 
           create_accessors_for(key)
           create_key_in_descendants(*args)
-          create_indexes_for(key) unless key.embeddable?
+          create_indexes_for(key)
           create_validations_for(key)
 
           key
@@ -98,7 +98,7 @@ module MongoMapper
           end
 
           def create_indexes_for(key)
-            ensure_index key.name if key.options[:index]
+            ensure_index key.name if key.options[:index] && !key.embeddable?
           end
 
           def create_validations_for(key)
