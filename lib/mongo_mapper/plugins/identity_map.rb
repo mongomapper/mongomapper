@@ -23,6 +23,8 @@ module MongoMapper
           else
             document = super
           end
+          
+          document
         end
 
         def load(attrs)
