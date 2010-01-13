@@ -49,7 +49,9 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     post.reload
     post.comments.size.should == 2
     post.comments[0].should == frank
+    post.comments[0].new?.should == false
     post.comments[1].should == bill
+    post.comments[1].new?.should == false
   end
   
   should "allow embedding arbitrarily deep" do

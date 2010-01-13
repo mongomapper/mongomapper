@@ -12,7 +12,7 @@ module MongoMapper
         private
           def find_target
             (@_values || []).map do |v|
-              child = klass.new(v)
+              child = klass.load(v)
               assign_root_document(child)
               child
             end
