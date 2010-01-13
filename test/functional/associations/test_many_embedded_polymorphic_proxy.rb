@@ -27,6 +27,7 @@ class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
     catalog = catalog.reload
     catalog.medias.size.should == 1
     catalog.medias[0].file.should == 'video.mpg'
+    catalog.medias[0].new?.should == false
   end
   
   context "count" do

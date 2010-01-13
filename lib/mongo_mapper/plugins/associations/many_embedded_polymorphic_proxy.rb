@@ -12,7 +12,7 @@ module MongoMapper
         protected
           def find_target
             (@_values || []).map do |hash|
-              child = polymorphic_class(hash).new(hash)
+              child = polymorphic_class(hash).load(hash)
               assign_root_document(child)
               child
             end
