@@ -31,9 +31,8 @@ class Test::Unit::TestCase
         class_eval "def self.name; '#{name}' end"
         class_eval "def self.to_s; '#{name}' end"
       end
-      
-      class_eval(&block) if block_given?
     end
+    klass.class_eval(&block) if block_given?
     klass.collection.remove
     klass
   end

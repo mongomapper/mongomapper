@@ -18,6 +18,7 @@ module MongoMapper
         plugin Plugins::Dirty # for now dirty needs to be after keys
         plugin Plugins::Logger
         plugin Plugins::Pagination
+        plugin Plugins::Protected
         plugin Plugins::Rails
         plugin Plugins::Serialization
         plugin Plugins::Validations
