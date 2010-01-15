@@ -19,7 +19,7 @@ module MongoMapper
         plugin Plugins::Serialization
         plugin Plugins::Validations
 
-        attr_accessor :_root_document, :_owner
+        attr_accessor :_root_document, :_parent_document
       end
 
       super
@@ -32,7 +32,7 @@ module MongoMapper
 
       def embedded_in(owner_name)
         define_method(owner_name) do
-          self._owner
+          self._parent_document
         end
       end
     end

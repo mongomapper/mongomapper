@@ -142,8 +142,8 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       doc.people << meg
       meg.pets << pet
 
-      doc.people.first._owner.should == doc
-      doc.people.first.pets.first._owner.should == doc.people.first
+      doc.people.first._parent_document.should == doc
+      doc.people.first.pets.first._parent_document.should == doc.people.first
     end
 
     should "create a reference to the root document for all embedded documents" do
@@ -167,8 +167,8 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       doc.save
 
       doc.reload
-      doc.people.first._owner.should == doc
-      doc.people.first.pets.first._owner.should == doc.people.first
+      doc.people.first._parent_document.should == doc
+      doc.people.first.pets.first._parent_document.should == doc.people.first
     end
 
     should "create embedded_in relationship for embedded docs" do
