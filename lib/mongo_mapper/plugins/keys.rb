@@ -122,6 +122,10 @@ module MongoMapper
               validates_format_of(attribute, :with => key.options[:format])
             end
 
+            if key.options[:within]
+              validates_inclusion_of(attribute, :within => key.options[:within])
+            end
+
             if key.options[:length]
               length_options = case key.options[:length]
               when Integer

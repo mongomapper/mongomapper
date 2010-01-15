@@ -214,6 +214,19 @@ class ValidationsTest < Test::Unit::TestCase
           doc.action = 'kick'
           doc.should_not have_error_on(:action)
         end
+
+        should "work with :within shortcut on key definition" do
+          @document.key :action, String, :within => %w(kick run)
+        
+          doc = @document.new
+          doc.should have_error_on(:action, 'is not in the list')
+        
+          doc.action = 'fart'
+          doc.should have_error_on(:action, 'is not in the list')
+        
+          doc.action = 'kick'
+          doc.should_not have_error_on(:action)
+        end
       
         should "not have error if allow nil is true and value is nil" do
           @document.key :action, String
