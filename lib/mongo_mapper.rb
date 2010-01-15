@@ -100,12 +100,10 @@ module MongoMapper
   end
 end
 
-require 'mongo_mapper/finder_options'
 require 'mongo_mapper/support'
-require 'mongo_mapper/descendant_appends'
-
+require 'mongo_mapper/finder_options'
 require 'mongo_mapper/dynamic_finder'
-require 'mongo_mapper/key'
+require 'mongo_mapper/descendant_appends'
 
 require 'mongo_mapper/plugins'
 require 'mongo_mapper/plugins/associations'
@@ -123,5 +121,5 @@ require 'mongo_mapper/plugins/rails'
 require 'mongo_mapper/plugins/serialization'
 require 'mongo_mapper/plugins/validations'
 
-require 'mongo_mapper/embedded_document'
 require 'mongo_mapper/document'
+require 'mongo_mapper/embedded_document'
