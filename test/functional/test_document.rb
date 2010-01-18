@@ -393,7 +393,7 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     should "return nil if document not found" do
-      @document.find_by_id(1234).should be(nil)
+      @document.find_by_id(1234).should be_nil
     end
   end
 
