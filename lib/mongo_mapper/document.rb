@@ -365,10 +365,13 @@ module MongoMapper
       end
 
       def reload
-        doc = self.class.find(_id)
-        self.class.associations.each { |name, assoc| send(name).reset if respond_to?(name) }
-        self.attributes = doc.attributes
-        self
+        if attrs = collection.find_one({:_id => _id})
+          self.class.associations.each { |name, assoc| send(name).reset if respond_to?(name) }
+          self.attributes = attrs
+          self
+        else
+          raise DocumentNotFound, "Document match #{_id.inspect} does not exist in #{collection.name} collection"
+        end
       end
 
     private

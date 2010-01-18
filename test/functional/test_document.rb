@@ -1104,6 +1104,11 @@ class DocumentTest < Test::Unit::TestCase
     should "return self" do
       @instance.reload.object_id.should == @instance.object_id
     end
+    
+    should "raise DocumentNotFound if not found" do
+      @instance.destroy
+      assert_raises(MongoMapper::DocumentNotFound) { @instance.reload }
+    end
   end
 
   context "Loading a document from the database with keys that are not defined" do

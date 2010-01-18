@@ -64,6 +64,25 @@ class IdentityMapTest < Test::Unit::TestCase
       assert_not_in_map(person)
     end
     
+    context "reload" do
+      setup do
+        @person = @person_class.create(:name => 'Fred')
+      end
+
+      should "remove object from identity and re-query" do
+        assert_in_map(@person)
+        Mongo::Collection.any_instance.expects(:find_one).once.returns({})
+        @person.reload
+      end
+      
+      should "add object back into map" do
+        assert_in_map(@person)
+        object_id = @person.object_id
+        @person.reload.object_id.should == object_id
+        assert_in_map(@person)
+      end
+    end
+
     context "#load" do
       setup do
         @id = Mongo::ObjectID.new
