@@ -38,9 +38,9 @@ module MongoMapper
           changed.inject({}) { |h, key| h[key] = key_change(key); h }
         end
 
-        def initialize(attrs={})
+        def initialize(*args)
           super
-          changed_keys.clear if attrs.blank?
+          changed_keys.clear if args.first.blank? || !new?
         end
 
         def save(*args)

@@ -1,23 +1,17 @@
 require 'test_helper'
-require 'models'
 
 class DirtyTest < Test::Unit::TestCase
   def setup
-    @document = Doc do
-      key :phrase, String
-    end
-    
-    Status.collection.remove
-    Project.collection.remove
+    @document = Doc { key :phrase, String }
   end
-  
+
   context "marking changes" do
     should "not happen if there are none" do
       doc = @document.new
       doc.phrase_changed?.should be_false
       doc.phrase_change.should be_nil
     end
-    
+
     should "happen when change happens" do
       doc = @document.new
       doc.phrase = 'Golly Gee Willikers Batman'
@@ -25,12 +19,12 @@ class DirtyTest < Test::Unit::TestCase
       doc.phrase_was.should be_nil
       doc.phrase_change.should == [nil, 'Golly Gee Willikers Batman']
     end
-    
+
     should "happen when initializing" do
       doc = @document.new(:phrase => 'Foo')
       doc.changed?.should be_true
     end
-    
+
     should "clear changes on save" do
       doc = @document.new
       doc.phrase = 'Golly Gee Willikers Batman'
@@ -39,7 +33,7 @@ class DirtyTest < Test::Unit::TestCase
       doc.phrase_changed?.should_not be_true
       doc.phrase_change.should be_nil
     end
-    
+
     should "clear changes on save!" do
       doc = @document.new
       doc.phrase = 'Golly Gee Willikers Batman'
@@ -48,15 +42,18 @@ class DirtyTest < Test::Unit::TestCase
       doc.phrase_changed?.should_not be_true
       doc.phrase_change.should be_nil
     end
-    
+
     should "not happen when loading from database" do
       doc = @document.create(:phrase => 'Foo')
+      doc = @document.find(doc.id)
+      
+      doc.changed?.should be_false
       doc.phrase = 'Fart'
       doc.changed?.should be_true
       doc.reload
       doc.changed?.should be_false
     end
-    
+
     should "happen if changed after loading from database" do
       doc = @document.create(:phrase => 'Foo')
       doc.reload
@@ -65,7 +62,7 @@ class DirtyTest < Test::Unit::TestCase
       doc.changed?.should be_true
     end
   end
-  
+
   context "blank new value and type integer" do
     should "not mark changes" do
       @document.key :age, Integer
@@ -147,10 +144,20 @@ class DirtyTest < Test::Unit::TestCase
   
   context "changing a foreign key through association" do
     should "mark changes" do
-      status = Status.create(:name => 'Foo')
-      status.project = Project.create(:name => 'Bar')
-      status.changed?.should be_true
-      status.changed.should == %w(project_id)
+      project_class = Doc do
+        key :name, String
+      end
+      
+      milestone_class = Doc do
+        key :project_id, ObjectId
+        key :name, String
+      end
+      milestone_class.belongs_to :project, :class => project_class
+      
+      milestone = milestone_class.create(:name => 'Launch')
+      milestone.project = project_class.create(:name => 'Harmony')
+      milestone.changed?.should be_true
+      milestone.changed.should == %w(project_id)
     end
   end
 end
