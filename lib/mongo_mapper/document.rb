@@ -22,6 +22,7 @@ module MongoMapper
         plugin Plugins::Serialization
         plugin Plugins::Validations
         plugin Plugins::Callbacks # for now callbacks needs to be after validations
+        plugin Plugins::IdentityMap
         
         extend Plugins::Validations::DocumentMacros
       end

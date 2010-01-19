@@ -15,13 +15,11 @@ class IdentityMapTest < Test::Unit::TestCase
     setup do
       @person_class = Doc('Person') do
         key :name, String
-        plugin MongoMapper::Plugins::IdentityMap
       end
       
       @post_class = Doc('Post') do
         key :title, String
         key :person_id, ObjectId
-        plugin MongoMapper::Plugins::IdentityMap
       end
       
       @post_class.belongs_to :person, :class => @person_class
@@ -260,6 +258,17 @@ class IdentityMapTest < Test::Unit::TestCase
         assert_in_map(people.first) # making sure one that wasn't mapped now is
         assert_in_map(person2)
         assert_in_map(person3)
+      end
+    end
+    
+    context "#find_by_id" do
+      setup do
+        @person = @person_class.create(:name => 'Bill')
+      end
+      
+      should "return nil for document id not found in collection" do
+        assert_in_map(@person)
+        @person_class.find_by_id(1234).should be_nil
       end
     end
     
