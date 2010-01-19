@@ -45,29 +45,29 @@ module MongoMapper
         MongoMapper.ensure_index(self, keys_to_index, options)
       end
 
-      def find!(*args)
+      def find(*args)
+        find_all_first_last_error(args)
         options = args.extract_options!
-        case args.first
-          when :first then first(options)
-          when :last  then last(options)
-          when :all   then find_every(options)
-          when Array  then find_some(args, options)
-          else
-            case args.size
-              when 0
-                raise DocumentNotFound, "Couldn't find without an ID"
-              when 1
-                find_one!(options.merge({:_id => args[0]}))
-              else
-                find_some(args, options)
-            end
+        return nil if args.size == 0
+
+        if args.first.is_a?(Array) || args.size > 1
+          find_some(args, options)
+        else
+          find_one(options.merge({:_id => args[0]}))
         end
       end
-      
-      def find(*args)
-        find!(*args)
-      rescue DocumentNotFound
-        nil
+
+      def find!(*args)
+        find_all_first_last_error(args)
+        options = args.extract_options!
+        raise DocumentNotFound, "Couldn't find without an ID" if args.size == 0
+
+        if args.first.is_a?(Array) || args.size > 1
+          find_some!(args, options)
+        else
+          find_one(options.merge({:_id => args[0]})) || 
+            raise(DocumentNotFound, "Document match #{options.inspect} does not exist in #{collection.name} collection")
+        end
       end
 
       def first(options={})
@@ -80,7 +80,7 @@ module MongoMapper
       end
 
       def all(options={})
-        find_every(options)
+        find_many(options)
       end
 
       def find_by_id(id)
@@ -121,7 +121,7 @@ module MongoMapper
       end
 
       def destroy(*ids)
-        find_some(ids.flatten).each(&:destroy)
+        find_some!(ids.flatten).each(&:destroy)
       end
 
       def destroy_all(options={})
@@ -168,20 +168,6 @@ module MongoMapper
       def pop(*args)
         modifier_update('$pop', args)
       end
-      
-      def modifier_update(modifier, args)
-        criteria, keys = criteria_and_keys_from_args(args)
-        modifiers = {modifier => keys}
-        collection.update(criteria, modifiers, :multi => true)
-      end
-      private :modifier_update
-      
-      def criteria_and_keys_from_args(args)
-        keys     = args.pop
-        criteria = args[0].is_a?(Hash) ? args[0] : {:id => args}
-        [to_criteria(criteria), keys]
-      end
-      private :criteria_and_keys_from_args
 
       def embeddable?
         false
@@ -257,17 +243,33 @@ module MongoMapper
           instances.size == 1 ? instances[0] : instances
         end
 
-        def find_every(options)
-          criteria, options = to_finder_options(options)
-          collection.find(criteria, options).to_a.map do |doc|
-            load(doc)
+        def modifier_update(modifier, args)
+          criteria, keys = criteria_and_keys_from_args(args)
+          modifiers = {modifier => keys}
+          collection.update(criteria, modifiers, :multi => true)
+        end
+
+        def criteria_and_keys_from_args(args)
+          keys     = args.pop
+          criteria = args[0].is_a?(Hash) ? args[0] : {:id => args}
+          [to_criteria(criteria), keys]
+        end
+
+        def find_all_first_last_error(args)
+          if args[0] == :first || args[0] == :last || args[0] == :all
+            raise ArgumentError, "#{self}.find(:#{args}) is no longer supported, use #{self}.#{args} instead."
           end
         end
 
         def find_some(ids, options={})
-          ids       = ids.flatten.compact.uniq
-          documents = find_every(options.merge(:_id => ids))
-
+          ids = ids.flatten.compact.uniq
+          find_many(options.merge(:_id => ids)).compact
+        end
+        
+        def find_some!(ids, options={})
+          ids = ids.flatten.compact.uniq
+          documents = find_some(ids, options)
+          
           if ids.size == documents.size
             documents
           else
@@ -282,8 +284,11 @@ module MongoMapper
           end
         end
 
-        def find_one!(options={})
-          find_one(options) || raise(DocumentNotFound, "Document match #{options.inspect} does not exist in #{collection.name} collection")
+        def find_many(options)
+          criteria, options = to_finder_options(options)
+          collection.find(criteria, options).to_a.map do |doc|
+            load(doc)
+          end
         end
 
         def invert_order_clause(order)

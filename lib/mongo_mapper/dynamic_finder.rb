@@ -9,7 +9,7 @@ module MongoMapper
       
       options = args.extract_options!.merge(attributes)
       
-      if result = find(finder.finder, options)
+      if result = send(finder.finder, options)
         result
       else
         if finder.raise?

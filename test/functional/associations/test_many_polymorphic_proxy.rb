@@ -176,22 +176,6 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       end
     end
     
-    context "with :all" do
-      should "work" do
-        @lounge.messages.find(:all, :order => "position").should == [@lm1, @lm2]
-      end
-      
-      should "work with conditions" do
-        messages = @lounge.messages.find(:all, :body => 'Loungin!', :order => "position")
-        messages.should == [@lm1]
-      end
-      
-      should "work with order" do
-        messages = @lounge.messages.find(:all, :order => 'position desc')
-        messages.should == [@lm2, @lm1]
-      end
-    end
-    
     context "with #all" do
       should "work" do
         @lounge.messages.all(:order => "position").should == [@lm1, @lm2]
@@ -208,17 +192,6 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       end
     end
     
-    context "with :first" do
-      should "work" do
-        @lounge.messages.find(:first, :order => "position asc").should == @lm1
-      end
-      
-      should "work with conditions" do
-        message = @lounge.messages.find(:first, :body => 'I love loungin!', :order => "position asc")
-        message.should == @lm2
-      end
-    end
-    
     context "with #first" do
       should "work" do
         @lounge.messages.first(:order => "position asc").should == @lm1
@@ -227,17 +200,6 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       should "work with conditions" do
         message = @lounge.messages.first(:body => 'I love loungin!', :order => "position asc")
         message.should == @lm2
-      end
-    end
-    
-    context "with :last" do
-      should "work" do
-        @lounge.messages.find(:last, :order => "position asc").should == @lm2
-      end
-      
-      should "work with conditions" do
-        message = @lounge.messages.find(:last, :body => 'Loungin!', :order => "position asc")
-        message.should == @lm1
       end
     end
     
@@ -285,9 +247,9 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       end
       
       should "not work for ids not in association" do
-        lambda {
+        assert_raises(MongoMapper::DocumentNotFound) do
           @lounge.messages.find!(@lm1._id, @lm2._id, @hm2._id)
-        }.should raise_error(MongoMapper::DocumentNotFound)
+        end
       end
     end
     

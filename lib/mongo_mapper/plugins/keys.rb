@@ -42,6 +42,7 @@ module MongoMapper
           value.is_a?(self) ? value : load(value)
         end
 
+        # load is overridden in identity map to ensure same objects are loaded
         def load(attrs)
           begin
             klass = attrs['_type'].present? ? attrs['_type'].constantize : self

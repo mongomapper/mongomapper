@@ -13,7 +13,7 @@ module MongoMapper
           pagination    = Pagination::PaginationProxy.new(total_entries, page, per_page)
 
           options.merge!(:limit => pagination.limit, :skip => pagination.skip)
-          pagination.subject = find_every(options)
+          pagination.subject = find_many(options)
           pagination
         end
       end

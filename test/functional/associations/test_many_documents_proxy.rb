@@ -242,36 +242,30 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
     
     context "all" do
       should "work" do
-        @project1.statuses.find(:all, :order => "position asc").should == [@brand_new, @complete]
         @project1.statuses.all(:order => "position asc").should == [@brand_new, @complete]
       end
       
       should "work with conditions" do
-        @project1.statuses.find(:all, :name => 'Complete').should == [@complete]
         @project1.statuses.all(:name => 'Complete').should == [@complete]
       end
     end
     
     context "first" do
       should "work" do
-        @project1.statuses.find(:first, :order => 'name').should == @complete
         @project1.statuses.first(:order => 'name').should == @complete
       end
       
       should "work with conditions" do
-        @project1.statuses.find(:first, :name => 'Complete').should == @complete
         @project1.statuses.first(:name => 'Complete').should == @complete
       end
     end
     
     context "last" do
       should "work" do
-        @project1.statuses.find(:last, :order => "position asc").should == @complete
         @project1.statuses.last(:order => "position asc").should == @complete
       end
       
       should "work with conditions" do
-        @project1.statuses.find(:last, :order => 'position', :name => 'New').should == @brand_new
         @project1.statuses.last(:order => 'position', :name => 'New').should == @brand_new
       end
     end
@@ -295,9 +289,9 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       end
       
       should "not work for ids not in association" do
-        lambda {
+        assert_raises(MongoMapper::DocumentNotFound) do
           @project1.statuses.find!(@brand_new.id, @complete.id, @archived.id)
-        }.should raise_error(MongoMapper::DocumentNotFound)
+        end
       end
     end
     

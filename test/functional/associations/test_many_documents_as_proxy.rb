@@ -131,23 +131,6 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
       @post2.save
     end
 
-    context "with :all" do
-      should "work" do
-        @post.comments.find(:all).should include(@comment1)
-        @post.comments.find(:all).should include(@comment2)
-      end
-
-      should "work with conditions" do
-        comments = @post.comments.find(:all, :body => 'comment1')
-        comments.should == [@comment1]
-      end
-
-      should "work with order" do
-        comments = @post.comments.find(:all, :order => 'body desc')
-        comments.should == [@comment2, @comment1]
-      end
-    end
-
     context "with #all" do
       should "work" do
         @post.comments.all.should include(@comment1)
@@ -171,9 +154,9 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
       end
 
       should "not work for id not in association" do
-        lambda {
+        assert_raises(MongoMapper::DocumentNotFound) do
           @post.comments.find!(@comment5._id)
-        }.should raise_error(MongoMapper::DocumentNotFound)
+        end
       end
     end
 
@@ -184,9 +167,9 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
       end
 
       should "not work for ids not in association" do
-        lambda {
+        assert_raises(MongoMapper::DocumentNotFound) do
           @post.comments.find!(@comment1._id, @comment2._id, @comment4._id)
-        }.should raise_error(MongoMapper::DocumentNotFound)
+        end
       end
     end
     

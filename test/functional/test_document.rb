@@ -239,7 +239,19 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     should "raise document not found if nothing provided for find!" do
-      lambda { @document.find! }.should raise_error(MongoMapper::DocumentNotFound)
+      assert_raises(MongoMapper::DocumentNotFound) do
+        @document.find!
+      end
+    end
+    
+    should "raise error if trying to find with :all, :first, or :last" do
+      [:all, :first, :last].each do |m|
+        assert_raises(ArgumentError) { @document.find(m) }
+      end
+
+      [:all, :first, :last].each do |m|
+        assert_raises(ArgumentError) { @document.find!(m) }
+      end
     end
 
     context "(with a single id)" do
@@ -252,9 +264,7 @@ class DocumentTest < Test::Unit::TestCase
       end
 
       should "raise error if document not found with find!" do
-        lambda {
-          @document.find!(123)
-        }.should raise_error(MongoMapper::DocumentNotFound)
+        assert_raises(MongoMapper::DocumentNotFound) { @document.find!(123) }
       end
     end
 
@@ -267,7 +277,17 @@ class DocumentTest < Test::Unit::TestCase
         @document.find([@doc1._id, @doc2._id]).should == [@doc1, @doc2]
       end
 
-      should "return array if array only has one element" do
+      should "compact not found when using find" do
+        @document.find(@doc1._id, 1234).should == [@doc1]
+      end
+
+      should "raise error if not all found when using find!" do
+        assert_raises(MongoMapper::DocumentNotFound) do
+          @document.find!(@doc1._id, 1234)
+        end
+      end
+
+      should "return array if array with one element" do
         @document.find([@doc1._id]).should == [@doc1]
       end
     end
@@ -277,43 +297,21 @@ class DocumentTest < Test::Unit::TestCase
       @document.all(:last_name => 'Nunemaker', :order => 'age desc').should == [@doc1, @doc3]
     end
 
-    context "(with :all)" do
-      should "find all documents" do
-        @document.find(:all, :order => 'first_name').should == [@doc1, @doc3, @doc2]
-      end
-
-      should "be able to add conditions" do
-        @document.find(:all, :first_name => 'John').should == [@doc1]
-      end
-    end
-
-    context "(with #all)" do
+    context "#all" do
       should "find all documents based on criteria" do
         @document.all(:order => 'first_name').should == [@doc1, @doc3, @doc2]
         @document.all(:last_name => 'Nunemaker', :order => 'age desc').should == [@doc1, @doc3]
       end
     end
 
-    context "(with :first)" do
-      should "find first document" do
-        @document.find(:first, :order => 'first_name').should == @doc1
-      end
-    end
-
-    context "(with #first)" do
+    context "#first" do
       should "find first document based on criteria" do
         @document.first(:order => 'first_name').should == @doc1
         @document.first(:age => 28).should == @doc2
       end
     end
 
-    context "(with :last)" do
-      should "find last document" do
-        @document.find(:last, :order => 'age').should == @doc2
-      end
-    end
-
-    context "(with #last)" do
+    context "#last" do
       should "find last document based on criteria" do
         @document.last(:order => 'age').should == @doc2
         @document.last(:order => 'age', :age => 28).should == @doc2
@@ -324,7 +322,7 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
 
-    context "(with :find_by)" do
+    context "#find_by..." do
       should "find document based on argument" do
         @document.find_by_first_name('John').should == @doc1
         @document.find_by_last_name('Nunemaker', :order => 'age desc').should == @doc1
@@ -340,7 +338,7 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
 
-    context "(with dynamic finders)" do
+    context "dynamic finders" do
       should "find document based on all arguments" do
         @document.find_by_first_name_and_last_name_and_age('John', 'Nunemaker', 27).should == @doc1
       end
@@ -835,7 +833,7 @@ class DocumentTest < Test::Unit::TestCase
       @parent.save
       @daughter.save
 
-      collection = DocParent.find(:all)
+      collection = DocParent.all
       collection.size.should == 2
       collection.first.should be_kind_of(DocParent)
       collection.first.name.should == "Daddy Warbucks"
