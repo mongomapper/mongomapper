@@ -1,17 +1,25 @@
 module MongoMapper
   module Plugins
     module IdentityMap
+      def self.identity_map
+        Thread.current[:mongo_mapper_identity_map] ||= {}
+      end
+      
+      def self.identity_map=(v)
+        Thread.current[:mongo_mapper_identity_map] = v
+      end
+      
       module ClassMethods
         def identity_map
-          Thread.current[:mongo_mapper_identity_map] ||= {}
+          IdentityMap.identity_map
         end
 
         def identity_map=(v)
-          Thread.current[:mongo_mapper_identity_map] = v
+          IdentityMap.identity_map = v
         end
 
         def identity_map_key(id)
-          "#{self}:#{id}"
+          "#{collection.name}:#{id}"
         end
 
         def find_one(options={})

@@ -14,10 +14,12 @@ class IdentityMapTest < Test::Unit::TestCase
   context "Document" do
     setup do
       @person_class = Doc('Person') do
+        set_collection_name 'people'
         key :name, String
       end
       
       @post_class = Doc('Post') do
+        set_collection_name 'posts'
         key :title, String
         key :person_id, ObjectId
       end
@@ -42,11 +44,11 @@ class IdentityMapTest < Test::Unit::TestCase
 
     should "have identity map key that is always unique per document and class" do
       person = @person_class.new
-      person.identity_map_key.should == "Person:#{person.id}"
+      person.identity_map_key.should == "people:#{person.id}"
       @person_class.identity_map_key(person.id).should == person.identity_map_key
 
       post = @post_class.new
-      post.identity_map_key.should == "Post:#{post.id}"
+      post.identity_map_key.should == "posts:#{post.id}"
       @post_class.identity_map_key(post.id).should == post.identity_map_key
 
       person.identity_map_key.should_not == post.identity_map_key
@@ -276,6 +278,35 @@ class IdentityMapTest < Test::Unit::TestCase
       should "return nil for document id not found in collection" do
         assert_in_map(@person)
         @person_class.find_by_id(1234).should be_nil
+      end
+    end
+    
+    context "single collection inheritance" do
+      setup do
+        class ::DocParent
+          include MongoMapper::Document
+          key :_type, String
+          key :name, String
+        end
+        DocParent.collection.remove
+
+        class ::DocDaughter < ::DocParent; end
+      end
+
+      teardown do
+        Object.send :remove_const, 'DocParent'   if defined?(::DocParent)
+        Object.send :remove_const, 'DocDaughter' if defined?(::DocDaughter)
+      end
+
+      should "share the same identity map 4eva" do
+        @daughter = DocDaughter.create(:name => 'Jill')
+        assert_in_map(@daughter)
+        DocParent.identity_map_key(@daughter).should == DocDaughter.identity_map_key(@daughter)
+      end
+      
+      should "load from map when using parent collection inherited class" do
+        @daughter = DocDaughter.create(:name => 'Jill')
+        DocParent.find(@daughter.id).object_id.should == @daughter.object_id
       end
     end
     
