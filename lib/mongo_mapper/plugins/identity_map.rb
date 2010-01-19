@@ -48,7 +48,7 @@ module MongoMapper
           self.class.identity_map
         end
 
-        def save
+        def save(*args)
           if result = super
             identity_map[identity_map_key] = self
           end

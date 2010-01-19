@@ -58,6 +58,13 @@ class IdentityMapTest < Test::Unit::TestCase
       person.save.should be_true
       assert_in_map(person)
     end
+    
+    should "allow saving with options" do
+      person = @person_class.new
+      assert_nothing_raised do
+        person.save(:validate => false).should be_true
+      end
+    end
 
     should "remove key from map when deleted" do
       person = @person_class.create(:name => 'Fred')
