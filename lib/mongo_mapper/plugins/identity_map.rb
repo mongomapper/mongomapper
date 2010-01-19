@@ -28,8 +28,7 @@ module MongoMapper
         end
 
         def load(attrs)
-          id = attrs[:_id] || attrs[:id] || attrs['_id'] || attrs['id']
-          key = identity_map_key(id)
+          key = identity_map_key(attrs['_id'])
 
           unless document = identity_map[key]
             document = super

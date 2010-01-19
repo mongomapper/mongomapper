@@ -87,31 +87,16 @@ class IdentityMapTest < Test::Unit::TestCase
       setup do
         @id = Mongo::ObjectID.new
       end
-      
-      should "add document to map with _id key as symbol" do
-        loaded = @person_class.load({:_id => @id, :name => 'Frank'})
+
+      should "add document to map" do
+        loaded = @person_class.load({'_id' => @id, 'name' => 'Frank'})
         assert_in_map(loaded)
       end
-      
-      should "add document to map with _id key as string" do
-        loaded = @person_class.load({'_id' => @id, :name => 'Frank'})
-        assert_in_map(loaded)
-      end
-      
-      should "add document to map with id key as symbol" do
-        loaded = @person_class.load({:id => @id, :name => 'Frank'})
-        assert_in_map(loaded)
-      end
-      
-      should "add document to map with id key as string" do
-        loaded = @person_class.load({'id' => @id, :name => 'Frank'})
-        assert_in_map(loaded)
-      end
-      
+
       should "return document if already in map" do
-        first_load = @person_class.load({:_id => @id, :name => 'Frank'})
+        first_load = @person_class.load({'_id' => @id, 'name' => 'Frank'})
         @person_class.identity_map.expects(:[]=).never
-        second_load = @person_class.load({:_id => @id, :name => 'Frank'})
+        second_load = @person_class.load({'_id' => @id, 'name' => 'Frank'})
         first_load.object_id.should == second_load.object_id
       end
     end
