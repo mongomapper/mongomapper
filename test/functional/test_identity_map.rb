@@ -20,8 +20,12 @@ class IdentityMapTest < Test::Unit::TestCase
       
       @post_class = Doc('Post') do
         key :title, String
+        key :person_id, ObjectId
         plugin MongoMapper::Plugins::IdentityMap
       end
+      
+      @post_class.belongs_to :person, :class => @person_class
+      @person_class.many :posts, :class => @post_class
       
       @person_class.identity_map = {}
       @post_class.identity_map   = {}
@@ -136,6 +140,32 @@ class IdentityMapTest < Test::Unit::TestCase
           found_person = @person_class.find(@person.id)
           found_person.object_id.should == @person.object_id
         end
+      end      
+    end
+    
+    context "#find (with one id and options)" do
+      setup do
+        @person = @person_class.create(:name => 'Fred')
+        @post1  = @person.posts.create(:title => 'I Love Mongo')
+        @post2  = @person.posts.create(:title => 'Migrations Suck!')
+      end
+
+      # There are times when even though the id matches, other criteria doesn't
+      # so we need to do the query to ensure that when criteria doesn't match
+      # the document is in fact not found. 
+      #
+      # I'm open to not making this query if someone can figure out reliable
+      # way to check if document matches criteria without querying.
+      should "query the database" do
+        assert_in_map(@post1)
+        Mongo::Collection.any_instance.expects(:find_one)
+        @person.posts.find(@post1.id)
+      end
+      
+      should "return exact object" do
+        assert_in_map(@post1)
+        @person.posts.find(@post1.id)
+        assert_in_map(@post1)
       end
     end
     

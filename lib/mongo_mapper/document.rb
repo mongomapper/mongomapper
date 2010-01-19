@@ -65,8 +65,7 @@ module MongoMapper
         if args.first.is_a?(Array) || args.size > 1
           find_some!(args, options)
         else
-          find_one(options.merge({:_id => args[0]})) || 
-            raise(DocumentNotFound, "Document match #{options.inspect} does not exist in #{collection.name} collection")
+          find_one(options.merge({:_id => args[0]})) || raise(DocumentNotFound, "Document match #{options.inspect} does not exist in #{collection.name} collection")
         end
       end
 

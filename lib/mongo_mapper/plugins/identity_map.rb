@@ -18,12 +18,12 @@ module MongoMapper
           criteria, options = to_finder_options(options)
           key = identity_map_key(criteria[:_id])
 
-          if document = identity_map[key]
+          if criteria.keys == [:_id] && document = identity_map[key]
             document
           else
             document = super
           end
-          
+
           document
         end
 
