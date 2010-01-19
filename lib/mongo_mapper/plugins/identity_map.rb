@@ -25,7 +25,6 @@ module MongoMapper
         def find_one(options={})
           criteria, finder_options = to_finder_options(options)
           key = identity_map_key(criteria[:_id])
-          
           if criteria.keys == [:_id] && document = identity_map[key]
             document
           else
@@ -37,7 +36,6 @@ module MongoMapper
 
         def load(attrs)
           key = identity_map_key(attrs['_id'])
-
           unless document = identity_map[key]
             document = super
             identity_map[document.identity_map_key] = document

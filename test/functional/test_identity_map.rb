@@ -27,8 +27,8 @@ class IdentityMapTest < Test::Unit::TestCase
       @post_class.belongs_to :person, :class => @person_class
       @person_class.many :posts, :class => @post_class
       
-      @person_class.identity_map = {}
-      @post_class.identity_map   = {}
+      @person_class.identity_map.clear
+      @post_class.identity_map.clear
     end
 
     should "default identity map to hash" do
@@ -287,8 +287,13 @@ class IdentityMapTest < Test::Unit::TestCase
           include MongoMapper::Document
           key :_type, String
           key :name, String
+          key :parent_id, ObjectId
+          
+          belongs_to :parent, :class_name => 'DocParent'
+          one :child, :class_name => 'DocDaughter'
         end
         DocParent.collection.remove
+        DocParent.identity_map.clear
 
         class ::DocDaughter < ::DocParent; end
       end
@@ -302,13 +307,32 @@ class IdentityMapTest < Test::Unit::TestCase
         @daughter = DocDaughter.create(:name => 'Jill')
         assert_in_map(@daughter)
         DocParent.identity_map_key(@daughter).should == DocDaughter.identity_map_key(@daughter)
+        DocParent.identity_map.object_id.should == DocDaughter.identity_map.object_id
       end
       
       should "load from map when using parent collection inherited class" do
         @daughter = DocDaughter.create(:name => 'Jill')
         DocParent.find(@daughter.id).object_id.should == @daughter.object_id
       end
+      
+      should "work correctly with belongs to proxy" do
+        @parent = DocParent.create(:name => 'Dad')
+        assert_in_map(@parent)
+        
+        @daughter = DocDaughter.create(:name => 'Jill', :parent => @parent)
+        assert_in_map(@daughter)
+        @parent.object_id.should == @daughter.parent.object_id
+      end
+      
+      should "work correctly with one proxy" do
+        @daughter = DocDaughter.create(:name => 'Jill')
+        assert_in_map(@daughter)
+
+        @parent = DocParent.create(:name => 'Dad', :child => @daughter)
+        assert_in_map(@parent)
+        
+        @parent.child.object_id.should == @daughter.object_id
+      end
     end
-    
   end
 end
