@@ -15,11 +15,15 @@ class IdentityMapTest < Test::Unit::TestCase
     setup do
       @person_class = Doc('Person') do
         set_collection_name 'people'
+        plugin MongoMapper::Plugins::IdentityMap
+        
         key :name, String
       end
       
       @post_class = Doc('Post') do
         set_collection_name 'posts'
+        plugin MongoMapper::Plugins::IdentityMap
+        
         key :title, String
         key :person_id, ObjectId
       end
@@ -285,6 +289,8 @@ class IdentityMapTest < Test::Unit::TestCase
       setup do
         class ::DocParent
           include MongoMapper::Document
+          plugin MongoMapper::Plugins::IdentityMap
+          
           key :_type, String
           key :name, String
           key :parent_id, ObjectId
