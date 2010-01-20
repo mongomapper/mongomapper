@@ -58,7 +58,7 @@ module MongoMapper
         
         private
           def remove_documents_from_map(*documents)
-            documents.flatten.each do |document|
+            documents.flatten.compact.each do |document|
               identity_map.delete(identity_map_key(document._id))
             end
           end

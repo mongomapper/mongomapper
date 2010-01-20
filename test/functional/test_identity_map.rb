@@ -319,6 +319,10 @@ class IdentityMapTest < Test::Unit::TestCase
         @person_class.all(:_id => @person.id, :select => 'name').should == [@person]
         assert_not_in_map(@person)
       end
+      
+      should "return nil if not found" do
+        @person_class.find(1234, :select => 'name').should be_nil
+      end
     end
     
     context "single collection inheritance" do
