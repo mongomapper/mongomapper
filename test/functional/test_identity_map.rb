@@ -285,6 +285,23 @@ class IdentityMapTest < Test::Unit::TestCase
       end
     end
     
+    context "querying and selecting certain fields" do
+      setup do
+        @person = @person_class.create(:name => 'Bill')
+        @person_class.identity_map.clear
+      end
+
+      should "not add to map" do
+        assert_not_in_map(@person)
+        @person_class.first(:_id => @person.id, :select => 'name').should == @person
+        @person_class.first(:_id => @person.id, 'fields' => ['name']).should == @person
+        @person_class.last(:_id => @person.id, :select => 'name', :order => 'name').should == @person
+        @person_class.find(@person.id, :select => 'name').should == @person
+        @person_class.all(:_id => @person.id, :select => 'name').should == [@person]
+        assert_not_in_map(@person)
+      end
+    end
+    
     context "single collection inheritance" do
       setup do
         class ::DocParent

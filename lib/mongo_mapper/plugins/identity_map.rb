@@ -24,14 +24,23 @@ module MongoMapper
 
         def find_one(options={})
           criteria, finder_options = to_finder_options(options)
-          key = identity_map_key(criteria[:_id])
-          if criteria.keys == [:_id] && document = identity_map[key]
+
+          if criteria.keys == [:_id] && document = identity_map[identity_map_key(criteria[:_id])]
             document
           else
-            document = super
+            document = super.tap do |document|
+              remove_documents_from_map(document) unless finder_options[:fields].nil?
+            end
           end
 
           document
+        end
+
+        def find_many(options)
+          criteria, finder_options = to_finder_options(options)
+          super.tap do |documents|
+            remove_documents_from_map(documents) unless finder_options[:fields].nil?
+          end
         end
 
         def load(attrs)
@@ -43,6 +52,13 @@ module MongoMapper
 
           document
         end
+        
+        private
+          def remove_documents_from_map(*documents)
+            documents.flatten.each do |document|
+              identity_map.delete(identity_map_key(document._id))
+            end
+          end
       end
 
       module InstanceMethods
