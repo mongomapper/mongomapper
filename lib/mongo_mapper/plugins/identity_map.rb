@@ -23,17 +23,20 @@ module MongoMapper
         end
 
         def find_one(options={})
-          criteria, finder_options = to_finder_options(options)
-
-          if criteria.keys == [:_id] && document = identity_map[identity_map_key(criteria[:_id])]
-            document
+          criteria, finder_options   = to_finder_options(options)
+          document_in_map            = identity_map[identity_map_key(criteria[:_id])]
+          find_by_single_id          = criteria.keys == [:_id]
+          find_by_single_id_with_sci = criteria.keys.to_set == [:_id, :_type].to_set
+          
+          if find_by_single_id && document_in_map
+            document_in_map
+          elsif find_by_single_id_with_sci && document_in_map
+            document_in_map
           else
-            document = super.tap do |document|
+            super.tap do |document|
               remove_documents_from_map(document) unless finder_options[:fields].nil?
             end
           end
-
-          document
         end
 
         def find_many(options)

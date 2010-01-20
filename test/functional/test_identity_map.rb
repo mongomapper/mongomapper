@@ -11,6 +11,15 @@ class IdentityMapTest < Test::Unit::TestCase
     resource.identity_map.keys.should_not include(resource.identity_map_key)
   end
   
+  def expect_no_queries
+    Mongo::Collection.any_instance.expects(:find_one).never
+    Mongo::Collection.any_instance.expects(:find).never
+  end
+  
+  def expects_one_query
+    Mongo::Collection.any_instance.expects(:find_one).once.returns({})
+  end
+  
   context "Document" do
     setup do
       @person_class = Doc('Person') do
@@ -86,7 +95,7 @@ class IdentityMapTest < Test::Unit::TestCase
 
       should "remove object from identity and re-query" do
         assert_in_map(@person)
-        Mongo::Collection.any_instance.expects(:find_one).once.returns({})
+        expects_one_query
         @person.reload
       end
       
@@ -124,7 +133,7 @@ class IdentityMapTest < Test::Unit::TestCase
         end
 
         should "query the database" do
-          Mongo::Collection.any_instance.expects(:find_one).once
+          expects_one_query
           @person_class.find(@person.id)
         end
 
@@ -132,6 +141,10 @@ class IdentityMapTest < Test::Unit::TestCase
           assert_not_in_map(@person)
           found_person = @person_class.find(@person.id)
           assert_in_map(found_person)
+        end
+        
+        should "return nil if not found " do
+          @person_class.find(1234).should be_nil
         end
       end
 
@@ -141,8 +154,7 @@ class IdentityMapTest < Test::Unit::TestCase
         end
 
         should "not query database" do
-          Mongo::Collection.any_instance.expects(:find).never
-          Mongo::Collection.any_instance.expects(:find_one).never
+          expect_no_queries
           @person_class.find(@person.id)
         end
         
@@ -151,7 +163,7 @@ class IdentityMapTest < Test::Unit::TestCase
           found_person = @person_class.find(@person.id)
           found_person.object_id.should == @person.object_id
         end
-      end      
+      end
     end
     
     context "#find (with one id and options)" do
@@ -169,7 +181,7 @@ class IdentityMapTest < Test::Unit::TestCase
       # way to check if document matches criteria without querying.
       should "query the database" do
         assert_in_map(@post1)
-        Mongo::Collection.any_instance.expects(:find_one)
+        expects_one_query
         @person.posts.find(@post1.id)
       end
       
@@ -177,6 +189,10 @@ class IdentityMapTest < Test::Unit::TestCase
         assert_in_map(@post1)
         @person.posts.find(@post1.id)
         assert_in_map(@post1)
+      end
+      
+      should "return nil if not found " do
+        @person.posts.find(1234).should be_nil
       end
     end
     
@@ -216,7 +232,7 @@ class IdentityMapTest < Test::Unit::TestCase
         end
 
         should "query the database" do
-          Mongo::Collection.any_instance.expects(:find_one).once
+          expects_one_query
           @person_class.first(:_id => @person.id)
         end
 
@@ -224,6 +240,10 @@ class IdentityMapTest < Test::Unit::TestCase
           assert_not_in_map(@person)
           found_person = @person_class.first(:_id => @person.id)
           assert_in_map(found_person)
+        end
+        
+        should "return nil if not found" do
+          @person_class.first(:name => 'Bill').should be_nil
         end
       end
 
@@ -233,8 +253,7 @@ class IdentityMapTest < Test::Unit::TestCase
         end
 
         should "not query database" do
-          Mongo::Collection.any_instance.expects(:find).never
-          Mongo::Collection.any_instance.expects(:find_one).never
+          expect_no_queries
           @person_class.first(:_id => @person.id)
         end
         
@@ -304,57 +323,78 @@ class IdentityMapTest < Test::Unit::TestCase
     
     context "single collection inheritance" do
       setup do
-        class ::DocParent
+        class ::Item
           include MongoMapper::Document
           plugin MongoMapper::Plugins::IdentityMap
           
           key :_type, String
-          key :name, String
+          key :title, String
           key :parent_id, ObjectId
           
-          belongs_to :parent, :class_name => 'DocParent'
-          one :child, :class_name => 'DocDaughter'
+          belongs_to :parent, :class_name => 'Item'
+          one :child, :class_name => 'Blog'
         end
-        DocParent.collection.remove
-        DocParent.identity_map.clear
+        Item.collection.remove
+        Item.identity_map.clear
 
-        class ::DocDaughter < ::DocParent; end
+        class ::Blog < ::Item; end
+        
+        class ::BlogPost < ::Item
+          key :blog_id, ObjectId
+          belongs_to :blog
+        end
       end
 
       teardown do
-        Object.send :remove_const, 'DocParent'   if defined?(::DocParent)
-        Object.send :remove_const, 'DocDaughter' if defined?(::DocDaughter)
+        Object.send :remove_const, 'Item'   if defined?(::Item)
+        Object.send :remove_const, 'Blog' if defined?(::Blog)
+        Object.send :remove_const, 'BlogPost' if defined?(::BlogPost)
       end
 
       should "share the same identity map 4eva" do
-        @daughter = DocDaughter.create(:name => 'Jill')
-        assert_in_map(@daughter)
-        DocParent.identity_map_key(@daughter).should == DocDaughter.identity_map_key(@daughter)
-        DocParent.identity_map.object_id.should == DocDaughter.identity_map.object_id
+        blog = Blog.create(:title => 'Jill')
+        assert_in_map(blog)
+        Item.identity_map_key(blog).should == Blog.identity_map_key(blog)
+        Item.identity_map.object_id.should == Blog.identity_map.object_id
+      end
+      
+      should "not query when finding by _id and _type" do
+        blog = Blog.create(:title => 'Blog')
+        post = BlogPost.create(:title => 'Mongo Rocks', :blog => blog)
+        Item.identity_map.clear
+        
+        blog = Item.find(blog.id)
+        post = Item.find(post.id)
+        assert_in_map(blog)
+        assert_in_map(post)
+        
+        expect_no_queries
+        post.blog
+        Blog.find(blog.id)
       end
       
       should "load from map when using parent collection inherited class" do
-        @daughter = DocDaughter.create(:name => 'Jill')
-        DocParent.find(@daughter.id).object_id.should == @daughter.object_id
+        blog = Blog.create(:title => 'Jill')
+        Item.find(blog.id).object_id.should == blog.object_id
       end
       
       should "work correctly with belongs to proxy" do
-        @parent = DocParent.create(:name => 'Dad')
-        assert_in_map(@parent)
+        root = Item.create(:title => 'Root')
+        assert_in_map(root)
         
-        @daughter = DocDaughter.create(:name => 'Jill', :parent => @parent)
-        assert_in_map(@daughter)
-        @parent.object_id.should == @daughter.parent.object_id
+        blog = Blog.create(:title => 'Jill', :parent => root)
+        assert_in_map(blog)
+        root.object_id.should == blog.parent.object_id
       end
       
       should "work correctly with one proxy" do
-        @daughter = DocDaughter.create(:name => 'Jill')
-        assert_in_map(@daughter)
+        blog = Blog.create(:title => 'Jill')
+        assert_in_map(blog)
 
-        @parent = DocParent.create(:name => 'Dad', :child => @daughter)
-        assert_in_map(@parent)
+        root = Item.create(:title => 'Root', :child => blog)
+        assert_in_map(root)
         
-        @parent.child.object_id.should == @daughter.object_id
+        root.child.object_id.should == blog.object_id
       end
     end
   end
