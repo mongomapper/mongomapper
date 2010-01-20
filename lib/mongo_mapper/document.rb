@@ -276,6 +276,7 @@ module MongoMapper
           end
         end
 
+        # All query methods that load documents pass through find_one or find_many
         def find_one(options={})
           criteria, options = to_finder_options(options)
           if doc = collection.find_one(criteria, options)
@@ -283,6 +284,7 @@ module MongoMapper
           end
         end
 
+        # All query methods that load documents pass through find_one or find_many
         def find_many(options)
           criteria, options = to_finder_options(options)
           collection.find(criteria, options).to_a.map do |doc|
