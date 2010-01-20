@@ -242,6 +242,10 @@ class FinderOptionsTest < Test::Unit::TestCase
     should "also work as select" do
       FinderOptions.new(Room, :select => %w(a b)).options[:fields].should == %w(a b)
     end
+    
+    should "also work with select as array of symbols" do
+      FinderOptions.new(Room, :select => [:a, :b]).options[:fields].should == [:a, :b]
+    end
   end
   
   context "Condition auto-detection" do
