@@ -90,6 +90,13 @@ module MongoMapper
         collection.find(to_criteria(options)).count
       end
 
+      def find_each(options={})
+        criteria, options = to_finder_options(options)
+        collection.find(criteria, options).each do |doc|
+          yield load(doc)
+        end
+      end
+
       def exists?(options={})
         !count(options).zero?
       end

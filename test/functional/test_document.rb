@@ -338,6 +338,18 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
 
+    context "#find_each" do
+      should "yield all documents found, based on criteria" do
+        yield_documents = []
+        @document.find_each(:order => "first_name") {|doc| yield_documents << doc }
+        yield_documents.should == [@doc1, @doc3, @doc2]
+
+        yield_documents = []
+        @document.find_each(:last_name => 'Nunemaker', :order => 'age desc') {|doc| yield_documents << doc }
+        yield_documents.should == [@doc1, @doc3]
+      end
+    end
+
     context "dynamic finders" do
       should "find document based on all arguments" do
         @document.find_by_first_name_and_last_name_and_age('John', 'Nunemaker', 27).should == @doc1
