@@ -8,6 +8,10 @@ module MongoMapper
       def self.clear
         models.each { |m| m.identity_map.clear }
       end
+      
+      def self.configure(model)
+        IdentityMap.models << model
+      end
 
       module ClassMethods
         def inherited(descendant)
@@ -97,10 +101,6 @@ module MongoMapper
       end
 
       module InstanceMethods
-        def self.included(model)
-          IdentityMap.models << model
-        end
-
         def identity_map
           self.class.identity_map
         end

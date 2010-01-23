@@ -1,6 +1,10 @@
 module MongoMapper
   module Plugins
     module Keys
+      def self.configure(model)
+        model.key :_id, ObjectId
+      end
+      
       module ClassMethods
         def inherited(descendant)
           descendant.instance_variable_set(:@keys, keys.dup)
@@ -133,10 +137,6 @@ module MongoMapper
       end
       
       module InstanceMethods
-        def self.included(model)
-          model.key :_id, ObjectId
-        end
-        
         def initialize(attrs={}, from_db=false)
           unless attrs.nil?
             provided_keys = attrs.keys.map { |k| k.to_s }

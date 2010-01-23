@@ -1,23 +1,23 @@
 module MongoMapper
   module Plugins
     module Callbacks
-      module InstanceMethods
-        def self.included(model)
-          model.class_eval do
-            include ActiveSupport::Callbacks
+      def self.configure(model)
+        model.class_eval do
+          include ActiveSupport::Callbacks
 
-            define_callbacks(
-              :before_save, :after_save, 
-              :before_create, :after_create, 
-              :before_update, :after_update, 
-              :before_validation, :after_validation, 
-              :before_validation_on_create, :after_validation_on_create, 
-              :before_validation_on_update, :after_validation_on_update, 
-              :before_destroy, :after_destroy
-            )
-          end
+          define_callbacks(
+            :before_save, :after_save, 
+            :before_create, :after_create, 
+            :before_update, :after_update, 
+            :before_validation, :after_validation, 
+            :before_validation_on_create, :after_validation_on_create, 
+            :before_validation_on_update, :after_validation_on_update, 
+            :before_destroy, :after_destroy
+          )
         end
-        
+      end
+      
+      module InstanceMethods
         def valid?
           action = new? ? 'create' : 'update'
 

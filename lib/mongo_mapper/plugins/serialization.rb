@@ -3,6 +3,10 @@ require 'active_support/json'
 module MongoMapper
   module Plugins
     module Serialization
+      def self.configure(model)
+        model.class_eval { include Json }
+      end
+      
       class Serializer
         attr_reader :options
 
@@ -95,14 +99,6 @@ module MongoMapper
             except << :_id
             options[:except] = except
           end
-      end
-      
-      module InstanceMethods
-        def self.included(model)
-          model.class_eval do
-            include Json
-          end
-        end
       end
     end
   end

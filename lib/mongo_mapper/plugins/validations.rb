@@ -1,10 +1,8 @@
 module MongoMapper
   module Plugins
     module Validations
-      module InstanceMethods
-        def self.included(model)
-          model.class_eval { include Validatable }
-        end
+      def self.configure(model)
+        model.class_eval { include Validatable }
       end
       
       module DocumentMacros
