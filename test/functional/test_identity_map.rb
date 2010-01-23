@@ -4,7 +4,7 @@ class IdentityMapTest < Test::Unit::TestCase
   def assert_in_map(resource)
     resource.identity_map.keys.should include(resource.identity_map_key)
     mapped_resource = resource.identity_map[resource.identity_map_key]
-    resource.object_id.should == mapped_resource.object_id
+    resource.should equal(mapped_resource)
   end
   
   def assert_not_in_map(resource)
@@ -45,23 +45,18 @@ class IdentityMapTest < Test::Unit::TestCase
     end
 
     should "default identity map to hash" do
-      Doc() do
+      Doc do
         plugin MongoMapper::Plugins::IdentityMap
       end.identity_map.should == {}
     end
 
-    should "share identity map with other classes" do
-      map = @post_class.identity_map
-      map.object_id.should == @person_class.identity_map.object_id
-    end
-
     should "have identity map key that is always unique per document and class" do
       person = @person_class.new
-      person.identity_map_key.should == "people:#{person.id}"
+      person.identity_map_key.should == "Person:#{person.id}"
       @person_class.identity_map_key(person.id).should == person.identity_map_key
 
       post = @post_class.new
-      post.identity_map_key.should == "posts:#{post.id}"
+      post.identity_map_key.should == "Post:#{post.id}"
       @post_class.identity_map_key(post.id).should == post.identity_map_key
 
       person.identity_map_key.should_not == post.identity_map_key
@@ -101,8 +96,8 @@ class IdentityMapTest < Test::Unit::TestCase
       
       should "add object back into map" do
         assert_in_map(@person)
-        object_id = @person.object_id
-        @person.reload.object_id.should == object_id
+        before_reload = @person
+        @person.reload.should equal(before_reload)
         assert_in_map(@person)
       end
     end
@@ -121,7 +116,7 @@ class IdentityMapTest < Test::Unit::TestCase
         first_load = @person_class.load({'_id' => @id, 'name' => 'Frank'})
         @person_class.identity_map.expects(:[]=).never
         second_load = @person_class.load({'_id' => @id, 'name' => 'Frank'})
-        first_load.object_id.should == second_load.object_id
+        first_load.should equal(second_load)
       end
     end
     
@@ -161,7 +156,7 @@ class IdentityMapTest < Test::Unit::TestCase
         should "return exact object" do
           assert_in_map(@person)
           found_person = @person_class.find(@person.id)
-          found_person.object_id.should == @person.object_id
+          found_person.should equal(@person)
         end
       end
     end
@@ -260,7 +255,7 @@ class IdentityMapTest < Test::Unit::TestCase
         should "return exact object" do
           assert_in_map(@person)
           found_person = @person_class.first(:_id => @person.id)
-          found_person.object_id.should == @person.object_id
+          found_person.should equal(@person)
         end
       end
     end
@@ -325,7 +320,7 @@ class IdentityMapTest < Test::Unit::TestCase
       end
     end
     
-    context "single collection inheritance" do
+    context "single collection inherited models" do
       setup do
         class ::Item
           include MongoMapper::Document
@@ -355,11 +350,11 @@ class IdentityMapTest < Test::Unit::TestCase
         Object.send :remove_const, 'BlogPost' if defined?(::BlogPost)
       end
 
-      should "share the same identity map 4eva" do
+      should "share the same identity map" do
         blog = Blog.create(:title => 'Jill')
         assert_in_map(blog)
-        Item.identity_map_key(blog).should == Blog.identity_map_key(blog)
-        Item.identity_map.object_id.should == Blog.identity_map.object_id
+        Item.identity_map_key(blog.id).should == Blog.identity_map_key(blog.id)
+        Item.identity_map.should equal(Blog.identity_map)
       end
       
       should "not query when finding by _id and _type" do
@@ -379,7 +374,7 @@ class IdentityMapTest < Test::Unit::TestCase
       
       should "load from map when using parent collection inherited class" do
         blog = Blog.create(:title => 'Jill')
-        Item.find(blog.id).object_id.should == blog.object_id
+        Item.find(blog.id).should equal(blog)
       end
       
       should "work correctly with belongs to proxy" do
@@ -388,6 +383,7 @@ class IdentityMapTest < Test::Unit::TestCase
         
         blog = Blog.create(:title => 'Jill', :parent => root)
         assert_in_map(blog)
+        root.should equal(blog.parent)
         root.object_id.should == blog.parent.object_id
       end
       
@@ -397,8 +393,7 @@ class IdentityMapTest < Test::Unit::TestCase
 
         root = Item.create(:title => 'Root', :child => blog)
         assert_in_map(root)
-        
-        root.child.object_id.should == blog.object_id
+        root.child.should equal(blog)
       end
     end
   end

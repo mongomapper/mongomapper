@@ -15,6 +15,14 @@ class BelongsToProxyTest < Test::Unit::TestCase
     @comment_class.new.post.nil?.should be_true
   end
   
+  should "send object id to target" do
+    post = @post_class.new(:name => 'mongomapper')
+    comment = @comment_class.new(:name => 'Foo!', :post => post)
+    comment.save
+    
+    comment.post.object_id.should == comment.post.target.object_id
+  end
+  
   should "have boolean presence method" do
     comment = @comment_class.new(:name => 'Foo!')
     comment.post?.should be_false

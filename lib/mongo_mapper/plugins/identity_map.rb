@@ -1,25 +1,31 @@
 module MongoMapper
   module Plugins
     module IdentityMap
-      def self.identity_map
-        Thread.current[:mongo_mapper_identity_map] ||= {}
-      end
-      
-      def self.identity_map=(v)
-        Thread.current[:mongo_mapper_identity_map] = v
-      end
-      
       module ClassMethods
+        def inherited(descendant)
+          descendant.identity_map = identity_map
+          descendant.identity_map_key_class = identity_map_key_class
+          super
+        end
+        
         def identity_map
-          IdentityMap.identity_map
+          @identity_map ||= {}
         end
 
         def identity_map=(v)
-          IdentityMap.identity_map = v
+          @identity_map = v
         end
 
         def identity_map_key(id)
-          "#{collection.name}:#{id}"
+          "#{identity_map_key_class}:#{id}"
+        end
+        
+        def identity_map_key_class
+          @identity_map_key_class ||= self
+        end
+        
+        def identity_map_key_class=(klass)
+          @identity_map_key_class = klass
         end
 
         def find_one(options={})
@@ -27,7 +33,7 @@ module MongoMapper
           document_in_map            = identity_map[identity_map_key(criteria[:_id])]
           find_by_single_id          = criteria.keys == [:_id]
           find_by_single_id_with_sci = criteria.keys.to_set == [:_id, :_type].to_set
-          
+
           if find_by_single_id && document_in_map
             document_in_map
           elsif find_by_single_id_with_sci && document_in_map

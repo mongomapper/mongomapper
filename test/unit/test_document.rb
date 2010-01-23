@@ -186,6 +186,34 @@ class DocumentTest < Test::Unit::TestCase
         @oid = Mongo::ObjectID.new
       end
       
+      should "delegate hash to _id" do
+        doc = @document.new
+        doc.hash.should == doc._id.hash
+      end
+      
+      should "delegate eql to ==" do
+        doc = @document.new
+        other = @document.new
+        doc.eql?(other).should == (doc == other)
+        doc.eql?(doc).should == (doc == doc)
+      end
+      
+      should "know if same object as another" do
+        doc = @document.new
+        doc.should equal(doc)
+        doc.should_not equal(@document.new)
+      end
+      
+      should "allow set operations on array of documents" do
+        @document.key :parent_id, ObjectId
+        @document.belongs_to :parent, :class => @document
+        
+        parent = @document.create
+        child = @document.create(:parent => parent)
+        
+        ([child.parent] & [parent]).should == [parent]
+      end
+      
       should "be equal if id and class are the same" do
         (@document.new('_id' => @oid) == @document.new('_id' => @oid)).should be(true)
       end

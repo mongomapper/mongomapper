@@ -8,10 +8,12 @@ class FakeBlankProxy < MongoMapper::Plugins::Associations::Proxy
   def find_target; '' end
 end
 
+class FakeNumberProxy < MongoMapper::Plugins::Associations::Proxy
+  def find_target; 17 end
+end
+
 class FakeProxy < MongoMapper::Plugins::Associations::Proxy
-  def find_target
-    [1, 2]
-  end
+  def find_target; [1, 2] end
 end
 
 class ProxyTest < Test::Unit::TestCase
