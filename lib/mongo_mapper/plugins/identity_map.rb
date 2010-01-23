@@ -30,7 +30,7 @@ module MongoMapper
             identity_map[criteria[:_id]]
           else
             super.tap do |document|
-              remove_documents_from_map(document) unless finder_options[:fields].nil?
+              remove_documents_from_map(document) if selecting_fields?(finder_options)
             end
           end
         end
@@ -38,7 +38,7 @@ module MongoMapper
         def find_many(options)
           criteria, finder_options = to_finder_options(options)
           super.tap do |documents|
-            remove_documents_from_map(documents) unless finder_options[:fields].nil?
+            remove_documents_from_map(documents) if selecting_fields?(finder_options)
           end
         end
 
@@ -89,6 +89,10 @@ module MongoMapper
 
           def simple_find?(criteria)
             criteria.keys == [:_id] || criteria.keys.to_set == [:_id, :_type].to_set
+          end
+          
+          def selecting_fields?(options)
+            !options[:fields].nil?
           end
       end
 
