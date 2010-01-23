@@ -73,6 +73,10 @@ class IdentityMapTest < Test::Unit::TestCase
         @person_class.identity_map_on
       end
 
+      should "default identity map status to on" do
+        Doc { plugin MongoMapper::Plugins::IdentityMap }.identity_map_status.should be_true
+      end
+
       should "be true if on" do
         @post_class.identity_map_on
         @post_class.should be_identity_map_on
@@ -84,7 +88,7 @@ class IdentityMapTest < Test::Unit::TestCase
         @post_class.should be_identity_map_off
         @post_class.should_not be_identity_map_on
       end
-      
+
       should "not share with other classes" do
         @post_class.identity_map_off
         @person_class.identity_map_on
@@ -93,9 +97,7 @@ class IdentityMapTest < Test::Unit::TestCase
     end
 
     should "default identity map to hash" do
-      Doc do
-        plugin MongoMapper::Plugins::IdentityMap
-      end.identity_map.should == {}
+      Doc { plugin MongoMapper::Plugins::IdentityMap }.identity_map.should == {}
     end
 
     should "add key to map when saved" do
