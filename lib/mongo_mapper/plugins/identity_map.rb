@@ -4,7 +4,7 @@ module MongoMapper
       def self.models
         @models ||= Set.new
       end
-      
+
       def self.clear
         models.each { |m| m.identity_map.clear }
       end
@@ -14,7 +14,7 @@ module MongoMapper
           descendant.identity_map = identity_map
           super
         end
-        
+
         def identity_map
           @identity_map ||= {}
         end
@@ -72,14 +72,14 @@ module MongoMapper
         def identity_map_off?
           !identity_map_on?
         end
-        
+
         def without_identity_map(&block)
           identity_map_off
           yield
         ensure
           identity_map_on
         end
-        
+
         private
           def remove_documents_from_map(*documents)
             documents.flatten.compact.each do |document|
@@ -90,7 +90,7 @@ module MongoMapper
           def simple_find?(criteria)
             criteria.keys == [:_id] || criteria.keys.to_set == [:_id, :_type].to_set
           end
-          
+
           def selecting_fields?(options)
             !options[:fields].nil?
           end

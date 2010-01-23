@@ -465,7 +465,35 @@ class IdentityMapTest < Test::Unit::TestCase
       context "all" do
         should "not add to map" do
           @post_class.without_identity_map do
+            post1 = @post_class.create(:title => 'Foo')
+            post2 = @post_class.create(:title => 'Bar')
+            @post_class.identity_map.clear
             
+            assert_not_in_map(@post_class.all)
+          end
+        end
+      end
+      
+      context "first" do
+        should "not add to map" do
+          @post_class.without_identity_map do
+            post1 = @post_class.create(:title => 'Foo')
+            post2 = @post_class.create(:title => 'Bar')
+            @post_class.identity_map.clear
+            
+            assert_not_in_map(@post_class.first)
+          end
+        end
+      end
+      
+      context "last" do
+        should "not add to map" do
+          @post_class.without_identity_map do
+            post1 = @post_class.create(:title => 'Foo')
+            post2 = @post_class.create(:title => 'Bar')
+            @post_class.identity_map.clear
+            
+            assert_not_in_map(@post_class.last(:order => 'title'))
           end
         end
       end
