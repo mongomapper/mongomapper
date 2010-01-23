@@ -70,6 +70,7 @@ class IdentityMapTest < Test::Unit::TestCase
     context "IM on off status" do
       teardown do
         @post_class.identity_map_on
+        @person_class.identity_map_on
       end
 
       should "be true if on" do
@@ -82,6 +83,12 @@ class IdentityMapTest < Test::Unit::TestCase
         @post_class.identity_map_off
         @post_class.should be_identity_map_off
         @post_class.should_not be_identity_map_on
+      end
+      
+      should "not share with other classes" do
+        @post_class.identity_map_off
+        @person_class.identity_map_on
+        @post_class.identity_map_status.should_not == @person_class.identity_map_status
       end
     end
 
