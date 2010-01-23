@@ -44,15 +44,10 @@ module MongoMapper
         end
 
         def find_one(options={})
-          criteria, finder_options   = to_finder_options(options)
-          document_in_map            = identity_map[criteria[:_id]]
-          find_by_single_id          = criteria.keys == [:_id]
-          find_by_single_id_with_sci = criteria.keys.to_set == [:_id, :_type].to_set
+          criteria, finder_options = to_finder_options(options)
 
-          if find_by_single_id && document_in_map
-            document_in_map
-          elsif find_by_single_id_with_sci && document_in_map
-            document_in_map
+          if simple_find?(criteria) && identity_map.key?(criteria[:_id])
+            identity_map[criteria[:_id]]
           else
             super.tap do |document|
               remove_documents_from_map(document) unless finder_options[:fields].nil?
@@ -90,6 +85,10 @@ module MongoMapper
             documents.flatten.compact.each do |document|
               identity_map.delete(document._id)
             end
+          end
+
+          def simple_find?(criteria)
+            criteria.keys == [:_id] || criteria.keys.to_set == [:_id, :_type].to_set
           end
       end
 
