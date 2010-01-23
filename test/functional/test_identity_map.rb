@@ -27,7 +27,6 @@ class IdentityMapTest < Test::Unit::TestCase
   context "Document" do
     setup do
       MongoMapper::Plugins::IdentityMap.models.clear
-      MongoMapper::Plugins::IdentityMap.on
 
       @person_class = Doc('Person') do
         set_collection_name 'people'
@@ -47,6 +46,8 @@ class IdentityMapTest < Test::Unit::TestCase
       @post_class.belongs_to :person, :class => @person_class
       @person_class.many :posts, :class => @post_class
 
+      @post_class.identity_map_on
+      @person_class.identity_map_on
       MongoMapper::Plugins::IdentityMap.clear
     end
 
@@ -68,24 +69,20 @@ class IdentityMapTest < Test::Unit::TestCase
     
     context "IM on off status" do
       teardown do
-        MongoMapper::Plugins::IdentityMap.on
+        @post_class.identity_map_on
       end
 
       should "be true if on" do
-        MongoMapper::Plugins::IdentityMap.on
-        MongoMapper::Plugins::IdentityMap.should be_on
-        MongoMapper::Plugins::IdentityMap.should_not be_off
+        @post_class.identity_map_on
+        @post_class.should be_identity_map_on
+        @post_class.should_not be_identity_map_off
       end
 
       should "be false if off" do
-        MongoMapper::Plugins::IdentityMap.off
-        MongoMapper::Plugins::IdentityMap.should be_off
-        MongoMapper::Plugins::IdentityMap.should_not be_on
+        @post_class.identity_map_off
+        @post_class.should be_identity_map_off
+        @post_class.should_not be_identity_map_on
       end
-    end
-
-    should "be able to turn identity map on" do
-      MongoMapper::Plugins::IdentityMap
     end
 
     should "default identity map to hash" do
@@ -453,6 +450,14 @@ class IdentityMapTest < Test::Unit::TestCase
         @post_class.without_identity_map do
           loaded = @post_class.load('_id' => post._id, 'title' => 'Awesome!')
           loaded.should_not equal(post)
+        end
+      end
+      
+      context "all" do
+        should "not add to map" do
+          @post_class.without_identity_map do
+            
+          end
         end
       end
     end

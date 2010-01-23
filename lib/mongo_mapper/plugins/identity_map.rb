@@ -9,26 +9,6 @@ module MongoMapper
         models.each { |m| m.identity_map.clear }
       end
 
-      def self.status
-        defined?(@map) ? @map : true
-      end
-
-      def self.on
-        @map = true
-      end
-      
-      def self.off
-        @map = false
-      end
-      
-      def self.on?
-        status
-      end
-      
-      def self.off?
-        !on?
-      end
-
       module ClassMethods
         def inherited(descendant)
           descendant.identity_map = identity_map
@@ -65,19 +45,39 @@ module MongoMapper
         def load(attrs)
           document = identity_map[attrs['_id']]
           
-          if document.nil? || IdentityMap.off?
+          if document.nil? || identity_map_off?
             document = super
-            identity_map[document._id] = document if IdentityMap.on?
+            identity_map[document._id] = document if identity_map_on?
           end
 
           document
         end
+
+        def identity_map_status
+          defined?(@identity_map_status) ? @identity_map_status : true
+        end
+
+        def identity_map_on
+          @identity_map_status = true
+        end
+
+        def identity_map_off
+          @identity_map_status = false
+        end
+
+        def identity_map_on?
+          identity_map_status
+        end
+
+        def identity_map_off?
+          !identity_map_on?
+        end
         
         def without_identity_map(&block)
-          IdentityMap.off
+          identity_map_off
           yield
         ensure
-          IdentityMap.on
+          identity_map_on
         end
         
         private
@@ -103,13 +103,13 @@ module MongoMapper
 
         def save(*args)
           if result = super
-            identity_map[_id] = self if IdentityMap.on?
+            identity_map[_id] = self if self.class.identity_map_on?
           end
           result
         end
 
         def delete
-          identity_map.delete(_id) if IdentityMap.on?
+          identity_map.delete(_id) if self.class.identity_map_on?
           super
         end
       end
