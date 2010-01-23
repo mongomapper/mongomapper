@@ -3,15 +3,15 @@ require 'test_helper'
 class IdentityMapTest < Test::Unit::TestCase
   def assert_in_map(*resources)
     [resources].flatten.each do |resource|
-      resource.identity_map.keys.should include(resource.identity_map_key)
-      mapped_resource = resource.identity_map[resource.identity_map_key]
+      resource.identity_map.keys.should include(resource._id)
+      mapped_resource = resource.identity_map[resource._id]
       resource.should equal(mapped_resource)
     end
   end
 
   def assert_not_in_map(*resources)
     [resources].flatten.each do |resource|
-      resource.identity_map.keys.should_not include(resource.identity_map_key)
+      resource.identity_map.keys.should_not include(resource._id)
     end
   end
 
@@ -69,18 +69,6 @@ class IdentityMapTest < Test::Unit::TestCase
       Doc do
         plugin MongoMapper::Plugins::IdentityMap
       end.identity_map.should == {}
-    end
-
-    should "have identity map key that is always unique per document and class" do
-      person = @person_class.new
-      person.identity_map_key.should == "Person:#{person.id}"
-      @person_class.identity_map_key(person.id).should == person.identity_map_key
-
-      post = @post_class.new
-      post.identity_map_key.should == "Post:#{post.id}"
-      @post_class.identity_map_key(post.id).should == post.identity_map_key
-
-      person.identity_map_key.should_not == post.identity_map_key
     end
 
     should "add key to map when saved" do
@@ -369,7 +357,6 @@ class IdentityMapTest < Test::Unit::TestCase
       should "share the same identity map" do
         blog = Blog.create(:title => 'Jill')
         assert_in_map(blog)
-        Item.identity_map_key(blog.id).should == Blog.identity_map_key(blog.id)
         Item.identity_map.should equal(Blog.identity_map)
       end
       

@@ -12,7 +12,6 @@ module MongoMapper
       module ClassMethods
         def inherited(descendant)
           descendant.identity_map = identity_map
-          descendant.identity_map_key_class = identity_map_key_class
           super
         end
         
@@ -24,21 +23,9 @@ module MongoMapper
           @identity_map = v
         end
 
-        def identity_map_key(id)
-          "#{identity_map_key_class}:#{id}"
-        end
-        
-        def identity_map_key_class
-          @identity_map_key_class ||= self
-        end
-        
-        def identity_map_key_class=(klass)
-          @identity_map_key_class = klass
-        end
-
         def find_one(options={})
           criteria, finder_options   = to_finder_options(options)
-          document_in_map            = identity_map[identity_map_key(criteria[:_id])]
+          document_in_map            = identity_map[criteria[:_id]]
           find_by_single_id          = criteria.keys == [:_id]
           find_by_single_id_with_sci = criteria.keys.to_set == [:_id, :_type].to_set
 
@@ -61,10 +48,9 @@ module MongoMapper
         end
 
         def load(attrs)
-          key = identity_map_key(attrs['_id'])
-          unless document = identity_map[key]
+          unless document = identity_map[attrs['_id']]
             document = super
-            identity_map[document.identity_map_key] = document
+            identity_map[document._id] = document
           end
 
           document
@@ -73,7 +59,7 @@ module MongoMapper
         private
           def remove_documents_from_map(*documents)
             documents.flatten.compact.each do |document|
-              identity_map.delete(identity_map_key(document._id))
+              identity_map.delete(document._id)
             end
           end
       end
@@ -82,10 +68,6 @@ module MongoMapper
         def self.included(model)
           IdentityMap.models << model
         end
-        
-        def identity_map_key
-          @identity_map_key ||= self.class.identity_map_key(_id)
-        end
 
         def identity_map
           self.class.identity_map
@@ -93,13 +75,13 @@ module MongoMapper
 
         def save(*args)
           if result = super
-            identity_map[identity_map_key] = self
+            identity_map[_id] = self
           end
           result
         end
 
         def delete
-          identity_map.delete(identity_map_key)
+          identity_map.delete(_id)
           super
         end
       end
