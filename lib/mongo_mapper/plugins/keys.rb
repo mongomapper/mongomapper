@@ -122,8 +122,8 @@ module MongoMapper
               validates_format_of(attribute, :with => key.options[:format])
             end
 
-            if key.options[:within]
-              validates_inclusion_of(attribute, :within => key.options[:within])
+            if key.options[:in]
+              validates_inclusion_of(attribute, :within => key.options[:in])
             end
 
             if key.options[:length]
