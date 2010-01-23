@@ -1,6 +1,14 @@
 module MongoMapper
   module Plugins
     module IdentityMap
+      def self.models
+        @models ||= Set.new
+      end
+      
+      def self.clear
+        models.each { |m| m.identity_map.clear }
+      end
+
       module ClassMethods
         def inherited(descendant)
           descendant.identity_map = identity_map
@@ -71,6 +79,10 @@ module MongoMapper
       end
 
       module InstanceMethods
+        def self.included(model)
+          IdentityMap.models << model
+        end
+        
         def identity_map_key
           @identity_map_key ||= self.class.identity_map_key(_id)
         end
