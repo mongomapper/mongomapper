@@ -5,14 +5,9 @@ module MongoMapper
     end
     
     def plugin(mod)
-      if mod.const_defined?(:ClassMethods)
-        extend mod::ClassMethods
-      end
-      
-      if mod.const_defined?(:InstanceMethods)
-        include mod::InstanceMethods
-      end
-      
+      extend mod::ClassMethods     if mod.const_defined?(:ClassMethods)
+      include mod::InstanceMethods if mod.const_defined?(:InstanceMethods)
+      mod.configure(self)          if mod.respond_to?(:configure)
       plugins << mod
     end
   end
