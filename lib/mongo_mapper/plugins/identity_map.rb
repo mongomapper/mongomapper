@@ -9,6 +9,26 @@ module MongoMapper
         models.each { |m| m.identity_map.clear }
       end
 
+      def self.status
+        defined?(@map) ? @map : true
+      end
+
+      def self.on
+        @map = true
+      end
+      
+      def self.off
+        @map = false
+      end
+      
+      def self.on?
+        status
+      end
+      
+      def self.off?
+        !on?
+      end
+
       module ClassMethods
         def inherited(descendant)
           descendant.identity_map = identity_map
@@ -48,12 +68,21 @@ module MongoMapper
         end
 
         def load(attrs)
-          unless document = identity_map[attrs['_id']]
+          document = identity_map[attrs['_id']]
+          
+          if document.nil? || IdentityMap.off?
             document = super
-            identity_map[document._id] = document
+            identity_map[document._id] = document if IdentityMap.on?
           end
 
           document
+        end
+        
+        def without_identity_map(&block)
+          IdentityMap.off
+          yield
+        ensure
+          IdentityMap.on
         end
         
         private
@@ -75,13 +104,13 @@ module MongoMapper
 
         def save(*args)
           if result = super
-            identity_map[_id] = self
+            identity_map[_id] = self if IdentityMap.on?
           end
           result
         end
 
         def delete
-          identity_map.delete(_id)
+          identity_map.delete(_id) if IdentityMap.on?
           super
         end
       end

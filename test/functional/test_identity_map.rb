@@ -27,6 +27,7 @@ class IdentityMapTest < Test::Unit::TestCase
   context "Document" do
     setup do
       MongoMapper::Plugins::IdentityMap.models.clear
+      MongoMapper::Plugins::IdentityMap.on
 
       @person_class = Doc('Person') do
         set_collection_name 'people'
@@ -63,6 +64,28 @@ class IdentityMapTest < Test::Unit::TestCase
       assert_not_in_map(person, post)
 
       [@person_class, @post_class].each { |klass| klass.identity_map.should == {} }
+    end
+    
+    context "IM on off status" do
+      teardown do
+        MongoMapper::Plugins::IdentityMap.on
+      end
+
+      should "be true if on" do
+        MongoMapper::Plugins::IdentityMap.on
+        MongoMapper::Plugins::IdentityMap.should be_on
+        MongoMapper::Plugins::IdentityMap.should_not be_off
+      end
+
+      should "be false if off" do
+        MongoMapper::Plugins::IdentityMap.off
+        MongoMapper::Plugins::IdentityMap.should be_off
+        MongoMapper::Plugins::IdentityMap.should_not be_on
+      end
+    end
+
+    should "be able to turn identity map on" do
+      MongoMapper::Plugins::IdentityMap
     end
 
     should "default identity map to hash" do
@@ -395,6 +418,42 @@ class IdentityMapTest < Test::Unit::TestCase
         root = Item.create(:title => 'Root', :child => blog)
         assert_in_map(root)
         root.child.should equal(blog)
+      end
+    end
+
+    context "without identity map" do
+      should "not add to map on save" do
+        @post_class.without_identity_map do
+          post = @post_class.create(:title => 'Bill')
+          assert_not_in_map(post)
+        end
+      end
+      
+      should "not remove from map on delete" do
+        post = @post_class.create(:title => 'Bill')
+        assert_in_map(post)
+        
+        @post_class.without_identity_map do
+          post.destroy
+        end
+        
+        assert_in_map(post)
+      end
+      
+      should "not add to map when loading" do
+        @post_class.without_identity_map do
+          post = @post_class.load({'_id' => Mongo::ObjectID.new, 'title' => 'Awesome!'})
+          assert_not_in_map(post)
+        end
+      end
+      
+      should "not load from map when loading" do
+        post = @post_class.create(:title => 'Awesome!')
+        
+        @post_class.without_identity_map do
+          loaded = @post_class.load('_id' => post._id, 'title' => 'Awesome!')
+          loaded.should_not equal(post)
+        end
       end
     end
   end
