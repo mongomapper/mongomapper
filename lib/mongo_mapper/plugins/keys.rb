@@ -126,6 +126,10 @@ module MongoMapper
               validates_inclusion_of(attribute, :within => key.options[:in])
             end
 
+            if key.options[:not_in]
+              validates_exclusion_of(attribute, :within => key.options[:not_in])
+            end
+
             if key.options[:length]
               length_options = case key.options[:length]
               when Integer

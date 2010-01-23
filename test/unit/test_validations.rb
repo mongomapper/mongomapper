@@ -175,7 +175,20 @@ class ValidationsTest < Test::Unit::TestCase
           doc.action = 'kick'
           doc.should have_error_on(:action, 'is reserved')
         end
-      
+
+        should "work with :not_in shortcut on key definition" do
+          @document.key :action, String, :not_in => %w(kick run)
+        
+          doc = @document.new
+          doc.should_not have_error_on(:action)
+        
+          doc.action = 'fart'
+          doc.should_not have_error_on(:action)
+        
+          doc.action = 'kick'
+          doc.should have_error_on(:action, 'is reserved')
+        end
+
         should "not have error if allow nil is true and value is nil" do
           @document.key :action, String
           @document.validates_exclusion_of :action, :within => %w(kick run), :allow_nil => true
@@ -410,6 +423,19 @@ class ValidationsTest < Test::Unit::TestCase
         should "work with validates_exclusion_of macro" do
           @embedded_doc.key :action, String
           @embedded_doc.validates_exclusion_of :action, :within => %w(kick run)
+        
+          doc = @embedded_doc.new
+          doc.should_not have_error_on(:action)
+        
+          doc.action = 'fart'
+          doc.should_not have_error_on(:action)
+        
+          doc.action = 'kick'
+          doc.should have_error_on(:action, 'is reserved')
+        end
+
+        should "work with :not_in shortcut on key definition" do
+          @embedded_doc.key :action, String, :not_in => %w(kick run)
         
           doc = @embedded_doc.new
           doc.should_not have_error_on(:action)
