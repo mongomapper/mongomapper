@@ -763,6 +763,47 @@ class DocumentTest < Test::Unit::TestCase
         @document.new(:name => 'John').save(:safe => true)
       end
     end
+    
+    should "raise argument error if options has unsupported key" do
+      doc = @document.new
+      assert_raises(ArgumentError) { doc.save(:foo => true) }
+    end
+  end
+  
+  context "#save! (with options)" do
+    setup do
+      MongoMapper.ensured_indexes = []
+      
+      @document = Doc do
+        key :name, String
+        set_collection_name 'test_indexes'
+        ensure_index :name, :unique => true
+      end
+      
+      if @document.database.collection_names.include?(@document.collection.name)
+        @document.collection.drop_indexes
+      end
+      
+      MongoMapper.ensure_indexes!
+    end
+    
+    should "allow passing safe" do
+      doc = @document.create(:name => 'John')
+      
+      assert_raises(Mongo::OperationFailure) do
+        @document.new(:name => 'John').save!(:safe => true)
+      end
+    end
+    
+    should "raise argument error if options has unsupported key" do
+      doc = @document.new
+      assert_raises(ArgumentError) { doc.save!(:foo => true) }
+    end
+    
+    should "raise argument error if using validate as that would be pointless with save!" do
+      doc = @document.new
+      assert_raises(ArgumentError) { doc.save!(:validate => false) }
+    end
   end
 
   context "#destroy" do

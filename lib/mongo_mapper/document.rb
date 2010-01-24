@@ -350,13 +350,14 @@ module MongoMapper
       end
 
       def save(options={})
+        options.assert_valid_keys(:validate, :safe)
         options.reverse_merge!(:validate => true)
-        perform_validations = options.delete(:validate)
-        !perform_validations || valid? ? create_or_update(options) : false
+        !options[:validate] || valid? ? create_or_update(options) : false
       end
 
-      def save!
-        save || raise(DocumentNotValid.new(self))
+      def save!(options={})
+        options.assert_valid_keys(:safe)
+        save(options) || raise(DocumentNotValid.new(self))
       end
       
       def update_attributes(attrs={})
