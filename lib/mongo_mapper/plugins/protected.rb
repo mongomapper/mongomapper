@@ -9,6 +9,12 @@ module MongoMapper
         def protected_attributes
           self.read_inheritable_attribute(:attr_protected)
         end
+
+        def key(*args)
+          key = super
+          attr_protected key.name.to_sym if key.options[:protected]
+          key
+        end
       end
 
       module InstanceMethods

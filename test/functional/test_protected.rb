@@ -16,9 +16,19 @@ class ProtectedTest < Test::Unit::TestCase
     should 'have protected attributes class method' do
       @doc_class.protected_attributes.should == [:admin].to_set
     end
+    
+    should "default protected attributes to nil" do
+      Doc().protected_attributes.should be_nil
+    end
 
     should "have protected attributes instance method" do
       @doc.protected_attributes.should equal(@doc_class.protected_attributes)
+    end
+
+    should "work with :protected shortcut when defining key" do
+      Doc() do
+        key :user_id, ObjectId, :protected => true
+      end.protected_attributes.should == [:user_id].to_set
     end
 
     should 'assign protected attribute through accessor' do
@@ -39,6 +49,48 @@ class ProtectedTest < Test::Unit::TestCase
     end
   end
   
+  context "Single collection inherited protected attributes" do
+    setup do
+      class ::GrandParent
+        include MongoMapper::Document
+
+        key :_type, String
+        key :site_id, ObjectId
+
+        attr_protected :site_id
+      end
+      GrandParent.collection.remove
+
+      class ::Child < ::GrandParent
+        key :position, Integer
+
+        attr_protected :position
+      end
+
+      class ::GrandChild < ::Child; end
+
+      class ::OtherChild < ::GrandParent
+        key :blog_id, ObjectId
+
+        attr_protected :blog_id
+      end
+    end
+
+    teardown do
+      Object.send :remove_const, 'GrandParent' if defined?(::GrandParent)
+      Object.send :remove_const, 'Child'       if defined?(::Child)
+      Object.send :remove_const, 'GrandChild'  if defined?(::GrandChild)
+      Object.send :remove_const, 'OtherChild'  if defined?(::OtherChild)
+    end
+
+    should "share keys down the inheritance trail" do
+      GrandParent.protected_attributes.should == [:site_id].to_set
+      Child.protected_attributes.should == [:site_id, :position].to_set
+      GrandChild.protected_attributes.should == [:site_id, :position].to_set
+      OtherChild.protected_attributes.should == [:site_id, :blog_id].to_set
+    end
+  end
+
   context 'An embedded document with protected attributes' do
     setup do
       @doc_class = Doc('Project')
@@ -57,6 +109,10 @@ class ProtectedTest < Test::Unit::TestCase
 
     should 'have protected attributes class method' do
       @edoc_class.protected_attributes.should == [:admin].to_set
+    end
+    
+    should "default protected attributes to nil" do
+      EDoc().protected_attributes.should be_nil
     end
 
     should "have protected attributes instance method" do
