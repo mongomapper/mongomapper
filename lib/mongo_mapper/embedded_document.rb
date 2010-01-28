@@ -1,12 +1,12 @@
 module MongoMapper
   module EmbeddedDocument
     extend DescendantAppends
-    
+
     def self.included(model)
       model.class_eval do
         include InstanceMethods
         extend  ClassMethods
-        
+
         extend Plugins
         plugin Plugins::Associations
         plugin Plugins::Clone
@@ -19,15 +19,21 @@ module MongoMapper
         plugin Plugins::Serialization
         plugin Plugins::Validations
 
-        attr_accessor :_root_document
+        attr_accessor :_root_document, :_parent_document
       end
-      
+
       super
     end
 
     module ClassMethods
       def embeddable?
         true
+      end
+
+      def embedded_in(owner_name)
+        define_method(owner_name) do
+          self._parent_document
+        end
       end
     end
 
@@ -38,7 +44,7 @@ module MongoMapper
         end
         result
       end
-      
+
       def save!(options={})
         if result = _root_document.try(:save!, options)
           @new = false

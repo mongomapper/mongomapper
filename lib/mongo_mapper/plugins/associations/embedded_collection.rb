@@ -41,6 +41,7 @@ module MongoMapper
           def assign_root_document(*docs)
             docs.each do |doc|
               doc._root_document = _root_document
+              doc._parent_document = owner
             end
           end
       end
