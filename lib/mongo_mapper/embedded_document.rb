@@ -6,8 +6,8 @@ module MongoMapper
       model.class_eval do
         include InstanceMethods
         extend  ClassMethods
-
         extend Plugins
+
         plugin Plugins::Associations
         plugin Plugins::Clone
         plugin Plugins::Descendants
