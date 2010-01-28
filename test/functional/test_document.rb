@@ -13,7 +13,7 @@ class DocumentTest < Test::Unit::TestCase
     end
   end
   
-  context "Using key with type Array" do
+  context "array key" do
     setup do
       @document.key :tags, Array
     end
@@ -60,7 +60,7 @@ class DocumentTest < Test::Unit::TestCase
     end
   end
 
-  context "Using key with type Hash" do
+  context "hash key" do
     setup do
       @document.key :foo, Hash
     end
@@ -95,7 +95,7 @@ class DocumentTest < Test::Unit::TestCase
     end
   end
 
-  context "Using key with custom type with default" do
+  context "custom type key with default" do
     setup do
       @document.key :window, WindowSize, :default => WindowSize.new(600, 480)
     end
@@ -407,6 +407,24 @@ class DocumentTest < Test::Unit::TestCase
     end
   end
 
+  context "find_or_create" do
+    should "find if exists" do
+      created = @document.create(:first_name => 'John', :last_name => 'Nunemaker')
+      lambda {
+        found = @document.find_or_create(:first_name => 'John', :last_name => 'Nunemaker')
+        found.should == created
+      }.should_not change { @document.count }
+    end
+
+    should "create if not found" do
+      lambda {
+        created = @document.find_or_create(:first_name => 'John', :last_name => 'Nunemaker')
+        created.first_name.should == 'John'
+        created.last_name.should == 'Nunemaker'
+      }.should change { @document.count }.by(1)
+    end
+  end
+
   context "ClassMethods#delete (single document)" do
     setup do
       @doc1 = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
@@ -568,6 +586,74 @@ class DocumentTest < Test::Unit::TestCase
     @document.new.database.should == @document.database
   end
 
+  context "#update_attributes (new document)" do
+    setup do
+      @doc = @document.new(:first_name => 'John', :age => '27')
+      @doc.update_attributes(:first_name => 'Johnny', :age => 30)
+    end
+
+    should "insert document into the collection" do
+      @document.count.should == 1
+    end
+
+    should "assign an id for the document" do
+      @doc.id.should be_instance_of(Mongo::ObjectID)
+    end
+
+    should "save attributes" do
+      @doc.first_name.should == 'Johnny'
+      @doc.age.should == 30
+    end
+
+    should "update attributes in the database" do
+      doc = @doc.reload
+      doc.should == @doc
+      doc.first_name.should == 'Johnny'
+      doc.age.should == 30
+    end
+
+    should "allow updating custom attributes" do
+      @doc.update_attributes(:gender => 'mALe')
+      @doc.reload.gender.should == 'mALe'
+    end
+  end
+
+  context "#update_attributes (existing document)" do
+    setup do
+      @doc = @document.create(:first_name => 'John', :age => '27')
+      @doc.update_attributes(:first_name => 'Johnny', :age => 30)
+    end
+
+    should "not insert document into collection" do
+      @document.count.should == 1
+    end
+
+    should "update attributes" do
+      @doc.first_name.should == 'Johnny'
+      @doc.age.should == 30
+    end
+
+    should "update attributes in the database" do
+      doc = @doc.reload
+      doc.first_name.should == 'Johnny'
+      doc.age.should == 30
+    end
+  end
+
+  context "#update_attributes (return value)" do
+    setup do
+      @document.key :foo, String, :required => true
+    end
+
+    should "be true if document valid" do
+      @document.new.update_attributes(:foo => 'bar').should be_true
+    end
+
+    should "be false if document not valid" do
+      @document.new.update_attributes({}).should be_false
+    end
+  end
+  
   context "#save (new document)" do
     setup do
       @doc = @document.new(:first_name => 'John', :age => '27')
@@ -656,74 +742,6 @@ class DocumentTest < Test::Unit::TestCase
     end
   end
 
-  context "#update_attributes (new document)" do
-    setup do
-      @doc = @document.new(:first_name => 'John', :age => '27')
-      @doc.update_attributes(:first_name => 'Johnny', :age => 30)
-    end
-
-    should "insert document into the collection" do
-      @document.count.should == 1
-    end
-
-    should "assign an id for the document" do
-      @doc.id.should be_instance_of(Mongo::ObjectID)
-    end
-
-    should "save attributes" do
-      @doc.first_name.should == 'Johnny'
-      @doc.age.should == 30
-    end
-
-    should "update attributes in the database" do
-      doc = @doc.reload
-      doc.should == @doc
-      doc.first_name.should == 'Johnny'
-      doc.age.should == 30
-    end
-
-    should "allow updating custom attributes" do
-      @doc.update_attributes(:gender => 'mALe')
-      @doc.reload.gender.should == 'mALe'
-    end
-  end
-
-  context "#update_attributes (existing document)" do
-    setup do
-      @doc = @document.create(:first_name => 'John', :age => '27')
-      @doc.update_attributes(:first_name => 'Johnny', :age => 30)
-    end
-
-    should "not insert document into collection" do
-      @document.count.should == 1
-    end
-
-    should "update attributes" do
-      @doc.first_name.should == 'Johnny'
-      @doc.age.should == 30
-    end
-
-    should "update attributes in the database" do
-      doc = @doc.reload
-      doc.first_name.should == 'Johnny'
-      doc.age.should == 30
-    end
-  end
-
-  context "#update_attributes" do
-    setup do
-      @document.key :foo, String, :required => true
-    end
-
-    should "return true if document valid" do
-      @document.new.update_attributes(:foo => 'bar').should be_true
-    end
-
-    should "return false if document not valid" do
-      @document.new.update_attributes({}).should be_false
-    end
-  end
-  
   context "#save (with validations off)" do
     setup do
       @document = Doc do
@@ -1091,7 +1109,7 @@ class DocumentTest < Test::Unit::TestCase
     end
   end
 
-  context "#exist?" do
+  context "#exists?" do
     setup do
       @doc = @document.create(:first_name => "James", :age => 27)
     end
@@ -1162,7 +1180,7 @@ class DocumentTest < Test::Unit::TestCase
     end
   end
 
-  context "Loading a document from the database with keys that are not defined" do
+  context "database has keys not defined in model" do
     setup do
       @id = Mongo::ObjectID.new
       @document.collection.insert({
