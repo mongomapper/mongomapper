@@ -345,6 +345,10 @@ class SupportTest < Test::Unit::TestCase
       id = Mongo::ObjectID.new
       id.to_json.should == %Q("#{id}")
     end
+    
+    should "support ruby driver syntax also" do
+      id = Mongo::ObjectID.new
+      id.original_to_json.should == %Q({"$oid": "#{id}"})
+    end
   end
-  
 end
