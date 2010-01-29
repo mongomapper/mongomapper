@@ -365,7 +365,7 @@ class IdentityMapTest < Test::Unit::TestCase
           key :parent_id, ObjectId
           
           belongs_to :parent, :class_name => 'Item'
-          one :child, :class_name => 'Blog'
+          one :blog, :class_name => 'Blog', :foreign_key => 'parent_id'
         end
         Item.collection.remove
 
@@ -421,9 +421,15 @@ class IdentityMapTest < Test::Unit::TestCase
         blog = Blog.create(:title => 'Jill')
         assert_in_map(blog)
 
-        root = Item.create(:title => 'Root', :child => blog)
+        root = Item.create(:title => 'Root', :blog => blog)
         assert_in_map(root)
-        root.child.should equal(blog)
+        root.blog.should equal(blog)
+      end
+      
+      should "work correctly with one proxy create" do
+        root = Item.create(:title => 'Root')
+        blog = root.blog.create(:title => 'Blog')
+        blog.parent.should equal(root)
       end
     end
 
