@@ -1,6 +1,6 @@
 module MongoMapper
   module EmbeddedDocument
-    extend DescendantAppends
+    extend Support::DescendantAppends
 
     def self.included(model)
       model.class_eval do

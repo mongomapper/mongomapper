@@ -1,12 +1,12 @@
 module MongoMapper
   module Document
-    extend DescendantAppends
+    extend Support::DescendantAppends
 
     def self.included(model)
       model.class_eval do
         include InstanceMethods
         extend  ClassMethods
-        extend  Finders
+        extend  Support::Find
         extend  Plugins
 
         plugin Plugins::Associations

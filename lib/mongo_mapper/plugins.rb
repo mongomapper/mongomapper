@@ -12,3 +12,19 @@ module MongoMapper
     end
   end
 end
+
+require 'mongo_mapper/plugins/associations'
+require 'mongo_mapper/plugins/callbacks'
+require 'mongo_mapper/plugins/clone'
+require 'mongo_mapper/plugins/descendants'
+require 'mongo_mapper/plugins/dirty'
+require 'mongo_mapper/plugins/equality'
+require 'mongo_mapper/plugins/identity_map'
+require 'mongo_mapper/plugins/inspect'
+require 'mongo_mapper/plugins/keys'
+require 'mongo_mapper/plugins/logger'
+require 'mongo_mapper/plugins/pagination'
+require 'mongo_mapper/plugins/protected'
+require 'mongo_mapper/plugins/rails'
+require 'mongo_mapper/plugins/serialization'
+require 'mongo_mapper/plugins/validations'

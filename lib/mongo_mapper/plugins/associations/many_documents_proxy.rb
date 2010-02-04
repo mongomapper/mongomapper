@@ -2,7 +2,7 @@ module MongoMapper
   module Plugins
     module Associations
       class ManyDocumentsProxy < Collection
-        include ::MongoMapper::Finders
+        include Support::Find
 
         def find(*args)
           options = args.extract_options!

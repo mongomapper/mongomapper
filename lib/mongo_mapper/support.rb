@@ -212,3 +212,6 @@ class Mongo::ObjectID
     %Q("#{to_s}")
   end
 end
+
+require 'mongo_mapper/support/descendant_appends'
+require 'mongo_mapper/support/find'
