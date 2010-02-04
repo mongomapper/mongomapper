@@ -5,8 +5,8 @@ module MongoMapper
     def self.included(model)
       model.class_eval do
         include InstanceMethods
-        extend  ClassMethods
         extend  Support::Find
+        extend  ClassMethods
         extend  Plugins
 
         plugin Plugins::Associations
