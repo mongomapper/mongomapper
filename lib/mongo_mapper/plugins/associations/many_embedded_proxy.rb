@@ -13,7 +13,7 @@ module MongoMapper
           def find_target
             (@_values || []).map do |v|
               child = klass.load(v)
-              assign_root_document(child)
+              assign_references(child)
               child
             end
           end

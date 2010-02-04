@@ -4,7 +4,7 @@ module MongoMapper
       class EmbeddedCollection < Collection
         def build(attributes={})
           doc = klass.new(attributes)
-          assign_root_document(doc)
+          assign_references(doc)
           self << doc
           doc
         end
@@ -22,7 +22,7 @@ module MongoMapper
         def <<(*docs)
           load_target
           docs.each do |doc|
-            assign_root_document(doc)
+            assign_references(doc)
             target << doc
           end
         end
@@ -38,7 +38,7 @@ module MongoMapper
             end
           end
 
-          def assign_root_document(*docs)
+          def assign_references(*docs)
             docs.each do |doc|
               doc._root_document = _root_document
               doc._parent_document = owner

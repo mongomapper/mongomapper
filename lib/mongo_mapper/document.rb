@@ -7,7 +7,7 @@ module MongoMapper
         include InstanceMethods
         extend  ClassMethods
         extend  Finders
-        extend Plugins
+        extend  Plugins
 
         plugin Plugins::Associations
         plugin Plugins::Clone
