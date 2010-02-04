@@ -162,6 +162,10 @@ module MongoMapper
           @new
         end
         
+        # def assign(attrs={})
+        #   self.attributes = attrs
+        # end
+        
         def attributes=(attrs)
           return if attrs.blank?
           
@@ -193,7 +197,17 @@ module MongoMapper
           attrs
         end
         alias :to_mongo :attributes
-        
+
+        def update_attributes(attrs={})
+          self.attributes = attrs
+          save
+        end
+
+        def update_attributes!(attrs={})
+          self.attributes = attrs
+          save!
+        end
+
         def id
           _id
         end

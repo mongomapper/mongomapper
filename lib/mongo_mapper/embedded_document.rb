@@ -32,9 +32,7 @@ module MongoMapper
       end
 
       def embedded_in(owner_name)
-        define_method(owner_name) do
-          self._parent_document
-        end
+        define_method(owner_name) { self._parent_document }
       end
     end
 
@@ -51,16 +49,6 @@ module MongoMapper
           @new = false
         end
         result
-      end
-
-      def update_attributes(attrs={})
-        self.attributes = attrs
-        self.save
-      end
-
-      def update_attributes!(attrs={})
-        self.attributes = attrs
-        self.save!
       end
     end # InstanceMethods
   end # EmbeddedDocument

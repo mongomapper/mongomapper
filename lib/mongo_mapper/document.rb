@@ -364,16 +364,6 @@ module MongoMapper
         options.assert_valid_keys(:safe)
         save(options) || raise(DocumentNotValid.new(self))
       end
-      
-      def update_attributes(attrs={})
-        self.attributes = attrs
-        save
-      end
-
-      def update_attributes!(attrs={})
-        self.attributes = attrs
-        save!
-      end
 
       def destroy
         delete
