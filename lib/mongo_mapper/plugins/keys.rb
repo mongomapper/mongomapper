@@ -4,7 +4,7 @@ module MongoMapper
       def self.configure(model)
         model.key :_id, ObjectId
       end
-      
+
       module ClassMethods
         def inherited(descendant)
           descendant.instance_variable_set(:@keys, keys.dup)
@@ -143,29 +143,31 @@ module MongoMapper
             end
           end
       end
-      
+
       module InstanceMethods
-        def initialize(attrs={}, from_db=false)
+        def initialize(attrs={}, from_database=false)
           unless attrs.nil?
             provided_keys = attrs.keys.map { |k| k.to_s }
             unless provided_keys.include?('_id') || provided_keys.include?('id')
               write_key :_id, Mongo::ObjectID.new
             end
           end
-          
-          @new = from_db ? false : true
-          self._type = self.class.name if respond_to?(:_type=)
-          self.attributes = attrs
+
+          assign_type_if_present
+
+          if from_database
+            @new = false
+            self.attributes = attrs
+          else
+            @new = true
+            assign(attrs)
+          end
         end
-        
+
         def new?
           @new
         end
-        
-        # def assign(attrs={})
-        #   self.attributes = attrs
-        # end
-        
+
         def attributes=(attrs)
           return if attrs.blank?
           
@@ -198,13 +200,17 @@ module MongoMapper
         end
         alias :to_mongo :attributes
 
-        def update_attributes(attrs={})
+        def assign(attrs={})
           self.attributes = attrs
+        end
+
+        def update_attributes(attrs={})
+          assign(attrs)
           save
         end
 
         def update_attributes!(attrs={})
-          self.attributes = attrs
+          assign(attrs)
           save!
         end
 
@@ -250,6 +256,10 @@ module MongoMapper
         end
 
         private
+          def assign_type_if_present
+            self._type = self.class.name if respond_to?(:_type=)
+          end
+          
           def ensure_key_exists(name)
             self.class.key(name) unless respond_to?("#{name}=")
           end

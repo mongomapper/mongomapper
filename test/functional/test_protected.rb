@@ -36,6 +36,22 @@ class ProtectedTest < Test::Unit::TestCase
       @doc.admin.should be_true
     end
 
+    should "ignore protected attribute on #initialize" do
+      doc = @doc_class.new(:name => 'John', :admin => true)
+      doc.admin.should be_false
+      doc.name.should == 'John'
+    end
+
+    should "not ignore protected attributes on #initialize from the database" do
+      doc = @doc_class.new(:name => 'John')
+      doc.admin = true
+      doc.save!
+      
+      doc = @doc_class.first(:name => 'John')
+      doc.admin.should be_true
+      doc.name.should == 'John'
+    end
+
     should 'ignore protected attribute on #update_attributes' do
       @doc.update_attributes(:name => 'Ren Hoek', :admin => true)
       @doc.name.should == 'Ren Hoek'
