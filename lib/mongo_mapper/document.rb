@@ -47,7 +47,7 @@ module MongoMapper
       end
 
       def find(*args)
-        find_all_first_last_error(args)
+        assert_no_first_last_or_all(args)
         options = args.extract_options!
         return nil if args.size == 0
 
@@ -59,7 +59,7 @@ module MongoMapper
       end
 
       def find!(*args)
-        find_all_first_last_error(args)
+        assert_no_first_last_or_all(args)
         options = args.extract_options!
         raise DocumentNotFound, "Couldn't find without an ID" if args.size == 0
 
@@ -270,7 +270,7 @@ module MongoMapper
           [to_criteria(criteria), keys]
         end
 
-        def find_all_first_last_error(args)
+        def assert_no_first_last_or_all(args)
           if args[0] == :first || args[0] == :last || args[0] == :all
             raise ArgumentError, "#{self}.find(:#{args}) is no longer supported, use #{self}.#{args} instead."
           end
