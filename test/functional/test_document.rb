@@ -407,21 +407,40 @@ class DocumentTest < Test::Unit::TestCase
     end
   end
 
-  context "find_or_create" do
+  context "first_or_create" do
     should "find if exists" do
       created = @document.create(:first_name => 'John', :last_name => 'Nunemaker')
       lambda {
-        found = @document.find_or_create(:first_name => 'John', :last_name => 'Nunemaker')
+        found = @document.first_or_create(:first_name => 'John', :last_name => 'Nunemaker')
         found.should == created
       }.should_not change { @document.count }
     end
 
     should "create if not found" do
       lambda {
-        created = @document.find_or_create(:first_name => 'John', :last_name => 'Nunemaker')
+        created = @document.first_or_create(:first_name => 'John', :last_name => 'Nunemaker')
         created.first_name.should == 'John'
         created.last_name.should == 'Nunemaker'
       }.should change { @document.count }.by(1)
+    end
+  end
+
+  context "first_or_new" do
+    should "find if exists" do
+      created = @document.create(:first_name => 'John', :last_name => 'Nunemaker')
+      lambda {
+        found = @document.first_or_new(:first_name => 'John', :last_name => 'Nunemaker')
+        found.should == created
+      }.should_not change { @document.count }
+    end
+
+    should "initialize if not found" do
+      lambda {
+        created = @document.first_or_new(:first_name => 'John', :last_name => 'Nunemaker')
+        created.first_name.should == 'John'
+        created.last_name.should == 'Nunemaker'
+        created.should be_new
+      }.should_not change { @document.count }
     end
   end
 

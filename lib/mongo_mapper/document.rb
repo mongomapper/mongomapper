@@ -26,10 +26,10 @@ module MongoMapper
         
         extend Plugins::Validations::DocumentMacros
       end
-      
+
       super
     end
-    
+
     module ClassMethods
       def inherited(subclass)
         subclass.set_collection_name(collection_name)
@@ -70,10 +70,6 @@ module MongoMapper
         end
       end
 
-      def find_or_create(arg)
-        first(arg) || create(arg)
-      end
-
       def find_each(options={})
         criteria, options = to_finder_options(options)
         collection.find(criteria, options).each do |doc|
@@ -83,6 +79,14 @@ module MongoMapper
 
       def find_by_id(id)
         find(id)
+      end
+
+      def first_or_create(arg)
+        first(arg) || create(arg)
+      end
+
+      def first_or_new(arg)
+        first(arg) || new(arg)
       end
 
       def first(options={})
@@ -136,46 +140,46 @@ module MongoMapper
       end
 
       def destroy_all(options={})
-        all(options).each(&:destroy)
+        find_each(options) { |document| document.destroy }
       end
-      
+
       def increment(*args)
         modifier_update('$inc', args)
       end
-      
+
       def decrement(*args)
         criteria, keys = criteria_and_keys_from_args(args)
         values, to_decrement = keys.values, {}
         keys.keys.each_with_index { |k, i| to_decrement[k] = -values[i].abs }
         collection.update(criteria, {'$inc' => to_decrement}, :multi => true)
       end
-      
+
       def set(*args)
         modifier_update('$set', args)
       end
-      
+
       def push(*args)
         modifier_update('$push', args)
       end
-      
+
       def push_all(*args)
         modifier_update('$pushAll', args)
       end
-      
+
       def push_uniq(*args)
         criteria, keys = criteria_and_keys_from_args(args)
         keys.each { |key, value | criteria[key] = {'$ne' => value} }
         collection.update(criteria, {'$push' => keys}, :multi => true)
       end
-      
+
       def pull(*args)
         modifier_update('$pull', args)
       end
-      
+
       def pull_all(*args)
         modifier_update('$pullAll', args)
       end
-      
+
       def pop(*args)
         modifier_update('$pop', args)
       end
@@ -276,11 +280,11 @@ module MongoMapper
           ids = ids.flatten.compact.uniq
           find_many(options.merge(:_id => ids)).compact
         end
-        
+
         def find_some!(ids, options={})
           ids = ids.flatten.compact.uniq
           documents = find_some(ids, options)
-          
+
           if ids.size == documents.size
             documents
           else
@@ -368,7 +372,7 @@ module MongoMapper
       def destroy
         delete
       end
-      
+
       def delete
         self.class.delete(id) unless new?
       end
@@ -398,7 +402,7 @@ module MongoMapper
       end
 
       def save_to_collection(options={})
-        safe = options.delete(:safe) || false
+        safe = options[:safe] || false
         @new = false
         collection.save(to_mongo, :safe => safe)
       end
