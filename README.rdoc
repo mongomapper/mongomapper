@@ -13,25 +13,16 @@ Releases are tagged on github and released on gemcutter. Master is pushed to whe
 * Send me a pull request. Bonus points for topic branches.
 
 == Install
- 
+
  $ gem install mongo_mapper
 
-== Dependencies
+== Problems or Questions?
 
-* ActiveSupport (typically the latest version)
-* Mongo Ruby Driver (mongo)
-* My fork of the validatable gem (jnunemaker-validatable)
-
-== Documentation
-
-Documentation is lacking right now because if you can't look through the code right now and feel comfortable, this is probably too young for you to use. Wait til it stabilizes a bit more.
-
+Hit up the google group.
 http://groups.google.com/group/mongomapper
 
-== More Info
-
-* http://www.mongodb.org/
-* http://github.com/mongodb/mongo-ruby-driver/
+To see if the problem you are having is a verified issue, you can see the MM pivotal tracker project:
+http://www.pivotaltracker.com/projects/33576
 
 == Copyright
 
