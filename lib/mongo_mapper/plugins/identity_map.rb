@@ -28,21 +28,21 @@ module MongoMapper
         end
 
         def find_one(options={})
-          criteria, finder_options = to_finder_options(options)
+          criteria, query_options = to_query(options)
 
           if simple_find?(criteria) && identity_map.key?(criteria[:_id])
             identity_map[criteria[:_id]]
           else
             super.tap do |document|
-              remove_documents_from_map(document) if selecting_fields?(finder_options)
+              remove_documents_from_map(document) if selecting_fields?(query_options)
             end
           end
         end
 
         def find_many(options)
-          criteria, finder_options = to_finder_options(options)
+          criteria, query_options = to_query(options)
           super.tap do |documents|
-            remove_documents_from_map(documents) if selecting_fields?(finder_options)
+            remove_documents_from_map(documents) if selecting_fields?(query_options)
           end
         end
 

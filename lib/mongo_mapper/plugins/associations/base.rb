@@ -2,13 +2,13 @@ module MongoMapper
   module Plugins
     module Associations
       class Base
-        attr_reader :type, :name, :options, :finder_options
+        attr_reader :type, :name, :options, :query_options
 
         # Options that should not be considered MongoDB query options/criteria
         AssociationOptions = [:as, :class, :class_name, :dependent, :extend, :foreign_key, :in, :polymorphic]
 
         def initialize(type, name, options={}, &extension)
-          @type, @name, @options, @finder_options = type, name, {}, {}
+          @type, @name, @options, @query_options = type, name, {}, {}
           options.symbolize_keys!
 
           options[:extend] = modulized_extensions(extension, options[:extend])
@@ -17,7 +17,7 @@ module MongoMapper
             if AssociationOptions.include?(key)
               @options[key] = value
             else
-              @finder_options[key] = value
+              @query_options[key] = value
             end
           end
         end

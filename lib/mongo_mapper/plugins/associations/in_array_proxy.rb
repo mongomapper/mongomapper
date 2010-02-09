@@ -119,7 +119,7 @@ module MongoMapper
           end
 
           def scoped_options(options)
-            reflection.finder_options.merge(options).merge(scoped_conditions)
+            reflection.query_options.merge(options).merge(scoped_conditions)
           end
 
           def scoped_ids(args)

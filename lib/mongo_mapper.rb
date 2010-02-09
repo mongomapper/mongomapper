@@ -111,7 +111,7 @@ module MongoMapper
 end
 
 require 'mongo_mapper/support'
-require 'mongo_mapper/finder_options'
+require 'mongo_mapper/query'
 require 'mongo_mapper/plugins'
 
 require 'mongo_mapper/document'

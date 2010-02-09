@@ -78,7 +78,7 @@ module MongoMapper
         end
 
         def nullify
-          criteria = FinderOptions.new(klass, scoped_conditions).criteria
+          criteria = Query.new(klass, scoped_conditions).criteria
           all(criteria).each do |doc|
             doc.update_attributes(self.foreign_key => nil)
           end
@@ -91,7 +91,7 @@ module MongoMapper
           end
 
           def scoped_options(options)
-            reflection.finder_options.merge(options).merge(scoped_conditions)
+            reflection.query_options.merge(options).merge(scoped_conditions)
           end
 
           def find_target
