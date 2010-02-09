@@ -164,21 +164,15 @@ class String
 end
 
 class SymbolOperator
+  attr_reader :field, :operator
+
   def initialize(field, operator, options={})
     @field, @operator = field, operator
   end unless method_defined?(:initialize)
-  
-  def to_mm_criteria(value)
-    {MongoMapper::FinderOptions.normalized_field(@field) => {"$#{@operator}" => value}}
-  end
-  
-  def to_mm_order
-    [@field.to_s, MongoMapper::FinderOptions.normalized_order_direction(@operator)]
-  end
 end
 
 class Symbol
-  %w(gt lt gte lte ne in nin mod size where exists asc desc).each do |operator|
+  %w(gt lt gte lte ne in nin mod all size where exists asc desc).each do |operator|
     define_method(operator) do
       SymbolOperator.new(self, operator)
     end unless method_defined?(operator)

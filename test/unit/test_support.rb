@@ -267,6 +267,14 @@ class SupportTest < Test::Unit::TestCase
     end
   end
   
+  context "Symbol" do
+    %w(gt lt gte lte ne in nin mod all size where exists asc desc).each do |operator|
+      should "have $#{operator} operator" do
+        :foo.respond_to?(operator)
+      end
+    end
+  end
+  
   context "Time#to_mongo without Time.zone" do
     should "be time to milliseconds if string" do
       Time.to_mongo('2000-01-01 01:01:01.123456').should == Time.local(2000, 1, 1, 1, 1, 1, 123000).utc

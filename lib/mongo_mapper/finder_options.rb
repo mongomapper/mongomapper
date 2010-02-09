@@ -6,15 +6,6 @@ module MongoMapper
   class FinderOptions
     OptionKeys = [:fields, :select, :skip, :offset, :limit, :sort, :order]
 
-    def self.normalized_field(field)
-      field.to_s == 'id' ? :_id : field
-    end
-
-    def self.normalized_order_direction(direction)
-      direction ||= 'ASC'
-      direction.upcase == 'ASC' ? 1 : -1
-    end
-
     def initialize(model, options)
       raise ArgumentError, "Options must be a hash" unless options.is_a?(Hash)
 
@@ -37,16 +28,16 @@ module MongoMapper
     end
 
     def criteria
-      to_mongo_criteria(@conditions)
+      to_criteria(@conditions)
     end
 
     def options
       fields = @options[:fields] || @options[:select]
       skip   = @options[:skip]   || @options[:offset] || 0
       limit  = @options[:limit]  || 0
-      sort   = @options[:sort]   || convert_order_to_sort(@options[:order])
+      sort   = @options[:sort]   || normalized_sort(@options[:order])
 
-      {:fields => to_mongo_fields(fields), :skip => skip.to_i, :limit => limit.to_i, :sort => sort}
+      {:fields => to_fields(fields), :skip => skip.to_i, :limit => limit.to_i, :sort => sort}
     end
 
     def to_a
@@ -54,48 +45,41 @@ module MongoMapper
     end
 
     private
-      def to_mongo_criteria(conditions, parent_key=nil)
+      # adds _type single collection inheritance scope for models that need it
+      def add_sci_scope
+        @conditions[:_type] = @model.to_s if @model.single_collection_inherited?
+      end
+
+      def modifier?(field)
+        field.to_s =~ /^\$/
+      end
+
+      def symbol_operator?(object)
+        object.respond_to?(:field, :operator)
+      end
+
+      def to_criteria(conditions, parent_key=nil)
         criteria = {}
 
-        conditions.each_pair do |field, value|
-          field = self.class.normalized_field(field)
+        conditions.each_pair do |key, value|
+          key = normalized_key(key)
           
-          if @model.object_id_key?(field) && value.is_a?(String)
+          if @model.object_id_key?(key) && value.is_a?(String)
             value = Mongo::ObjectID.from_string(value)
           end
           
-          if field.is_a?(SymbolOperator)
-            criteria.update(field.to_mm_criteria(value))
-            next
+          if symbol_operator?(key)
+            value = {"$#{key.operator}" => value}
+            key = normalized_key(key.field)
           end
           
-          case value
-            when Array
-              criteria[field] = operator?(field) ? value : {'$in' => value}
-            when Hash
-              criteria[field] = to_mongo_criteria(value, field)
-            when Time
-              criteria[field] = value.utc
-            else            
-              criteria[field] = value
-          end
+          criteria[key] = normalized_value(key, value)
         end
 
         criteria
       end
 
-      def operator?(field)
-        field.to_s =~ /^\$/
-      end
-
-      # adds _type single collection inheritance scope for models that need it
-      def add_sci_scope
-        if @model.single_collection_inherited?
-          @conditions[:_type] = @model.to_s
-        end
-      end
-
-      def to_mongo_fields(fields)
+      def to_fields(fields)
         return if fields.blank?
 
         if fields.respond_to?(:flatten, :compact)
@@ -105,23 +89,41 @@ module MongoMapper
         end
       end
 
-      def convert_order_to_sort(sort)
-        return if sort.blank?
-        
-        if sort.respond_to?(:all?) && sort.all? { |s| s.respond_to?(:to_mm_order) }
-          sort.map { |s| s.to_mm_order }
-        elsif sort.respond_to?(:to_mm_order)
-          [sort.to_mm_order]
-        else
-          pieces = sort.split(',')
-          pieces.map { |s| to_mongo_sort_piece(s) }
+      def to_order(field, direction=nil)
+        direction ||= 'ASC'
+        direction = direction.upcase == 'ASC' ? 1 : -1
+        [field.to_s, direction]
+      end
+
+      def normalized_key(field)
+        field.to_s == 'id' ? :_id : field
+      end
+
+      def normalized_value(field, value)
+        case value
+          when Array
+            modifier?(field) ? value : {'$in' => value}
+          when Hash
+            to_criteria(value, field)
+          when Time
+            value.utc
+          else
+            value
         end
       end
 
-      def to_mongo_sort_piece(str)
-        field, direction = str.strip.split(' ')
-        direction = FinderOptions.normalized_order_direction(direction)
-        [field, direction]
+      def normalized_sort(sort)
+        return if sort.blank?
+
+        if sort.respond_to?(:all?) && sort.all? { |s| symbol_operator?(s) }
+          sort.map { |s| to_order(s.field, s.operator) }
+        elsif symbol_operator?(sort)
+          [to_order(sort.field, sort.operator)]
+        else
+          sort.split(',').map do |str|
+            to_order(*str.strip.split(' '))
+          end
+        end
       end
   end
 end
