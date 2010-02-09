@@ -46,6 +46,12 @@ class Test::Unit::TestCase
     klass.class_eval(&block) if block_given?
     klass
   end
+
+  def drop_indexes(klass)
+    if klass.database.collection_names.include?(klass.collection.name)
+      klass.collection.drop_indexes
+    end
+  end
 end
 
 test_dir = File.expand_path(File.dirname(__FILE__) + '/../tmp')

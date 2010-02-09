@@ -43,7 +43,7 @@ module MongoMapper
           name_or_array
         end
 
-        MongoMapper.ensure_index(self, keys_to_index, options)
+        collection.create_index(keys_to_index, options[:unique])
       end
 
       def find(*args)

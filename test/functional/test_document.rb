@@ -778,68 +778,55 @@ class DocumentTest < Test::Unit::TestCase
   
   context "#save (with options)" do
     setup do
-      MongoMapper.ensured_indexes = []
-      
       @document = Doc do
         key :name, String
         set_collection_name 'test_indexes'
-        ensure_index :name, :unique => true
       end
-      if @document.database.collection_names.include?(@document.collection.name)
-        @document.collection.drop_indexes
-      end
-      
-      MongoMapper.ensure_indexes!
+      drop_indexes(@document)
+      @document.ensure_index :name, :unique => true
     end
-    
+
     should "allow passing safe" do
-      doc = @document.new(:name => 'John')
-      doc.save
-      
+      @document.create(:name => 'John')
       assert_raises(Mongo::OperationFailure) do
         @document.new(:name => 'John').save(:safe => true)
       end
     end
-    
+
     should "raise argument error if options has unsupported key" do
-      doc = @document.new
-      assert_raises(ArgumentError) { doc.save(:foo => true) }
+      assert_raises(ArgumentError) do
+        @document.new.save(:foo => true)
+      end
     end
   end
   
   context "#save! (with options)" do
     setup do
-      MongoMapper.ensured_indexes = []
-      
       @document = Doc do
         key :name, String
         set_collection_name 'test_indexes'
-        ensure_index :name, :unique => true
       end
-      
-      if @document.database.collection_names.include?(@document.collection.name)
-        @document.collection.drop_indexes
-      end
-      
-      MongoMapper.ensure_indexes!
+      drop_indexes(@document)
+      @document.ensure_index :name, :unique => true
     end
-    
+
     should "allow passing safe" do
-      doc = @document.create(:name => 'John')
-      
+      @document.create(:name => 'John')
       assert_raises(Mongo::OperationFailure) do
         @document.new(:name => 'John').save!(:safe => true)
       end
     end
-    
+
     should "raise argument error if options has unsupported key" do
-      doc = @document.new
-      assert_raises(ArgumentError) { doc.save!(:foo => true) }
+      assert_raises(ArgumentError) do
+        @document.new.save!(:foo => true)
+      end
     end
-    
+
     should "raise argument error if using validate as that would be pointless with save!" do
-      doc = @document.new
-      assert_raises(ArgumentError) { doc.save!(:validate => false) }
+      assert_raises(ArgumentError) do
+        @document.new.save!(:validate => false)
+      end
     end
   end
 
@@ -1224,28 +1211,22 @@ class DocumentTest < Test::Unit::TestCase
 
   context "Indexing" do
     setup do
-      MongoMapper.ensured_indexes = []
-      @document.collection.drop_indexes
+      drop_indexes(@document)
     end
 
     should "allow creating index for a key" do
       @document.ensure_index :first_name
-      MongoMapper.ensure_indexes!
-
       @document.should have_index('first_name_1')
     end
 
     should "allow creating unique index for a key" do
       @document.ensure_index :first_name, :unique => true
-      MongoMapper.ensure_indexes!
-
       @document.should have_index('first_name_1')
     end
 
     should "allow creating index on multiple keys" do
       @document.ensure_index [[:first_name, 1], [:last_name, -1]]
-      MongoMapper.ensure_indexes!
-
+      
       # order is different for different versions of ruby so instead of
       # just checking have_index('first_name_1_last_name_-1') I'm checking
       # the values of the indexes to make sure the index creation was successful
@@ -1257,7 +1238,6 @@ class DocumentTest < Test::Unit::TestCase
 
     should "work with :index shortcut when defining key" do
       @document.key :father, String, :index => true
-      MongoMapper.ensure_indexes!
       @document.should have_index('father_1')
     end
   end

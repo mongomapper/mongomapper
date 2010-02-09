@@ -95,29 +95,6 @@ module MongoMapper
   end
 
   # @api private
-  def self.ensured_indexes
-    @@ensured_indexes ||= []
-  end
-
-  # @api private
-  def self.ensured_indexes=(value)
-    @@ensured_indexes = value
-  end
-
-  # @api private
-  def self.ensure_index(klass, keys, options={})
-    ensured_indexes << {:klass => klass, :keys => keys, :options => options}
-  end
-
-  # @api public
-  def self.ensure_indexes!
-    ensured_indexes.each do |index|
-      unique = index[:options].delete(:unique)
-      index[:klass].collection.create_index(index[:keys], unique)
-    end
-  end
-
-  # @api private
   def self.use_time_zone?
     Time.respond_to?(:zone) && Time.zone ? true : false
   end
