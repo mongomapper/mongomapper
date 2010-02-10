@@ -7,19 +7,19 @@ module MongoMapper
 
         instance_methods.each { |m| undef_method m unless m =~ /(^__|^nil\?$|^send$|proxy_|^object_id$)/ }
 
-        attr_reader :owner, :reflection, :target
+        attr_reader :owner, :association, :target
 
         alias :proxy_owner :owner
         alias :proxy_target :target
-        alias :proxy_reflection :reflection
+        alias :proxy_association :association
 
-        delegate :klass, :to => :proxy_reflection
-        delegate :options, :to => :proxy_reflection
+        delegate :klass, :to => :proxy_association
+        delegate :options, :to => :proxy_association
         delegate :collection, :to => :klass
 
-        def initialize(owner, reflection)
-          @owner, @reflection, @loaded = owner, reflection, false
-          Array(reflection.options[:extend]).each { |ext| proxy_extend(ext) }
+        def initialize(owner, association)
+          @owner, @association, @loaded = owner, association, false
+          Array(association.options[:extend]).each { |ext| proxy_extend(ext) }
           reset
         end
 

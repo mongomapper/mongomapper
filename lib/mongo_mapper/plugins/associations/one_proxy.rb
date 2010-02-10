@@ -46,7 +46,7 @@ module MongoMapper
 
         protected
           def find_target
-            target_class.first(reflection.query_options.merge(foreign_key => owner.id))
+            target_class.first(association.query_options.merge(foreign_key => owner.id))
           end
 
           def instantiate_target(instantiator, attrs={})
@@ -56,7 +56,7 @@ module MongoMapper
           end
 
           def target_class
-            @target_class ||= options[:class] || (options[:class_name] || reflection.name.to_s.camelize).constantize
+            @target_class ||= options[:class] || (options[:class_name] || association.name.to_s.camelize).constantize
           end
 
           def foreign_key

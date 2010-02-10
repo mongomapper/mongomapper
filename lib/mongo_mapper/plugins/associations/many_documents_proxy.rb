@@ -91,7 +91,7 @@ module MongoMapper
           end
 
           def scoped_options(options)
-            reflection.query_options.merge(options).merge(scoped_conditions)
+            association.query_options.merge(options).merge(scoped_conditions)
           end
 
           def find_target

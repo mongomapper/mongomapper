@@ -4,7 +4,7 @@ module MongoMapper
       class ManyPolymorphicProxy < ManyDocumentsProxy
         private
           def apply_scope(doc)
-            doc[reflection.type_key_name] = doc.class.name
+            doc[association.type_key_name] = doc.class.name
             super
           end
       end
