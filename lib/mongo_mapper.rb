@@ -108,11 +108,11 @@ module MongoMapper
   def self.normalize_object_id(value)
     value.is_a?(String) ? Mongo::ObjectID.from_string(value) : value
   end
+  
+  autoload :Query,            'mongo_mapper/query'
+  autoload :Document,         'mongo_mapper/document'
+  autoload :EmbeddedDocument, 'mongo_mapper/embedded_document'
 end
 
 require 'mongo_mapper/support'
-require 'mongo_mapper/query'
 require 'mongo_mapper/plugins'
-
-require 'mongo_mapper/document'
-require 'mongo_mapper/embedded_document'
