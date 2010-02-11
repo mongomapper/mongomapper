@@ -54,6 +54,14 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       status = project.statuses.build(:name => 'Foo')
       status.name.should == 'Foo'
     end
+
+    should "reset cache" do
+      project = Project.create
+      project.statuses.size.should == 0
+      status = project.statuses.build(:name => 'Foo')
+      status.save!
+      project.statuses.size.should == 1
+    end
   end
   
   context "create" do
@@ -74,6 +82,13 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       project = Project.create
       status = project.statuses.create(:name => 'Foo!')
       status.name.should == 'Foo!'
+    end
+
+    should "reset cache" do
+      project = Project.create
+      project.statuses.size.should == 0
+      project.statuses.create(:name => 'Foo!')
+      project.statuses.size.should == 1
     end
   end
   
@@ -102,6 +117,13 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       lambda {
         project.statuses.create!(:name => nil)
       }.should raise_error(MongoMapper::DocumentNotValid)
+    end
+
+    should "reset cache" do
+      project = Project.create
+      project.statuses.size.should == 0
+      project.statuses.create!(:name => 'Foo!')
+      project.statuses.size.should == 1
     end
   end
   

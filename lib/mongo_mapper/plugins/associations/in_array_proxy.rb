@@ -79,6 +79,7 @@ module MongoMapper
           unless doc.new?
             ids << doc.id
             owner.save
+            reset
           end
           doc
         end
@@ -88,6 +89,7 @@ module MongoMapper
           unless doc.new?
             ids << doc.id
             owner.save
+            reset
           end
           doc
         end
