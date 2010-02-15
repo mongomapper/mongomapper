@@ -1,6 +1,6 @@
 = MongoMapper
 
-Awesome gem for modeling your domain and storing it in mongo.
+A Ruby Object Mapper for Mongo.
 
 Releases are tagged on github and released on gemcutter. Master is pushed to whenever I add a patch or a new feature, but I do not release a new gem version each time I push.
 
