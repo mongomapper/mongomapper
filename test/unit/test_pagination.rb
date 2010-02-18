@@ -12,6 +12,29 @@ class PaginationTest < Test::Unit::TestCase
   context "Pagination proxy" do
     include MongoMapper::Plugins::Pagination
     
+    should "respond_to? correctly on proxy readers" do
+      proxy = Proxy.new(25, 10, 4)
+      proxy.respond_to?(:subject).should be_true
+      proxy.respond_to?(:total_entries).should be_true
+      proxy.respond_to?(:per_page).should be_true
+      proxy.respond_to?(:current_page).should be_true
+      proxy.respond_to?(:limit).should be_true
+      proxy.respond_to?(:total_pages).should be_true
+      proxy.respond_to?(:out_of_bounds?).should be_true
+      proxy.respond_to?(:previous_page).should be_true
+      proxy.respond_to?(:next_page).should be_true
+      proxy.respond_to?(:skip).should be_true
+      proxy.respond_to?(:offset).should be_true
+      
+      # make sure it doesnt respond true to everything
+      proxy.respond_to?(:blahblahblah).should be_false
+    end
+    
+    should "respond_to? correctly on proxy writers" do
+      proxy = Proxy.new(25, 10, 4)
+      proxy.respond_to?(:subject=).should be_true
+    end
+    
     should "should have accessors for subject" do
       subject = [1,2,3,4,5]
       collection = Proxy.new(25, 2)
@@ -29,6 +52,16 @@ class PaginationTest < Test::Unit::TestCase
       end
       collection[0..2].should == [1,2,3]
       collection.class.should == Array
+    end
+    
+    should "should respond_to? correctly for methods defined on the subject" do
+      subject = [1,2,3,4,5]
+      def subject.blahblah
+        "BLAHBLAH"
+      end
+      collection = Proxy.new(25, 2, 10)
+      collection.subject = subject
+      collection.respond_to?(:blahblah).should be_true
     end
     
     should "return correct value for total_entries" do
