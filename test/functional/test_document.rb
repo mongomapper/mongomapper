@@ -115,6 +115,25 @@ class DocumentTest < Test::Unit::TestCase
     end
   end
 
+  context "default key with proc" do
+    setup do
+      @document.key :dynamic_key, String, :default => lambda { return "i am a string" }
+    end
+
+    should "detect and run proc default" do
+      doc = @document.new
+      doc.dynamic_key.should == "i am a string"
+    end
+
+    should "save and load from mongo" do
+      doc = @document.new
+      doc.save
+
+      doc = doc.reload
+      doc.dynamic_key.should == "i am a string"
+    end
+  end
+
   context "ClassMethods#create (single document)" do
     setup do
       @doc_instance = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
