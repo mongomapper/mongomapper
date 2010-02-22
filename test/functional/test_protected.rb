@@ -16,7 +16,7 @@ class ProtectedTest < Test::Unit::TestCase
     should 'have protected attributes class method' do
       @doc_class.protected_attributes.should == [:admin].to_set
     end
-    
+
     should "default protected attributes to nil" do
       Doc().protected_attributes.should be_nil
     end
@@ -46,7 +46,7 @@ class ProtectedTest < Test::Unit::TestCase
       doc = @doc_class.new(:name => 'John')
       doc.admin = true
       doc.save!
-      
+
       doc = @doc_class.first(:name => 'John')
       doc.admin.should be_true
       doc.name.should == 'John'
@@ -63,8 +63,14 @@ class ProtectedTest < Test::Unit::TestCase
       @doc.name.should == 'Stimpson J. Cat'
       @doc.admin.should be_false
     end
+
+    should 'be indifferent to whether the protected keys are strings or symbols' do
+      @doc.update_attributes!("name" => 'Stimpson J. Cat', "admin" => true)
+      @doc.name.should == 'Stimpson J. Cat'
+      @doc.admin.should be_false
+    end
   end
-  
+
   context "Single collection inherited protected attributes" do
     setup do
       class ::GrandParent
@@ -126,7 +132,7 @@ class ProtectedTest < Test::Unit::TestCase
     should 'have protected attributes class method' do
       @edoc_class.protected_attributes.should == [:admin].to_set
     end
-    
+
     should "default protected attributes to nil" do
       EDoc().protected_attributes.should be_nil
     end

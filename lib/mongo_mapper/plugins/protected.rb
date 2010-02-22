@@ -37,7 +37,7 @@ module MongoMapper
         protected
           def filter_protected_attrs(attrs)
             return attrs if protected_attributes.blank?
-            attrs.dup.delete_if { |key, val| protected_attributes.include?(key) }
+            attrs.dup.delete_if { |key, val| protected_attributes.include?(key.to_sym) }
           end
       end
     end
