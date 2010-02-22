@@ -118,11 +118,13 @@ class DocumentTest < Test::Unit::TestCase
   context "default key with proc" do
     setup do
       @document.key :dynamic_key, String, :default => lambda { return "i am a string" }
+      @document.key :dynamic_key2, String, :default => lambda { |doc| return "i am a #{doc.class}" }
     end
 
     should "detect and run proc default" do
       doc = @document.new
       doc.dynamic_key.should == "i am a string"
+      doc.dynamic_key2.should == "i am a Doc"
     end
 
     should "save and load from mongo" do
@@ -131,6 +133,7 @@ class DocumentTest < Test::Unit::TestCase
 
       doc = doc.reload
       doc.dynamic_key.should == "i am a string"
+      doc.dynamic_key2.should == "i am a Doc"
     end
   end
 

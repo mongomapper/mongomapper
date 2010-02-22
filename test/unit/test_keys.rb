@@ -165,18 +165,9 @@ class KeyTest < Test::Unit::TestCase
     should "work with Boolean type and true value" do
       Key.new(:active, Boolean, :default => true).get(nil).should be_true
     end
-  end
-  
-  context "getting a value with a proc default set" do
-    setup do
-      @key = Key.new(:foo, String, :default => lambda {return 'hello world'})
+    
+    should "work with procs" do
+       Key.new(:foo, String, :default => lambda {return 'hello world'}).get(nil).should == "hello world"
     end
-
-    should "return default value if value nil" do
-      @key.get(nil).should == 'hello world'
-    end
-
   end
-  
-  
 end # KeyTest
