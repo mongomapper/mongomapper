@@ -13,6 +13,7 @@ end
 require 'active_support'
 require 'mongo'
 require 'validatable'
+require 'uri'
 
 module MongoMapper
   # generic MM error
