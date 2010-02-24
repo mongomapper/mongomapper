@@ -72,12 +72,27 @@ module MongoMapper
 
   def self.connect(environment, options={})
     raise 'Set config before connecting. MongoMapper.config = {...}' if config.blank?
-    MongoMapper.connection = Mongo::Connection.new(config[environment]['host'], config[environment]['port'], options)
-    MongoMapper.database = config[environment]['database']
-    if config[environment]['username'].present? && config[environment]['password'].present?
-      MongoMapper.database.authenticate(config[environment]['username'], config[environment]['password'])
-    end
+		if config[environment]['uri'].present?
+			MongoMapper.uri_connect(config[environment]['uri'], options)
+		else
+			MongoMapper.connection = Mongo::Connection.new(config[environment]['host'], config[environment]['port'], options)
+			MongoMapper.database = config[environment]['database']
+			if config[environment]['username'].present? && config[environment]['password'].present?
+				MongoMapper.database.authenticate(config[environment]['username'], config[environment]['password'])
+			end
+		end
   end
+
+	def self.uri_connect(uri_string, options={})
+		uri = URI.parse(uri_string)
+		raise 'Invalid URI format' unless uri.scheme == 'mongodb'
+		 
+		MongoMapper.connection = Mongo::Connection.new(uri.host, uri.port, options)
+		MongoMapper.database = uri.path.gsub(/^\//, '')
+		if uri.user.present? && uri.password.present?
+			MongoMapper.database.authenticate(uri.user, uri.password)
+		end
+	end
 
   def self.setup(config, environment, options={})
     using_passenger = options.delete(:passenger)
