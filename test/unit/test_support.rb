@@ -78,7 +78,7 @@ class SupportTest < Test::Unit::TestCase
   
   context "Date#to_mongo" do
     should "be time if string" do
-      date = Date.to_mongo('10/1/2009')
+      date = Date.to_mongo('2009-10-01')
       date.should == Time.utc(2009, 10, 1)
       date.should == date
       date.month.should == 10

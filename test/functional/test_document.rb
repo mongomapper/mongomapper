@@ -740,7 +740,7 @@ class DocumentTest < Test::Unit::TestCase
 
     context "with key of type date" do
       should "save the date value as a Time object" do
-        doc = @document.new(:first_name => 'John', :age => '27', :date => "12/01/2009")
+        doc = @document.new(:first_name => 'John', :age => '27', :date => "2009-12-01")
         doc.save
         doc.date.should == Date.new(2009, 12, 1)
       end
