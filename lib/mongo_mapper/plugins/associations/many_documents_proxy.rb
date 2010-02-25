@@ -112,7 +112,7 @@ module MongoMapper
           end
 
           def foreign_key
-            options[:foreign_key] || owner.class.name.underscore.gsub("/", "_") + "_id"
+            options[:foreign_key] || owner.class.name.to_s.underscore.gsub("/", "_") + "_id"
           end
       end
     end
