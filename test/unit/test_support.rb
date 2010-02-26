@@ -281,7 +281,7 @@ class SupportTest < Test::Unit::TestCase
     end
 
     should "be time to milliseconds if string" do
-      Time.to_mongo('2000-01-01 01:01:01.123456').should == Time.local(2000, 1, 1, 1, 1, 1, 123000).utc
+      Time.to_mongo('2000-01-01 01:01:01.123456').to_f.should == Time.local(2000, 1, 1, 1, 1, 1, 123000).utc.to_f
     end
     
     should "be time in utc if time" do
@@ -300,13 +300,13 @@ class SupportTest < Test::Unit::TestCase
   context "Time#to_mongo with Time.zone" do
     should "be time to milliseconds if time" do
       Time.zone = 'Hawaii'
-      Time.to_mongo(Time.zone.local(2009, 8, 15, 14, 0, 0, 123456)).should == Time.utc(2009, 8, 16, 0, 0, 0, 123000)
+      Time.to_mongo(Time.zone.local(2009, 8, 15, 14, 0, 0, 123456)).to_f.should == Time.utc(2009, 8, 16, 0, 0, 0, 123000).to_f
       Time.zone = nil
     end
 
     should "be time to milliseconds if string" do
       Time.zone = 'Hawaii'
-      Time.to_mongo('2009-08-15 14:00:00.123456').should == Time.utc(2009, 8, 16, 0, 0, 0, 123000)
+      Time.to_mongo('2009-08-15 14:00:00.123456').to_f.should == Time.utc(2009, 8, 16, 0, 0, 0, 123000).to_f
       Time.zone = nil
     end
     
