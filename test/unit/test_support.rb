@@ -276,6 +276,10 @@ class SupportTest < Test::Unit::TestCase
   end
   
   context "Time#to_mongo without Time.zone" do
+    setup do
+      Time.zone = nil
+    end
+
     should "be time to milliseconds if string" do
       Time.to_mongo('2000-01-01 01:01:01.123456').should == Time.local(2000, 1, 1, 1, 1, 1, 123000).utc
     end
