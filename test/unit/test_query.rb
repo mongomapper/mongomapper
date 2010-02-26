@@ -38,6 +38,8 @@ class QueryTest < Test::Unit::TestCase
     end
     
     %w{gt lt gte lte ne in nin mod all size where exists}.each do |operator|
+      next if operator == "size" && RUBY_VERSION >= "1.9.1" # 1.9 defines Symbol#size
+
       should "convert #{operator} conditions" do
         Query.new(Room, :age.send(operator) => 21).criteria.should == {
           :age => {"$#{operator}" => 21}
