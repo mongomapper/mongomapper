@@ -31,7 +31,6 @@ class MongoMapperTest < Test::Unit::TestCase
       'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'},
       'production'  => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test-prod'}
     }
-
     MongoMapper.config = config
     MongoMapper.config.should == config
   end
@@ -41,76 +40,61 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'}
       }
-
       Mongo::Connection.expects(:new).with('127.0.0.1', 27017, {})
       MongoMapper.expects(:database=).with('test')
       Mongo::DB.any_instance.expects(:authenticate).never
-      MongoMapper.connect('development')
-    end
-
-    should "invoke without authentication using uri" do
-      MongoMapper.config = {
-        'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
-      }
-
-      MongoMapper.expects(:uri_connect).with('mongodb://127.0.0.1:27017/test', {})
       MongoMapper.connect('development')
     end
 
     should "work without authentication using uri" do
+      MongoMapper.config = {
+        'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
+      }
       Mongo::Connection.expects(:new).with('127.0.0.1', 27017, {})
       MongoMapper.expects(:database=).with('test')
       Mongo::DB.any_instance.expects(:authenticate).never
-      MongoMapper.uri_connect('mongodb://127.0.0.1:27017/test', {})
+      MongoMapper.connect('development')
     end
 
     should "work with options" do
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'}
       }
-
       connection, logger = mock('connection'), mock('logger')
       Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :logger => logger)
-      MongoMapper.connect('development', :logger => logger)
-    end
-
-    should "invoke with options using uri" do
-      MongoMapper.config = {
-        'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
-      }
-
-      connection, logger = mock('connection'), mock('logger')
-      MongoMapper.expects(:uri_connect).with('mongodb://127.0.0.1:27017/test', :logger => logger)
       MongoMapper.connect('development', :logger => logger)
     end
 
     should "work with options using uri" do
+      MongoMapper.config = {
+        'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
+      }
       connection, logger = mock('connection'), mock('logger')
       Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :logger => logger)
-      MongoMapper.uri_connect('mongodb://127.0.0.1:27017/test', :logger => logger)
+      MongoMapper.connect('development', :logger => logger)
     end
 
     should "work with authentication" do
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'username' => 'john', 'password' => 'secret'}
       }
-
       Mongo::DB.any_instance.expects(:authenticate).with('john', 'secret')
-      MongoMapper.connect('development')
-    end
-
-    should "invoke with authentication using uri" do
-      MongoMapper.config = {
-        'development' => {'uri' => 'mongodb://john:secret@127.0.0.1:27017/test'}
-      }
-
-      MongoMapper.expects(:uri_connect).with('mongodb://john:secret@127.0.0.1:27017/test', {})
       MongoMapper.connect('development')
     end
 
     should "work with authentication using uri" do
+      MongoMapper.config = {
+        'development' => {'uri' => 'mongodb://john:secret@127.0.0.1:27017/test'}
+      }
       Mongo::DB.any_instance.expects(:authenticate).with('john', 'secret')
-      MongoMapper.uri_connect('mongodb://john:secret@127.0.0.1:27017/test', {})
+      MongoMapper.connect('development')
+    end
+    
+    should "raise error for invalid scheme" do
+      MongoMapper.config = {
+        'development' => {'uri' => 'mysql://127.0.0.1:5336/foo'}
+      }
+      assert_raises(MongoMapper::InvalidScheme) { MongoMapper.connect('development') }
     end
   end
 

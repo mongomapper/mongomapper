@@ -1,4 +1,5 @@
 require 'set'
+require 'uri'
 
 # if Gem is defined i'll assume you are using rubygems and lock specific versions
 # call me crazy but a plain old require will just get the latest version you have installed
@@ -13,7 +14,6 @@ end
 require 'active_support'
 require 'mongo'
 require 'validatable'
-require 'uri'
 
 module MongoMapper
   # generic MM error
@@ -24,6 +24,9 @@ module MongoMapper
 
   # raised when document expected but not found
   class DocumentNotFound < MongoMapperError; end
+
+  # raised when trying to connect using uri with incorrect scheme
+  class InvalidScheme < MongoMapperError; end
 
   # raised when document not valid and using !
   class DocumentNotValid < MongoMapperError
@@ -71,29 +74,29 @@ module MongoMapper
     @@config
   end
 
-  def self.connect(environment, options={})
-    raise 'Set config before connecting. MongoMapper.config = {...}' if config.blank?
-		if config[environment]['uri'].present?
-			MongoMapper.uri_connect(config[environment]['uri'], options)
-		else
-			MongoMapper.connection = Mongo::Connection.new(config[environment]['host'], config[environment]['port'], options)
-			MongoMapper.database = config[environment]['database']
-			if config[environment]['username'].present? && config[environment]['password'].present?
-				MongoMapper.database.authenticate(config[environment]['username'], config[environment]['password'])
-			end
-		end
+  # @api private
+  def self.config_for_environment(environment)
+    env = config[environment]
+    return env if env['uri'].blank?
+    
+    uri = URI.parse(env['uri'])
+    raise InvalidScheme.new('must be mongodb') unless uri.scheme == 'mongodb'
+    {
+      'host'     => uri.host,
+      'port'     => uri.port,
+      'database' => uri.path.gsub(/^\//, ''),
+      'username' => uri.user,
+      'password' => uri.password,
+    }
   end
 
-	def self.uri_connect(uri_string, options={})
-		uri = URI.parse(uri_string)
-		raise 'Invalid URI format' unless uri.scheme == 'mongodb'
-		 
-		MongoMapper.connection = Mongo::Connection.new(uri.host, uri.port, options)
-		MongoMapper.database = uri.path.gsub(/^\//, '')
-		if uri.user.present? && uri.password.present?
-			MongoMapper.database.authenticate(uri.user, uri.password)
-		end
-	end
+  def self.connect(environment, options={})
+    raise 'Set config before connecting. MongoMapper.config = {...}' if config.blank?
+    env = config_for_environment(environment)
+    MongoMapper.connection = Mongo::Connection.new(env['host'], env['port'], options)
+    MongoMapper.database = env['database']
+    MongoMapper.database.authenticate(env['username'], env['password']) if env['username'] && env['password']
+  end
 
   def self.setup(config, environment, options={})
     using_passenger = options.delete(:passenger)
@@ -124,7 +127,7 @@ module MongoMapper
   def self.normalize_object_id(value)
     value.is_a?(String) ? Mongo::ObjectID.from_string(value) : value
   end
-  
+
   autoload :Query,            'mongo_mapper/query'
   autoload :Document,         'mongo_mapper/document'
   autoload :EmbeddedDocument, 'mongo_mapper/embedded_document'
