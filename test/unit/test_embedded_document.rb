@@ -42,7 +42,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       Object.send :remove_const, 'Child'       if defined?(::Child)
       Object.send :remove_const, 'OtherChild'  if defined?(::OtherChild)
     end
-    
+
     context "Including MongoMapper::EmbeddedDocument in a class" do
       setup do
         @klass = EDoc()
@@ -249,34 +249,34 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
 
       should "convert string object id to mongo object id when assigning id with _id object id type" do
         id = Mongo::ObjectID.new
-
         doc = @document.new(:id => id.to_s)
         doc._id.should == id
-        doc.id.should == id
-
+        doc.id.should  == id
         doc = @document.new(:_id => id.to_s)
         doc._id.should == id
-        doc.id.should == id
+        doc.id.should  == id
       end
 
-      context "_root_document" do
+      context "_parent_document" do
         should "default to nil" do
+          @document.new._parent_document.should be_nil
           @document.new._root_document.should be_nil
         end
 
-        should "allow setting when initialized" do
+        should "set _root_document when setting _parent_document" do
           root = Doc().new
-          doc  = @document.new :_root_document => root
-
+          doc  = @document.new(:_parent_document => root)
+          doc._parent_document.should be(root)
           doc._root_document.should be(root)
         end
 
-        should "also be set on many embedded documents" do
-          root  = Doc().new
-          klass = EDoc { many :children }
-          doc   = klass.new(:_root_document => root, :children => [{}])
-
-          doc.children.first._root_document.should == root
+        should "set _root_document when setting _parent_document on embedded many" do
+          root   = Doc().new
+          klass  = EDoc { many :children }
+          parent = klass.new(:_parent_document => root, :children => [{}])
+          child  = parent.children.first
+          child._parent_document.should be(parent)
+          child._root_document.should   be(root)
         end
       end
 

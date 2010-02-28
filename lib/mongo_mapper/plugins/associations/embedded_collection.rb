@@ -30,19 +30,8 @@ module MongoMapper
         alias_method :concat, :<<
 
         private
-          def _root_document
-            if owner.respond_to?(:_root_document)
-              owner._root_document
-            else
-              owner
-            end
-          end
-
           def assign_references(*docs)
-            docs.each do |doc|
-              doc._root_document = _root_document
-              doc._parent_document = owner
-            end
+            docs.each { |doc| doc._parent_document = owner }
           end
       end
     end

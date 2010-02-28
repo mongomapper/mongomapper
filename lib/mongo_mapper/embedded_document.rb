@@ -20,7 +20,7 @@ module MongoMapper
         plugin Plugins::Serialization
         plugin Plugins::Validations
 
-        attr_accessor :_root_document, :_parent_document
+        attr_reader :_root_document, :_parent_document
       end
 
       super
@@ -49,6 +49,11 @@ module MongoMapper
           @new = false
         end
         result
+      end
+      
+      def _parent_document=(value)
+        @_root_document   = value._root_document
+        @_parent_document = value
       end
     end # InstanceMethods
   end # EmbeddedDocument

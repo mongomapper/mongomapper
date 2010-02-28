@@ -175,6 +175,9 @@ module MongoMapper
             writer_method = "#{name}="
 
             if respond_to?(writer_method)
+              if writer_method == '_root_document='
+                puts "_root_document= #{value.inspect}"
+              end
               self.send(writer_method, value)
             else
               self[name.to_s] = value

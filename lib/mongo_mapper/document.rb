@@ -392,6 +392,12 @@ module MongoMapper
         end
       end
 
+      # Used by embedded docs to find root easily without if/respond_to? stuff.
+      # Documents are always root documents.
+      def _root_document
+        self
+      end
+
     private
       def create_or_update(options={})
         result = new? ? create(options) : update(options)
