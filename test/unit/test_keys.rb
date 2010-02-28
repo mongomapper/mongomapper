@@ -42,25 +42,25 @@ class KeyTest < Test::Unit::TestCase
     should "symbolize option keys" do
       Key.new(:foo, Integer, 'required' => true).options[:required].should be(true)
     end
-    
+
     should "work with just name" do
       key = Key.new(:foo)
       key.name.should == 'foo'
     end
-    
+
     should "work with name and type" do
       key = Key.new(:foo, String)
       key.name.should == 'foo'
       key.type.should == String
     end
-    
+
     should "work with name, type, and options" do
       key = Key.new(:foo, String, :required => true)
       key.name.should == 'foo'
       key.type.should == String
       key.options[:required].should be_true
     end
-    
+
     should "work with name and options" do
       key = Key.new(:foo, :required => true)
       key.name.should == 'foo'
@@ -80,7 +80,7 @@ class KeyTest < Test::Unit::TestCase
     should "not be equal to another key with different type" do
       Key.new(:name, String).should_not == Key.new(:name, Integer)
     end
-    
+
     should "know if it is a embedded_document" do
       Key.new(:name, EDoc()).embeddable?.should be_true
     end
@@ -88,12 +88,12 @@ class KeyTest < Test::Unit::TestCase
     should "know if it is not a embedded_document" do
       Key.new(:name, String).embeddable?.should be_false
     end
-    
+
     should "know if it is a number" do
       Key.new(:age, Integer).number?.should be_true
       Key.new(:age, Float).number?.should be_true
     end
-    
+
     should "know if it is not a number" do
       Key.new(:age, String).number?.should be_false
     end
@@ -110,7 +110,7 @@ class KeyTest < Test::Unit::TestCase
       key.set(FooType.new('something')).should == 'to_mongo'
     end
   end
-  
+
   context "getting a value with a custom type" do
     should "use #from_mongo to convert back to custom type" do
       key = Key.new(:foo, FooType)
@@ -123,7 +123,7 @@ class KeyTest < Test::Unit::TestCase
       key = Key.new(:foo, String)
       key.get('bar').should == 'bar'
     end
-    
+
     should "work without type" do
       key = Key.new(:foo)
       key.get([1, '2']).should == [1, '2']
@@ -144,7 +144,7 @@ class KeyTest < Test::Unit::TestCase
       end
     end
   end
-  
+
   context "getting a value with a default set" do
     setup do
       @key = Key.new(:foo, String, :default => 'baz')
@@ -157,7 +157,7 @@ class KeyTest < Test::Unit::TestCase
     should "return value if not blank" do
       @key.get('foobar').should == 'foobar'
     end
-    
+
     should "work with Boolean type and false value" do
       Key.new(:active, Boolean, :default => false).get(nil).should be_false
     end
@@ -165,9 +165,9 @@ class KeyTest < Test::Unit::TestCase
     should "work with Boolean type and true value" do
       Key.new(:active, Boolean, :default => true).get(nil).should be_true
     end
-    
+
     should "work with procs" do
-       Key.new(:foo, String, :default => lambda {return 'hello world'}).get(nil).should == "hello world"
+       Key.new(:foo, String, :default => lambda { return 'hello world' }).get(nil).should == "hello world"
     end
   end
 end # KeyTest

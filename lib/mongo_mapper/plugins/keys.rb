@@ -310,7 +310,7 @@ module MongoMapper
         def get(value)
           if value.nil? && !default_value.nil?
             if default_value.respond_to?(:call)
-              return default_value.call(self)
+              return default_value.call
             else
               return default_value
             end
