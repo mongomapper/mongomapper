@@ -23,7 +23,7 @@ module MongoMapper
         plugin Plugins::Serialization
         plugin Plugins::Validations
         plugin Plugins::Callbacks # for now callbacks needs to be after validations
-        
+
         extend Plugins::Validations::DocumentMacros
       end
 
@@ -200,7 +200,7 @@ module MongoMapper
       def set_database_name(name)
         @database_name = name
       end
-      
+
       def database_name
         @database_name
       end
@@ -374,7 +374,12 @@ module MongoMapper
       end
 
       def delete
+        @_destroyed = true
         self.class.delete(id) unless new?
+      end
+
+      def destroyed?
+        @_destroyed == true
       end
 
       def reload
