@@ -176,6 +176,10 @@ class QueryTest < Test::Unit::TestCase
       Query.new(Room, :sort => sort, :order => 'foo asc').options[:sort].should == sort
     end
     
+    should "normalize id to _id" do
+      Query.new(Room, :order => :id.asc).options[:sort].should == [['_id', 1]]
+    end
+    
     should "convert natural in order to proper" do
       sort = [['$natural', 1]]
       Query.new(Room, :order => '$natural asc').options[:sort].should == sort

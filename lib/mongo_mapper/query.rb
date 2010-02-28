@@ -93,7 +93,7 @@ module MongoMapper
       def to_order(field, direction=nil)
         direction ||= 'ASC'
         direction = direction.upcase == 'ASC' ? 1 : -1
-        [field.to_s, direction]
+        [normalized_key(field).to_s, direction]
       end
 
       def normalized_key(field)
