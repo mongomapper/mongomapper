@@ -11,7 +11,7 @@ if self.class.const_defined?(:Gem)
   gem 'jnunemaker-validatable', '1.8.1'
 end
 
-require 'active_support'
+require 'active_support/all'
 require 'mongo'
 require 'validatable'
 
