@@ -276,6 +276,15 @@ class ModifierTest < Test::Unit::TestCase
 
       assert_page_counts page, 0, 0, 0
     end
+    
+    should "be able to set with modifier hashes" do
+      page  = @page_class.create(:title => 'Home')
+
+      page.set(:title => 'Home Revised')
+
+      page.reload
+      page.title.should == 'Home Revised'
+    end
   end
   
 end

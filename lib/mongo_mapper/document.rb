@@ -405,6 +405,10 @@ module MongoMapper
       def decrement(hash)
         self.class.decrement({:_id => id}, hash)
       end
+      
+      def set(hash)
+        self.class.set({:_id => id}, hash)
+      end
 
     private
       def create_or_update(options={})
