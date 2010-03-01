@@ -109,6 +109,11 @@ class JsonSerializationTest < Test::Unit::TestCase
       json = @contact.to_json(:only => :name)
       assert_no_match %r{"id":}, json
     end
+
+    should "be represented by a string" do
+      json = convert_to_json(@contact)
+      assert_match %r{"id":"}, json
+    end
   end  
   
   context "including methods" do
