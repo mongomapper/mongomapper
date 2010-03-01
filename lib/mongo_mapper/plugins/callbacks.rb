@@ -13,7 +13,9 @@ module MongoMapper
             :before_validation,           :after_validation,
             :before_validation_on_create, :after_validation_on_create,
             :before_validation_on_update, :after_validation_on_update,
-            :before_destroy,              :after_destroy
+            :before_destroy,              :after_destroy,
+            :validate_on_create,          :validate_on_update,
+            :validate
           )
         end
       end
@@ -48,14 +50,23 @@ module MongoMapper
       module InstanceMethods
         def valid?
           action = new? ? 'create' : 'update'
-
           run_callbacks(:before_validation)
           run_callbacks("before_validation_on_#{action}".to_sym)
           result = super
           run_callbacks("after_validation_on_#{action}".to_sym)
           run_callbacks(:after_validation)
-
           result
+        end
+
+        # Overriding validatable's valid_for_group? to integrate validation callbacks
+        def valid_for_group?(group) #:nodoc:
+          errors.clear
+          run_before_validations
+          run_callbacks(:validate)
+          new? ? run_callbacks(:validate_on_create) : run_callbacks(:validate_on_update)
+          self.class.validate_children(self, group)
+          self.validate_group(group)
+          errors.empty?
         end
 
         def destroy
