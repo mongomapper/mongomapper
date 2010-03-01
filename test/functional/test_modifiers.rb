@@ -254,7 +254,7 @@ class ModifierTest < Test::Unit::TestCase
   
   context "using instance methods" do    
     should "be able to increment with modifier hashes" do
-      page = @page_class.create(:title => 'Home')
+      page = @page_class.create
       
       page.increment({:day_count => 1, :week_count => 2, :month_count => 3})
 
@@ -262,7 +262,7 @@ class ModifierTest < Test::Unit::TestCase
     end
     
     should "be able to decrement with modifier hashes" do
-      page = @page_class.create(:title => 'Home', :day_count => 1, :week_count => 2, :month_count => 3)
+      page = @page_class.create(:day_count => 1, :week_count => 2, :month_count => 3)
 
       page.decrement({:day_count => 1, :week_count => 2, :month_count => 3})
 
@@ -270,7 +270,7 @@ class ModifierTest < Test::Unit::TestCase
     end
     
     should "always decrement when decrement is called whether number is positive or negative" do
-      page = @page_class.create(:title => 'Home', :day_count => 1, :week_count => 2, :month_count => 3)
+      page = @page_class.create(:day_count => 1, :week_count => 2, :month_count => 3)
 
       page.decrement({:day_count => -1, :week_count => 2, :month_count => -3})
 
@@ -284,6 +284,38 @@ class ModifierTest < Test::Unit::TestCase
 
       page.reload
       page.title.should == 'Home Revised'
+    end
+    
+    should "be able to push with modifier hashes" do
+      page = @page_class.create
+
+      page.push(:tags => 'foo')
+
+      page.reload
+      page.tags.should == %w(foo)
+    end
+  
+    should "be able to pull with criteria and modifier hashes" do
+      page  = @page_class.create(:tags => %w(foo bar))
+
+      page.pull(:tags => 'foo')
+
+      page.reload
+      page.tags.should == %w(bar)
+    end
+
+    should "be able to push uniq with criteria and modifier hash" do
+      page  = @page_class.create(:tags => 'foo')
+      page2 = @page_class.create
+
+      page.push_uniq(:tags => 'foo')
+      page.push_uniq(:tags => 'foo')
+
+      page.reload
+      page.tags.should == %w(foo)
+
+      page2.reload
+      page.tags.should == %w(foo)
     end
   end
   

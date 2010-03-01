@@ -409,6 +409,18 @@ module MongoMapper
       def set(hash)
         self.class.set({:_id => id}, hash)
       end
+      
+      def push(hash)
+        self.class.push({:_id => id}, hash)
+      end
+      
+      def pull(hash)
+        self.class.pull({:_id => id}, hash)
+      end
+      
+      def push_uniq(hash)
+        self.class.push_uniq({:_id => id}, hash)
+      end
 
     private
       def create_or_update(options={})
