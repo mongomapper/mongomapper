@@ -11,10 +11,6 @@ require 'timecop'
 require 'mocha'
 require 'pp'
 
-if RUBY_VERSION.to_f < 1.9
-  require 'leftright' rescue nil
-end
-
 require 'support/custom_matchers'
 require 'support/timing'
 
