@@ -23,14 +23,14 @@ class SerializationTest < Test::Unit::TestCase
     context format do
       should "be reversable" do
         serialized = @instance.send("to_#{format}")
-        unserialized = @document.new.send("from_#{format}", serialized)
+        unserialized = @document.send("from_#{format}", serialized)
 
         assert_equal @instance, unserialized
       end
       
       should "allow attribute only filtering" do
         serialized = @instance.send("to_#{format}", :only => [ :age, :name ])
-        unserialized = @document.new.send("from_#{format}", serialized)
+        unserialized = @document.send("from_#{format}", serialized)
 
         assert_equal @instance.name, unserialized.name
         assert_equal @instance.age, unserialized.age
@@ -40,7 +40,7 @@ class SerializationTest < Test::Unit::TestCase
       
       should "allow attribute except filtering" do
         serialized = @instance.send("to_#{format}", :except => [ :age, :name ])
-        unserialized = @document.new.send("from_#{format}", serialized)
+        unserialized = @document.send("from_#{format}", serialized)
         
         assert_nil unserialized.name
         assert_nil unserialized.age
