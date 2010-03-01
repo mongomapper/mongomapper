@@ -170,7 +170,7 @@ module MongoMapper
 
         def attributes=(attrs)
           return if attrs.blank?
-          
+
           attrs.each_pair do |name, value|
             writer_method = "#{name}="
 
@@ -220,7 +220,7 @@ module MongoMapper
         def id
           _id
         end
-        
+
         def id=(value)
           if self.class.using_object_id?
             value = MongoMapper.normalize_object_id(value)
@@ -262,7 +262,7 @@ module MongoMapper
           def assign_type_if_present
             self._type = self.class.name if respond_to?(:_type=)
           end
-          
+
           def ensure_key_exists(name)
             self.class.key(name) unless respond_to?("#{name}=")
           end
@@ -283,11 +283,16 @@ module MongoMapper
 
           def write_key(name, value)
             key = keys[name]
+
+            if key.embeddable? && value.is_a?(key.type)
+              value._parent_document = self
+            end
+
             instance_variable_set "@#{name}_before_typecast", value
             instance_variable_set "@#{name}", key.set(value)
           end
       end
-      
+
       class Key
         attr_accessor :name, :type, :options, :default_value
 

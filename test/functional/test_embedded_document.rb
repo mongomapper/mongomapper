@@ -3,18 +3,17 @@ require 'models'
 
 class EmbeddedDocumentTest < Test::Unit::TestCase
   def setup
-    @klass = Doc do
-      key :first_name, String
-      key :last_name, String
+    @klass = Doc('Person') do
+      key :name, String
     end
 
-    @pet_klass = EDoc do
+    @pet_klass = EDoc('Pet') do
       key :name, String
     end
 
     @klass.many :pets, :class => @pet_klass
 
-    @address_class = EDoc do
+    @address_class = EDoc('Address') do
       key :city, String
       key :state, String
     end
@@ -23,19 +22,25 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
   context "Saving a document with a key that is an embedded document" do
     setup do
       @klass.key :foo, @address_class
-
-      @address = @address_class.new(:city => 'South Bend', :state => 'IN')
-      @doc = @klass.new(:foo => @address)
     end
 
     should "embed embedded document" do
-      @doc.save
-      @doc.foo.city.should == 'South Bend'
-      @doc.foo.state.should == 'IN'
-
-      doc = @doc.reload
+      address = @address_class.new(:city => 'South Bend', :state => 'IN')
+      doc = @klass.create(:foo => address)
       doc.foo.city.should == 'South Bend'
       doc.foo.state.should == 'IN'
+
+      doc = doc.reload
+      doc.foo.city.should == 'South Bend'
+      doc.foo.state.should == 'IN'
+    end
+
+    should "assign _parent_document and _root_document" do
+      address = @address_class.new(:city => 'South Bend', :state => 'IN')
+      address._parent_document.should be_nil
+      doc = @klass.create(:foo => address)
+      address._parent_document.should be(doc)
+      address._root_document.should be(doc)
     end
   end
 

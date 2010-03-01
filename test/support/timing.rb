@@ -5,7 +5,7 @@ class Test::Unit::TestCase
     end_time = Time.now
  
     duration = end_time - begin_time
-    threshold = 3.0
+    threshold = 5.0
     
     if duration > threshold
       puts "\nSLOW TEST: #{duration} - #{self.name}"
