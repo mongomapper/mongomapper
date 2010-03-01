@@ -397,6 +397,14 @@ module MongoMapper
       def _root_document
         self
       end
+      
+      def increment(hash)
+        self.class.increment({:_id => id}, hash)
+      end
+      
+      def decrement(hash)
+        self.class.decrement({:_id => id}, hash)
+      end
 
     private
       def create_or_update(options={})
