@@ -25,6 +25,7 @@ module MongoMapper
     autoload :Rails,          'mongo_mapper/plugins/rails'
     autoload :Serialization,  'mongo_mapper/plugins/serialization'
     autoload :Timestamps,     'mongo_mapper/plugins/timestamps'
+    autoload :Userstamps,     'mongo_mapper/plugins/userstamps'
     autoload :Validations,    'mongo_mapper/plugins/validations'
   end
 end

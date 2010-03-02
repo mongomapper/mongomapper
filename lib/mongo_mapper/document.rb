@@ -23,6 +23,7 @@ module MongoMapper
         plugin Plugins::Rails
         plugin Plugins::Serialization
         plugin Plugins::Timestamps
+        plugin Plugins::Userstamps
         plugin Plugins::Validations
         plugin Plugins::Callbacks # for now callbacks needs to be after validations
 
@@ -184,13 +185,6 @@ module MongoMapper
 
       def collection
         database.collection(collection_name)
-      end
-
-      def userstamps!
-        key :creator_id, ObjectId
-        key :updater_id, ObjectId
-        belongs_to :creator, :class_name => 'User'
-        belongs_to :updater, :class_name => 'User'
       end
 
       def single_collection_inherited?
