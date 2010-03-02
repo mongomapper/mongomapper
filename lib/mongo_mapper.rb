@@ -8,7 +8,7 @@ require 'uri'
 if self.class.const_defined?(:Gem)
   gem 'activesupport', '>= 2.3'
   gem 'mongo', '0.18.3'
-  gem 'jnunemaker-validatable', '1.8.2'
+  gem 'jnunemaker-validatable', '1.8.3'
 end
 
 require 'active_support/all'
