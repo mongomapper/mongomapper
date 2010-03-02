@@ -22,6 +22,7 @@ module MongoMapper
         plugin Plugins::Protected
         plugin Plugins::Rails
         plugin Plugins::Serialization
+        plugin Plugins::Timestamps
         plugin Plugins::Validations
         plugin Plugins::Callbacks # for now callbacks needs to be after validations
 
@@ -183,12 +184,6 @@ module MongoMapper
 
       def collection
         database.collection(collection_name)
-      end
-
-      def timestamps!
-        key :created_at, Time
-        key :updated_at, Time
-        class_eval { before_save :update_timestamps }
       end
 
       def userstamps!
@@ -364,12 +359,6 @@ module MongoMapper
         safe = options[:safe] || false
         @new = false
         collection.save(to_mongo, :safe => safe)
-      end
-
-      def update_timestamps
-        now = Time.now.utc
-        self[:created_at] = now if new? && !created_at?
-        self[:updated_at] = now
       end
     end
   end # Document

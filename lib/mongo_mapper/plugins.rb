@@ -24,6 +24,7 @@ module MongoMapper
     autoload :Protected,      'mongo_mapper/plugins/protected'
     autoload :Rails,          'mongo_mapper/plugins/rails'
     autoload :Serialization,  'mongo_mapper/plugins/serialization'
+    autoload :Timestamps,     'mongo_mapper/plugins/timestamps'
     autoload :Validations,    'mongo_mapper/plugins/validations'
   end
 end
