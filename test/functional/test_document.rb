@@ -1245,37 +1245,4 @@ class DocumentTest < Test::Unit::TestCase
       doc.skills.should == ['ruby', 'rails', 'javascript', 'xhtml', 'css']
     end
   end
-
-  context "Indexing" do
-    setup do
-      drop_indexes(@document)
-    end
-
-    should "allow creating index for a key" do
-      @document.ensure_index :first_name
-      @document.should have_index('first_name_1')
-    end
-
-    should "allow creating unique index for a key" do
-      @document.ensure_index :first_name, :unique => true
-      @document.should have_index('first_name_1')
-    end
-
-    should "allow creating index on multiple keys" do
-      @document.ensure_index [[:first_name, 1], [:last_name, -1]]
-
-      # order is different for different versions of ruby so instead of
-      # just checking have_index('first_name_1_last_name_-1') I'm checking
-      # the values of the indexes to make sure the index creation was successful
-      @document.collection.index_information.detect do |index|
-        keys = index[1]
-        keys.include?(['first_name', 1]) && keys.include?(['last_name', -1])
-      end.should_not be_nil
-    end
-
-    should "work with :index shortcut when defining key" do
-      @document.key :father, String, :index => true
-      @document.should have_index('father_1')
-    end
-  end
 end
