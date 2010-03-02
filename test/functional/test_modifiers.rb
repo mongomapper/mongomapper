@@ -10,14 +10,14 @@ class ModifierTest < Test::Unit::TestCase
       key :tags, Array
     end
   end
-  
+
   def assert_page_counts(page, day_count, week_count, month_count)
     page.reload
     page.day_count.should == day_count
     page.week_count.should == week_count
     page.month_count.should == month_count
   end
-  
+
   context "using class methods" do
     should "be able to increment with criteria and modifier hashes" do
       page = @page_class.create(:title => 'Home')
@@ -30,7 +30,7 @@ class ModifierTest < Test::Unit::TestCase
       assert_page_counts page, 1, 2, 3
       assert_page_counts page2, 1, 2, 3
     end
-    
+
     should "be able to increment with ids and modifier hash" do
       page  = @page_class.create(:title => 'Home')
       page2 = @page_class.create(:title => 'Home')
@@ -251,16 +251,16 @@ class ModifierTest < Test::Unit::TestCase
       page.tags.should == %w(bar)
     end
   end
-  
-  context "using instance methods" do    
+
+  context "using instance methods" do
     should "be able to increment with modifier hashes" do
       page = @page_class.create
-      
+
       page.increment({:day_count => 1, :week_count => 2, :month_count => 3})
 
       assert_page_counts page, 1, 2, 3
     end
-    
+
     should "be able to decrement with modifier hashes" do
       page = @page_class.create(:day_count => 1, :week_count => 2, :month_count => 3)
 
@@ -268,7 +268,7 @@ class ModifierTest < Test::Unit::TestCase
 
       assert_page_counts page, 0, 0, 0
     end
-    
+
     should "always decrement when decrement is called whether number is positive or negative" do
       page = @page_class.create(:day_count => 1, :week_count => 2, :month_count => 3)
 
@@ -276,7 +276,7 @@ class ModifierTest < Test::Unit::TestCase
 
       assert_page_counts page, 0, 0, 0
     end
-    
+
     should "be able to set with modifier hashes" do
       page  = @page_class.create(:title => 'Home')
 
@@ -285,7 +285,7 @@ class ModifierTest < Test::Unit::TestCase
       page.reload
       page.title.should == 'Home Revised'
     end
-    
+
     should "be able to push with modifier hashes" do
       page = @page_class.create
 
@@ -294,7 +294,7 @@ class ModifierTest < Test::Unit::TestCase
       page.reload
       page.tags.should == %w(foo)
     end
-  
+
     should "be able to pull with criteria and modifier hashes" do
       page  = @page_class.create(:tags => %w(foo bar))
 
@@ -318,5 +318,5 @@ class ModifierTest < Test::Unit::TestCase
       page.tags.should == %w(foo)
     end
   end
-  
+
 end
