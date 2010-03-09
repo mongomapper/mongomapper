@@ -174,6 +174,10 @@ class InArrayProxyTest < Test::Unit::TestCase
           @user.lists.find(@list1.id).should == @list1
         end
 
+        should "work with string ids" do
+          @user.lists.find(@list1.id.to_s).should == @list1
+        end
+
         should "not work for id not in association" do
           @user.lists.find(@list3.id).should be_nil
         end

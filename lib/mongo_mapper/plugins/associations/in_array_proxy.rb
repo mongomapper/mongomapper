@@ -125,7 +125,10 @@ module MongoMapper
           end
 
           def scoped_ids(args)
-            args.flatten.reject { |id| !ids.include?(id) }
+            args.flatten.select do |id|
+              id = ObjectId.to_mongo(id) if klass.using_object_id?
+              ids.include?(id)
+            end
           end
 
           def find_target
