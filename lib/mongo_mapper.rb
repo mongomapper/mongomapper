@@ -131,6 +131,7 @@ module MongoMapper
   autoload :Query,            'mongo_mapper/query'
   autoload :Document,         'mongo_mapper/document'
   autoload :EmbeddedDocument, 'mongo_mapper/embedded_document'
+  autoload :Version,          'mongo_mapper/version'
 end
 
 require 'mongo_mapper/support'
