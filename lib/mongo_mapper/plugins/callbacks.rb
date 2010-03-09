@@ -78,6 +78,11 @@ module MongoMapper
 
         def run_callbacks(kind, options = {}, &block)
           self.class.send("#{kind}_callback_chain").run(self, options, &block)
+          self.embedded_associations.each do |association|
+            self.send(association.name).each do |document|
+              document.run_callbacks(kind, options, &block)
+            end
+          end
         end
 
         private

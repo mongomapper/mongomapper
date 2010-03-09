@@ -19,6 +19,7 @@ module MongoMapper
         plugin Plugins::Rails
         plugin Plugins::Serialization
         plugin Plugins::Validations
+        plugin Plugins::Callbacks
 
         attr_reader :_root_document, :_parent_document
       end
