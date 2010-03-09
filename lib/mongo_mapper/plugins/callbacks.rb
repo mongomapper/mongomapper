@@ -77,7 +77,9 @@ module MongoMapper
         end
 
         def run_callbacks(kind, options = {}, &block)
-          self.class.send("#{kind}_callback_chain").run(self, options, &block)
+          callback_chain_method = "#{kind}_callback_chain"
+          return unless self.class.respond_to?(callback_chain_method)
+          self.class.send(callback_chain_method).run(self, options, &block)
           self.embedded_associations.each do |association|
             self.send(association.name).each do |document|
               document.run_callbacks(kind, options, &block)

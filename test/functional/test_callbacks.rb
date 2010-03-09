@@ -31,7 +31,7 @@ end
 class CallbacksTest < Test::Unit::TestCase
   CreateCallbackOrder = [:before_validation, :before_validation_on_create, :after_validation, :before_save, :before_create, :after_create, :after_save]
   UpdateCallbackOrder = [:before_validation, :before_validation_on_update, :after_validation, :before_save, :before_update, :after_update, :after_save]
-  
+
   context "Defining and running callbacks on documents" do
     setup do
       @document = Doc { include CallbacksSupport }
@@ -122,7 +122,7 @@ class CallbacksTest < Test::Unit::TestCase
       grand = root.children.first.children.first
       grand.history.should == UpdateCallbackOrder
     end
-    
+
     should "work for before and after destroy" do
       grand = @grand_child_class.new(:name => 'Grand Child')
       child = @child_class.new(:name => 'Child', :children => [grand])
@@ -135,6 +135,17 @@ class CallbacksTest < Test::Unit::TestCase
       grand = root.children.first.children.first
       grand.history.should include(:before_destroy)
       grand.history.should include(:after_destroy)
+    end
+
+    should "not attempt to run callback defined on root that is not defined on embedded association" do
+      @root_class.define_callbacks :after_publish
+      @root_class.after_save { |d| d.run_callbacks(:after_publish) }
+
+      assert_nothing_raised do
+        child = @child_class.new(:name => 'Child')
+        root  = @root_class.create(:name => 'Parent', :children => [child])
+        child.history.should_not include(:after_publish)
+      end
     end
   end
 end
