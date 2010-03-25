@@ -20,26 +20,60 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
     project.statuses.size.should == 3
   end
 
-  should "be able to replace the association" do
-    project = Project.new
-    project.statuses = [Status.new(:name => "ready")]
-    project.save.should be_true
+  context "replacing the association" do
+    context "with objects of the class" do
+      should "work" do
+        project = Project.new
+        project.statuses = [Status.new(:name => "ready")]
+        project.save.should be_true
 
-    project.reload
-    project.statuses.size.should == 1
-    project.statuses[0].name.should == "ready"
+        project.reload
+        project.statuses.size.should == 1
+        project.statuses[0].name.should == "ready"
+      end
+    end
+
+    context "with Hashes" do
+      should "convert to objects of the class and work" do
+        project = Project.new
+        project.statuses = [{ 'name' => 'ready' }]
+        project.save.should be_true
+
+        project.reload
+        project.statuses.size.should == 1
+        project.statuses[0].name.should == "ready"
+      end
+    end
   end
   
-  should "correctly assign foreign key when using <<, push and concat" do
-    project = Project.new
-    project.statuses <<     Status.new(:name => '<<')
-    project.statuses.push   Status.new(:name => 'push')
-    project.statuses.concat Status.new(:name => 'concat')
-    
-    project.reload
-    project.statuses[0].project_id.should == project.id
-    project.statuses[1].project_id.should == project.id
-    project.statuses[2].project_id.should == project.id
+  context "using <<, push and concat" do
+    context "with objects of the class" do
+      should "correctly assign foreign key" do
+        project = Project.new
+        project.statuses <<     Status.new(:name => '<<')
+        project.statuses.push   Status.new(:name => 'push')
+        project.statuses.concat Status.new(:name => 'concat')
+
+        project.reload
+        project.statuses[0].project_id.should == project.id
+        project.statuses[1].project_id.should == project.id
+        project.statuses[2].project_id.should == project.id
+      end
+    end
+
+    context "with Hashes" do
+      should "correctly convert to objects and assign foreign key" do
+        project = Project.new
+        project.statuses <<     { 'name' => '<<' }
+        project.statuses.push(  { 'name' => 'push' })
+        project.statuses.concat({ 'name' => 'concat' })
+
+        project.reload
+        project.statuses[0].project_id.should == project.id
+        project.statuses[1].project_id.should == project.id
+        project.statuses[2].project_id.should == project.id
+      end
+    end
   end
   
   context "build" do
