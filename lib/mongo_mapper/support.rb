@@ -26,16 +26,14 @@ end
 class Boolean
   BOOLEAN_MAPPING = {
     true => true, 'true' => true, 'TRUE' => true, 'True' => true, 't' => true, 'T' => true, '1' => true, 1 => true, 1.0 => true,
-    false => false, 'false' => false, 'FALSE' => false, 'False' => false, 'f' => false, 'F' => false, '0' => false, 0 => false, 0.0 => false, nil => false
+    false => false, 'false' => false, 'FALSE' => false, 'False' => false, 'f' => false, 'F' => false, '0' => false, 0 => false, 0.0 => false, nil => nil
   }
   
   def self.to_mongo(value)
     if value.is_a?(Boolean)
       value
     else
-      v = BOOLEAN_MAPPING[value]
-      v = value.to_s.downcase == 'true' if v.nil? # Check all mixed case spellings for true
-      v
+      BOOLEAN_MAPPING[value]
     end
   end
 

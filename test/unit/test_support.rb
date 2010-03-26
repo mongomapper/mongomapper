@@ -60,6 +60,10 @@ class SupportTest < Test::Unit::TestCase
       Boolean.to_mongo('0').should be_false
       Boolean.to_mongo(0).should be_false
     end
+    
+    should "be nil for nil" do
+      Boolean.to_mongo(nil).should be_nil
+    end
   end
   
   context "Boolean#from_mongo" do
@@ -71,8 +75,8 @@ class SupportTest < Test::Unit::TestCase
       Boolean.from_mongo(false).should be_false
     end
     
-    should "be false for nil" do
-      Boolean.from_mongo(nil).should be_false
+    should "be nil for nil" do
+      Boolean.to_mongo(nil).should be_nil
     end
   end
   
