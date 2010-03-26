@@ -282,6 +282,10 @@ class QueryTest < Test::Unit::TestCase
     should "also work with select as array of symbols" do
       Query.new(Room, :select => [:a, :b]).options[:fields].should == [:a, :b]
     end
+
+    should "work with select as hash" do
+      Query.new(Room, :select => {:a => 0, :b => 1}).options[:fields].should == {:a => 0, :b => 1}
+    end
   end
 
   context "Condition auto-detection" do

@@ -86,6 +86,7 @@ module MongoMapper
       end
 
       def to_fields(fields)
+        return fields if fields.class == Hash
         return if fields.blank?
 
         if fields.respond_to?(:flatten, :compact)
