@@ -24,6 +24,18 @@ class OneProxyTest < Test::Unit::TestCase
     
     post.author.object_id.should == post.author.target.object_id
   end
+
+  should "allow assignment of associated document using a hash" do
+    @post_class.one :author, :class => @author_class
+
+    post = @post_class.new('author' => { 'name' => 'Frank' })
+    post.author.name.should == 'Frank'
+
+    post.save.should be_true
+    post.reload
+
+    post.author.name.should == 'Frank'
+  end
   
   context "replacing the association" do
     context "with an object of the class" do
