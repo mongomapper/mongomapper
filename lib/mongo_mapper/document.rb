@@ -319,6 +319,10 @@ module MongoMapper
         @_destroyed == true
       end
 
+      def persisted?
+        !new? && !destroyed?
+      end
+
       def reload
         if attrs = collection.find_one({:_id => _id})
           self.class.associations.each { |name, assoc| send(name).reset if respond_to?(name) }

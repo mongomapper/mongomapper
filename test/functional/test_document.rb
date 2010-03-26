@@ -907,6 +907,28 @@ class DocumentTest < Test::Unit::TestCase
       assert ! @doc1.destroyed?
     end
   end
+  
+  context "#persisted?" do
+    setup do
+      @doc = @document.new(:first_name => 'John', :last_name => 'Nunemaker', :age => '27')
+    end
+    
+    should "be false if new" do
+      @doc.should_not be_persisted
+    end
+    
+    should "be false if destroyed" do
+      @doc.save
+      @doc.destroy
+      @doc.should be_destroyed
+      @doc.should_not be_persisted
+    end
+    
+    should "be true if not new or destroyed" do
+      @doc.save
+      @doc.should be_persisted
+    end
+  end
 
   context "Single collection inheritance" do
     setup do
