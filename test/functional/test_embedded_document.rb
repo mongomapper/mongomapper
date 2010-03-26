@@ -81,6 +81,23 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
   end
 
+  context "#destroyed?" do
+    setup do
+      @doc = @klass.create(:pets => [@pet_klass.new(:name => 'sparky')])
+    end
+
+    should "be false if root document is not destroyed" do
+      @doc.should_not be_destroyed
+      @doc.pets.first.should_not be_destroyed
+    end
+    
+    should "be true if root document is destroyed" do
+      @doc.destroy
+      @doc.should be_destroyed
+      @doc.pets.first.should be_destroyed
+    end
+  end
+
   should "be able to save" do
     person = @klass.create
 

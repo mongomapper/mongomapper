@@ -38,6 +38,10 @@ module MongoMapper
     end
 
     module InstanceMethods
+      def destroyed?
+        _root_document.destroyed?
+      end
+      
       def save(options={})
         if result = _root_document.try(:save, options)
           @new = false
