@@ -12,7 +12,7 @@ Jeweler::Tasks.new do |gem|
   gem.authors     = ["John Nunemaker"]
   gem.version     = MongoMapper::Version
 
-  gem.add_dependency('activesupport', '>= 2.3')
+  gem.add_dependency('activesupport', '>= 2.3.4')
   gem.add_dependency('mongo', '0.19.1')
   gem.add_dependency('jnunemaker-validatable', '1.8.3')
 
