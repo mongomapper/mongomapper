@@ -15,6 +15,7 @@ module MongoMapper
         plugin Plugins::Inspect
         plugin Plugins::Keys
         plugin Plugins::Logger
+        plugin Plugins::Persistence
         plugin Plugins::Protected
         plugin Plugins::Rails
         plugin Plugins::Serialization

@@ -189,4 +189,14 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     pet.expects(:save!)
     pet.update_attributes!(attributes)
   end
+  
+  should "have database instance method that is equal to root document" do
+    person = @klass.create(:pets => [@pet_klass.new(:name => 'sparky')])
+    person.pets.first.database.should == person.database
+  end
+  
+  should "have collection instance method that is equal to root document" do
+    person = @klass.create(:pets => [@pet_klass.new(:name => 'sparky')])
+    person.pets.first.collection.name.should == person.collection.name
+  end
 end
