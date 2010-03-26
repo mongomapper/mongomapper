@@ -126,7 +126,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @doc = @klass.new(:name => 'persisted doc', :pets => [@pet_klass.new(:name => 'persisted pet')])
     end
 
-    should_eventually "be false if new" do
+    should "be false if new" do
       @doc.pets.first.should_not be_persisted
     end
 
