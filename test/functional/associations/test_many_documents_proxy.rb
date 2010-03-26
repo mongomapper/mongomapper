@@ -5,11 +5,47 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
   def setup
     Project.collection.remove
     Status.collection.remove
+
+    @pet_class = Doc do
+      key :name, String
+      key :owner_id, ObjectId
+    end
+
+    @owner_class = Doc do
+      key :name, String
+    end
+    @owner_class.many :pets, :class => @pet_class, :foreign_key => :owner_id
   end
   
   should "default reader to empty array" do
     project = Project.new
     project.statuses.should == []
+  end
+
+  should "allow assignment of many associated documents using a hash" do
+    person_attributes = {
+      'name' => 'Mr. Pet Lover',
+      'pets' => [
+        {'name' => 'Jimmy', 'species' => 'Cocker Spainel'},
+        {'name' => 'Sasha', 'species' => 'Siberian Husky'},
+      ]
+    }
+
+    owner = @owner_class.new(person_attributes)
+    owner.name.should == 'Mr. Pet Lover'
+    owner.pets[0].name.should == 'Jimmy'
+    owner.pets[0].species.should == 'Cocker Spainel'
+    owner.pets[1].name.should == 'Sasha'
+    owner.pets[1].species.should == 'Siberian Husky'
+
+    owner.save.should be_true
+    owner.reload
+
+    owner.name.should == 'Mr. Pet Lover'
+    owner.pets[0].name.should == 'Jimmy'
+    owner.pets[0].species.should == 'Cocker Spainel'
+    owner.pets[1].name.should == 'Sasha'
+    owner.pets[1].species.should == 'Siberian Husky'
   end
 
   should "allow adding to association like it was an array" do
