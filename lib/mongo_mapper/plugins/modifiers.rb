@@ -81,6 +81,10 @@ module MongoMapper
         def push_uniq(hash)
           self.class.push_uniq({:_id => id}, hash)
         end
+
+        def pop(hash)
+          self.class.pop({:_id => id}, hash)
+        end
       end
     end
   end

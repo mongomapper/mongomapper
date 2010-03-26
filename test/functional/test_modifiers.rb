@@ -317,6 +317,14 @@ class ModifierTest < Test::Unit::TestCase
       page2.reload
       page.tags.should == %w(foo)
     end
-  end
+    
+    should "be able to pop with modifier hashes" do
+      page = @page_class.create(:tags => %w(foo bar))
 
+      page.pop({:tags => 1})
+
+      page.reload
+      page.tags.should == %w(foo)
+    end
+  end
 end
