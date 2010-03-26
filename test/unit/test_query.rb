@@ -150,6 +150,14 @@ class QueryTest < Test::Unit::TestCase
         :foo => {:bar => {'$any' => [1,2,3]}}
       }
     end
+    
+    should "make sure that ids in array are object ids" do
+      id1, id2, id3 = Mongo::ObjectID.new, Mongo::ObjectID.new, Mongo::ObjectID.new
+      
+      Query.new(Room, :_id => [id1.to_s, id2.to_s, id3.to_s]).criteria.should == {
+        :_id => {'$in' => [id1, id2, id3]}
+      }
+    end
   end
 
   context "ordering" do
