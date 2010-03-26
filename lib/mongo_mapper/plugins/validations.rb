@@ -37,7 +37,7 @@ module MongoMapper
 
         def where_conditions(instance)
           conditions = {}
-          conditions[attribute] = /#{instance[attribute].to_s}/i unless case_sensitive
+          conditions[attribute] = /^#{Regexp.escape(instance[attribute].to_s)}$/i unless case_sensitive
           conditions
         end
       end
