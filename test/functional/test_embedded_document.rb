@@ -53,31 +53,54 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     doc1.reload.message.class.should be(Enter)
   end
 
-  context "new?" do
+  context "new? (embedded key)" do
     setup do
       @klass.key :foo, @address_class
     end
 
-    should "be new until document is saved" do
+    should "be true until document is saved" do
       address = @address_class.new(:city => 'South Bend', :state => 'IN')
       doc = @klass.new(:foo => address)
-      address.new?.should == true
+      address.new?.should be_true
     end
 
-    should "not be new after document is saved" do
+    should "be false after document is saved" do
       address = @address_class.new(:city => 'South Bend', :state => 'IN')
       doc = @klass.new(:foo => address)
       doc.save
-      doc.foo.new?.should == false
+      doc.foo.new?.should be_false
     end
 
-    should "not be new when document is read back" do
+    should "be false when loaded from database" do
       address = @address_class.new(:city => 'South Bend', :state => 'IN')
       doc = @klass.new(:foo => address)
       doc.save
 
-      doc = doc.reload
-      doc.foo.new?.should == false
+      doc.reload
+      doc.foo.new?.should be_false
+    end
+  end
+
+  context "new? (embedded association)" do
+    setup do
+      @doc = @klass.new(:pets => [{:name => 'poo bear'}])
+    end
+
+    should "be true until document is saved" do
+      @doc.should be_new
+      @doc.pets.first.should be_new
+    end
+
+    should "be false after document is saved" do
+      @doc.save
+      @doc.pets.first.should_not be_new
+    end
+
+    should "be false when loaded from database" do
+      @doc.save
+      @doc.pets.first.should_not be_new
+      @doc.reload
+      @doc.pets.first.should_not be_new
     end
   end
 
@@ -90,11 +113,33 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @doc.should_not be_destroyed
       @doc.pets.first.should_not be_destroyed
     end
-    
+
     should "be true if root document is destroyed" do
       @doc.destroy
       @doc.should be_destroyed
       @doc.pets.first.should be_destroyed
+    end
+  end
+
+  context "#persisted?" do
+    setup do
+      @doc = @klass.new(:name => 'persisted doc', :pets => [@pet_klass.new(:name => 'persisted pet')])
+    end
+
+    should_eventually "be false if new" do
+      @doc.pets.first.should_not be_persisted
+    end
+
+    should "be false if destroyed" do
+      @doc.save
+      @doc.destroy
+      @doc.pets.first.should be_destroyed
+      @doc.pets.first.should_not be_persisted
+    end
+
+    should "be true if not new or destroyed" do
+      @doc.save
+      @doc.pets.first.should be_persisted
     end
   end
 

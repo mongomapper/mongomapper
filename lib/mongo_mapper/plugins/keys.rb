@@ -146,15 +146,9 @@ module MongoMapper
 
       module InstanceMethods
         def initialize(attrs={}, from_database=false)
-          unless attrs.nil?
-            provided_keys = attrs.keys.map { |k| k.to_s }
-            unless provided_keys.include?('_id') || provided_keys.include?('id')
-              write_key :_id, Mongo::ObjectID.new
-            end
-          end
-
-          assign_type_if_present
-
+          default_id_value(attrs)
+          assign_type
+          
           if from_database
             @new = false
             self.attributes = attrs
@@ -164,8 +158,8 @@ module MongoMapper
           end
         end
 
-        def new?
-          @new
+        def persisted?
+          !new? && !destroyed?
         end
 
         def attributes=(attrs)
@@ -175,9 +169,6 @@ module MongoMapper
             writer_method = "#{name}="
 
             if respond_to?(writer_method)
-              if writer_method == '_root_document='
-                puts "_root_document= #{value.inspect}"
-              end
               self.send(writer_method, value)
             else
               self[name.to_s] = value
@@ -238,28 +229,33 @@ module MongoMapper
           write_key(name, value)
         end
 
-        # @api public
         def keys
           self.class.keys
         end
 
-        # @api private?
         def key_names
           keys.keys
         end
 
-        # @api private?
         def non_embedded_keys
           keys.values.select { |key| !key.embeddable? }
         end
 
-        # @api private?
         def embedded_keys
           keys.values.select { |key| key.embeddable? }
         end
 
         private
-          def assign_type_if_present
+          def default_id_value(attrs)
+            unless attrs.nil?
+              provided_keys = attrs.keys.map { |k| k.to_s }
+              unless provided_keys.include?('_id') || provided_keys.include?('id')
+                write_key :_id, Mongo::ObjectID.new
+              end
+            end
+          end
+
+          def assign_type
             self._type = self.class.name if respond_to?(:_type=)
           end
 

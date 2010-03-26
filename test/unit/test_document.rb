@@ -105,12 +105,6 @@ class DocumentTest < Test::Unit::TestCase
       @document.new._id.should be_instance_of(Mongo::ObjectID)
     end
     
-    should "have to_param that is string representation of id" do
-      doc = @document.new(:id => Mongo::ObjectID.new)
-      doc.to_param.should == doc.id.to_s
-      doc.to_param.should be_instance_of(String)
-    end
-    
     should "have access to logger" do
       doc = @document.new
       doc.logger.should == @document.logger

@@ -315,12 +315,12 @@ module MongoMapper
         self.class.delete(id) unless new?
       end
 
-      def destroyed?
-        @_destroyed == true
+      def new?
+        @new
       end
 
-      def persisted?
-        !new? && !destroyed?
+      def destroyed?
+        @_destroyed == true
       end
 
       def reload

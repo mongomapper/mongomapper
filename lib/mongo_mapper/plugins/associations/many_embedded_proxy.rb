@@ -11,10 +11,10 @@ module MongoMapper
 
         private
           def find_target
-            (@_values || []).map do |v|
-              child = klass.load(v)
-              assign_references(child)
-              child
+            (@_values || []).map do |attrs|
+              klass.load(attrs).tap do |child|
+                assign_references(child)
+              end
             end
           end
       end

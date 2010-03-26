@@ -7,11 +7,15 @@ module MongoMapper
 
       module InstanceMethods
         def to_param
-          id.to_s
+          id.to_s if persisted?
         end
 
         def to_model
           self
+        end
+
+        def to_key
+          [id] if persisted?
         end
 
         def new_record?

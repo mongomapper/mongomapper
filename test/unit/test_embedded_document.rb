@@ -11,7 +11,7 @@ module KeyOverride
 end
 
 class EmbeddedDocumentTest < Test::Unit::TestCase
-  context "" do
+  context "EmbeddedDocuments" do
     setup do
       class ::Grandparent
         include MongoMapper::EmbeddedDocument
@@ -219,12 +219,6 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
           key :name, String
           key :age, Integer
         end
-      end
-
-      should "have to_param that is string representation of id" do
-        doc = @document.new
-        doc.to_param.should == doc.id.to_s
-        doc.to_param.should be_instance_of(String)
       end
 
       should "have access to class logger" do

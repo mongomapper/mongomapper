@@ -1,4 +1,6 @@
 require 'test_helper'
+# For testing against edge rails also.
+# $:.unshift '/Users/jnunemaker/dev/ruby/rails/activemodel/lib'
 require 'active_model'
 require 'models'
 
