@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/../lib/mongo_mapper')
+require 'fileutils'
 
 gem 'jnunemaker-matchy', '0.4.0'
 gem 'shoulda', '2.10.2'

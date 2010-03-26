@@ -102,8 +102,8 @@ module MongoMapper
 
       def normalized_value(field, value)
         case value
-          when Array
-            modifier?(field) ? value : {'$in' => value}
+          when Array, Set
+            modifier?(field) ? value.to_a : {'$in' => value.to_a}
           when Hash
             to_criteria(value, field)
           when Time
