@@ -37,6 +37,7 @@ module MongoMapper
 
           unless doc.nil?
             owner.save if owner.new?
+            doc = klass.new(doc) unless klass === doc
             doc[foreign_key] = owner.id
             doc.save if doc.new?
             loaded

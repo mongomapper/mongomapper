@@ -25,22 +25,44 @@ class OneProxyTest < Test::Unit::TestCase
     post.author.object_id.should == post.author.target.object_id
   end
   
-  should "be able to replace the association" do
-    @post_class.one :author, :class => @author_class
-    
-    post = @post_class.new
-    author = @author_class.new(:name => 'Frank')
-    post.author = author
-    post.reload
-    
-    post.author.should == author
-    post.author.nil?.should be_false
-    
-    new_author = @author_class.new(:name => 'Emily')
-    post.author = new_author
-    post.author.should == new_author
+  context "replacing the association" do
+    context "with an object of the class" do
+      should "work" do
+        @post_class.one :author, :class => @author_class
+
+        post = @post_class.new
+        author = @author_class.new(:name => 'Frank')
+        post.author = author
+        post.reload
+
+        post.author.should == author
+        post.author.nil?.should be_false
+
+        new_author = @author_class.new(:name => 'Emily')
+        post.author = new_author
+        post.author.should == new_author
+      end
+    end
+
+    context "with a Hash" do
+      should "convert to an object of the class and work" do
+        @post_class.one :author, :class => @author_class
+
+        post = @post_class.new
+        author = { 'name' => 'Frank' }
+        post.author = author
+        post.reload
+
+        post.author.name.should == 'Frank'
+        post.author.nil?.should be_false
+
+        new_author = { 'name' => 'Emily' }
+        post.author = new_author
+        post.author.name.should == 'Emily'
+      end
+    end
   end
-  
+
   should "have boolean method for testing presence" do
     @post_class.one :author, :class => @author_class
     
