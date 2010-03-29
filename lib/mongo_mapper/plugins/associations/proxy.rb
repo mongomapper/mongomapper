@@ -96,8 +96,14 @@ module MongoMapper
           end
 
           def load_target
-            @target = find_target unless loaded?
-            loaded
+            unless loaded?
+              if @target.is_a?(Array) && @target.any?
+                @target = find_target + @target.find_all { |record| record.new? }
+              else
+                @target = find_target
+              end
+              loaded
+            end
             @target
           rescue MongoMapper::DocumentNotFound
             reset
