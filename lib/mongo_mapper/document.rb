@@ -307,6 +307,10 @@ module MongoMapper
         safe = options[:safe] || false
         @new = false
         collection.save(to_mongo, :safe => safe)
+        associations.each do |association_name, association|
+          proxy = get_proxy(association)
+          proxy.save_to_collection(options) if proxy.proxy_respond_to?(:save_to_collection)
+        end
       end
     end
   end # Document

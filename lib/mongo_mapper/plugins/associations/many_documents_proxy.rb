@@ -52,7 +52,8 @@ module MongoMapper
         def build(attrs={})
           doc = klass.new(attrs)
           apply_scope(doc)
-          reset
+          @target ||= [] unless loaded?
+          @target << doc
           doc
         end
 
@@ -86,6 +87,10 @@ module MongoMapper
             doc.update_attributes(self.foreign_key => nil)
           end
           reset
+        end
+        
+        def save_to_collection(options = {})
+          @target.each { |doc| doc.save(options) } if @target
         end
 
         protected
