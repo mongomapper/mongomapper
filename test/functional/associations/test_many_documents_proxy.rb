@@ -132,6 +132,19 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       status.save!
       project.statuses.size.should == 1
     end
+    
+    should "update collection without save" do
+      project = Project.create
+      project.statuses.build(:name => 'Foo')
+      project.statuses.size.should == 1
+    end
+    
+    should "save built document when saving parent" do
+      project = Project.create
+      status = project.statuses.build(:name => 'Foo')
+      project.save!
+      status.should_not be_new
+    end
   end
   
   context "create" do
