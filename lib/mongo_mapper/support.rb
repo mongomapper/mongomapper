@@ -182,14 +182,15 @@ class Time
     if value.nil? || value == ''
       nil
     else
-      time = value.is_a?(Time) ? value : MongoMapper.time_class.parse(value.to_s)
+      time_class = Time.try(:zone).present? ? Time.zone : Time
+      time = value.is_a?(Time) ? value : time_class.parse(value.to_s)
       # Convert time to milliseconds since BSON stores dates with that accurracy, but Ruby uses microseconds
       Time.at((time.to_f * 1000).round / 1000.0).utc if time
     end
   end
   
   def self.from_mongo(value)
-    if MongoMapper.use_time_zone? && value.present?
+    if Time.try(:zone).present? && value.present?
       value.in_time_zone(Time.zone)
     else
       value

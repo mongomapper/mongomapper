@@ -113,21 +113,6 @@ module MongoMapper
     end
   end
 
-  # @api private
-  def self.use_time_zone?
-    Time.respond_to?(:zone) && Time.zone ? true : false
-  end
-
-  # @api private
-  def self.time_class
-    use_time_zone? ? Time.zone : Time
-  end
-
-  # @api private
-  def self.normalize_object_id(value)
-    value.is_a?(String) ? Mongo::ObjectID.from_string(value) : value
-  end
-
   autoload :Query,            'mongo_mapper/query'
   autoload :Document,         'mongo_mapper/document'
   autoload :EmbeddedDocument, 'mongo_mapper/embedded_document'

@@ -214,7 +214,7 @@ module MongoMapper
 
         def id=(value)
           if self.class.using_object_id?
-            value = MongoMapper.normalize_object_id(value)
+            value = ObjectId.to_mongo(value)
           end
 
           self[:_id] = value
