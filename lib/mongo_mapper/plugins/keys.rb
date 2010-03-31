@@ -147,7 +147,6 @@ module MongoMapper
       module InstanceMethods
         def initialize(attrs={}, from_database=false)
           default_id_value(attrs)
-          assign_type
           
           if from_database
             @new = false
@@ -156,6 +155,8 @@ module MongoMapper
             @new = true
             assign(attrs)
           end
+          
+          assign_type
         end
 
         def persisted?

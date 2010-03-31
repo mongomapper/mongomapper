@@ -1091,6 +1091,11 @@ class DocumentTest < Test::Unit::TestCase
       }.should change { DocParent.count }.by(-2)
     end
 
+    should "set type from class and ignore _type in attributes" do
+      doc = DocSon.create(:_type => 'DocDaughter', :name => 'John')
+      DocParent.first.should be_instance_of(DocSon)
+    end
+
     should "be able to reload parent inherited class" do
       brian = DocParent.create(:name => 'Brian')
       brian.name = 'B-Dawg'
