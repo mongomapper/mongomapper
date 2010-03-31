@@ -56,7 +56,7 @@ module MongoMapper
         end
 
         def embeddable?
-          many? && klass.embeddable?
+          (one? || many?) && klass.embeddable?
         end
 
         def type_key_name
@@ -95,7 +95,7 @@ module MongoMapper
                 end
               end
             elsif one?
-              OneProxy
+              klass.embeddable? ? OneEmbeddedProxy : OneProxy
             else
               polymorphic? ? BelongsToPolymorphicProxy : BelongsToProxy
             end

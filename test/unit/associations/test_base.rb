@@ -194,8 +194,13 @@ class AssociationBaseTest < Test::Unit::TestCase
     end
     
     should "be OneProxy for one" do
-      base = Base.new(:one, :target, :polymorphic => true)
+      base = Base.new(:one, :status, :polymorphic => true)
       base.proxy_class.should == OneProxy
+    end
+
+    should "be OneEmbeddedProxy for one embedded" do
+      base = Base.new(:one, :media)
+      base.proxy_class.should == OneEmbeddedProxy
     end
     
     should "be InArrayProxy for many with :in option" do
