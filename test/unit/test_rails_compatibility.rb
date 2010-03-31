@@ -29,9 +29,9 @@ class TestRailsCompatibility < Test::Unit::TestCase
     end
     
     should "have column names" do
-      Item.column_names.sort.should == ['_id', 'for_all']
-      FirstItem.column_names.sort.should == ['_id', 'first_only', 'for_all']
-      SecondItem.column_names.sort.should == ['_id', 'for_all', 'second_only']
+      Item.column_names.sort.should == ['_id', '_type', 'for_all']
+      FirstItem.column_names.sort.should == ['_id', '_type', 'first_only', 'for_all']
+      SecondItem.column_names.sort.should == ['_id', '_type', 'for_all', 'second_only']
     end
     
     should "alias new to new_record?" do

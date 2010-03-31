@@ -7,6 +7,7 @@ module MongoMapper
 
       module ClassMethods
         def inherited(descendant)
+          key :_type, String unless keys.keys.include?(:_type)
           descendant.instance_variable_set(:@keys, keys.dup)
           super
         end
