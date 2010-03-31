@@ -36,6 +36,7 @@ module MongoMapper
 
     module ClassMethods
       def inherited(subclass)
+        key :_type, String unless keys.keys.include?(:_type)
         subclass.set_collection_name(collection_name)
         super
       end

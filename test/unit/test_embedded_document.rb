@@ -302,8 +302,8 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
           @klass.new._type.should == 'FooBar'
         end
 
-        should "not change _type if already set" do
-          @klass.new(:_type => 'Foo')._type.should == 'Foo'
+        should "ignore _type attribute and always use class" do
+          @klass.new(:_type => 'Foo')._type.should == 'FooBar'
         end
       end
 

@@ -360,7 +360,6 @@ class IdentityMapTest < Test::Unit::TestCase
           include MongoMapper::Document
           plugin MongoMapper::Plugins::IdentityMap
           
-          key :_type, String
           key :title, String
           key :parent_id, ObjectId
           

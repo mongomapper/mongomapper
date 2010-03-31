@@ -76,9 +76,7 @@ class ProtectedTest < Test::Unit::TestCase
       class ::GrandParent
         include MongoMapper::Document
 
-        key :_type, String
         key :site_id, ObjectId
-
         attr_protected :site_id
       end
       GrandParent.collection.remove
