@@ -40,14 +40,8 @@ module MongoMapper
         super
       end
 
-      def ensure_index(name_or_array, options={})
-        keys_to_index = if name_or_array.is_a?(Array)
-          name_or_array.map { |pair| [pair[0], pair[1]] }
-        else
-          name_or_array
-        end
-
-        collection.create_index(keys_to_index, options[:unique])
+      def ensure_index(spec, options={})
+        collection.create_index(spec, options)
       end
 
       def find(*args)
