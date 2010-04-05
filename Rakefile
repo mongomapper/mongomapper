@@ -13,7 +13,7 @@ Jeweler::Tasks.new do |gem|
   gem.version     = MongoMapper::Version
 
   gem.add_dependency('activesupport', '>= 2.3.4')
-  gem.add_dependency('mongo', '0.19.1')
+  gem.add_dependency('mongo', '0.19.3')
   gem.add_dependency('jnunemaker-validatable', '1.8.3')
 
   gem.add_development_dependency('jnunemaker-matchy', '0.4.0')
@@ -30,22 +30,6 @@ Rake::TestTask.new(:test) do |test|
   test.ruby_opts << '-rubygems'
   test.pattern = 'test/**/test_*.rb'
   test.verbose = true
-end
-
-namespace :test do
-  Rake::TestTask.new(:units) do |test|
-    test.libs << 'test'
-    test.ruby_opts << '-rubygems'
-    test.pattern = 'test/unit/**/test_*.rb'
-    test.verbose = true
-  end
-
-  Rake::TestTask.new(:functionals) do |test|
-    test.libs << 'test'
-    test.ruby_opts << '-rubygems'
-    test.pattern = 'test/functional/**/test_*.rb'
-    test.verbose = true
-  end
 end
 
 task :default  => :test

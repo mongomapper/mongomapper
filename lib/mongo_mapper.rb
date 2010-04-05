@@ -1,19 +1,13 @@
+# Make sure you have the following libs in your load path or you could have issues:
+#   gem 'activesupport', '>= 2.3.4'
+#   gem 'mongo', '0.19.3'
+#   gem 'jnunemaker-validatable', '1.8.3'
+# gem 'activesupport', '= 2.3.4'
 require 'set'
 require 'uri'
-
-# if Gem is defined i'll assume you are using rubygems and lock specific versions
-# call me crazy but a plain old require will just get the latest version you have installed
-# so i want to make sure that if you are using gems you do in fact have the correct versions
-# if there is a better way to do this, please enlighten me!
-if self.class.const_defined?(:Gem)
-  gem 'activesupport', '>= 2.3.4'
-  gem 'mongo', '0.19.1'
-  gem 'jnunemaker-validatable', '1.8.3'
-end
-
-require 'active_support/all'
 require 'mongo'
 require 'validatable'
+require 'active_support/all'
 
 module MongoMapper
   # generic MM error
