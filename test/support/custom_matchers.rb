@@ -1,16 +1,4 @@
 module CustomMatchers
-  custom_matcher :be_nil do |receiver, matcher, args|
-    matcher.positive_failure_message = "Expected #{receiver} to be nil but it wasn't"
-    matcher.negative_failure_message = "Expected #{receiver} not to be nil but it was"
-    receiver.nil?
-  end
-  
-  custom_matcher :be_blank do |receiver, matcher, args|
-    matcher.positive_failure_message = "Expected #{receiver} to be blank but it wasn't"
-    matcher.negative_failure_message = "Expected #{receiver} not to be blank but it was"
-    receiver.blank?
-  end
-  
   custom_matcher :be_true do |receiver, matcher, args|
     matcher.positive_failure_message = "Expected #{receiver} to be true but it wasn't"
     matcher.negative_failure_message = "Expected #{receiver} not to be true but it was"
@@ -21,12 +9,6 @@ module CustomMatchers
     matcher.positive_failure_message = "Expected #{receiver} to be false but it wasn't"
     matcher.negative_failure_message = "Expected #{receiver} not to be false but it was"
     receiver.eql?(false)
-  end
-
-  custom_matcher :be_valid do |receiver, matcher, args|
-    matcher.positive_failure_message = "Expected to be valid but it was invalid #{receiver.errors.inspect}"
-    matcher.negative_failure_message = "Expected to be invalid but it was valid #{receiver.errors.inspect}"
-    receiver.valid?
   end
 
   custom_matcher :have_error_on do |receiver, matcher, args|
