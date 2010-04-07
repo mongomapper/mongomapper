@@ -42,6 +42,14 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       address._parent_document.should be(doc)
       address._root_document.should be(doc)
     end
+
+    should "assign _parent_document and _root_document when loading" do
+      address = @address_class.new(:city => 'South Bend', :state => 'IN')
+      doc = @klass.create(:foo => address)
+      doc.reload
+      doc.foo._parent_document.should be(doc)
+      doc.foo._root_document.should be(doc)
+    end
   end
 
   should "correctly instantiate single collection inherited embedded documents" do
