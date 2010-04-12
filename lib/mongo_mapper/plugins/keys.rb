@@ -252,7 +252,7 @@ module MongoMapper
             unless attrs.nil?
               provided_keys = attrs.keys.map { |k| k.to_s }
               unless provided_keys.include?('_id') || provided_keys.include?('id')
-                write_key :_id, Mongo::ObjectID.new
+                write_key :_id, BSON::ObjectID.new
               end
             end
           end

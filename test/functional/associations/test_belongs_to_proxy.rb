@@ -52,7 +52,7 @@ class BelongsToProxyTest < Test::Unit::TestCase
   end
   
   should "return nil if id set but document not found" do
-    id = Mongo::ObjectID.new
+    id = BSON::ObjectID.new
     @comment_class.new(:name => 'Foo', :post_id => id).post.nil?.should be_true
   end
   

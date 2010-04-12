@@ -51,7 +51,7 @@ module MongoMapper
               hash[key] = value.map do |item|
                 item.respond_to?(:as_json) ? item.as_json(options) : item
               end
-            elsif value.is_a? Mongo::ObjectID
+            elsif value.is_a? BSON::ObjectID
               hash[key] = value.to_s
             elsif value.respond_to?(:as_json)
               hash[key] = value.as_json(options)

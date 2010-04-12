@@ -13,7 +13,7 @@ Jeweler::Tasks.new do |gem|
   gem.version     = MongoMapper::Version
 
   gem.add_dependency('activesupport', '>= 2.3.4')
-  gem.add_dependency('mongo', '0.19.3')
+  gem.add_dependency('mongo', '0.20.1')
   gem.add_dependency('jnunemaker-validatable', '1.8.3')
 
   gem.add_development_dependency('jnunemaker-matchy', '0.4.0')

@@ -102,7 +102,7 @@ class DocumentTest < Test::Unit::TestCase
     end
     
     should "create id during initialization" do
-      @document.new._id.should be_instance_of(Mongo::ObjectID)
+      @document.new._id.should be_instance_of(BSON::ObjectID)
     end
     
     should "have access to logger" do
@@ -177,7 +177,7 @@ class DocumentTest < Test::Unit::TestCase
 
     context "equality" do
       setup do
-        @oid = Mongo::ObjectID.new
+        @oid = BSON::ObjectID.new
       end
       
       should "delegate hash to _id" do
@@ -213,7 +213,7 @@ class DocumentTest < Test::Unit::TestCase
       end
 
       should "not be equal if class same but id different" do
-        (@document.new('_id' => @oid) == @document.new('_id' => Mongo::ObjectID.new)).should be(false)
+        (@document.new('_id' => @oid) == @document.new('_id' => BSON::ObjectID.new)).should be(false)
       end
 
       should "not be equal if id same but class different" do

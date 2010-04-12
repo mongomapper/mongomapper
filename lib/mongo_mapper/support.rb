@@ -11,10 +11,10 @@ end
 
 class Binary
   def self.to_mongo(value)
-    if value.is_a?(ByteBuffer)
+    if value.is_a?(BSON::Binary)
       value
     else
-      value.nil? ? nil : ByteBuffer.new(value)
+      value.nil? ? nil : BSON::Binary.new(value)
     end
   end
 
@@ -129,10 +129,10 @@ class ObjectId
   def self.to_mongo(value)
     if value.blank?
       nil
-    elsif value.is_a?(Mongo::ObjectID)
+    elsif value.is_a?(BSON::ObjectID)
       value
     else
-      Mongo::ObjectID.from_string(value.to_s)
+      BSON::ObjectID.from_string(value.to_s)
     end
   end
   
@@ -198,7 +198,7 @@ class Time
   end
 end
 
-class Mongo::ObjectID
+class BSON::ObjectID
   alias_method :original_to_json, :to_json
   
   def to_json(options = nil)
