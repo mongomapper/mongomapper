@@ -69,6 +69,10 @@ class ProtectedTest < Test::Unit::TestCase
       @doc.name.should == 'Stimpson J. Cat'
       @doc.admin.should be_false
     end
+
+    should "accept nil as constructor's argument without raising exception" do
+      lambda { @doc_class.new(nil) }.should_not raise_error
+    end
   end
 
   context "Single collection inherited protected attributes" do
