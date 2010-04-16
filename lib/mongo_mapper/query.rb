@@ -79,7 +79,11 @@ module MongoMapper
             key = normalized_key(key.field)
           end
 
-          criteria[key] = normalized_value(key, value)
+          if criteria[key] && criteria.kind_of?(Hash) && value.kind_of?(Hash)
+            value.keys.each {|k| criteria[key][k] = value[k]}
+          else
+            criteria[key] = normalized_value(key, value)
+          end
         end
 
         criteria

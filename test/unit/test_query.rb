@@ -53,6 +53,12 @@ class QueryTest < Test::Unit::TestCase
       criteria[:created_at]['$gt'].should be_utc
     end
 
+    should "work with multiple symbol operators on the same field" do
+      Query.new(Message, :position.gt => 0, :position.lte => 10).criteria.should == {
+        :position => {"$gt" => 0, "$lte" => 10}
+      }
+    end
+
     should "work with simple criteria" do
       Query.new(Room, :foo => 'bar').criteria.should == {
         :foo => 'bar'
