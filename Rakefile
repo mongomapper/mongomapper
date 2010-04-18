@@ -16,6 +16,7 @@ Jeweler::Tasks.new do |gem|
   gem.add_dependency('mongo', '0.20.1')
   gem.add_dependency('jnunemaker-validatable', '1.8.3')
 
+  gem.add_development_dependency('json', '>= 1.2.3')
   gem.add_development_dependency('jnunemaker-matchy', '0.4.0')
   gem.add_development_dependency('shoulda', '2.10.2')
   gem.add_development_dependency('timecop', '0.3.1')

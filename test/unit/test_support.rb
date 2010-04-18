@@ -356,15 +356,27 @@ class SupportTest < Test::Unit::TestCase
     end
   end
   
+  context "BSON::ObjectID" do
+    context "#as_json" do
+      should "convert object id to string" do
+        id = BSON::ObjectID.new
+        id.as_json.should == id.to_s
+      end
+    end
+    context "#to_json" do
+      should "convert object id to string" do
+        id = BSON::ObjectID.new
+        id.to_json.should == %Q("#{id}")
+      end
+
+      should "support ruby driver syntax also" do
+        id = BSON::ObjectID.new
+        id.original_to_json.should == %Q({"$oid": "#{id}"})
+      end
+    end
+  end
+  
   context "BSON::ObjectID.to_json" do
-    should "convert object id to string" do
-      id = BSON::ObjectID.new
-      id.to_json.should == %Q("#{id}")
-    end
     
-    should "support ruby driver syntax also" do
-      id = BSON::ObjectID.new
-      id.original_to_json.should == %Q({"$oid": "#{id}"})
-    end
   end
 end

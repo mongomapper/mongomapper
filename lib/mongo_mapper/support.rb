@@ -201,8 +201,12 @@ end
 class BSON::ObjectID
   alias_method :original_to_json, :to_json
   
+  def as_json(options=nil)
+    to_s
+  end
+  
   def to_json(options = nil)
-    %Q("#{to_s}")
+    as_json.to_json
   end
 end
 
