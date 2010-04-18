@@ -14,7 +14,7 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
     @owner_class = Doc do
       key :name, String
     end
-    @owner_class.many :pets, :class => @pet_class, :foreign_key => :owner_id
+    @owner_class.many :pets, :class => @pet_class, :foreign_key => :owner_id, :order => 'name'
   end
   
   should "default reader to empty array" do
