@@ -95,7 +95,6 @@ module MongoMapper
           end
 
           def create_key_in_descendants(*args)
-            return if descendants.blank?
             descendants.each { |descendant| descendant.key(*args) }
           end
 

@@ -3,12 +3,12 @@ module MongoMapper
     module Descendants
       module ClassMethods
         def inherited(descendant)
-          (@descendants ||= []) << descendant
+          descendants << descendant
           super
         end
 
         def descendants
-          @descendants
+          @descendants ||= []
         end
       end
     end

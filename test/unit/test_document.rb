@@ -84,8 +84,8 @@ class DocumentTest < Test::Unit::TestCase
   end
   
   context "descendants" do
-    should "default to nil" do
-      Enter.descendants.should be_nil
+    should "default to an empty array" do
+      Enter.descendants.should == []
     end
 
     should "be recorded" do

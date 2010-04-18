@@ -202,8 +202,8 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       end
 
       context "descendants" do
-        should "default to nil" do
-          Child.descendants.should be_nil
+        should "default to an empty array" do
+          Child.descendants.should == []
         end
 
         should "be recorded" do
