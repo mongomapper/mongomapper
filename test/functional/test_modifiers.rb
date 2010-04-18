@@ -211,6 +211,32 @@ class ModifierTest < Test::Unit::TestCase
       page.tags.should == %w(baz)
     end
 
+    should "be able to add to set with criteria and modifier hash" do
+      page  = @page_class.create(:title => 'Home', :tags => 'foo')
+      page2 = @page_class.create(:title => 'Home')
+
+      @page_class.add_to_set({:title => 'Home'}, :tags => 'foo')
+
+      page.reload
+      page.tags.should == %w(foo)
+
+      page2.reload
+      page.tags.should == %w(foo)
+    end
+
+    should "be able to add to set with ids and modifier hash" do
+      page  = @page_class.create(:title => 'Home', :tags => 'foo')
+      page2 = @page_class.create(:title => 'Home')
+
+      @page_class.add_to_set(page.id, page2.id, :tags => 'foo')
+
+      page.reload
+      page.tags.should == %w(foo)
+
+      page2.reload
+      page.tags.should == %w(foo)
+    end
+
     should "be able to push uniq with criteria and modifier hash" do
       page  = @page_class.create(:title => 'Home', :tags => 'foo')
       page2 = @page_class.create(:title => 'Home')
@@ -304,6 +330,20 @@ class ModifierTest < Test::Unit::TestCase
       page.tags.should == %w(bar)
     end
 
+    should "be able to add_to_set with criteria and modifier hash" do
+      page  = @page_class.create(:tags => 'foo')
+      page2 = @page_class.create
+
+      page.add_to_set(:tags => 'foo')
+      page.add_to_set(:tags => 'foo')
+
+      page.reload
+      page.tags.should == %w(foo)
+
+      page2.reload
+      page.tags.should == %w(foo)
+    end
+    
     should "be able to push uniq with criteria and modifier hash" do
       page  = @page_class.create(:tags => 'foo')
       page2 = @page_class.create

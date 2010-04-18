@@ -25,11 +25,10 @@ module MongoMapper
           modifier_update('$pushAll', args)
         end
 
-        def push_uniq(*args)
-          criteria, keys = criteria_and_keys_from_args(args)
-          keys.each { |key, value | criteria[key] = {'$ne' => value} }
-          collection.update(criteria, {'$push' => keys}, :multi => true)
+        def add_to_set(*args)
+          modifier_update('$addToSet', args)
         end
+        alias push_uniq add_to_set
 
         def pull(*args)
           modifier_update('$pull', args)
@@ -78,9 +77,10 @@ module MongoMapper
           self.class.pull({:_id => id}, hash)
         end
 
-        def push_uniq(hash)
+        def add_to_set(hash)
           self.class.push_uniq({:_id => id}, hash)
         end
+        alias push_uniq add_to_set
 
         def pop(hash)
           self.class.pop({:_id => id}, hash)
