@@ -104,6 +104,8 @@ module MongoMapper
         direction ||= 'ASC'
         direction = direction.upcase == 'ASC' ? 1 : -1
         [normalized_key(field).to_s, direction]
+      def to_order(key, direction=nil)
+        [normalized_key(key).to_s, normalized_direction(direction)]
       end
 
       def normalized_key(field)
@@ -121,6 +123,11 @@ module MongoMapper
           else
             value
         end
+      end
+
+      def normalized_direction(direction)
+        direction ||= 'asc'
+        direction.downcase == 'asc' ? Mongo::ASCENDING : Mongo::DESCENDING
       end
 
       def normalized_sort(sort)
