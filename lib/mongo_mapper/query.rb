@@ -75,49 +75,45 @@ module MongoMapper
           end
 
           if symbol_operator?(key)
-            value = {"$#{key.operator}" => value}
-            key = normalized_key(key.field)
+            key, value = normalized_key(key.field), {"$#{key.operator}" => value}
           end
 
-          if criteria[key] && criteria.kind_of?(Hash) && value.kind_of?(Hash)
-            value.keys.each {|k| criteria[key][k] = value[k]}
-          else
-            criteria[key] = normalized_value(key, value)
-          end
+          criteria[key] = normalized_value(criteria, key, value)
         end
 
         criteria
       end
 
-      def to_fields(fields)
-        return fields if fields.class == Hash
-        return if fields.blank?
+      def to_fields(keys)
+        return keys if keys.is_a?(Hash)
+        return nil  if keys.blank?
 
-        if fields.respond_to?(:flatten, :compact)
-          fields.flatten.compact
+        if keys.respond_to?(:flatten, :compact)
+          keys.flatten.compact
         else
-          fields.split(',').map { |field| field.strip }
+          keys.split(',').map { |key| key.strip }
         end
       end
 
-      def to_order(field, direction=nil)
-        direction ||= 'ASC'
-        direction = direction.upcase == 'ASC' ? 1 : -1
-        [normalized_key(field).to_s, direction]
       def to_order(key, direction=nil)
         [normalized_key(key).to_s, normalized_direction(direction)]
       end
 
-      def normalized_key(field)
-        field.to_s == 'id' ? :_id : field
+      def normalized_key(key)
+        key.to_s == 'id' ? :_id : key
       end
 
-      def normalized_value(field, value)
+      # TODO: this is getting heavy enough to move to a class
+      def normalized_value(criteria, key, value)
         case value
           when Array, Set
-            modifier?(field) ? value.to_a : {'$in' => value.to_a}
+            modifier?(key) ? value.to_a : {'$in' => value.to_a}
           when Hash
-            to_criteria(value, field)
+            if criteria[key].kind_of?(Hash)
+              criteria[key].dup.merge(to_criteria(value, key))
+            else
+              to_criteria(value, key)
+            end
           when Time
             value.utc
           else
