@@ -68,7 +68,7 @@ module MongoMapper
           if model.object_id_key?(key)
             case value
               when String
-                value = BSON::ObjectID.from_string(value)
+                value = ObjectId.to_mongo(value)
               when Array
                 value.map! { |id| ObjectId.to_mongo(id) }
             end
