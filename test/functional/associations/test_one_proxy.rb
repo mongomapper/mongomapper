@@ -92,6 +92,7 @@ class OneProxyTest < Test::Unit::TestCase
     post = @post_class.create
     author = @author_class.create(:name => 'Frank', :primary => false, :post_id => post.id)
     primary = @author_class.create(:name => 'Bill', :primary => true, :post_id => post.id)
+    post.reload
     post.author.should == author
     post.primary_author.should == primary
   end
