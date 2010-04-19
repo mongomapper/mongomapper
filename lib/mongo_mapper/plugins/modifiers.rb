@@ -17,6 +17,19 @@ module MongoMapper
           modifier_update('$set', args)
         end
 
+        def unset(*args)
+          if args[0].is_a?(Hash)
+            criteria, keys = args.shift, args
+          else
+            keys, ids = args.partition { |arg| arg.is_a?(Symbol) }
+            criteria = {:id => ids}
+          end
+
+          criteria  = to_criteria(criteria)
+          modifiers = keys.inject({}) { |hash, key| hash[key] = 1; hash }
+          collection.update(criteria, {'$unset' => modifiers}, :multi => true)
+        end
+
         def push(*args)
           modifier_update('$push', args)
         end
@@ -45,8 +58,7 @@ module MongoMapper
         private
           def modifier_update(modifier, args)
             criteria, keys = criteria_and_keys_from_args(args)
-            modifiers = {modifier => keys}
-            collection.update(criteria, modifiers, :multi => true)
+            collection.update(criteria, {modifier => keys}, :multi => true)
           end
 
           def criteria_and_keys_from_args(args)
@@ -57,33 +69,37 @@ module MongoMapper
       end
 
       module InstanceMethods
+        def unset(*keys)
+          self.class.unset(id, *keys)
+        end
+
         def increment(hash)
-          self.class.increment({:_id => id}, hash)
+          self.class.increment(id, hash)
         end
 
         def decrement(hash)
-          self.class.decrement({:_id => id}, hash)
+          self.class.decrement(id, hash)
         end
 
         def set(hash)
-          self.class.set({:_id => id}, hash)
+          self.class.set(id, hash)
         end
 
         def push(hash)
-          self.class.push({:_id => id}, hash)
+          self.class.push(id, hash)
         end
 
         def pull(hash)
-          self.class.pull({:_id => id}, hash)
+          self.class.pull(id, hash)
         end
 
         def add_to_set(hash)
-          self.class.push_uniq({:_id => id}, hash)
+          self.class.push_uniq(id, hash)
         end
         alias push_uniq add_to_set
 
         def pop(hash)
-          self.class.pop({:_id => id}, hash)
+          self.class.pop(id, hash)
         end
       end
     end
