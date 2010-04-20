@@ -28,6 +28,10 @@ module MongoMapper
           key
         end
 
+        def key?(key)
+          keys.keys.include?(key.to_s)
+        end
+
         def using_object_id?
           object_id_key?(:_id)
         end
@@ -147,7 +151,7 @@ module MongoMapper
       module InstanceMethods
         def initialize(attrs={}, from_database=false)
           default_id_value(attrs)
-          
+
           if from_database
             @new = false
             self.attributes = attrs
@@ -155,7 +159,7 @@ module MongoMapper
             @new = true
             assign(attrs)
           end
-          
+
           assign_type
         end
 

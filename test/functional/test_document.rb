@@ -448,6 +448,15 @@ class DocumentTest < Test::Unit::TestCase
         created.last_name.should == 'Nunemaker'
       }.should change { @document.count }.by(1)
     end
+    
+    should "disregard non-keys when creating, but use them in the query" do
+      assert_nothing_raised do
+        @document.create(:first_name => 'John', :age => 9)
+        lambda {
+          @document.first_or_create(:first_name => 'John', :age.gt => 10).first_name.should == 'John'
+        }.should change { @document.count }.by(1)
+      end
+    end
   end
 
   context "first_or_new" do
@@ -466,6 +475,13 @@ class DocumentTest < Test::Unit::TestCase
         created.last_name.should == 'Nunemaker'
         created.should be_new
       }.should_not change { @document.count }
+    end
+    
+    should "disregard non-keys when initializing, but use them in the query" do
+      assert_nothing_raised do
+        @document.create(:first_name => 'John', :age => 9)
+        @document.first_or_new(:first_name => 'John', :age.gt => 10).first_name.should == 'John'
+      end
     end
   end
 

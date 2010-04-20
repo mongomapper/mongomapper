@@ -22,6 +22,18 @@ end
 class KeyTest < Test::Unit::TestCase
   include MongoMapper::Plugins::Keys
 
+  context ".key?" do
+    should "be true if document has key" do
+      Address.key?(:city).should be_true
+      Address.key?('city').should be_true
+    end
+    
+    should "be false if document does not have key" do
+      Address.key?(:foo).should be_false
+      Address.key?('foo').should be_false
+    end
+  end
+
   context "Initializing a new key" do
     should "allow setting the name" do
       Key.new(:foo, String).name.should == 'foo'

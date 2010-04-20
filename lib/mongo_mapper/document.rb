@@ -79,12 +79,12 @@ module MongoMapper
         find(id)
       end
 
-      def first_or_create(arg)
-        first(arg) || create(arg)
+      def first_or_create(args)
+        first(args) || create(args.reject { |key, value| !key?(key) })
       end
 
-      def first_or_new(arg)
-        first(arg) || new(arg)
+      def first_or_new(args)
+        first(args) || new(args.reject { |key, value| !key?(key) })
       end
 
       def first(options={})
