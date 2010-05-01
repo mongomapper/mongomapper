@@ -7,6 +7,7 @@ gem 'json',              '>= 1.2.3'
 gem 'timecop',           '0.3.1'
 gem 'mocha',             '0.9.8'
 
+require 'ostruct'
 require 'shoulda'
 require 'timecop'
 require 'matchy'

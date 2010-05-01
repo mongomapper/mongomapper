@@ -1,6 +1,8 @@
 module MongoMapper
   module Plugins
     module Keys
+      autoload :Key, 'mongo_mapper/plugins/keys/key'
+
       def self.configure(model)
         model.key :_id, ObjectId
       end
@@ -17,15 +19,13 @@ module MongoMapper
         end
 
         def key(*args)
-          key = Key.new(*args)
-          keys[key.name] = key
-
-          create_accessors_for(key)
-          create_key_in_descendants(*args)
-          create_indexes_for(key)
-          create_validations_for(key)
-
-          key
+          Key.new(*args).tap do |key|
+            keys[key.name] = key
+            create_accessors_for(key)
+            create_key_in_descendants(*args)
+            create_indexes_for(key)
+            create_validations_for(key)
+          end
         end
 
         def key?(key)
@@ -62,14 +62,16 @@ module MongoMapper
         end
 
         private
-          def accessors_module
-            module_defined =  if method(:const_defined?).arity == 1 # Ruby 1.9 compat check
-                                const_defined?('MongoMapperKeys')
-                              else
-                                const_defined?('MongoMapperKeys', false)
-                              end
+          def key_accessors_module_defined?
+            if method(:const_defined?).arity == 1 # Ruby 1.9 compat check
+              const_defined?('MongoMapperKeys')
+            else
+              const_defined?('MongoMapperKeys', false)
+            end
+          end
 
-            if module_defined
+          def accessors_module
+            if key_accessors_module_defined?
               const_get 'MongoMapperKeys'
             else
               const_set 'MongoMapperKeys', Module.new
@@ -154,7 +156,7 @@ module MongoMapper
 
           if from_database
             @new = false
-            self.attributes = attrs
+            load_from_database(attrs)
           else
             @new = true
             assign(attrs)
@@ -170,13 +172,11 @@ module MongoMapper
         def attributes=(attrs)
           return if attrs.blank?
 
-          attrs.each_pair do |name, value|
-            writer_method = "#{name}="
-
-            if respond_to?(writer_method)
-              self.send(writer_method, value)
+          attrs.each_pair do |key, value|
+            if respond_to?(:"#{key}=")
+              self.send(:"#{key}=", value)
             else
-              self[name.to_s] = value
+              self[key] = value
             end
           end
         end
@@ -255,6 +255,17 @@ module MongoMapper
         end
 
         private
+          def load_from_database(attrs)
+            return if attrs.blank?
+            attrs.each do |key, value|
+              if respond_to?(:"#{key}=") && !self.class.key?(key)
+                self.send(:"#{key}=", value)
+              else
+                self[key] = value
+              end
+            end
+          end
+
           def default_id_value(attrs)
             unless attrs.nil?
               provided_keys = attrs.keys.map { |k| k.to_s }
@@ -278,68 +289,29 @@ module MongoMapper
             end
           end
 
-          def read_key(name)
-            if key = keys[name]
-              var_name = "@#{name}"
-              value = key.get(instance_variable_get(var_name))
+          def read_key(key_name)
+            if key = keys[key_name]
+              value = key.get(instance_variable_get(:"@#{key_name}"))
               set_parent_document(key, value)
-              instance_variable_set(var_name, value)
+              instance_variable_set(:"@#{key_name}", value)
             else
-              raise KeyNotFound, "Could not find key: #{name.inspect}"
+              raise KeyNotFound, "Could not find key: #{key_name.inspect}"
             end
           end
 
           def read_key_before_typecast(name)
-            instance_variable_get("@#{name}_before_typecast")
+            instance_variable_get(:"@#{name}_before_typecast")
           end
 
           def write_key(name, value)
-            key = keys[name]
-
+            key = keys[name.to_s]
             set_parent_document(key, value)
-            instance_variable_set "@#{name}_before_typecast", value
-            instance_variable_set "@#{name}", key.set(value)
+            instance_variable_set :"@#{name}_before_typecast", value
+            instance_variable_set :"@#{name}", key.set(value)
           end
       end
 
-      class Key
-        attr_accessor :name, :type, :options, :default_value
 
-        def initialize(*args)
-          options = args.extract_options!
-          @name, @type = args.shift.to_s, args.shift
-          self.options = (options || {}).symbolize_keys
-          self.default_value = self.options.delete(:default)
-        end
-
-        def ==(other)
-          @name == other.name && @type == other.type
-        end
-
-        def embeddable?
-          type.respond_to?(:embeddable?) && type.embeddable? ? true : false
-        end
-
-        def number?
-          [Integer, Float].include?(type)
-        end
-
-        def get(value)
-          if value.nil? && !default_value.nil?
-            if default_value.respond_to?(:call)
-              return default_value.call
-            else
-              return default_value
-            end
-          end
-
-          type.from_mongo(value)
-        end
-
-        def set(value)
-          type.to_mongo(value)
-        end
-      end
     end
   end
 end
