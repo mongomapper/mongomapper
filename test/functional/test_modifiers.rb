@@ -44,7 +44,7 @@ class ModifierTest < Test::Unit::TestCase
         assert_keys_removed @page2, :title, :tags
       end
     end
-    
+
     context "increment" do
       setup do
         @page  = @page_class.create(:title => 'Home')
@@ -65,7 +65,7 @@ class ModifierTest < Test::Unit::TestCase
         assert_page_counts @page2, 1, 2, 3
       end
     end
-    
+
     context "decrement" do
       setup do
         @page = @page_class.create(:title => 'Home', :day_count => 1, :week_count => 2, :month_count => 3)
@@ -85,7 +85,7 @@ class ModifierTest < Test::Unit::TestCase
         assert_page_counts @page, 0, 0, 0
         assert_page_counts @page2, 0, 0, 0
       end
-      
+
       should "decrement with positive or negative numbers" do
         @page_class.decrement(@page.id, @page2.id, :day_count => -1, :week_count => 2, :month_count => -3)
 
@@ -260,7 +260,7 @@ class ModifierTest < Test::Unit::TestCase
     context "push_uniq" do
       setup do
         @page  = @page_class.create(:title => 'Home', :tags => 'foo')
-        @page2 = @page_class.create(:title => 'Home')        
+        @page2 = @page_class.create(:title => 'Home')
       end
 
       should "be able to push uniq with criteria and modifier hash" do
@@ -309,7 +309,7 @@ class ModifierTest < Test::Unit::TestCase
       page.unset(:title, :tags)
       assert_keys_removed page, :title, :tags
     end
-    
+
     should "be able to increment with modifier hashes" do
       page = @page_class.create
       page.increment(:day_count => 1, :week_count => 2, :month_count => 3)
@@ -368,7 +368,7 @@ class ModifierTest < Test::Unit::TestCase
       page2.reload
       page.tags.should == %w(foo)
     end
-    
+
     should "be able to push uniq with criteria and modifier hash" do
       page  = @page_class.create(:tags => 'foo')
       page2 = @page_class.create
@@ -382,7 +382,7 @@ class ModifierTest < Test::Unit::TestCase
       page2.reload
       page.tags.should == %w(foo)
     end
-    
+
     should "be able to pop with modifier hashes" do
       page = @page_class.create(:tags => %w(foo bar))
       page.pop(:tags => 1)

@@ -5,7 +5,7 @@ class DescendantAppendsTest < Test::Unit::TestCase
     should "default descendants to a new set" do
       MongoMapper::Document.descendants.should be_instance_of(Set)
     end
-    
+
     should 'allow extensions to Document to be appended' do
       module Extension; def test_this_extension; end end
       MongoMapper::Document.append_extensions(Extension)
@@ -34,12 +34,12 @@ class DescendantAppendsTest < Test::Unit::TestCase
       article.new.should respond_to(:test_this_inclusion)
     end
   end
-  
+
   context "EmbeddedDocument" do
     should "default descendants to a new set" do
       MongoMapper::EmbeddedDocument.descendants.should be_instance_of(Set)
     end
-    
+
     should 'allow extensions to Document to be appended' do
       module Extension; def test_this_extension; end end
       MongoMapper::EmbeddedDocument.append_extensions(Extension)

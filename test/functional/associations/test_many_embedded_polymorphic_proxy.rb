@@ -6,7 +6,7 @@ class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
     Catalog.collection.remove
     TrModels::Fleet.collection.remove
   end
-  
+
   should "default reader to empty array" do
     catalog = Catalog.new
     catalog.medias.should == []
@@ -29,12 +29,12 @@ class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
     catalog.medias[0].file.should == 'video.mpg'
     catalog.medias[0].new?.should == false
   end
-  
+
   context "count" do
     should "default to 0" do
       Catalog.new.medias.count.should == 0
     end
-    
+
     should 'return correct count if any are embedded' do
       catalog = Catalog.new
       catalog.medias = [
@@ -48,8 +48,8 @@ class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
       catalog.medias.count.should == 3
     end
   end
-  
-  should "store different associations" do      
+
+  should "store different associations" do
     catalog = Catalog.new
     catalog.medias = [
       Video.new('file' => 'video.mpg', 'length' => 3600),
@@ -57,7 +57,7 @@ class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
       Image.new('file' => 'image.png', 'width' => 800, 'height' => 600)
     ]
     catalog.save.should be_true
-    
+
     catalog = catalog.reload
     catalog.medias.size.should == 3
     catalog.medias[0].file.should == 'video.mpg'
@@ -68,18 +68,18 @@ class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
     catalog.medias[2].width.should == 800
     catalog.medias[2].height.should == 600
   end
-  
+
   context "With modularized models" do
     should "set associations correctly" do
-      fleet_attributes = { 
-        'name' => 'My Fleet', 
+      fleet_attributes = {
+        'name' => 'My Fleet',
         'transports' => [
           {'_type' => 'TrModels::Ambulance', 'license_plate' => 'GGG123', 'icu' => true},
-          {'_type' => 'TrModels::Car', 'license_plate' => 'ABC123', 'model' => 'VW Golf', 'year' => 2001}, 
+          {'_type' => 'TrModels::Car', 'license_plate' => 'ABC123', 'model' => 'VW Golf', 'year' => 2001},
           {'_type' => 'TrModels::Car', 'license_plate' => 'DEF123', 'model' => 'Honda Accord', 'year' => 2008},
-        ] 
+        ]
       }
-      
+
       fleet = TrModels::Fleet.new(fleet_attributes)
       fleet.transports.size.should == 3
       fleet.transports[0].class.should == TrModels::Ambulance
@@ -92,9 +92,9 @@ class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
       fleet.transports[2].class.should == TrModels::Car
       fleet.transports[2].license_plate.should == 'DEF123'
       fleet.transports[2].model.should == 'Honda Accord'
-      fleet.transports[2].year.should == 2008      
+      fleet.transports[2].year.should == 2008
       fleet.save.should be_true
-      
+
       fleet = fleet.reload
       fleet.transports.size.should == 3
       fleet.transports[0].license_plate.should == 'GGG123'
@@ -104,31 +104,31 @@ class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
       fleet.transports[1].year.should == 2001
       fleet.transports[2].license_plate.should == 'DEF123'
       fleet.transports[2].model.should == 'Honda Accord'
-      fleet.transports[2].year.should == 2008      
+      fleet.transports[2].year.should == 2008
     end
-    
+
     should "default reader to empty array" do
       fleet = TrModels::Fleet.new
       fleet.transports.should == []
     end
-    
+
     should "allow adding to association like it was an array" do
       fleet = TrModels::Fleet.new
       fleet.transports << TrModels::Car.new
       fleet.transports.push TrModels::Bus.new
       fleet.transports.size.should == 2
     end
-    
+
     should "be able to replace the association" do
       fleet = TrModels::Fleet.new
       fleet.transports = [TrModels::Car.new('license_plate' => 'DCU2013', 'model' => 'Honda Civic')]
       fleet.save.should be_true
-    
+
       fleet = fleet.reload
       fleet.transports.size.should == 1
       fleet.transports[0].license_plate.should == 'DCU2013'
     end
-    
+
     should "store different associations" do
       fleet = TrModels::Fleet.new
       fleet.transports = [
@@ -137,7 +137,7 @@ class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
         TrModels::Ambulance.new('license_plate' => 'HDD3030', 'icu' => true)
       ]
       fleet.save.should be_true
-    
+
       fleet = fleet.reload
       fleet.transports.size.should == 3
       fleet.transports[0].license_plate.should == 'ABC1223'
@@ -161,7 +161,7 @@ class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
       catalog.save
       catalog.medias.visible.should == [medias[0], medias[1]]
     end
-  
+
     should "work using many's :extend option" do
       fleet = TrModels::Fleet.new
       transports = fleet.transports = [

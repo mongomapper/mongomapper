@@ -84,7 +84,7 @@ module MongoMapper
 
           proxy
         end
-        
+
         def save_to_collection(options = {})
           super
           associations.each do |association_name, association|

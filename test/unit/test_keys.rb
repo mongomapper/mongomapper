@@ -31,7 +31,7 @@ class KeyTest < Test::Unit::TestCase
       Address.key?(:foo).should be_false
     end
   end
-  
+
   context ".key?('string')" do
     should "be true if document has key" do
       Address.key?('city').should be_true

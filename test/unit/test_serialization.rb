@@ -9,7 +9,7 @@ class SerializationTest < Test::Unit::TestCase
       key :preferences, Hash
       key :created_at, Time
     end
-    
+
     @instance = @document.new(
       :name        => 'John Doe',
       :age         => 25,
@@ -18,7 +18,7 @@ class SerializationTest < Test::Unit::TestCase
       :created_at  => Time.now.change(:usec => 0)
     )
   end
-  
+
   [:json].each do |format|
     context format do
       should "be reversable" do
@@ -27,7 +27,7 @@ class SerializationTest < Test::Unit::TestCase
 
         assert_equal @instance, unserialized
       end
-      
+
       should "allow attribute only filtering" do
         serialized = @instance.send("to_#{format}", :only => [ :age, :name ])
         unserialized = @document.send("from_#{format}", serialized)
@@ -37,11 +37,11 @@ class SerializationTest < Test::Unit::TestCase
         assert ! unserialized.awesome
         assert_nil unserialized.created_at
       end
-      
+
       should "allow attribute except filtering" do
         serialized = @instance.send("to_#{format}", :except => [ :age, :name ])
         unserialized = @document.send("from_#{format}", serialized)
-        
+
         assert_nil unserialized.name
         assert_nil unserialized.age
         assert_equal @instance.awesome, unserialized.awesome

@@ -4,13 +4,13 @@ module MongoMapper
       def self.configure(model)
         model.class_eval { include Validatable }
       end
-      
+
       module DocumentMacros
         def validates_uniqueness_of(*args)
           add_validations(args, MongoMapper::Plugins::Validations::ValidatesUniquenessOf)
         end
       end
-      
+
       class ValidatesUniquenessOf < Validatable::ValidationBase
         option :scope, :case_sensitive
         default :case_sensitive => true

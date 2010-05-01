@@ -46,7 +46,7 @@ class DirtyTest < Test::Unit::TestCase
     should "not happen when loading from database" do
       doc = @document.create(:phrase => 'Foo')
       doc = @document.find(doc.id)
-      
+
       doc.changed?.should be_false
       doc.phrase = 'Fart'
       doc.changed?.should be_true
@@ -75,7 +75,7 @@ class DirtyTest < Test::Unit::TestCase
       end
     end
   end
-  
+
   context "blank new value and type float" do
     should "not mark changes" do
       @document.key :amount, Float
@@ -87,73 +87,73 @@ class DirtyTest < Test::Unit::TestCase
         doc.amount_change.should be_nil
       end
     end
-  end  
-  
+  end
+
   context "changed?" do
     should "be true if key changed" do
       doc = @document.new
       doc.phrase = 'A penny saved is a penny earned.'
       doc.changed?.should be_true
     end
-    
+
     should "be false if no keys changed" do
       @document.new.changed?.should be_false
     end
   end
-  
+
   context "changes" do
     should "be empty hash if no changes" do
       @document.new.changes.should == {}
     end
-    
+
     should "be hash of keys with values of changes if there are changes" do
       doc = @document.new
       doc.phrase = 'A penny saved is a penny earned.'
       doc.changes['phrase'].should == [nil, 'A penny saved is a penny earned.']
     end
   end
-  
+
   context "changed" do
     should "be empty array if no changes" do
       @document.new.changed.should == []
     end
-    
+
     should "be array of keys that have changed if there are changes" do
       doc = @document.new
       doc.phrase = 'A penny saved is a penny earned.'
       doc.changed.should == ['phrase']
     end
   end
-  
+
   context "will_change!" do
     should "mark changes" do
       doc = @document.create(:phrase => 'Foo')
-      
+
       doc.phrase << 'bar'
       doc.phrase_changed?.should be_false
-      
+
       doc.phrase_will_change!
       doc.phrase_changed?.should be_true
       doc.phrase_change.should == ['Foobar', 'Foobar']
-      
+
       doc.phrase << '!'
       doc.phrase_changed?.should be_true
       doc.phrase_change.should == ['Foobar', 'Foobar!']
     end
   end
-  
+
   context "changing a foreign key through association" do
     should "mark changes" do
       project_class = Doc do
         key :name, String
       end
-      
+
       milestone_class = Doc do
         key :project_id, ObjectId
         key :name, String
       end
       milestone_class.belongs_to :project, :class => project_class
-      
+
       milestone = milestone_class.create(:name => 'Launch')
       milestone.project = project_class.create(:name => 'Harmony')
       milestone.changed?.should be_true

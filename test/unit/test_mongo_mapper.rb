@@ -2,7 +2,7 @@ require 'test_helper'
 
 class Address; end
 
-class MongoMapperTest < Test::Unit::TestCase  
+class MongoMapperTest < Test::Unit::TestCase
   should "be able to write and read connection" do
     conn = Mongo::Connection.new
     MongoMapper.connection = conn
@@ -89,7 +89,7 @@ class MongoMapperTest < Test::Unit::TestCase
       Mongo::DB.any_instance.expects(:authenticate).with('john', 'secret')
       MongoMapper.connect('development')
     end
-    
+
     should "raise error for invalid scheme" do
       MongoMapper.config = {
         'development' => {'uri' => 'mysql://127.0.0.1:5336/foo'}
@@ -106,7 +106,7 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.expects(:handle_passenger_forking).never
       MongoMapper.setup(config, 'development', :logger => logger)
     end
-    
+
     should "handle passenger if option present" do
       config, logger = mock('config'), mock('logger')
       MongoMapper.expects(:config=).with(config)

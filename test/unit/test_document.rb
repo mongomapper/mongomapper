@@ -6,11 +6,11 @@ class DocumentTest < Test::Unit::TestCase
     setup do
       @document = Doc()
     end
-    
+
     should "return false for embeddable" do
       Doc().embeddable?.should be_false
     end
-    
+
     should "have logger method" do
       @document.logger.should == MongoMapper.logger
       @document.logger.should be_instance_of(Logger)
@@ -39,16 +39,16 @@ class DocumentTest < Test::Unit::TestCase
       another_document = Doc()
       another_document.database.should == MongoMapper.database
     end
-    
+
     should "default collection name to class name tableized" do
       class ::Item
         include MongoMapper::Document
       end
-      
+
       Item.collection.should be_instance_of(Mongo::Collection)
       Item.collection.name.should == 'items'
     end
-    
+
     should "default collection name of namespaced class to tableized with dot separation" do
       module ::BloggyPoo
         class Post
@@ -66,7 +66,7 @@ class DocumentTest < Test::Unit::TestCase
       @document.collection.name.should == 'foobar'
     end
   end # Document class
-  
+
   context "Documents that inherit from other documents" do
     should "default collection name to inherited class" do
       Message.collection_name.should == 'messages'
@@ -82,7 +82,7 @@ class DocumentTest < Test::Unit::TestCase
       Chat.associations.keys.should    include("room")
     end
   end
-  
+
   context "descendants" do
     should "default to an empty array" do
       Enter.descendants.should == []
@@ -100,11 +100,11 @@ class DocumentTest < Test::Unit::TestCase
         key :age, Integer
       end
     end
-    
+
     should "create id during initialization" do
       @document.new._id.should be_instance_of(BSON::ObjectID)
     end
-    
+
     should "have access to logger" do
       doc = @document.new
       doc.logger.should == @document.logger
@@ -122,23 +122,23 @@ class DocumentTest < Test::Unit::TestCase
       @document.new.active.should be_true
       @document.new(:active => false).active.should be_false
     end
-    
+
     should "use default values if defined even when custom data type" do
       @document.key :window, WindowSize, :default => WindowSize.new(600, 480)
-      
+
       doc = @document.new
       doc.window.should == WindowSize.new(600, 480)
     end
 
     context "root document" do
-      should "set self to the root document on embedded documents" do        
+      should "set self to the root document on embedded documents" do
         klass = Doc()
         pets = EDoc()
-        
+
         klass.many :pets, :class => pets
-        
+
         doc = klass.new(:pets => [{}])
-        doc.pets.first._root_document.should == doc        
+        doc.pets.first._root_document.should == doc
       end
     end
 
@@ -146,7 +146,7 @@ class DocumentTest < Test::Unit::TestCase
       should "be true if no id" do
         @document.new.new?.should be_true
       end
-      
+
       should "be true if id but using custom id and not saved yet" do
         @document.key :_id, String
         doc = @document.new
@@ -179,35 +179,35 @@ class DocumentTest < Test::Unit::TestCase
       setup do
         @oid = BSON::ObjectID.new
       end
-      
+
       should "delegate hash to _id" do
         doc = @document.new
         doc.hash.should == doc._id.hash
       end
-      
+
       should "delegate eql to ==" do
         doc = @document.new
         other = @document.new
         doc.eql?(other).should == (doc == other)
         doc.eql?(doc).should == (doc == doc)
       end
-      
+
       should "know if same object as another" do
         doc = @document.new
         doc.should equal(doc)
         doc.should_not equal(@document.new)
       end
-      
+
       should "allow set operations on array of documents" do
         @document.key :parent_id, ObjectId
         @document.belongs_to :parent, :class => @document
-        
+
         parent = @document.create
         child = @document.create(:parent => parent)
-        
+
         ([child.parent] & [parent]).should == [parent]
       end
-      
+
       should "be equal if id and class are the same" do
         (@document.new('_id' => @oid) == @document.new('_id' => @oid)).should be(true)
       end

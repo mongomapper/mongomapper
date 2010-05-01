@@ -8,7 +8,7 @@ module MongoMapper
       def self.clear
         models.each { |m| m.identity_map.clear }
       end
-      
+
       def self.configure(model)
         IdentityMap.models << model
       end
@@ -48,7 +48,7 @@ module MongoMapper
 
         def load(attrs)
           document = identity_map[attrs['_id']]
-          
+
           if document.nil? || identity_map_off?
             document = super
             identity_map[document._id] = document if identity_map_on?

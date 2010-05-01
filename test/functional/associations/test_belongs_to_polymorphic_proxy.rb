@@ -6,17 +6,17 @@ class BelongsToPolymorphicProxyTest < Test::Unit::TestCase
     Status.collection.remove
     Project.collection.remove
   end
-  
+
   should "default to nil" do
     status = Status.new
     status.target.nil?.should be_true
     status.target.inspect.should == "nil"
   end
-  
+
   should "have boolean presence method" do
     status = Status.new
     status.target?.should be_false
-    
+
     status.target = Project.new(:name => 'mongomapper')
     status.target?.should be_true
   end
@@ -46,7 +46,7 @@ class BelongsToPolymorphicProxyTest < Test::Unit::TestCase
     status.target_id.nil?.should be_true
     status.target.nil?.should be_true
   end
-  
+
   context "association id set but document not found" do
     setup do
       @status = Status.new(:name => 'Foo!')

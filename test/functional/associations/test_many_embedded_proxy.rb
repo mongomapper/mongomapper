@@ -11,7 +11,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       key :title, String
     end
     @post_class.many :comments, :class => @comment_class
-    
+
     @pet_class = EDoc do
       key :name, String
     end
@@ -21,17 +21,17 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     end
     @person_class.key :child, @person_class
     @person_class.many :pets, :class => @pet_class
-    
+
     @owner_class = Doc do
       key :name, String
     end
     @owner_class.many :pets, :class => @pet_class
   end
-    
+
   should "default reader to empty array" do
     @post_class.new.comments.should == []
   end
-  
+
   should "allow adding to association like it was an array" do
     post = @post_class.new
     post.comments << @comment_class.new
@@ -54,33 +54,33 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     post.comments[1].should == bill
     post.comments[1].new?.should == false
   end
-  
+
   should "allow embedding arbitrarily deep" do
     @klass = Doc()
     @klass.key :person, @person_class
-    
+
     meg             = @person_class.new(:name => 'Meg')
     meg.child       = @person_class.new(:name => 'Steve')
     meg.child.child = @person_class.new(:name => 'Linda')
-    
+
     doc = @klass.new(:person => meg)
     doc.save
     doc.reload
-    
+
     doc.person.name.should == 'Meg'
     doc.person.child.name.should == 'Steve'
     doc.person.child.child.name.should == 'Linda'
   end
-  
+
   should "allow assignment of many embedded documents using a hash" do
-    person_attributes = { 
-      'name' => 'Mr. Pet Lover', 
+    person_attributes = {
+      'name' => 'Mr. Pet Lover',
       'pets' => [
         {'name' => 'Jimmy', 'species' => 'Cocker Spainel'},
-        {'name' => 'Sasha', 'species' => 'Siberian Husky'}, 
-      ] 
+        {'name' => 'Sasha', 'species' => 'Siberian Husky'},
+      ]
     }
-    
+
     owner = @owner_class.new(person_attributes)
     owner.name.should == 'Mr. Pet Lover'
     owner.pets[0].name.should == 'Jimmy'
@@ -109,12 +109,12 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
         @pet_class.new(:name => 'Sparky', :species => 'Dog'),
         @pet_class.new(:name => 'Koda', :species => 'Dog')
       ])
-      
+
       doc = @klass.new
       doc.people << meg
       doc.save
       doc.reload
-      
+
       doc.people.first.name.should == 'Meg'
       doc.people.first.pets.should_not == []
       doc.people.first.pets.first.name.should == 'Sparky'
@@ -127,7 +127,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       doc = @klass.new
       meg = @person_class.new(:name => 'Meg')
       pet = @pet_class.new(:name => 'Sparky', :species => 'Dog')
-      
+
       doc.people << meg
       meg.pets << pet
 
@@ -138,7 +138,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       doc = @klass.new
       meg = @person_class.new(:name => 'Meg')
       pet = @pet_class.new(:name => 'Sparky', :species => 'Dog')
-      
+
       doc.people << meg
       meg.pets << pet
 
@@ -161,7 +161,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       doc = @klass.new
       meg = @person_class.new(:name => 'Meg')
       pet = @pet_class.new(:name => 'Sparky', :species => 'Dog')
-      
+
       doc.people << meg
       meg.pets << pet
       doc.save
@@ -175,7 +175,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       doc = @klass.new
       meg = @person_class.new(:name => 'Meg')
       pet = @pet_class.new(:name => 'Sparky', :species => 'Dog')
-      
+
       doc.people << meg
       meg.pets << pet
       doc.save
@@ -184,20 +184,20 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       doc.people.first.pets.first.person.should == doc.people.first
     end
   end
-  
+
   should "allow finding by id" do
     sparky = @pet_class.new(:name => 'Sparky', :species => 'Dog')
     meg    = @owner_class.create(:name => 'Meg', :pets => [sparky])
-    
+
     meg.pets.find(sparky._id).should     == sparky  # oid
     meg.pets.find(sparky.id.to_s).should == sparky  # string
   end
-  
+
   context "count" do
     should "default to 0" do
       @owner_class.new.pets.count.should == 0
     end
-    
+
     should "return correct count if any are embedded" do
       owner = @owner_class.new(:name => 'Meg')
       owner.pets = [@pet_class.new, @pet_class.new]
@@ -207,7 +207,7 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
       owner.pets.count.should == 2
     end
   end
-  
+
   context "extending the association" do
     setup do
       @address_class = EDoc do
@@ -216,27 +216,27 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
         key :state, String
         key :zip, Integer
       end
-      
+
       @project_class = Doc do
         key :name, String
       end
     end
-    
+
     should "work using a block passed to many" do
       @project_class.many :addresses, :class => @address_class do
         def find_all_by_state(state)
           find_all { |a| a.state == state }
         end
       end
-      
+
       addr1 = @address_class.new(:address => "Gate-3 Lankershim Blvd.", :city => "Universal City", :state => "CA", :zip => "91608")
       addr2 = @address_class.new(:address => "3000 W. Alameda Ave.", :city => "Burbank", :state => "CA", :zip => "91523")
       addr3 = @address_class.new(:address => "111 Some Ln", :city => "Nashville", :state => "TN", :zip => "37211")
       project = @project_class.create(:name => "Some Project", :addresses => [addr1, addr2, addr3])
-      
+
       project.addresses.find_all_by_state("CA").should == [addr1, addr2]
     end
-  
+
     should "work using many's :extend option" do
       module FindByCity
         def find_by_city(city)
@@ -244,12 +244,12 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
         end
       end
       @project_class.many :addresses, :class => @address_class, :extend => FindByCity
-      
+
       addr1 = @address_class.new(:address => "Gate-3 Lankershim Blvd.", :city => "Universal City", :state => "CA", :zip => "91608")
       addr2 = @address_class.new(:address => "3000 W. Alameda Ave.", :city => "Burbank", :state => "CA", :zip => "91523")
       addr3 = @address_class.new(:address => "111 Some Ln", :city => "Nashville", :state => "TN", :zip => "37211")
       project = @project_class.create(:name => "Some Project", :addresses => [addr1, addr2, addr3])
-      
+
       project.addresses.find_by_city('Burbank').should == [addr2]
     end
   end

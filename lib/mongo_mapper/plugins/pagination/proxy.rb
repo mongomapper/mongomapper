@@ -3,7 +3,7 @@ module MongoMapper
     module Pagination
       class Proxy
         instance_methods.each { |m| undef_method m unless m =~ /(^__|^nil\?$|^send$|respond_to\?|proxy_|^object_id$)/ }
-                
+
         attr_accessor :subject
         attr_reader :total_entries, :per_page, :current_page
         alias limit per_page
@@ -50,11 +50,11 @@ module MongoMapper
         def method_missing(name, *args, &block)
           @subject.send(name, *args, &block)
         end
-        
+
         def respond_to?(name, *args, &block)
           super || @subject.respond_to?(name, *args, &block)
         end
-        
+
         private
           def per_page=(value)
             value = 25 if value.blank?

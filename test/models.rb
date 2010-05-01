@@ -1,23 +1,23 @@
 # custom type
 class WindowSize
   attr_reader :width, :height
-  
+
   def self.to_mongo(value)
     value.to_a
   end
-  
+
   def self.from_mongo(value)
     value.is_a?(self) ? value : WindowSize.new(value)
   end
-  
+
   def initialize(*args)
     @width, @height = args.flatten
   end
-  
+
   def to_a
     [width, height]
   end
-  
+
   def ==(other)
     other.is_a?(self.class) && other.width == width && other.height == height
   end
@@ -86,16 +86,16 @@ class Room
     end
   end
   many :latest_messages, :class_name => 'Message', :order => 'position desc', :limit => 2
-  
+
   many :accounts, :polymorphic => true, :extend => AccountsExtensions
 end
 
 class Account
   include MongoMapper::Document
-  
+
   key :room_id, ObjectId
   key :last_logged_in, Time
-  
+
   belongs_to :room
 end
 class AccountUser < Account; end
@@ -117,14 +117,14 @@ class Project
   include MongoMapper::Document
 
   key :name, String
-  
+
   many :collaborators, :extend => CollaboratorsExtensions
   many :statuses, :order => 'position' do
     def open
       all(:name => %w(New Assigned))
     end
   end
-  
+
   many :addresses do
     def find_all_by_state(state)
       # can't use select here for some reason
@@ -175,7 +175,7 @@ end
 
 class Catalog
   include MongoMapper::Document
-  
+
   many :medias, :polymorphic => true do
     def visible
       # for some reason we can't use select here
@@ -220,7 +220,7 @@ module TrModels
         find_all { |t| t.purchased_on < 2.years.ago.to_date }
       end
     end
-    
+
     many :transports, :polymorphic => true, :class_name => "TrModels::Transport", :extend => TransportsExtension
     key :name, String
   end

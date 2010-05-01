@@ -35,7 +35,7 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
         PostComment.new(:body => 'baz')
       ]
     }.should change { PostComment.count }.by(3)
-    
+
     post = post.reload
     post.comments.size.should == 3
     bodies = post.comments.collect(&:body)
@@ -172,24 +172,24 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
         end
       end
     end
-    
+
     context "dynamic finders" do
       should "work with single key" do
         @post.comments.find_by_body('comment1').should == @comment1
         @post2.comments.find_by_body('comment1').should == @comment4
       end
-      
+
       should "work with multiple keys" do
         @post.comments.find_by_body_and_name('comment1', 'John').should == @comment1
         @post.comments.find_by_body_and_name('comment1', 'Frank').should be_nil
       end
-      
+
       should "raise error when using !" do
         lambda {
           @post.comments.find_by_body!('asdf')
         }.should raise_error(MongoMapper::DocumentNotFound)
       end
-      
+
       context "find_or_create_by" do
         should "not create document if found" do
           lambda {

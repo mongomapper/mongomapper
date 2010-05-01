@@ -6,7 +6,7 @@ module MongoMapper
       def self.configure(model)
         model.class_eval { cattr_accessor :include_root_in_json, :instance_writer => true }
       end
-      
+
       module InstanceMethods
         def as_json options={}
           options ||= {}
@@ -43,7 +43,7 @@ module MongoMapper
             }
           end
           # End rip
-          
+
           options.delete(:only) if options[:only].nil? or options[:only].empty?
 
           hash.each do |key, value|
@@ -57,7 +57,7 @@ module MongoMapper
               hash[key] = value.as_json(options)
             end
           end
-          
+
           # Replicate Rails 3 naming - and also bin anytihng after : for use in our dynamic classes from unit tests
           hash = { ActiveSupport::Inflector.underscore(ActiveSupport::Inflector.demodulize(self)).gsub(/:.*/,'') => hash } if include_root_in_json
           hash

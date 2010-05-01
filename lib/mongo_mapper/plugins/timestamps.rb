@@ -8,7 +8,7 @@ module MongoMapper
           class_eval { before_save :update_timestamps }
         end
       end
-      
+
       module InstanceMethods
         def update_timestamps
           now = Time.now.utc

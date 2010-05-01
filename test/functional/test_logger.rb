@@ -11,7 +11,7 @@ class LoggerTest < Test::Unit::TestCase
     should "be able to get access to that logger" do
       MongoMapper.logger.should == @logger
     end
-    
+
     should "be able to log messages" do
       MongoMapper.logger.debug 'testing'
       @output.string.include?('testing').should be_true

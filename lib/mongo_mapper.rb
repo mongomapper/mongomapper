@@ -71,7 +71,7 @@ module MongoMapper
   def self.config_for_environment(environment)
     env = config[environment]
     return env if env['uri'].blank?
-    
+
     uri = URI.parse(env['uri'])
     raise InvalidScheme.new('must be mongodb') unless uri.scheme == 'mongodb'
     {

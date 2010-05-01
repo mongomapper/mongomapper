@@ -448,7 +448,7 @@ class DocumentTest < Test::Unit::TestCase
         created.last_name.should == 'Nunemaker'
       }.should change { @document.count }.by(1)
     end
-    
+
     should "disregard non-keys when creating, but use them in the query" do
       assert_nothing_raised do
         @document.create(:first_name => 'John', :age => 9)
@@ -476,7 +476,7 @@ class DocumentTest < Test::Unit::TestCase
         created.should be_new
       }.should_not change { @document.count }
     end
-    
+
     should "disregard non-keys when initializing, but use them in the query" do
       assert_nothing_raised do
         @document.create(:first_name => 'John', :age => 9)

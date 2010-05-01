@@ -3,7 +3,7 @@ class Array
     value = value.respond_to?(:lines) ? value.lines : value
     value.to_a
   end
-  
+
   def self.from_mongo(value)
     value || []
   end
@@ -28,7 +28,7 @@ class Boolean
     true => true, 'true' => true, 'TRUE' => true, 'True' => true, 't' => true, 'T' => true, '1' => true, 1 => true, 1.0 => true,
     false => false, 'false' => false, 'FALSE' => false, 'False' => false, 'f' => false, 'F' => false, '0' => false, 0 => false, 0.0 => false, nil => nil
   }
-  
+
   def self.to_mongo(value)
     if value.is_a?(Boolean)
       value
@@ -53,7 +53,7 @@ class Date
   rescue
     nil
   end
-  
+
   def self.from_mongo(value)
     value.to_date if value.present?
   end
@@ -69,7 +69,7 @@ class Hash
   def self.from_mongo(value)
     HashWithIndifferentAccess.new(value || {})
   end
-  
+
   def to_mongo
     self
   end
@@ -90,7 +90,7 @@ class NilClass
   def to_mongo(value)
     value
   end
-  
+
   def from_mongo(value)
     value
   end
@@ -115,11 +115,11 @@ class Object
   def class_def(name, &blk)
     class_eval { define_method(name, &blk) }
   end
-  
+
   def self.to_mongo(value)
     value
   end
-  
+
   def self.from_mongo(value)
     value
   end
@@ -135,7 +135,7 @@ class ObjectId
       BSON::ObjectID.from_string(value.to_s)
     end
   end
-  
+
   def self.from_mongo(value)
     value
   end
@@ -145,7 +145,7 @@ class Set
   def self.to_mongo(value)
     value.to_a
   end
-  
+
   def self.from_mongo(value)
     Set.new(value || [])
   end
@@ -155,7 +155,7 @@ class String
   def self.to_mongo(value)
     value.nil? ? nil : value.to_s
   end
-  
+
   def self.from_mongo(value)
     value.nil? ? nil : value.to_s
   end
@@ -188,7 +188,7 @@ class Time
       Time.at((time.to_f * 1000).round / 1000.0).utc if time
     end
   end
-  
+
   def self.from_mongo(value)
     if Time.try(:zone).present? && value.present?
       value.in_time_zone(Time.zone)
@@ -200,11 +200,11 @@ end
 
 class BSON::ObjectID
   alias_method :original_to_json, :to_json
-  
+
   def as_json(options=nil)
     to_s
   end
-  
+
   def to_json(options = nil)
     as_json.to_json
   end
