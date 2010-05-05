@@ -14,7 +14,11 @@ module MongoMapper
         end
 
         def set(*args)
-          modifier_update('$set', args)
+          criteria, updates = criteria_and_keys_from_args(args)
+          updates.each do |key, value|
+            updates[key] = keys[key].set(value) if key?(key)
+          end
+          collection.update(criteria, {'$set' => updates}, :multi => true)
         end
 
         def unset(*args)
@@ -57,8 +61,8 @@ module MongoMapper
 
         private
           def modifier_update(modifier, args)
-            criteria, keys = criteria_and_keys_from_args(args)
-            collection.update(criteria, {modifier => keys}, :multi => true)
+            criteria, updates = criteria_and_keys_from_args(args)
+            collection.update(criteria, {modifier => updates}, :multi => true)
           end
 
           def criteria_and_keys_from_args(args)

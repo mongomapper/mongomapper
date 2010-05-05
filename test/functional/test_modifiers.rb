@@ -119,6 +119,28 @@ class ModifierTest < Test::Unit::TestCase
         @page2.reload
         @page2.title.should == 'Home Revised'
       end
+
+      should "typecast values before querying" do
+        @page_class.key :tags, Set
+
+        assert_nothing_raised do
+          @page_class.set(@page.id, :tags => ['foo', 'bar'].to_set)
+          @page.reload
+          @page.tags.should == Set.new(['foo', 'bar'])
+        end
+      end
+
+      should "not typecast keys that are not defined in document" do
+        assert_raises(BSON::InvalidDocument) do
+          @page_class.set(@page.id, :colors => ['red', 'green'].to_set)
+        end
+      end
+
+      should "set keys that are not defined in document" do
+        @page_class.set(@page.id, :colors => %w[red green])
+        @page.reload
+        @page[:colors].should == %w[red green]
+      end
     end
 
     context "push" do
