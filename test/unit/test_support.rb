@@ -133,6 +133,10 @@ class SupportTest < Test::Unit::TestCase
         Float.to_mongo(value).should == 21.0
       end
     end
+
+    should "leave nil values nil" do
+      Float.to_mongo(nil).should == nil
+    end
   end
 
   context "Hash#from_mongo" do
