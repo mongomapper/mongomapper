@@ -184,8 +184,8 @@ class Time
     else
       time_class = Time.try(:zone).present? ? Time.zone : Time
       time = value.is_a?(Time) ? value : time_class.parse(value.to_s)
-      # Convert time to milliseconds since BSON stores dates with that accurracy, but Ruby uses microseconds
-      Time.at((time.to_f * 1000).floor / 1000.0).utc if time
+      # strip milliseconds as Ruby does micro and bson does milli and rounding rounded wrong
+      at(time.to_i).utc if time
     end
   end
 
