@@ -61,7 +61,7 @@ end
 
 class Float
   def self.to_mongo(value)
-    value.to_f
+    value.nil? ? nil : value.to_f
   end
 end
 
