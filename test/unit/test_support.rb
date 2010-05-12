@@ -314,6 +314,10 @@ class SupportTest < Test::Unit::TestCase
       Time.zone = nil
     end
 
+    should "not round up times at the end of the month" do
+      Time.to_mongo(Time.now.end_of_month).to_i.should == Time.now.end_of_month.utc.to_i
+    end
+
     should "be nil if blank string" do
       Time.zone = 'Hawaii'
       Time.to_mongo('').should be_nil
