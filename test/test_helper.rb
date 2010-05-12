@@ -16,7 +16,6 @@ require 'json'
 require 'pp'
 
 require 'support/custom_matchers'
-require 'support/timing'
 
 class Test::Unit::TestCase
   include CustomMatchers
