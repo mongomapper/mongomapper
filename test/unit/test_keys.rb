@@ -65,6 +65,16 @@ class KeyTest < Test::Unit::TestCase
     end
   end
 
+  context ".load" do
+    setup do
+      @klass = Doc()
+    end
+
+    should "return nil if argument is nil" do
+      @klass.load(nil).should be_nil
+    end
+  end
+
   context "Initializing a new key" do
     should "allow setting the name" do
       Key.new(:foo, String).name.should == 'foo'

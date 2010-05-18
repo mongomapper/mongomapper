@@ -45,34 +45,31 @@ module MongoMapper
       end
 
       def find(*args)
-        assert_no_first_last_or_all(args)
         options = args.extract_options!
         return nil if args.size == 0
 
         if args.first.is_a?(Array) || args.size > 1
           find_some(args, options)
         else
-          find_one(options.merge({:_id => args[0]}))
+          query = query(options).update(:_id => args[0])
+          find_one(query.to_hash)
         end
       end
 
       def find!(*args)
-        assert_no_first_last_or_all(args)
         options = args.extract_options!
         raise DocumentNotFound, "Couldn't find without an ID" if args.size == 0
 
         if args.first.is_a?(Array) || args.size > 1
           find_some!(args, options)
         else
-          find_one(options.merge({:_id => args[0]})) || raise(DocumentNotFound, "Document match #{options.inspect} does not exist in #{collection.name} collection")
+          query = query(options).update(:_id => args[0])
+          find_one(query.to_hash) || raise(DocumentNotFound, "Document match #{options.inspect} does not exist in #{collection.name} collection")
         end
       end
 
       def find_each(options={})
-        criteria, options = to_query(options)
-        collection.find(criteria, options).each do |doc|
-          yield load(doc)
-        end
+        query(options).find().each { |doc| yield load(doc) }
       end
 
       def find_by_id(id)
@@ -93,7 +90,7 @@ module MongoMapper
 
       def last(options={})
         raise ':order option must be provided when using last' if options[:order].blank?
-        find_one(options.merge(:order => invert_order_clause(options[:order])))
+        find_one(query(options).reverse.to_hash)
       end
 
       def all(options={})
@@ -101,7 +98,7 @@ module MongoMapper
       end
 
       def count(options={})
-        collection.find(to_criteria(options)).count
+        query(options).count
       end
 
       def exists?(options={})
@@ -126,11 +123,11 @@ module MongoMapper
       end
 
       def delete(*ids)
-        collection.remove(to_criteria(:_id => ids.flatten))
+        query(:_id => ids.flatten).remove
       end
 
       def delete_all(options={})
-        collection.remove(to_criteria(options))
+        query(options).remove
       end
 
       def destroy(*ids)
@@ -153,6 +150,11 @@ module MongoMapper
         superclass.respond_to?(:keys) && superclass.keys.key?(:_type)
       end
 
+      # @api private for now
+      def query(options={})
+        Query.new(self, options)
+      end
+
       private
         def initialize_each(*docs)
           instances = []
@@ -165,15 +167,9 @@ module MongoMapper
           instances.size == 1 ? instances[0] : instances
         end
 
-        def assert_no_first_last_or_all(args)
-          if args[0] == :first || args[0] == :last || args[0] == :all
-            raise ArgumentError, "#{self}.find(:#{args}) is no longer supported, use #{self}.#{args} instead."
-          end
-        end
-
         def find_some(ids, options={})
-          ids = ids.flatten.compact.uniq
-          find_many(options.merge(:_id => ids)).compact
+          query = query(options).update(:_id => ids.flatten.compact.uniq)
+          find_many(query.to_hash).compact
         end
 
         def find_some!(ids, options={})
@@ -189,30 +185,12 @@ module MongoMapper
 
         # All query methods that load documents pass through find_one or find_many
         def find_one(options={})
-          criteria, options = to_query(options)
-          if doc = collection.find_one(criteria, options)
-            load(doc)
-          end
+          load(query(options).first)
         end
 
         # All query methods that load documents pass through find_one or find_many
         def find_many(options)
-          criteria, options = to_query(options)
-          collection.find(criteria, options).to_a.map do |doc|
-            load(doc)
-          end
-        end
-
-        def invert_order_clause(order)
-          order.split(',').map do |order_segment|
-            if order_segment =~ /\sasc/i
-              order_segment.sub /\sasc/i, ' desc'
-            elsif order_segment =~ /\sdesc/i
-              order_segment.sub /\sdesc/i, ' asc'
-            else
-              "#{order_segment.strip} desc"
-            end
-          end.join(',')
+          query(options).all().map { |doc| load(doc) }
         end
 
         def update_single(id, attrs)
@@ -220,9 +198,9 @@ module MongoMapper
             raise ArgumentError, "Updating a single document requires an id and a hash of attributes"
           end
 
-          doc = find(id)
-          doc.update_attributes(attrs)
-          doc
+          find(id).tap do |doc|
+            doc.update_attributes(attrs)
+          end
         end
 
         def update_multiple(docs)
@@ -233,14 +211,6 @@ module MongoMapper
           instances = []
           docs.each_pair { |id, attrs| instances << update(id, attrs) }
           instances
-        end
-
-        def to_criteria(options={})
-          Query.new(self, options).criteria
-        end
-
-        def to_query(options={})
-          Query.new(self, options).to_a
         end
     end
 
@@ -274,9 +244,9 @@ module MongoMapper
       end
 
       def reload
-        if attrs = collection.find_one({:_id => _id})
+        if doc = self.class.query(:_id => id).first
           self.class.associations.each { |name, assoc| send(name).reset if respond_to?(name) }
-          self.attributes = attrs
+          self.attributes = doc
           self
         else
           raise DocumentNotFound, "Document match #{_id.inspect} does not exist in #{collection.name} collection"

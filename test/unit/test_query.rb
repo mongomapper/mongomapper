@@ -5,7 +5,7 @@ class QueryTest < Test::Unit::TestCase
   include MongoMapper
 
   should "raise error if provided something other than a hash" do
-    lambda { Query.new(Room) }.should raise_error(ArgumentError)
+    lambda { Query.new(Room, nil) }.should raise_error(ArgumentError)
     lambda { Query.new(Room, 1) }.should raise_error(ArgumentError)
   end
 
@@ -17,13 +17,13 @@ class QueryTest < Test::Unit::TestCase
 
   context "Converting conditions to criteria" do
     should "not add _type to query if model does not have superclass that is single collection inherited" do
-      Query.new(Message, :foo => 'bar').criteria.should == {
+      Query.new(Message, :foo => 'bar').criteria.to_hash.should == {
         :foo => 'bar'
       }
     end
 
     should "not add _type to nested conditions" do
-      Query.new(Enter, :foo => 'bar', :age => {'$gt' => 21}).criteria.should == {
+      Query.new(Enter, :foo => 'bar', :age => {'$gt' => 21}).criteria.to_hash.should == {
         :foo => 'bar',
         :age => {'$gt' => 21},
         :_type => 'Enter'
@@ -31,20 +31,10 @@ class QueryTest < Test::Unit::TestCase
     end
 
     should "automatically add _type to query if model is single collection inherited" do
-      Query.new(Enter, :foo => 'bar').criteria.should == {
+      Query.new(Enter, :foo => 'bar').criteria.to_hash.should == {
         :foo => 'bar',
         :_type => 'Enter'
       }
-    end
-
-    %w{gt lt gte lte ne in nin mod all size where exists}.each do |operator|
-      next if operator == 'size' && RUBY_VERSION >= '1.9.1' # 1.9 defines Symbol#size
-
-      should "convert #{operator} conditions" do
-        Query.new(Room, :age.send(operator) => 21).criteria.should == {
-          :age => {"$#{operator}" => 21}
-        }
-      end
     end
 
     should "normalize value when using symbol operators" do
@@ -54,17 +44,17 @@ class QueryTest < Test::Unit::TestCase
     end
 
     should "work with multiple symbol operators on the same field" do
-      Query.new(Message, :position.gt => 0, :position.lte => 10).criteria.should == {
+      Query.new(Message, :position.gt => 0, :position.lte => 10).criteria.to_hash.should == {
         :position => {"$gt" => 0, "$lte" => 10}
       }
     end
 
     should "work with simple criteria" do
-      Query.new(Room, :foo => 'bar').criteria.should == {
+      Query.new(Room, :foo => 'bar').criteria.to_hash.should == {
         :foo => 'bar'
       }
 
-      Query.new(Room, :foo => 'bar', :baz => 'wick').criteria.should == {
+      Query.new(Room, :foo => 'bar', :baz => 'wick').criteria.to_hash.should == {
         :foo => 'bar',
         :baz => 'wick'
       }
@@ -72,34 +62,34 @@ class QueryTest < Test::Unit::TestCase
 
     should "convert id to _id" do
       id = BSON::ObjectID.new
-      Query.new(Room, :id => id).criteria.should == {:_id => id}
+      Query.new(Room, :id => id).criteria.keys.should include(:_id)
     end
 
     should "convert id with symbol operator to _id with modifier" do
       id = BSON::ObjectID.new
-      Query.new(Room, :id.ne => id).criteria.should == {
+      Query.new(Room, :id.ne => id).criteria.to_hash.should == {
         :_id => {'$ne' => id}
       }
     end
 
     should "make sure that _id's are object ids" do
       id = BSON::ObjectID.new
-      Query.new(Room, :_id => id.to_s).criteria.should == {:_id => id}
+      Query.new(Room, :_id => id.to_s).criteria.to_hash.should == {:_id => id}
     end
 
     should "work fine with _id's that are object ids" do
       id = BSON::ObjectID.new
-      Query.new(Room, :_id => id).criteria.should == {:_id => id}
+      Query.new(Room, :_id => id).criteria.to_hash.should == {:_id => id}
     end
 
     should "make sure other object id typed keys get converted" do
       id = BSON::ObjectID.new
-      Query.new(Message, :room_id => id.to_s).criteria.should == {:room_id => id}
+      Query.new(Message, :room_id => id.to_s).criteria.to_hash.should == {:room_id => id}
     end
 
     should "work fine with object ids for object id typed keys" do
       id = BSON::ObjectID.new
-      Query.new(Message, :room_id => id).criteria.should == {:room_id => id}
+      Query.new(Message, :room_id => id).criteria.to_hash.should == {:room_id => id}
     end
 
     should "convert times to utc if they aren't already" do
@@ -116,51 +106,41 @@ class QueryTest < Test::Unit::TestCase
     end
 
     should "use $in for arrays" do
-      Query.new(Room, :foo => [1,2,3]).criteria.should == {
+      Query.new(Room, :foo => [1,2,3]).criteria.to_hash.should == {
         :foo => {'$in' => [1,2,3]}
       }
     end
 
     should "not use $in for arrays if already using array operator" do
-      Query.new(Room, :foo => {'$all' => [1,2,3]}).criteria.should == {
+      Query.new(Room, :foo => {'$all' => [1,2,3]}).criteria.to_hash.should == {
         :foo => {'$all' => [1,2,3]}
       }
 
-      Query.new(Room, :foo => {'$any' => [1,2,3]}).criteria.should == {
+      Query.new(Room, :foo => {'$any' => [1,2,3]}).criteria.to_hash.should == {
         :foo => {'$any' => [1,2,3]}
       }
     end
 
     should "use $in for sets" do
-      Query.new(Room, :foo => Set.new([1,2,3])).criteria.should == {
+      Query.new(Room, :foo => Set.new([1,2,3])).criteria.to_hash.should == {
         :foo => {'$in' => [1,2,3]}
       }
     end
 
     should "not use $in for sets if already using array operator" do
-      Query.new(Room, :foo => {'$all' => Set.new([1,2,3])}).criteria.should == {
+      Query.new(Room, :foo => {'$all' => Set.new([1,2,3])}).criteria.to_hash.should == {
         :foo => {'$all' => [1,2,3]}
       }
 
-      Query.new(Room, :foo => {'$any' => Set.new([1,2,3])}).criteria.should == {
+      Query.new(Room, :foo => {'$any' => Set.new([1,2,3])}).criteria.to_hash.should == {
         :foo => {'$any' => [1,2,3]}
-      }
-    end
-
-    should "work arbitrarily deep" do
-      Query.new(Room, :foo => {:bar => [1,2,3]}).criteria.should == {
-        :foo => {:bar => {'$in' => [1,2,3]}}
-      }
-
-      Query.new(Room, :foo => {:bar => {'$any' => [1,2,3]}}).criteria.should == {
-        :foo => {:bar => {'$any' => [1,2,3]}}
       }
     end
 
     should "make sure that ids in array are object ids" do
       id1, id2, id3 = BSON::ObjectID.new, BSON::ObjectID.new, BSON::ObjectID.new
 
-      Query.new(Room, :_id => [id1.to_s, id2.to_s, id3.to_s]).criteria.should == {
+      Query.new(Room, :_id => [id1.to_s, id2.to_s, id3.to_s]).criteria.to_hash.should == {
         :_id => {'$in' => [id1, id2, id3]}
       }
     end
@@ -229,8 +209,8 @@ class QueryTest < Test::Unit::TestCase
   end
 
   context "skip" do
-    should "default to 0" do
-      Query.new(Room, {}).options[:skip].should == 0
+    should "default to nil" do
+      Query.new(Room, {}).options[:skip].should == nil
     end
 
     should "use skip provided" do
@@ -247,8 +227,8 @@ class QueryTest < Test::Unit::TestCase
   end
 
   context "limit" do
-    should "default to 0" do
-      Query.new(Room, {}).options[:limit].should == 0
+    should "default to nil" do
+      Query.new(Room, {}).options[:limit].should == nil
     end
 
     should "use limit provided" do
@@ -297,7 +277,7 @@ class QueryTest < Test::Unit::TestCase
   context "Condition auto-detection" do
     should "know :conditions are criteria" do
       finder = Query.new(Room, :conditions => {:foo => 'bar'})
-      finder.criteria.should == {:foo => 'bar'}
+      finder.criteria.to_hash.should == {:foo => 'bar'}
       finder.options.keys.should_not include(:conditions)
     end
 
@@ -310,7 +290,8 @@ class QueryTest < Test::Unit::TestCase
     # select gets converted to fields so just checking keys
     should "know select is an option" do
       finder = Query.new(Room, :select => 'foo')
-      finder.options.keys.should include(:sort)
+      finder.options.keys.should      include(:fields)
+      finder.options.keys.should_not  include(:select)
       finder.criteria.keys.should_not include(:select)
       finder.criteria.keys.should_not include(:fields)
     end
@@ -358,12 +339,12 @@ class QueryTest < Test::Unit::TestCase
         :skip => 10,
       })
 
-      query_options.criteria.should == {
+      query_options.criteria.to_hash.should == {
         :foo => 'bar',
         :baz => true,
       }
 
-      query_options.options.should == {
+      query_options.options.to_hash.should == {
         :sort => [['foo', 1]],
         :fields => ['foo', 'baz'],
         :limit => 10,

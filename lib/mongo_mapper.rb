@@ -2,11 +2,13 @@
 #   gem 'activesupport', '>= 2.3.4'
 #   gem 'mongo', '1.0'
 #   gem 'jnunemaker-validatable', '1.8.4'
+#   gem 'plucky', '0.1'
 require 'set'
 require 'uri'
 require 'mongo'
 require 'validatable'
 require 'active_support/all'
+require 'plucky'
 
 module MongoMapper
   # generic MM error

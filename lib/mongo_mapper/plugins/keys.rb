@@ -36,9 +36,12 @@ module MongoMapper
           object_id_key?(:_id)
         end
 
+        def object_id_keys
+          keys.keys.select { |key| keys[key].type == ObjectId }.map(&:to_sym)
+        end
+
         def object_id_key?(name)
-          key = keys[name.to_s]
-          key && key.type == ObjectId
+          object_id_keys.include?(name.to_sym)
         end
 
         def to_mongo(instance)
@@ -53,6 +56,7 @@ module MongoMapper
 
         # load is overridden in identity map to ensure same objects are loaded
         def load(attrs)
+          return nil if attrs.nil?
           begin
             klass = attrs['_type'].present? ? attrs['_type'].constantize : self
             klass.new(attrs, true)

@@ -40,30 +40,29 @@ class DocumentTest < Test::Unit::TestCase
       another_document.database.should == MongoMapper.database
     end
 
-    should "default collection name to class name tableized" do
-      class ::Item
-        include MongoMapper::Document
-      end
-
-      Item.collection.should be_instance_of(Mongo::Collection)
-      Item.collection.name.should == 'items'
+    should "allow setting the collection name" do
+      @document.set_collection_name('foobar')
+      @document.collection.name.should == 'foobar'
     end
 
-    should "default collection name of namespaced class to tableized with dot separation" do
-      module ::BloggyPoo
-        class Post
+    context ".collection" do
+      should "default collection name to class name tableized" do
+        class ::Item
           include MongoMapper::Document
+        end.collection.name.should == 'items'
+      end
+
+      should "default collection name of namespaced class to tableized with dot separation" do
+        module ::BloggyPoo
+          class Post
+            include MongoMapper::Document
+          end.collection.name.should == 'bloggy_poo.posts'
         end
       end
 
-      BloggyPoo::Post.collection.should be_instance_of(Mongo::Collection)
-      BloggyPoo::Post.collection.name.should == 'bloggy_poo.posts'
-    end
-
-    should "allow setting the collection name" do
-      @document.set_collection_name('foobar')
-      @document.collection.should be_instance_of(Mongo::Collection)
-      @document.collection.name.should == 'foobar'
+      should "be an instance of a Mongo::Collection" do
+        @document.collection.should be_instance_of(Mongo::Collection)
+      end
     end
   end # Document class
 

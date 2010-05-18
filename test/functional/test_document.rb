@@ -261,16 +261,6 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
 
-    should "raise error if trying to find with :all, :first, or :last" do
-      [:all, :first, :last].each do |m|
-        assert_raises(ArgumentError) { @document.find(m) }
-      end
-
-      [:all, :first, :last].each do |m|
-        assert_raises(ArgumentError) { @document.find!(m) }
-      end
-    end
-
     context "(with a single id)" do
       should "work" do
         @document.find(@doc1._id).should == @doc1

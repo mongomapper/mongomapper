@@ -29,7 +29,7 @@ module MongoMapper
             criteria = {:id => ids}
           end
 
-          criteria  = to_criteria(criteria)
+          criteria  = query(criteria).criteria.to_hash
           modifiers = keys.inject({}) { |hash, key| hash[key] = 1; hash }
           collection.update(criteria, {'$unset' => modifiers}, :multi => true)
         end
@@ -68,7 +68,7 @@ module MongoMapper
           def criteria_and_keys_from_args(args)
             keys     = args.pop
             criteria = args[0].is_a?(Hash) ? args[0] : {:id => args}
-            [to_criteria(criteria), keys]
+            [query(criteria).criteria.to_hash, keys]
           end
       end
 

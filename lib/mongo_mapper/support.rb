@@ -127,13 +127,7 @@ end
 
 class ObjectId
   def self.to_mongo(value)
-    if value.blank?
-      nil
-    elsif value.is_a?(BSON::ObjectID)
-      value
-    else
-      BSON::ObjectID.from_string(value.to_s)
-    end
+    Plucky.to_object_id(value)
   end
 
   def self.from_mongo(value)
@@ -158,22 +152,6 @@ class String
 
   def self.from_mongo(value)
     value.nil? ? nil : value.to_s
-  end
-end
-
-class SymbolOperator
-  attr_reader :field, :operator
-
-  def initialize(field, operator, options={})
-    @field, @operator = field, operator
-  end unless method_defined?(:initialize)
-end
-
-class Symbol
-  %w(gt lt gte lte ne in nin mod all size where exists asc desc).each do |operator|
-    define_method(operator) do
-      SymbolOperator.new(self, operator)
-    end unless method_defined?(operator)
   end
 end
 
