@@ -1,3 +1,4 @@
+# encoding: UTF-8
 module MongoMapper
   module Document
     extend Support::DescendantAppends

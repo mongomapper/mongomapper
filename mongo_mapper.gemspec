@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# encoding: UTF-8
 require File.expand_path('../lib/mongo_mapper/version', __FILE__)
 
 Gem::Specification.new do |s|

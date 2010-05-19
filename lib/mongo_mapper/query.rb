@@ -1,3 +1,4 @@
+# encoding: UTF-8
 module MongoMapper
   class Query
     def initialize(model, options={})
