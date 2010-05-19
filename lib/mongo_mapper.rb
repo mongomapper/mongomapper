@@ -91,8 +91,7 @@ module MongoMapper
   end
 
   def self.setup(config, environment, options={})
-    using_passenger = options.delete(:passenger)
-    handle_passenger_forking if using_passenger
+    handle_passenger_forking
     self.config = config
     connect(environment, options)
   end

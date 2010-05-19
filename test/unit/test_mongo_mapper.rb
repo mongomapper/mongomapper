@@ -103,16 +103,8 @@ class MongoMapperTest < Test::Unit::TestCase
       config, logger = mock('config'), mock('logger')
       MongoMapper.expects(:config=).with(config)
       MongoMapper.expects(:connect).with('development', :logger => logger)
-      MongoMapper.expects(:handle_passenger_forking).never
+      MongoMapper.expects(:handle_passenger_forking).once
       MongoMapper.setup(config, 'development', :logger => logger)
-    end
-
-    should "handle passenger if option present" do
-      config, logger = mock('config'), mock('logger')
-      MongoMapper.expects(:config=).with(config)
-      MongoMapper.expects(:connect).with('development', :logger => logger)
-      MongoMapper.expects(:handle_passenger_forking)
-      MongoMapper.setup(config, 'development', :logger => logger, :passenger => true)
     end
   end
 end
