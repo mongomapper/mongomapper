@@ -2,7 +2,6 @@
 # Make sure you have the correct versions of the gems (see gemspec) in your load path.
 require 'set'
 require 'uri'
-require 'mongo'
 require 'plucky'
 require 'validatable'
 require 'active_support/all'
