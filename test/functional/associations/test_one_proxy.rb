@@ -61,15 +61,13 @@ class OneProxyTest < Test::Unit::TestCase
         @post_class.one :author, :class => @author_class
 
         post = @post_class.new
-        author = { 'name' => 'Frank' }
-        post.author = author
+        post.author = {'name' => 'Frank'}
         post.reload
 
         post.author.name.should == 'Frank'
         post.author.nil?.should be_false
 
-        new_author = { 'name' => 'Emily' }
-        post.author = new_author
+        post.author = {'name' => 'Emily'}
         post.author.name.should == 'Emily'
       end
     end
