@@ -101,7 +101,6 @@ module MongoMapper
           query = Plucky::Query.new(collection)
           query.object_ids(object_id_keys)
           query.update(options)
-          query[:_type] = to_s if single_collection_inherited?
           query
         end
 

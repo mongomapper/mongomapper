@@ -12,6 +12,12 @@ module MongoMapper
         def single_collection_inherited?
           @single_collection_inherited == true
         end
+
+        def query(options={})
+          super.tap do |query|
+            query[:_type] = name if single_collection_inherited?
+          end
+        end
       end
 
       module InstanceMethods
