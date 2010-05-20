@@ -19,6 +19,7 @@ module MongoMapper
         plugin Plugins::Persistence
         plugin Plugins::Protected
         plugin Plugins::Rails
+        plugin Plugins::Sci
         plugin Plugins::Serialization
         plugin Plugins::Validations
         plugin Plugins::Callbacks

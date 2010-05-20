@@ -25,6 +25,7 @@ module MongoMapper
         plugin Plugins::Protected
         plugin Plugins::Querying
         plugin Plugins::Rails
+        plugin Plugins::Sci
         plugin Plugins::Serialization
         plugin Plugins::Timestamps
         plugin Plugins::Userstamps
@@ -38,21 +39,8 @@ module MongoMapper
     end
 
     module ClassMethods
-      def inherited(subclass)
-        subclass.set_collection_name(collection_name)
-        super
-      end
-
       def embeddable?
         false
-      end
-
-      def single_collection_inherited?
-        keys.key?(:_type) && single_collection_inherited_superclass?
-      end
-
-      def single_collection_inherited_superclass?
-        superclass.respond_to?(:keys) && superclass.keys.key?(:_type)
       end
     end
 

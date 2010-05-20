@@ -10,7 +10,6 @@ module MongoMapper
 
       module ClassMethods
         def inherited(descendant)
-          key :_type, String unless keys.keys.include?(:_type)
           descendant.instance_variable_set(:@keys, keys.dup)
           super
         end
@@ -166,8 +165,6 @@ module MongoMapper
             @new = true
             assign(attrs)
           end
-
-          assign_type
         end
 
         def persisted?
@@ -278,10 +275,6 @@ module MongoMapper
                 write_key :_id, BSON::ObjectID.new
               end
             end
-          end
-
-          def assign_type
-            self._type = self.class.name if respond_to?(:_type=)
           end
 
           def ensure_key_exists(name)
