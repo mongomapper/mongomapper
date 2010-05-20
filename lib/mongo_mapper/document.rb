@@ -45,6 +45,14 @@ module MongoMapper
     end
 
     module InstanceMethods
+      def new?
+        @new
+      end
+
+      def destroyed?
+        @_destroyed == true
+      end
+
       def save(options={})
         options.assert_valid_keys(:validate, :safe)
         options.reverse_merge!(:validate => true)
@@ -63,14 +71,6 @@ module MongoMapper
       def delete
         @_destroyed = true
         self.class.delete(id) unless new?
-      end
-
-      def new?
-        @new
-      end
-
-      def destroyed?
-        @_destroyed == true
       end
 
       def reload
