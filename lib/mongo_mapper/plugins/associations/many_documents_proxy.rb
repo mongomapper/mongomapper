@@ -83,8 +83,7 @@ module MongoMapper
         end
 
         def nullify
-          criteria = Query.new(klass, scoped_conditions).criteria
-          all(criteria).each do |doc|
+          all.each do |doc|
             doc.update_attributes(self.foreign_key => nil)
           end
           reset
