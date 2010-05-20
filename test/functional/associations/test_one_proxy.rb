@@ -85,7 +85,7 @@ class OneProxyTest < Test::Unit::TestCase
 
   should "work with criteria" do
     @post_class.one :primary_author, :class => @author_class, :primary => true
-    @post_class.one :author, :class => @author_class
+    @post_class.one :author, :class => @author_class, :primary => false
 
     post = @post_class.create
     author = @author_class.create(:name => 'Frank', :primary => false, :post_id => post.id)
