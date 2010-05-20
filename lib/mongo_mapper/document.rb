@@ -15,6 +15,7 @@ module MongoMapper
         plugin Plugins::Descendants
         plugin Plugins::Equality
         plugin Plugins::Inspect
+        plugin Plugins::Indexes
         plugin Plugins::Keys
         plugin Plugins::Dirty # for now dirty needs to be after keys
         plugin Plugins::Logger
@@ -39,10 +40,6 @@ module MongoMapper
       def inherited(subclass)
         subclass.set_collection_name(collection_name)
         super
-      end
-
-      def ensure_index(spec, options={})
-        collection.create_index(spec, options)
       end
 
       def find(*args)
