@@ -192,6 +192,5 @@ end
 module MongoMapper
   module Support
     autoload :DescendantAppends, 'mongo_mapper/support/descendant_appends'
-    autoload :Find,              'mongo_mapper/support/find'
   end
 end

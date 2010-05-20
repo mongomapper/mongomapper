@@ -217,22 +217,6 @@ class QueryingTesting < Test::Unit::TestCase
       end
     end
 
-    context "#find_by..." do
-      should "find document based on argument" do
-        @document.find_by_first_name('John').should == @doc1
-        @document.find_by_last_name('Nunemaker', :order => 'age desc').should == @doc1
-        @document.find_by_age(27).should == @doc1
-      end
-
-      should "not raise error" do
-        @document.find_by_first_name('Mongo').should be_nil
-      end
-
-      should "define a method for each key" do
-        @document.methods(false).select { |e| e =~ /^find_by_/ }.size == @document.keys.size
-      end
-    end
-
     context "#find_each" do
       should "yield all documents found, based on criteria" do
         yield_documents = []
@@ -242,46 +226,6 @@ class QueryingTesting < Test::Unit::TestCase
         yield_documents = []
         @document.find_each(:last_name => 'Nunemaker', :order => 'age desc') {|doc| yield_documents << doc }
         yield_documents.should == [@doc1, @doc3]
-      end
-    end
-
-    context "dynamic finders" do
-      should "find document based on all arguments" do
-        @document.find_by_first_name_and_last_name_and_age('John', 'Nunemaker', 27).should == @doc1
-      end
-
-      should "not find the document if an argument is wrong" do
-        @document.find_by_first_name_and_last_name_and_age('John', 'Nunemaker', 28).should be_nil
-      end
-
-      should "find all documents based on arguments" do
-        docs = @document.find_all_by_last_name('Nunemaker')
-        docs.should be_kind_of(Array)
-        docs.should include(@doc1)
-        docs.should include(@doc3)
-      end
-
-      should "initialize document with given arguments" do
-        doc = @document.find_or_initialize_by_first_name_and_last_name('David', 'Cuadrado')
-        doc.should be_new
-        doc.first_name.should == 'David'
-      end
-
-      should "not initialize document if document is found" do
-        doc = @document.find_or_initialize_by_first_name('John')
-        doc.should_not be_new
-      end
-
-      should "create document with given arguments" do
-        doc = @document.find_or_create_by_first_name_and_last_name('David', 'Cuadrado')
-        doc.should_not be_new
-        doc.first_name.should == 'David'
-      end
-
-      should "raise error if document is not found when using !" do
-        lambda {
-          @document.find_by_first_name_and_last_name!(1,2)
-        }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
   end # finding documents
@@ -302,7 +246,7 @@ class QueryingTesting < Test::Unit::TestCase
     end
   end
 
-  context "first_or_create" do
+  context ".first_or_create" do
     should "find if exists" do
       created = @document.create(:first_name => 'John', :last_name => 'Nunemaker')
       lambda {
@@ -329,7 +273,7 @@ class QueryingTesting < Test::Unit::TestCase
     end
   end
 
-  context "first_or_new" do
+  context ".first_or_new" do
     should "find if exists" do
       created = @document.create(:first_name => 'John', :last_name => 'Nunemaker')
       lambda {

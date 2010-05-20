@@ -6,13 +6,13 @@ module MongoMapper
     def self.included(model)
       model.class_eval do
         include InstanceMethods
-        extend  Support::Find
         extend  ClassMethods
         extend  Plugins
 
         plugin Plugins::Associations
         plugin Plugins::Clone
         plugin Plugins::Descendants
+        plugin Plugins::DynamicQuerying
         plugin Plugins::Equality
         plugin Plugins::Inspect
         plugin Plugins::Indexes

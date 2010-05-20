@@ -3,7 +3,7 @@ module MongoMapper
   module Plugins
     module Associations
       class InArrayProxy < Collection
-        include Support::Find
+        include MongoMapper::Plugins::DynamicQuerying::ClassMethods
 
         def find(*args)
           options = args.extract_options!
