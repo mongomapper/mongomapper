@@ -25,6 +25,7 @@ module MongoMapper
     autoload :Modifiers,      'mongo_mapper/plugins/modifiers'
     autoload :Persistence,    'mongo_mapper/plugins/persistence'
     autoload :Protected,      'mongo_mapper/plugins/protected'
+    autoload :Querying,       'mongo_mapper/plugins/querying'
     autoload :Rails,          'mongo_mapper/plugins/rails'
     autoload :Serialization,  'mongo_mapper/plugins/serialization'
     autoload :Timestamps,     'mongo_mapper/plugins/timestamps'
