@@ -5,7 +5,7 @@ class JsonSerializationTest < Test::Unit::TestCase
 
   # Helper function in case things change in the future
   # - replacing all those to_json calls was a nightmare
-  def convert_to_json object, options = {}
+  def convert_to_json(object, options={})
     ActiveSupport::JSON.encode(object, options)
   end
 

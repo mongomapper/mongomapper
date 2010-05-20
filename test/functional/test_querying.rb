@@ -474,4 +474,270 @@ class QueryingTesting < Test::Unit::TestCase
       @document.exists?(:first_name => "Jean").should == false
     end
   end
+  
+  context "#update_attributes (new document)" do
+    setup do
+      @doc = @document.new(:first_name => 'John', :age => '27')
+      @doc.update_attributes(:first_name => 'Johnny', :age => 30)
+    end
+
+    should "insert document into the collection" do
+      @document.count.should == 1
+    end
+
+    should "assign an id for the document" do
+      @doc.id.should be_instance_of(BSON::ObjectID)
+    end
+
+    should "save attributes" do
+      @doc.first_name.should == 'Johnny'
+      @doc.age.should == 30
+    end
+
+    should "update attributes in the database" do
+      doc = @doc.reload
+      doc.should == @doc
+      doc.first_name.should == 'Johnny'
+      doc.age.should == 30
+    end
+
+    should "allow updating custom attributes" do
+      @doc.update_attributes(:gender => 'mALe')
+      @doc.reload.gender.should == 'mALe'
+    end
+  end
+
+  context "#update_attributes (existing document)" do
+    setup do
+      @doc = @document.create(:first_name => 'John', :age => '27')
+      @doc.update_attributes(:first_name => 'Johnny', :age => 30)
+    end
+
+    should "not insert document into collection" do
+      @document.count.should == 1
+    end
+
+    should "update attributes" do
+      @doc.first_name.should == 'Johnny'
+      @doc.age.should == 30
+    end
+
+    should "update attributes in the database" do
+      doc = @doc.reload
+      doc.first_name.should == 'Johnny'
+      doc.age.should == 30
+    end
+  end
+
+  context "#update_attributes (return value)" do
+    setup do
+      @document.key :foo, String, :required => true
+    end
+
+    should "be true if document valid" do
+      @document.new.update_attributes(:foo => 'bar').should be_true
+    end
+
+    should "be false if document not valid" do
+      @document.new.update_attributes({}).should be_false
+    end
+  end
+
+  context "#save (new document)" do
+    setup do
+      @doc = @document.new(:first_name => 'John', :age => '27')
+      @doc.save
+    end
+
+    should "insert document into the collection" do
+      @document.count.should == 1
+    end
+
+    should "assign an id for the document" do
+      @doc.id.should be_instance_of(BSON::ObjectID)
+    end
+
+    should "save attributes" do
+      @doc.first_name.should == 'John'
+      @doc.age.should == 27
+    end
+
+    should "update attributes in the database" do
+      doc = @doc.reload
+      doc.should == @doc
+      doc.first_name.should == 'John'
+      doc.age.should == 27
+    end
+
+    should "allow to add custom attributes to the document" do
+      @doc = @document.new(:first_name => 'David', :age => '26', :gender => 'male', :tags => [1, "2"])
+      @doc.save
+      doc = @doc.reload
+      doc.gender.should == 'male'
+      doc.tags.should == [1, "2"]
+    end
+
+    should "allow to use custom methods to assign properties" do
+      klass = Doc do
+        key :name, String
+
+        def realname=(value)
+          self.name = value
+        end
+      end
+
+      person = klass.new(:realname => 'David')
+      person.save
+      person.reload.name.should == 'David'
+    end
+
+    context "with key of type date" do
+      should "save the date value as a Time object" do
+        doc = @document.new(:first_name => 'John', :age => '27', :date => "2009-12-01")
+        doc.save
+        doc.date.should == Date.new(2009, 12, 1)
+      end
+    end
+  end
+
+  context "#save (existing document)" do
+    setup do
+      @doc = @document.create(:first_name => 'John', :age => '27')
+      @doc.first_name = 'Johnny'
+      @doc.age = 30
+      @doc.save
+    end
+
+    should "not insert document into collection" do
+      @document.count.should == 1
+    end
+
+    should "update attributes" do
+      @doc.first_name.should == 'Johnny'
+      @doc.age.should == 30
+    end
+
+    should "update attributes in the database" do
+      doc = @doc.reload
+      doc.first_name.should == 'Johnny'
+      doc.age.should == 30
+    end
+
+    should "allow updating custom attributes" do
+      @doc = @document.new(:first_name => 'David', :age => '26', :gender => 'male')
+      @doc.gender = 'Male'
+      @doc.save
+      @doc.reload.gender.should == 'Male'
+    end
+  end
+
+  context "#save (with validations off)" do
+    setup do
+      @document = Doc do
+        key :name, String, :required => true
+      end
+    end
+
+    should "insert invalid document" do
+      doc = @document.new
+      doc.expects(:valid?).never
+      doc.save(:validate => false)
+      @document.count.should == 1
+    end
+  end
+
+  context "#save (with options)" do
+    setup do
+      @document = Doc do
+        key :name, String
+        set_collection_name 'test_indexes'
+      end
+      drop_indexes(@document)
+      @document.ensure_index :name, :unique => true
+    end
+
+    should "allow passing safe" do
+      @document.create(:name => 'John')
+      assert_raises(Mongo::OperationFailure) do
+        @document.new(:name => 'John').save(:safe => true)
+      end
+    end
+
+    should "raise argument error if options has unsupported key" do
+      assert_raises(ArgumentError) do
+        @document.new.save(:foo => true)
+      end
+    end
+  end
+
+  context "#save! (with options)" do
+    setup do
+      @document = Doc do
+        key :name, String
+        set_collection_name 'test_indexes'
+      end
+      drop_indexes(@document)
+      @document.ensure_index :name, :unique => true
+    end
+
+    should "allow passing safe" do
+      @document.create(:name => 'John')
+      assert_raises(Mongo::OperationFailure) do
+        @document.new(:name => 'John').save!(:safe => true)
+      end
+    end
+
+    should "raise argument error if options has unsupported key" do
+      assert_raises(ArgumentError) do
+        @document.new.save!(:foo => true)
+      end
+    end
+
+    should "raise argument error if using validate as that would be pointless with save!" do
+      assert_raises(ArgumentError) do
+        @document.new.save!(:validate => false)
+      end
+    end
+  end
+
+  context "#destroy" do
+    setup do
+      @doc = @document.create(:first_name => 'John', :age => '27')
+      @doc.destroy
+    end
+
+    should "remove the document from the collection" do
+      @document.count.should == 0
+    end
+  end
+
+  context "#delete" do
+    setup do
+      @doc1 = @document.create(:first_name => 'John', :last_name => 'Nunemaker', :age => '27')
+      @doc2 = @document.create(:first_name => 'Steve', :last_name => 'Smith', :age => '28')
+
+      @document.class_eval do
+        before_destroy :before_destroy_callback
+        after_destroy :after_destroy_callback
+
+        def history; @history ||= [] end
+        def before_destroy_callback; history << :after_destroy end
+        def after_destroy_callback;  history << :after_destroy end
+      end
+
+      @doc1.delete
+    end
+
+    should "remove document from collection" do
+      @document.count.should == 1
+    end
+
+    should "not remove other documents" do
+      @document.find(@doc2.id).should_not be(nil)
+    end
+
+    should "not call before/after destroy callbacks" do
+      @doc1.history.should == []
+    end
+  end
 end

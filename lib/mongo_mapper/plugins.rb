@@ -12,6 +12,9 @@ module MongoMapper
       plugins << mod
     end
 
+    autoload :Document,         'mongo_mapper/plugins/document'
+    autoload :EmbeddedDocument, 'mongo_mapper/plugins/embedded_document'
+
     autoload :Callbacks,        'mongo_mapper/plugins/callbacks'
     autoload :Clone,            'mongo_mapper/plugins/clone'
     autoload :Descendants,      'mongo_mapper/plugins/descendants'

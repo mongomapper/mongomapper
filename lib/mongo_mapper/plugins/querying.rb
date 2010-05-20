@@ -162,6 +162,48 @@ module MongoMapper
             instances
           end
       end
+
+      module InstanceMethods
+        def save(options={})
+          options.assert_valid_keys(:validate, :safe)
+          options.reverse_merge!(:validate => true)
+          !options[:validate] || valid? ? create_or_update(options) : false
+        end
+
+        def save!(options={})
+          options.assert_valid_keys(:safe)
+          save(options) || raise(DocumentNotValid.new(self))
+        end
+
+        def destroy
+          delete
+        end
+
+        def delete
+          @_destroyed = true
+          self.class.delete(id) unless new?
+        end
+        
+        private
+          def create_or_update(options={})
+            result = new? ? create(options) : update(options)
+            result != false
+          end
+
+          def create(options={})
+            save_to_collection(options)
+          end
+
+          def update(options={})
+            save_to_collection(options)
+          end
+
+          def save_to_collection(options={})
+            safe = options[:safe] || false
+            @new = false
+            collection.save(to_mongo, :safe => safe)
+          end
+      end
     end
   end
 end

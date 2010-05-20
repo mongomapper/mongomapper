@@ -89,7 +89,7 @@ module MongoMapper
           reset
         end
 
-        def save_to_collection(options = {})
+        def save_to_collection(options={})
           @target.each { |doc| doc.save(options) } if @target
         end
 

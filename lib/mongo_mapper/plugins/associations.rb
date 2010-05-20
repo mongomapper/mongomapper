@@ -3,6 +3,11 @@ module MongoMapper
   module Plugins
     module Associations
       module ClassMethods
+        def inherited(subclass)
+          subclass.associations = associations.dup
+          super
+        end
+
         def belongs_to(association_id, options={}, &extension)
           create_association(:belongs_to, association_id, options, &extension)
         end
@@ -21,11 +26,6 @@ module MongoMapper
 
         def associations=(hash)
           @associations = hash
-        end
-
-        def inherited(subclass)
-          subclass.associations = associations.dup
-          super
         end
 
         private
@@ -86,7 +86,7 @@ module MongoMapper
           proxy
         end
 
-        def save_to_collection(options = {})
+        def save_to_collection(options={})
           super
           associations.each do |association_name, association|
             proxy = get_proxy(association)

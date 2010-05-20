@@ -3,7 +3,10 @@ module MongoMapper
   module Plugins
     module Validations
       def self.configure(model)
-        model.class_eval { include Validatable }
+        model.class_eval do
+          include Validatable
+          extend Plugins::Validations::DocumentMacros
+        end
       end
 
       module DocumentMacros
