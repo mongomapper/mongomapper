@@ -109,5 +109,6 @@ module MongoMapper
   autoload :Version,          'mongo_mapper/version'
 end
 
+require 'mongo_mapper/extensions'
 require 'mongo_mapper/support'
 require 'mongo_mapper/plugins'
