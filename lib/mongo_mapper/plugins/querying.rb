@@ -9,8 +9,7 @@ module MongoMapper
           if args.first.is_a?(Array) || args.size > 1
             find_some(args, options)
           else
-            query = query(options).update(:_id => args[0])
-            find_one(query.to_hash)
+            find_one(options.merge(:_id => args[0]))
           end
         end
 
@@ -21,25 +20,26 @@ module MongoMapper
           if args.first.is_a?(Array) || args.size > 1
             find_some!(args, options)
           else
-            query = query(options).update(:_id => args[0])
-            find_one(query.to_hash) || raise(DocumentNotFound, "Document match #{options.inspect} does not exist in #{collection.name} collection")
+            find_one(options.merge(:_id => args[0])) ||
+              raise(DocumentNotFound, "Document match #{options.inspect} does not exist
+                                        in #{collection.name} collection")
           end
         end
 
         def find_each(options={})
-          query(options).find().each { |doc| yield load(doc) }
+          query(options).query.find().each { |doc| yield load(doc) }
         end
 
         def find_by_id(id)
-          find(id)
+          find_one(:_id => id)
         end
 
         def first(options={})
           find_one(options)
         end
 
+        # All bets are off an actual order if you provide none.
         def last(options={})
-          raise ':order option must be provided when using last' if options[:order].blank?
           find_one(query(options).reverse.to_hash)
         end
 
@@ -81,11 +81,11 @@ module MongoMapper
         end
 
         def delete(*ids)
-          query(:_id => ids.flatten).remove
+          query(:_id => ids.flatten).query.remove
         end
 
         def delete_all(options={})
-          query(options).remove
+          query(options).query.remove
         end
 
         def destroy(*ids)
@@ -98,10 +98,17 @@ module MongoMapper
 
         # @api private for now
         def query(options={})
-          query = Plucky::Query.new(collection)
-          query.object_ids(object_id_keys)
-          query.update(options)
-          query
+          Query.new(self).update(options)
+        end
+
+        # @api private for now
+        def criteria_hash(criteria={})
+          Plucky::CriteriaHash.new(criteria, :object_ids => object_id_keys)
+        end
+
+        # @api private for now
+        def options_hash(options={})
+          Plucky::OptionsHash.new(options)
         end
 
         private
@@ -111,24 +118,24 @@ module MongoMapper
           end
 
           def find_some!(ids, options={})
-            ids = ids.flatten.compact.uniq
-            documents = find_some(ids, options)
+            ids  = ids.flatten.compact.uniq
+            docs = find_some(ids, options)
 
-            if ids.size == documents.size
-              documents
-            else
-              raise DocumentNotFound, "Couldn't find all of the ids (#{ids.to_sentence}). Found #{documents.size}, but was expecting #{ids.size}"
+            if ids.size != docs.size
+              raise DocumentNotFound, "Couldn't find all of the ids (#{ids.to_sentence}). Found #{docs.size}, but was expecting #{ids.size}"
             end
+
+            docs
           end
 
           # All query methods that load documents pass through find_one or find_many
           def find_one(options={})
-            load(query(options).first)
+            query(options).first
           end
 
           # All query methods that load documents pass through find_one or find_many
           def find_many(options)
-            query(options).all().map { |doc| load(doc) }
+            query(options).all
           end
 
           def initialize_each(*docs)
@@ -183,7 +190,7 @@ module MongoMapper
           @_destroyed = true
           self.class.delete(id) unless new?
         end
-        
+
         private
           def create_or_update(options={})
             result = new? ? create(options) : update(options)

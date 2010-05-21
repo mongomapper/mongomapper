@@ -105,6 +105,7 @@ module MongoMapper
 
   autoload :Document,         'mongo_mapper/document'
   autoload :EmbeddedDocument, 'mongo_mapper/embedded_document'
+  autoload :Query,            'mongo_mapper/query'
   autoload :Version,          'mongo_mapper/version'
 end
 

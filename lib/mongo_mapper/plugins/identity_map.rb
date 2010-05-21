@@ -30,20 +30,19 @@ module MongoMapper
 
         def find_one(options={})
           query = query(options)
-          criteria = query.criteria.to_hash
           
-          if simple_find?(criteria) && identity_map.key?(criteria[:_id])
-            identity_map[criteria[:_id]]
+          if query.simple? && identity_map.key?(query[:_id])
+            identity_map[query[:_id]]
           else
             super.tap do |document|
-              remove_documents_from_map(document) if selecting_fields?(query.options)
+              remove_documents_from_map(document) if query.fields?
             end
           end
         end
 
         def find_many(options)
           super.tap do |documents|
-            remove_documents_from_map(documents) if selecting_fields?(query(options).options)
+            remove_documents_from_map(documents) if query(options).fields?
           end
         end
 
@@ -91,10 +90,6 @@ module MongoMapper
             documents.flatten.compact.each do |document|
               identity_map.delete(document._id)
             end
-          end
-
-          def simple_find?(criteria)
-            criteria.keys == [:_id] || criteria.keys.to_set == [:_id, :_type].to_set
           end
 
           def selecting_fields?(options)

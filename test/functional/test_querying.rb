@@ -11,7 +11,57 @@ class QueryingTesting < Test::Unit::TestCase
       key :date, Date
     end
   end
+
+  context ".query" do
+    setup do
+      @query = @document.query
+    end
+
+    should "set model to self" do
+      @query.model.should == @document
+    end
+
+    should "always return new instance" do
+      @document.query.should_not equal(@query)
+    end
+
+    should "apply options" do
+      @document.query(:foo => 'bar')[:foo].should == 'bar'
+    end
+  end
+
+  context ".criteria_hash" do
+    setup do
+      @hash = @document.criteria_hash
+    end
+
+    should "set object id keys on hash" do
+      @hash.object_ids.should == [:_id]
+    end
+
+    should "always return new instance" do
+      @document.criteria_hash.should_not equal(@hash)
+    end
+
+    should "apply provided criteria" do
+      @document.criteria_hash(:foo => 'bar')[:foo].should == 'bar'
+    end
+  end
   
+  context ".options_hash" do
+    setup do
+      @hash = @document.options_hash
+    end
+
+    should "always return new instance" do
+      @document.options_hash.should_not equal(@hash)
+    end
+
+    should "apply provided criteria" do
+      @document.options_hash(:limit => 10)[:limit].should == 10
+    end
+  end
+
   context ".create (single document)" do
     setup do
       @doc_instance = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
@@ -193,32 +243,28 @@ class QueryingTesting < Test::Unit::TestCase
     end
 
     context "#all" do
-      should "find all documents based on criteria" do
+      should "find all documents with options" do
         @document.all(:order => 'first_name').should == [@doc1, @doc3, @doc2]
         @document.all(:last_name => 'Nunemaker', :order => 'age desc').should == [@doc1, @doc3]
       end
     end
 
     context "#first" do
-      should "find first document based on criteria" do
+      should "find first document options_hash" do
         @document.first(:order => 'first_name').should == @doc1
         @document.first(:age => 28).should == @doc2
       end
     end
 
     context "#last" do
-      should "find last document based on criteria" do
+      should "find last document with options" do
         @document.last(:order => 'age').should == @doc2
         @document.last(:order => 'age', :age => 28).should == @doc2
-      end
-
-      should "raise error if no order provided" do
-        lambda { @document.last() }.should raise_error
       end
     end
 
     context "#find_each" do
-      should "yield all documents found, based on criteria" do
+      should "yield all documents found, with options" do
         yield_documents = []
         @document.find_each(:order => "first_name") {|doc| yield_documents << doc }
         yield_documents.should == [@doc1, @doc3, @doc2]
@@ -451,7 +497,7 @@ class QueryingTesting < Test::Unit::TestCase
       @document.count(:age => [26, 27]).should == 2
     end
   end
-  
+
   context ".exists?" do
     setup do
       @doc = @document.create(:first_name => "James", :age => 27)
@@ -474,7 +520,7 @@ class QueryingTesting < Test::Unit::TestCase
       @document.exists?(:first_name => "Jean").should == false
     end
   end
-  
+
   context "#update_attributes (new document)" do
     setup do
       @doc = @document.new(:first_name => 'John', :age => '27')
