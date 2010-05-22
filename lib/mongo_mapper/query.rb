@@ -24,11 +24,15 @@ module MongoMapper
     end
 
     def query
-      @query ||= Plucky::Query.new(model.collection).object_ids(model.object_id_keys)
+      @query ||= fresh_query
+    end
+
+    def fresh_query
+      Plucky::Query.new(model.collection).object_ids(model.object_id_keys)
     end
 
     def spawn
-      query.clone
+      fresh_query.update(to_hash)
     end
 
     def update(*args)

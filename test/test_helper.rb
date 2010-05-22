@@ -1,3 +1,5 @@
+$LOAD_PATH.unshift File.expand_path(ENV['HOME'] + '/dev/projects/plucky/lib')
+
 require File.expand_path(File.dirname(__FILE__) + '/../lib/mongo_mapper')
 require 'fileutils'
 

@@ -264,7 +264,7 @@ class QueryingTesting < Test::Unit::TestCase
     end
 
     context "#find_each" do
-      should "yield all documents found, with options" do
+      should "yield all documents found based on options" do
         yield_documents = []
         @document.find_each(:order => "first_name") {|doc| yield_documents << doc }
         yield_documents.should == [@doc1, @doc3, @doc2]
@@ -518,6 +518,130 @@ class QueryingTesting < Test::Unit::TestCase
 
     should "be false when no documents exist with the provided conditions" do
       @document.exists?(:first_name => "Jean").should == false
+    end
+  end
+
+  context ".where" do
+    setup do
+      @doc1 = @document.create(:first_name => 'John',  :last_name => 'Nunemaker', :age => '27')
+      @doc2 = @document.create(:first_name => 'Steve', :last_name => 'Smith',     :age => '28')
+      @doc3 = @document.create(:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26')
+      @query = @document.where(:last_name => 'Nunemaker')
+    end
+
+    should "return instance of query" do
+      @query.should be_instance_of(MongoMapper::Query)
+    end
+
+    should "fetch documents when kicker called" do
+      docs = @query.all
+      docs.should include(@doc1)
+      docs.should include(@doc3)
+      docs.should_not include(@doc2)
+    end
+
+    should "be chainable" do
+      @query.sort(:age).first.should == @doc3
+    end
+  end
+  
+  context ".fields" do
+    setup do
+      @doc1 = @document.create(:first_name => 'John',  :last_name => 'Nunemaker', :age => '27')
+      @doc2 = @document.create(:first_name => 'Steve', :last_name => 'Smith',     :age => '28')
+      @doc3 = @document.create(:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26')
+      @query = @document.fields(:age)
+    end
+
+    should "return instance of query" do
+      @query.should be_instance_of(MongoMapper::Query)
+    end
+
+    should "fetch documents when kicker called" do
+      docs = @query.all
+      docs.should include(@doc1)
+      docs.should include(@doc3)
+      docs.should include(@doc2)
+      docs.each do |doc|
+        doc.age.should_not    be_nil
+        doc.first_name.should be_nil # key was not loaded
+        doc.last_name.should  be_nil # key was not loaded
+      end
+    end
+
+    should "be chainable" do
+      @query.sort(:age).all.map(&:age).should == [26, 27, 28]
+    end
+  end
+  
+  context ".limit" do
+    setup do
+      @doc1 = @document.create(:first_name => 'John',  :last_name => 'Nunemaker', :age => '27')
+      @doc2 = @document.create(:first_name => 'Steve', :last_name => 'Smith',     :age => '28')
+      @doc3 = @document.create(:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26')
+      @query = @document.limit(2)
+    end
+
+    should "return instance of query" do
+      @query.should be_instance_of(MongoMapper::Query)
+    end
+
+    should "fetch documents when kicker called" do
+      docs = @query.all
+      docs.size.should == 2
+    end
+
+    should "be chainable" do
+      result = [26, 27]
+      @query.sort(:age).all.map(&:age).should == result
+      @query.count.should > result.size
+    end
+  end
+  
+  context ".skip" do
+    setup do
+      @doc1 = @document.create(:first_name => 'John',  :last_name => 'Nunemaker', :age => '27')
+      @doc2 = @document.create(:first_name => 'Steve', :last_name => 'Smith',     :age => '28')
+      @doc3 = @document.create(:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26')
+      @query = @document.skip(1)
+    end
+
+    should "return instance of query" do
+      @query.should be_instance_of(MongoMapper::Query)
+    end
+
+    should "fetch documents when kicker called" do
+      docs = @query.all
+      docs.size.should == 2 # skipping 1 out of 3
+    end
+
+    should "be chainable" do
+      result = [27, 28]
+      @query.sort(:age).all.map(&:age).should == result
+      @query.count.should > result.size
+    end
+  end
+
+  context ".sort" do
+    setup do
+      @doc1 = @document.create(:first_name => 'John',  :last_name => 'Nunemaker', :age => '27')
+      @doc2 = @document.create(:first_name => 'Steve', :last_name => 'Smith',     :age => '28')
+      @doc3 = @document.create(:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26')
+      @query = @document.sort(:age)
+    end
+
+    should "return instance of query" do
+      @query.should be_instance_of(MongoMapper::Query)
+    end
+
+    should "fetch documents when kicker called" do
+      @query.all.should == [@doc3, @doc1, @doc2]
+    end
+
+    should "be chainable" do
+      result = [28]
+      @query.skip(2).all.map(&:age).should == result
+      @query.count.should > result.size
     end
   end
 

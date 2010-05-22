@@ -122,7 +122,7 @@ class QueryTest < Test::Unit::TestCase
       docs.first.name.should == 'John'
     end
 
-    should_eventually "not modify original query when using options" do
+    should "not modify original query when using options" do
       docs = @query.all(:name => 'John')
       @query[:name].should be_nil
     end
@@ -144,7 +144,7 @@ class QueryTest < Test::Unit::TestCase
       @query.first(:name => 'John').name.should == 'John'
     end
 
-    should_eventually "not modify original query when using options" do
+    should "not modify original query when using options" do
       @query.first(:name => 'John')
       @query[:name].should be_nil
     end
@@ -166,7 +166,7 @@ class QueryTest < Test::Unit::TestCase
       @query.last(:sort => :name).name.should == 'Steve'
     end
 
-    should_eventually "not modify original query when using options" do
+    should "not modify original query when using options" do
       @query.last(:sort => :name)
       @query[:sort].should be_nil
     end
