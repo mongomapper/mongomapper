@@ -7,6 +7,17 @@ class QueryTest < Test::Unit::TestCase
     model = Doc()
     Query.new(model).model.should == model
   end
+  
+  context "#initialize_copy" do
+    setup do
+      @original = Query.new(Doc())
+      @cloned   = @original.clone
+    end
+
+    should "clone the query" do
+      @cloned.query.should_not equal(@original.query)
+    end
+  end
 
   context "#query" do
     setup do

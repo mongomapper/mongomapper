@@ -4,11 +4,17 @@ module MongoMapper
   class Query
     extend Forwardable
 
-    attr_reader    :model
+    attr_reader    :query, :model
     def_delegators :query, :count, :fields?, :simple?, :to_hash, :[], :[]=
 
     def initialize(model)
       @model = model
+      @query = Plucky::Query.new(model.collection).object_ids(model.object_id_keys)
+    end
+
+    def initialize_copy(source)
+      super
+      @query = @query.clone
     end
 
     def all(opts={})
@@ -23,16 +29,8 @@ module MongoMapper
       load(spawn.update(opts).last)
     end
 
-    def query
-      @query ||= fresh_query
-    end
-
-    def fresh_query
-      Plucky::Query.new(model.collection).object_ids(model.object_id_keys)
-    end
-
     def spawn
-      fresh_query.update(to_hash)
+      query.clone
     end
 
     def update(*args)
