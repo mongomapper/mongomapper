@@ -1,8 +1,11 @@
 # encoding: UTF-8
+require 'forwardable'
 module MongoMapper
   module Plugins
     module Associations
       class Proxy
+        extend Forwardable
+
         alias :proxy_respond_to? :respond_to?
         alias :proxy_extend :extend
 
@@ -14,9 +17,8 @@ module MongoMapper
         alias :proxy_target :target
         alias :proxy_association :association
 
-        delegate :klass, :to => :proxy_association
-        delegate :options, :to => :proxy_association
-        delegate :collection, :to => :klass
+        def_delegators :proxy_association, :klass, :options
+        def_delegator :klass, :collection
 
         def initialize(owner, association)
           @owner, @association, @loaded = owner, association, false
