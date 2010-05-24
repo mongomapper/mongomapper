@@ -124,6 +124,10 @@ class Object
   def self.from_mongo(value)
     value
   end
+  
+  def to_mongo
+    self.class.to_mongo(self)
+  end
 end
 
 class ObjectId

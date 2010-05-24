@@ -174,6 +174,26 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
+  context "NilClass#from_mongo" do
+    should "return nil" do
+      nil.from_mongo(nil).should be_nil
+    end
+  end
+
+  context "NilClass#to_mongo" do
+    should "return nil" do
+      nil.to_mongo(nil).should be_nil
+    end
+  end
+
+  context "ObjectId#to_mongo" do
+    should "call class to_mongo with self" do
+      object = Object.new
+      object.class.expects(:to_mongo).with(object)
+      object.to_mongo
+    end
+  end
+
   context "ObjectId.to_mongo" do
     should "return nil for nil" do
       ObjectId.to_mongo(nil).should be_nil
@@ -192,28 +212,7 @@ class SupportTest < Test::Unit::TestCase
       id = BSON::ObjectID.new
       ObjectId.to_mongo(id.to_s).should be(id)
     end
-  end
 
-  context "ObjectId.from_mongo" do
-    should "return value" do
-      id = BSON::ObjectID.new
-      ObjectId.from_mongo(id).should == id
-    end
-  end
-
-  context "NilClass#to_mongo" do
-    should "return nil" do
-      nil.to_mongo(nil).should be_nil
-    end
-  end
-
-  context "NilClass#from_mongo" do
-    should "return nil" do
-      nil.from_mongo(nil).should be_nil
-    end
-  end
-
-  context "Object.to_mongo" do
     should "return value" do
       Object.to_mongo(21).should == 21
       Object.to_mongo('21').should == '21'
@@ -221,7 +220,12 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Object.from_mongo" do
+  context "ObjectId.from_mongo" do
+    should "return value" do
+      id = BSON::ObjectID.new
+      ObjectId.from_mongo(id).should == id
+    end
+
     should "return value" do
       Object.from_mongo(21).should == 21
       Object.from_mongo('21').should == '21'
@@ -272,14 +276,6 @@ class SupportTest < Test::Unit::TestCase
 
     should "return empty string if blank" do
       String.from_mongo('').should == ''
-    end
-  end
-
-  context "Symbol" do
-    %w(gt lt gte lte ne in nin mod all size where exists asc desc).each do |operator|
-      should "have $.{operator} operator" do
-        :foo.respond_to?(operator)
-      end
     end
   end
 
