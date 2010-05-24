@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class SupportTest < Test::Unit::TestCase
-  context "Array#to_mongo" do
+  context "Array.to_mongo" do
     should "convert value to_a" do
       Array.to_mongo([1, 2, 3, 4]).should == [1, 2, 3, 4]
       Array.to_mongo('1').should == ['1']
@@ -9,7 +9,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Array#from_mongo" do
+  context "Array.from_mongo" do
     should "be array if array" do
       Array.from_mongo([1, 2]).should == [1, 2]
     end
@@ -19,7 +19,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Binary#to_mongo" do
+  context "Binary.to_mongo" do
     should "convert to byte buffer if not byte buffer" do
       Binary.to_mongo('asdfsadasdfs').is_a?(BSON::ByteBuffer).should be_true
     end
@@ -33,14 +33,14 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Binary#from_mongo" do
+  context "Binary.from_mongo" do
     should "return value" do
       buffer = BSON::ByteBuffer.new('asdfasdfasdf')
       Binary.from_mongo(buffer).to_s.should == buffer.to_s
     end
   end
 
-  context "Boolean#to_mongo" do
+  context "Boolean.to_mongo" do
     should "be true for true" do
       Boolean.to_mongo(true).should be_true
     end
@@ -66,7 +66,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Boolean#from_mongo" do
+  context "Boolean.from_mongo" do
     should "be true for true" do
       Boolean.from_mongo(true).should be_true
     end
@@ -80,7 +80,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Date#to_mongo" do
+  context "Date.to_mongo" do
     should "be time if string" do
       date = Date.to_mongo('2009-10-01')
       date.should == Time.utc(2009, 10, 1)
@@ -107,7 +107,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Date#from_mongo" do
+  context "Date.from_mongo" do
     should "be date if date" do
       date = Date.new(2009, 10, 1)
       from_date = Date.from_mongo(date)
@@ -127,7 +127,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Float#to_mongo" do
+  context "Float.to_mongo" do
     should "convert value to_f" do
       [21, 21.0, '21'].each do |value|
         Float.to_mongo(value).should == 21.0
@@ -139,7 +139,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Hash#from_mongo" do
+  context "Hash.from_mongo" do
     should "convert hash to hash with indifferent access" do
       hash = Hash.from_mongo(:foo => 'bar')
       hash[:foo].should  == 'bar'
@@ -153,14 +153,14 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Hash#to_mongo instance method" do
+  context "Hash.to_mongo instance method" do
     should "have instance method that returns self" do
       hash = HashWithIndifferentAccess.new('foo' => 'bar')
       hash.to_mongo.should == {'foo' => 'bar'}
     end
   end
 
-  context "Integer#to_mongo" do
+  context "Integer.to_mongo" do
     should "convert value to integer" do
       [21, 21.0, '21'].each do |value|
         Integer.to_mongo(value).should == 21
@@ -174,7 +174,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "ObjectId#to_mongo" do
+  context "ObjectId.to_mongo" do
     should "return nil for nil" do
       ObjectId.to_mongo(nil).should be_nil
     end
@@ -194,7 +194,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "ObjectId#from_mongo" do
+  context "ObjectId.from_mongo" do
     should "return value" do
       id = BSON::ObjectID.new
       ObjectId.from_mongo(id).should == id
@@ -213,7 +213,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Object#to_mongo" do
+  context "Object.to_mongo" do
     should "return value" do
       Object.to_mongo(21).should == 21
       Object.to_mongo('21').should == '21'
@@ -221,7 +221,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Object#from_mongo" do
+  context "Object.from_mongo" do
     should "return value" do
       Object.from_mongo(21).should == 21
       Object.from_mongo('21').should == '21'
@@ -229,7 +229,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Set#to_mongo" do
+  context "Set.to_mongo" do
     should "convert value to_a" do
       Set.to_mongo(Set.new([1,2,3])).should == [1,2,3]
     end
@@ -239,7 +239,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Set#from_mongo" do
+  context "Set.from_mongo" do
     should "be a set if array" do
       Set.from_mongo([1,2,3]).should == Set.new([1,2,3])
     end
@@ -249,7 +249,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "String#to_mongo" do
+  context "String.to_mongo" do
     should "convert value to_s" do
       [21, '21'].each do |value|
         String.to_mongo(value).should == '21'
@@ -261,7 +261,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "String#from_mongo" do
+  context "String.from_mongo" do
     should "be string if value present" do
       String.from_mongo('Scotch! Scotch! Scotch!').should == 'Scotch! Scotch! Scotch!'
     end
@@ -277,13 +277,13 @@ class SupportTest < Test::Unit::TestCase
 
   context "Symbol" do
     %w(gt lt gte lte ne in nin mod all size where exists asc desc).each do |operator|
-      should "have $#{operator} operator" do
+      should "have $.{operator} operator" do
         :foo.respond_to?(operator)
       end
     end
   end
 
-  context "Time#to_mongo without Time.zone" do
+  context "Time.to_mongo without Time.zone" do
     setup do
       Time.zone = nil
     end
@@ -305,7 +305,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Time#to_mongo with Time.zone" do
+  context "Time.to_mongo with Time.zone" do
     should "be time to milliseconds if time" do
       Time.zone = 'Hawaii'
       Time.to_mongo(Time.zone.local(2009, 8, 15, 14, 0, 0, 123456)).to_f.should == Time.utc(2009, 8, 16, 0, 0, 0, 0).to_f
@@ -335,7 +335,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Time#from_mongo without Time.zone" do
+  context "Time.from_mongo without Time.zone" do
     should "be time" do
       time = Time.now
       Time.from_mongo(time).should == time
@@ -346,7 +346,7 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "Time#from_mongo with Time.zone" do
+  context "Time.from_mongo with Time.zone" do
     should "be time in Time.zone" do
       Time.zone = 'Hawaii'
 
@@ -371,6 +371,7 @@ class SupportTest < Test::Unit::TestCase
         id.as_json.should == id.to_s
       end
     end
+
     context "#to_json" do
       should "convert object id to string" do
         id = BSON::ObjectID.new
