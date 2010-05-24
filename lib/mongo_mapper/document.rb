@@ -24,6 +24,7 @@ module MongoMapper
         plugin Plugins::Persistence
         plugin Plugins::Protected
         plugin Plugins::Rails
+        plugin Plugins::Safe # needs to be after querying (save_to_collection)
         plugin Plugins::Sci
         plugin Plugins::Serialization
         plugin Plugins::Timestamps
