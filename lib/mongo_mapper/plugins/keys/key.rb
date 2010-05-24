@@ -46,7 +46,7 @@ module MongoMapper
         
         private
           def typecast_class
-            options[:typecast].constantize
+            @typecast_class ||= options[:typecast].constantize
           end
       end
     end
