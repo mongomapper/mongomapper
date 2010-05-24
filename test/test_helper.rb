@@ -62,3 +62,5 @@ FileUtils.mkdir_p(test_dir) unless File.exist?(test_dir)
 
 MongoMapper.connection = Mongo::Connection.new('127.0.0.1', 27017, {:logger => Logger.new(test_dir + '/test.log')})
 MongoMapper.database = 'test'
+
+MongoMapper.database.collections.each { |c| c.drop_indexes }
