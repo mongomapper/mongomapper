@@ -208,11 +208,6 @@ class SupportTest < Test::Unit::TestCase
       ObjectId.to_mongo(id).should be(id)
     end
 
-    should "return object id if string" do
-      id = BSON::ObjectID.new
-      ObjectId.to_mongo(id.to_s).should be(id)
-    end
-
     should "return value" do
       Object.to_mongo(21).should == 21
       Object.to_mongo('21').should == '21'
@@ -222,14 +217,12 @@ class SupportTest < Test::Unit::TestCase
 
   context "ObjectId.from_mongo" do
     should "return value" do
-      id = BSON::ObjectID.new
-      ObjectId.from_mongo(id).should == id
-    end
-
-    should "return value" do
       Object.from_mongo(21).should == 21
       Object.from_mongo('21').should == '21'
       Object.from_mongo(9223372036854775807).should == 9223372036854775807
+      
+      id = BSON::ObjectID.new
+      ObjectId.from_mongo(id).should == id
     end
   end
 

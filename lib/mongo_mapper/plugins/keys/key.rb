@@ -17,7 +17,8 @@ module MongoMapper
         end
 
         def embeddable?
-          type.respond_to?(:embeddable?) && type.embeddable? ? true : false
+          return false unless type.respond_to?(:embeddable?)
+          type.embeddable?
         end
 
         def number?
