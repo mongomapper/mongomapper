@@ -37,9 +37,9 @@ module MongoMapper
           reset
 
           unless doc.nil?
-            owner.save if owner.new?
+            proxy_owner.save if proxy_owner.new?
             doc = klass.new(doc) unless klass === doc
-            doc[foreign_key] = owner.id
+            doc[foreign_key] = proxy_owner.id
             doc.save if doc.new?
             loaded
             @target = doc
@@ -48,11 +48,11 @@ module MongoMapper
 
         protected
           def find_target
-            target_class.first(association.query_options.merge(foreign_key => owner.id))
+            target_class.first(association.query_options.merge(foreign_key => proxy_owner.id))
           end
 
           def instantiate_target(instantiator, attrs={})
-            @target = target_class.send(instantiator, attrs.update(foreign_key => owner.id))
+            @target = target_class.send(instantiator, attrs.update(foreign_key => proxy_owner.id))
             loaded
             @target
           end
@@ -62,7 +62,7 @@ module MongoMapper
           end
 
           def foreign_key
-            options[:foreign_key] || owner.class.name.foreign_key
+            options[:foreign_key] || proxy_owner.class.name.foreign_key
           end
       end
     end

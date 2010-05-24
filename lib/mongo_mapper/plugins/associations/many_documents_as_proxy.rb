@@ -5,13 +5,13 @@ module MongoMapper
       class ManyDocumentsAsProxy < ManyDocumentsProxy
         protected
           def scoped_conditions
-            {type_key_name => owner.class.name, id_key_name => owner.id}
+            {type_key_name => proxy_owner.class.name, id_key_name => proxy_owner.id}
           end
 
           def apply_scope(doc)
             ensure_owner_saved
-            doc[type_key_name] = owner.class.name
-            doc[id_key_name] = owner.id
+            doc[type_key_name] = proxy_owner.class.name
+            doc[id_key_name] = proxy_owner.id
             doc
           end
 

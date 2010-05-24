@@ -32,7 +32,7 @@ module MongoMapper
 
         private
           def assign_references(*docs)
-            docs.each { |doc| doc._parent_document = owner }
+            docs.each { |doc| doc._parent_document = proxy_owner }
           end
       end
     end

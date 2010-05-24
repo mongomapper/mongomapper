@@ -79,7 +79,7 @@ module MongoMapper
           doc = klass.create(attrs)
           unless doc.new?
             ids << doc.id
-            owner.save
+            proxy_owner.save
             reset
           end
           doc
@@ -89,7 +89,7 @@ module MongoMapper
           doc = klass.create!(attrs)
           unless doc.new?
             ids << doc.id
-            owner.save
+            proxy_owner.save
             reset
           end
           doc
@@ -137,7 +137,7 @@ module MongoMapper
           end
 
           def ids
-            owner[options[:in]]
+            proxy_owner[options[:in]]
           end
       end
     end

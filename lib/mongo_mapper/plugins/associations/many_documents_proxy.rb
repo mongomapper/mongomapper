@@ -95,7 +95,7 @@ module MongoMapper
 
         protected
           def scoped_conditions
-            {self.foreign_key => owner.id}
+            {self.foreign_key => proxy_owner.id}
           end
 
           def scoped_options(options)
@@ -107,7 +107,7 @@ module MongoMapper
           end
 
           def ensure_owner_saved
-            owner.save if owner.new?
+            proxy_owner.save if proxy_owner.new?
           end
 
           def prepare(doc)
@@ -116,12 +116,12 @@ module MongoMapper
 
           def apply_scope(doc)
             ensure_owner_saved
-            doc[foreign_key] = owner.id
+            doc[foreign_key] = proxy_owner.id
             doc
           end
 
           def foreign_key
-            options[:foreign_key] || owner.class.name.to_s.underscore.gsub("/", "_") + "_id"
+            options[:foreign_key] || proxy_owner.class.name.to_s.underscore.gsub("/", "_") + "_id"
           end
       end
     end
