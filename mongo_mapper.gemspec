@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.executables        = ['mmconsole']
   s.version            = MongoMapper::Version
   s.platform           = Gem::Platform::RUBY
-  s.files              = Dir.glob("{bin,lib}/**/*") + %w[LICENSE README.rdoc]
+  s.files              = Dir.glob("{bin,examples,lib}/**/*") + %w[LICENSE README.rdoc]
 
   s.required_rubygems_version = '>= 1.3.6'
 
