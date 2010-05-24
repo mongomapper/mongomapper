@@ -184,24 +184,22 @@ module MongoMapper
         end
 
         def attributes
-          attrs = HashWithIndifferentAccess.new
+          HashWithIndifferentAccess.new.tap do |attrs|
+            keys.each_pair do |name, key|
+              value = key.set(self[key.name])
+              attrs[name] = value
+            end
 
-          keys.each_pair do |name, key|
-            value = key.set(self[key.name])
-            attrs[name] = value
-          end
-
-          embedded_associations.each do |association|
-            if documents = instance_variable_get(association.ivar)
-              if association.one?
-                attrs[association.name] = documents.to_mongo
-              else
-                attrs[association.name] = documents.map { |document| document.to_mongo }
+            embedded_associations.each do |association|
+              if documents = instance_variable_get(association.ivar)
+                if association.one?
+                  attrs[association.name] = documents.to_mongo
+                else
+                  attrs[association.name] = documents.map { |document| document.to_mongo }
+                end
               end
             end
           end
-
-          attrs
         end
         alias :to_mongo :attributes
 
