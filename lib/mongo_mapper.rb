@@ -107,8 +107,11 @@ module MongoMapper
   autoload :EmbeddedDocument, 'mongo_mapper/embedded_document'
   autoload :Query,            'mongo_mapper/query'
   autoload :Version,          'mongo_mapper/version'
+  
+  module Support
+    autoload :DescendantAppends, 'mongo_mapper/support/descendant_appends'
+  end
 end
 
 require 'mongo_mapper/extensions'
-require 'mongo_mapper/support'
 require 'mongo_mapper/plugins'
