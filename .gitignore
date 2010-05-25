@@ -6,5 +6,6 @@ pkg
 *~
 *.gem
 tmp
+log
 .yardoc
-doc/*
+doc
