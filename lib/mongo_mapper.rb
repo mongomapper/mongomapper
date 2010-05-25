@@ -167,7 +167,9 @@ module MongoMapper
   end
 end
 
-require 'mongo_mapper/extensions'
+Dir[File.join(File.dirname(__FILE__), 'mongo_mapper', 'extensions', '*.rb')].each do |extension|
+  require extension
+end
 
 # FIXME: autoload with proxy is failing, need to investigate
 require 'mongo_mapper/plugins/associations/proxy'
