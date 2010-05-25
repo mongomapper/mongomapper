@@ -32,7 +32,7 @@ class QueryTest < Test::Unit::TestCase
     end
 
     should "set object id keys" do
-      @query.query.object_ids.should == [:room_id, :_id]
+      @query.query.object_ids.map(&:to_s).sort.should == ['_id', 'room_id']
     end
 
     should "set collection to models collection" do
