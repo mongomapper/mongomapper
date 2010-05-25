@@ -1,13 +1,5 @@
 require 'test_helper'
-
-class Address
-  include MongoMapper::EmbeddedDocument
-
-  key :address, String
-  key :city,    String
-  key :state,   String
-  key :zip,     Integer
-end
+require 'models'
 
 class FooType < Struct.new(:bar)
   def self.to_mongo(value)

@@ -1,23 +1,5 @@
 require 'test_helper'
-
-class Address
-  include MongoMapper::EmbeddedDocument
-
-  key :address, String
-  key :city,    String
-  key :state,   String
-  key :zip,     Integer
-end
-
-class FooType < Struct.new(:bar)
-  def self.to_mongo(value)
-    'to_mongo'
-  end
-
-  def self.from_mongo(value)
-    'from_mongo'
-  end
-end
+require 'models'
 
 class KeyTest < Test::Unit::TestCase
   include MongoMapper::Plugins::Keys
