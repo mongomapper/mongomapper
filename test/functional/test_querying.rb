@@ -3,8 +3,6 @@ require 'test_helper'
 class QueryingTesting < Test::Unit::TestCase
   def setup
     @document = Doc do
-      set_collection_name 'users'
-
       key :first_name, String
       key :last_name, String
       key :age, Integer
@@ -820,11 +818,10 @@ class QueryingTesting < Test::Unit::TestCase
     setup do
       @document = Doc do
         key :name, String
-        set_collection_name 'test_indexes'
       end
-      drop_indexes(@document)
       @document.ensure_index :name, :unique => true
     end
+    teardown { drop_indexes(@document) }
 
     should "allow passing safe" do
       @document.create(:name => 'John')
@@ -842,13 +839,10 @@ class QueryingTesting < Test::Unit::TestCase
 
   context "#save! (with options)" do
     setup do
-      @document = Doc do
-        key :name, String
-        set_collection_name 'test_indexes'
-      end
-      drop_indexes(@document)
+      @document = Doc { key :name, String }
       @document.ensure_index :name, :unique => true
     end
+    teardown { drop_indexes(@document) }
 
     should "allow passing safe" do
       @document.create(:name => 'John')

@@ -4,15 +4,13 @@ class IndexingTest < Test::Unit::TestCase
   context "Indexing" do
     setup do
       @document = Doc do
-        set_collection_name 'users'
-
         key :first_name, String
         key :last_name, String
         key :age, Integer
         key :date, Date
       end
-      drop_indexes(@document)
     end
+    teardown { drop_indexes(@document) }
 
     should "allow creating index for a key" do
       @document.ensure_index :first_name

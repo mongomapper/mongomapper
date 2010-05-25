@@ -4,8 +4,6 @@ class PaginationTest < Test::Unit::TestCase
   context "Paginating" do
     setup do
       @document = Doc do
-        set_collection_name 'users'
-
         key :first_name, String
         key :last_name, String
         key :age, Integer

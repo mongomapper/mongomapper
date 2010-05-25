@@ -30,12 +30,8 @@ class SafeTest < Test::Unit::TestCase
       @klass = Doc() do
         safe
       end
-      drop_indexes(@klass)
     end
-
-    teardown do
-      drop_indexes(@klass)
-    end
+    teardown { drop_indexes(@klass) }
 
     context "#save" do
       setup do

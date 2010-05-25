@@ -19,7 +19,7 @@ class Test::Unit::TestCase
   def Doc(name=nil, &block)
     klass = Class.new do
       include MongoMapper::Document
-      set_collection_name "test#{rand(20)}"
+      set_collection_name :test
 
       if name
         class_eval "def self.name; '#{name}' end"
@@ -89,10 +89,10 @@ class Test::Unit::TestCase
   end
 end
 
-test_dir = File.expand_path(File.dirname(__FILE__) + '/../tmp')
-FileUtils.mkdir_p(test_dir) unless File.exist?(test_dir)
+log_dir = File.expand_path('../../log', __FILE__)
+FileUtils.mkdir_p(log_dir) unless File.exist?(log_dir)
+logger = Logger.new(log_dir + '/test.log')
 
-MongoMapper.connection = Mongo::Connection.new('127.0.0.1', 27017, {:logger => Logger.new(test_dir + '/test.log')})
-MongoMapper.database = 'test'
-
+MongoMapper.connection = Mongo::Connection.new('127.0.0.1', 27017, :logger => logger)
+MongoMapper.database = "mm-test-#{RUBY_VERSION.gsub('.', '-')}"
 MongoMapper.database.collections.each { |c| c.drop_indexes }

@@ -4,8 +4,6 @@ class TimestampsTest < Test::Unit::TestCase
   context "timestamping" do
     setup do
       @klass = Doc do
-        set_collection_name 'users'
-
         key :first_name, String
         key :last_name, String
         key :age, Integer

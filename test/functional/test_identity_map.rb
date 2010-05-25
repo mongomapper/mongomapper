@@ -29,14 +29,12 @@ class IdentityMapTest < Test::Unit::TestCase
       MongoMapper::Plugins::IdentityMap.models.clear
 
       @person_class = Doc('Person') do
-        set_collection_name 'people'
         plugin MongoMapper::Plugins::IdentityMap
 
         key :name, String
       end
 
       @post_class = Doc('Post') do
-        set_collection_name 'posts'
         plugin MongoMapper::Plugins::IdentityMap
 
         key :title, String

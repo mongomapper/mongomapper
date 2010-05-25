@@ -4,7 +4,6 @@ class UserstampsTest < Test::Unit::TestCase
   context "userstamping" do
     setup do
       @document = Doc do
-        set_collection_name 'users'
         userstamps!
       end
     end
