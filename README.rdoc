@@ -2,8 +2,6 @@
 
 A Ruby Object Mapper for Mongo.
 
-Releases are tagged on github and released on gemcutter. Master is pushed to whenever I add a patch or a new feature, but I do not release a new gem version each time I push.
-
 == Note on Patches/Pull Requests
 
 * Fork the project.
@@ -18,14 +16,12 @@ Releases are tagged on github and released on gemcutter. Master is pushed to whe
 
 == Problems or Questions?
 
-Hit up the google group.
+Hit up the google group:
 http://groups.google.com/group/mongomapper
 
-To see if the problem you are having is a verified issue, you can see the MM pivotal tracker project:
-http://www.pivotaltracker.com/projects/33576
-
-There is no need to request to join the Pivotal Tracker project as I am only granting access to a select few (easier to keep things organized). If you have a problem, please use the mailing list. If I confirm it to be a bug, I am happy to add it to PT. Thanks!
+Hop on IRC:
+irc://chat.freenode.net/#mongomapper
 
 == Copyright
 
-Copyright (c) 2009 John Nunemaker. See LICENSE for details.
+See LICENSE for details.
