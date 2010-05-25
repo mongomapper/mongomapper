@@ -1,8 +1,6 @@
 module MongoMapper
   module Plugins
     module DynamicQuerying
-      autoload :DynamicFinder, 'mongo_mapper/plugins/dynamic_querying/dynamic_finder'
-
       module ClassMethods
         def dynamic_find(finder, args)
           attributes = {}

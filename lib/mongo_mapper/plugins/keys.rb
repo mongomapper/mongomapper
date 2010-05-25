@@ -2,8 +2,6 @@
 module MongoMapper
   module Plugins
     module Keys
-      autoload :Key, 'mongo_mapper/plugins/keys/key'
-
       def self.configure(model)
         model.key :_id, ObjectId
       end
@@ -306,8 +304,6 @@ module MongoMapper
             instance_variable_set :"@#{name}", key.set(value)
           end
       end
-
-
     end
   end
 end

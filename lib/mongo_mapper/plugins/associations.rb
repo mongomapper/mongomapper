@@ -94,22 +94,6 @@ module MongoMapper
           end
         end
       end
-
-      autoload :Base,                         'mongo_mapper/plugins/associations/base'
-      autoload :Collection,                   'mongo_mapper/plugins/associations/collection'
-      autoload :EmbeddedCollection,           'mongo_mapper/plugins/associations/embedded_collection'
-      autoload :ManyDocumentsProxy,           'mongo_mapper/plugins/associations/many_documents_proxy'
-      autoload :BelongsToProxy,               'mongo_mapper/plugins/associations/belongs_to_proxy'
-      autoload :BelongsToPolymorphicProxy,    'mongo_mapper/plugins/associations/belongs_to_polymorphic_proxy'
-      autoload :ManyPolymorphicProxy,         'mongo_mapper/plugins/associations/many_polymorphic_proxy'
-      autoload :ManyEmbeddedProxy,            'mongo_mapper/plugins/associations/many_embedded_proxy'
-      autoload :ManyEmbeddedPolymorphicProxy, 'mongo_mapper/plugins/associations/many_embedded_polymorphic_proxy'
-      autoload :ManyDocumentsAsProxy,         'mongo_mapper/plugins/associations/many_documents_as_proxy'
-      autoload :OneProxy,                     'mongo_mapper/plugins/associations/one_proxy'
-      autoload :OneEmbeddedProxy,             'mongo_mapper/plugins/associations/one_embedded_proxy'
-      autoload :InArrayProxy,                 'mongo_mapper/plugins/associations/in_array_proxy'
     end
   end
 end
-
-require 'mongo_mapper/plugins/associations/proxy'

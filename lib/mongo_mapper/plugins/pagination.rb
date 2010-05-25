@@ -12,7 +12,6 @@ module MongoMapper
           page          = options.delete(:page)
           total_entries = count(options)
           pagination    = Pagination::Proxy.new(total_entries, page, per_page)
-
           options.update(:limit => pagination.limit, :skip => pagination.skip)
           pagination.subject = find_many(options)
           pagination
@@ -21,5 +20,3 @@ module MongoMapper
     end
   end
 end
-
-require 'mongo_mapper/plugins/pagination/proxy'
