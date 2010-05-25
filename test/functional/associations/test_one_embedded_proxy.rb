@@ -28,16 +28,6 @@ class OneEmbeddedProxyTest < Test::Unit::TestCase
     post.author.post.should == post
   end
 
-  should "send object id to target" do
-    @post_class.one :author, :class => @author_class
-
-    post = @post_class.new
-    author = @author_class.new(:name => 'Frank')
-    post.author = author
-
-    post.author.object_id.should == post.author.target.object_id
-  end
-
   should "be able to replace the association" do
     @post_class.one :author, :class => @author_class
 

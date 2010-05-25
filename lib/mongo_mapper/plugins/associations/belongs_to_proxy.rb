@@ -3,8 +3,6 @@ module MongoMapper
   module Plugins
     module Associations
       class BelongsToProxy < Proxy
-        undef_method :object_id
-
         def replace(doc)
           if doc
             doc.save if doc.new?
@@ -12,7 +10,7 @@ module MongoMapper
           end
 
           proxy_owner[association.foreign_key] = id
-          reset
+          reload
         end
 
         protected

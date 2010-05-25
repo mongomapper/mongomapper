@@ -11,10 +11,6 @@ module MongoMapper
           self == other
         end
 
-        def equal?(other)
-          object_id === other.object_id
-        end
-
         def hash
           _id.hash
         end

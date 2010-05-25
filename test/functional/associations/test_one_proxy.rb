@@ -13,18 +13,6 @@ class OneProxyTest < Test::Unit::TestCase
     @post_class.new.author.nil?.should be_true
   end
 
-  should "send object id to target" do
-    @post_class.one :author, :class => @author_class
-
-    post = @post_class.new
-    author = @author_class.new(:name => 'Frank')
-    post.author = author
-    author.save.should be_true
-    post.save.should be_true
-
-    post.author.object_id.should == post.author.target.object_id
-  end
-
   should "allow assignment of associated document using a hash" do
     @post_class.one :author, :class => @author_class
 

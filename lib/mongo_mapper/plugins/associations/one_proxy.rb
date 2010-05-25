@@ -3,8 +3,6 @@ module MongoMapper
   module Plugins
     module Associations
       class OneProxy < Proxy
-        undef_method :object_id
-
         def build(attrs={})
           instantiate_target(:new, attrs)
         end

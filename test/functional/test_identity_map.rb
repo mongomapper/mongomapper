@@ -412,8 +412,9 @@ class IdentityMapTest < Test::Unit::TestCase
         assert_in_map(root)
 
         blog = Blog.create(:title => 'Jill', :parent => root)
+        blog.parent.inspect
         assert_in_map(blog)
-        root.should equal(blog.parent)
+        root.should equal(blog.parent.target)
       end
 
       should "work correctly with one proxy" do
@@ -422,7 +423,7 @@ class IdentityMapTest < Test::Unit::TestCase
 
         root = Item.create(:title => 'Root', :blog => blog)
         assert_in_map(root)
-        root.blog.should equal(blog)
+        blog.should equal(root.blog.target)
       end
 
       should "work correctly with one proxy create" do

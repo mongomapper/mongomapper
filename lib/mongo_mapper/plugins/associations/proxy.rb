@@ -17,7 +17,7 @@ module MongoMapper
         alias :proxy_association :association
 
         def_delegators :proxy_association, :klass, :options
-        def_delegator :klass, :collection
+        def_delegator  :klass, :collection
 
         def initialize(owner, association)
           @proxy_owner, @association, @loaded = owner, association, false
