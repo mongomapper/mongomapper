@@ -14,15 +14,13 @@ Gem::Specification.new do |s|
   s.platform           = Gem::Platform::RUBY
   s.files              = Dir.glob("{bin,examples,lib}/**/*") + %w[LICENSE README.rdoc]
 
-  s.required_rubygems_version = '>= 1.3.6'
-
   s.add_dependency 'activesupport',           '>= 2.3.4'
-  s.add_dependency 'jnunemaker-validatable',  '1.8.4'
-  s.add_dependency 'plucky',                  '0.1.3'
+  s.add_dependency 'jnunemaker-validatable',  '~> 1.8.4'
+  s.add_dependency 'plucky',                  '~> 0.1.4'
 
   s.add_development_dependency 'json',              '>= 1.2.3'
-  s.add_development_dependency 'jnunemaker-matchy', '0.4.0'
-  s.add_development_dependency 'shoulda',           '2.10.2'
-  s.add_development_dependency 'timecop',           '0.3.1'
-  s.add_development_dependency 'mocha',             '0.9.8'
+  s.add_development_dependency 'jnunemaker-matchy', '>= 0.4.0'
+  s.add_development_dependency 'shoulda',           '>= 2.10.2'
+  s.add_development_dependency 'timecop',           '>= 0.3.1'
+  s.add_development_dependency 'mocha',             '>= 0.9.8'
 end
