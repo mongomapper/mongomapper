@@ -157,10 +157,10 @@ module MongoMapper
           default_id_value(attrs)
 
           if from_database
-            @new = false
+            @_new = false
             load_from_database(attrs)
           else
-            @new = true
+            @_new = true
             assign(attrs)
           end
         end

@@ -20,7 +20,7 @@ module MongoMapper
 
       module InstanceMethods
         def new?
-          _root_document.try(:new?) || @new
+          _root_document.try(:new?) || @_new
         end
 
         def destroyed?
@@ -29,13 +29,13 @@ module MongoMapper
 
         def save(options={})
           _root_document.try(:save, options).tap do |result|
-            @new = false if result
+            @_new = false if result
           end
         end
 
         def save!(options={})
           _root_document.try(:save, options).tap do |result|
-            @new = false if result
+            @_new = false if result
           end
         end
 

@@ -10,7 +10,7 @@ module MongoMapper
       
       module InstanceMethods
         def new?
-          @new
+          @_new
         end
 
         def destroyed?
