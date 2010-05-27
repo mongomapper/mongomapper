@@ -20,19 +20,19 @@ module MongoMapper
         end
 
         def all(options={})
-          klass.all(scoped_options(options))
+          query(options).all
         end
 
         def first(options={})
-          klass.first(scoped_options(options))
+          query(options).first
         end
 
         def last(options={})
-          klass.last(scoped_options(options))
+          query(options).last
         end
 
         def count(options={})
-          klass.count(scoped_options(options))
+          query(options).count
         end
 
         def replace(docs)
@@ -83,9 +83,7 @@ module MongoMapper
         end
 
         def nullify
-          all.each do |doc|
-            doc.update_attributes(self.foreign_key => nil)
-          end
+          all.each { |doc| doc.update_attributes(self.foreign_key => nil) }
           reset
         end
 
@@ -94,6 +92,10 @@ module MongoMapper
         end
 
         protected
+          def query(options={})
+            klass.query(scoped_options(options))
+          end
+
           def scoped_conditions
             {self.foreign_key => proxy_owner.id}
           end
