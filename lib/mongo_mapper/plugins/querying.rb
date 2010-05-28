@@ -127,11 +127,6 @@ module MongoMapper
           Plucky::CriteriaHash.new(criteria, :object_ids => object_id_keys)
         end
 
-        # @api private for now
-        def options_hash(options={})
-          Plucky::OptionsHash.new(options)
-        end
-
         private
           def find_some(ids, options={})
             query = query(options).update(:_id => ids.flatten.compact.uniq)

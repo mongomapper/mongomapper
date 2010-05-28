@@ -45,24 +45,10 @@ class QueryingTesting < Test::Unit::TestCase
       @document.criteria_hash(:foo => 'bar')[:foo].should == 'bar'
     end
   end
-  
-  context ".options_hash" do
-    setup do
-      @hash = @document.options_hash
-    end
-
-    should "always return new instance" do
-      @document.options_hash.should_not equal(@hash)
-    end
-
-    should "apply provided criteria" do
-      @document.options_hash(:limit => 10)[:limit].should == 10
-    end
-  end
 
   context ".create (single document)" do
     setup do
-      @doc_instance = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
+      @doc = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
     end
 
     should "create a document in correct collection" do
@@ -70,19 +56,19 @@ class QueryingTesting < Test::Unit::TestCase
     end
 
     should "automatically set id" do
-      @doc_instance.id.should be_instance_of(BSON::ObjectID)
-      @doc_instance._id.should be_instance_of(BSON::ObjectID)
+      @doc.id.should be_instance_of(BSON::ObjectID)
+      @doc._id.should be_instance_of(BSON::ObjectID)
     end
 
     should "no longer be new?" do
-      @doc_instance.new?.should be_false
+      @doc.new?.should be_false
     end
 
     should "return instance of document" do
-      @doc_instance.should be_instance_of(@document)
-      @doc_instance.first_name.should == 'John'
-      @doc_instance.last_name.should == 'Nunemaker'
-      @doc_instance.age.should == 27
+      @doc.should be_instance_of(@document)
+      @doc.first_name.should == 'John'
+      @doc.last_name.should == 'Nunemaker'
+      @doc.age.should == 27
     end
 
     should "not fail if no attributes provided" do
@@ -93,7 +79,7 @@ class QueryingTesting < Test::Unit::TestCase
 
   context ".create (multiple documents)" do
     setup do
-      @doc_instances = @document.create([
+      @docs = @document.create([
         {:first_name => 'John', :last_name => 'Nunemaker', :age => '27'},
         {:first_name => 'Steve', :last_name => 'Smith', :age => '28'},
       ])
@@ -104,8 +90,8 @@ class QueryingTesting < Test::Unit::TestCase
     end
 
     should "return an array of doc instances" do
-      @doc_instances.map do |doc_instance|
-        doc_instance.should be_instance_of(@document)
+      @docs.map do |doc|
+        doc.should be_instance_of(@document)
       end
     end
   end
@@ -113,16 +99,16 @@ class QueryingTesting < Test::Unit::TestCase
   context ".update (single document)" do
     setup do
       doc = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
-      @doc_instance = @document.update(doc._id, {:age => 40})
+      @doc = @document.update(doc._id, {:age => 40})
     end
 
     should "update attributes provided" do
-      @doc_instance.age.should == 40
+      @doc.age.should == 40
     end
 
     should "not update existing attributes that were not set to update" do
-      @doc_instance.first_name.should == 'John'
-      @doc_instance.last_name.should == 'Nunemaker'
+      @doc.first_name.should == 'John'
+      @doc.last_name.should == 'Nunemaker'
     end
 
     should "not create new document" do
@@ -146,7 +132,7 @@ class QueryingTesting < Test::Unit::TestCase
       @doc1 = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
       @doc2 = @document.create({:first_name => 'Steve', :last_name => 'Smith', :age => '28'})
 
-      @doc_instances = @document.update({
+      @docs = @document.update({
         @doc1._id => {:age => 30},
         @doc2._id => {:age => 30},
       })
@@ -157,8 +143,8 @@ class QueryingTesting < Test::Unit::TestCase
     end
 
     should "should return an array of doc instances" do
-      @doc_instances.map do |doc_instance|
-        doc_instance.should be_instance_of(@document)
+      @docs.map do |doc|
+        doc.should be_instance_of(@document)
       end
     end
 
@@ -248,7 +234,7 @@ class QueryingTesting < Test::Unit::TestCase
     end
 
     context "#first" do
-      should "find first document options_hash" do
+      should "find first document with options" do
         @document.first(:order => 'first_name').should == @doc1
         @document.first(:age => 28).should == @doc2
       end
@@ -527,10 +513,6 @@ class QueryingTesting < Test::Unit::TestCase
       @query = @document.where(:last_name => 'Nunemaker')
     end
 
-    should "return instance of query" do
-      @query.should be_instance_of(MongoMapper::Query)
-    end
-
     should "fetch documents when kicker called" do
       docs = @query.all
       docs.should include(@doc1)
@@ -549,10 +531,6 @@ class QueryingTesting < Test::Unit::TestCase
       @doc2 = @document.create(:first_name => 'Steve', :last_name => 'Smith',     :age => '28')
       @doc3 = @document.create(:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26')
       @query = @document.fields(:age)
-    end
-
-    should "return instance of query" do
-      @query.should be_instance_of(MongoMapper::Query)
     end
 
     should "fetch documents when kicker called" do
@@ -580,10 +558,6 @@ class QueryingTesting < Test::Unit::TestCase
       @query = @document.limit(2)
     end
 
-    should "return instance of query" do
-      @query.should be_instance_of(MongoMapper::Query)
-    end
-
     should "fetch documents when kicker called" do
       docs = @query.all
       docs.size.should == 2
@@ -604,10 +578,6 @@ class QueryingTesting < Test::Unit::TestCase
       @query = @document.skip(1)
     end
 
-    should "return instance of query" do
-      @query.should be_instance_of(MongoMapper::Query)
-    end
-
     should "fetch documents when kicker called" do
       docs = @query.all
       docs.size.should == 2 # skipping 1 out of 3
@@ -626,10 +596,6 @@ class QueryingTesting < Test::Unit::TestCase
       @doc2 = @document.create(:first_name => 'Steve', :last_name => 'Smith',     :age => '28')
       @doc3 = @document.create(:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26')
       @query = @document.sort(:age)
-    end
-
-    should "return instance of query" do
-      @query.should be_instance_of(MongoMapper::Query)
     end
 
     should "fetch documents when kicker called" do
