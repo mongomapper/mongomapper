@@ -106,7 +106,6 @@ module MongoMapper
   autoload :Document,         'mongo_mapper/document'
   autoload :EmbeddedDocument, 'mongo_mapper/embedded_document'
   autoload :Plugins,          'mongo_mapper/plugins'
-  autoload :Query,            'mongo_mapper/query'
   autoload :Version,          'mongo_mapper/version'
 
   module Plugins
@@ -159,6 +158,10 @@ module MongoMapper
 
     module Keys
       autoload :Key, 'mongo_mapper/plugins/keys/key'
+    end
+    
+    module Querying
+      autoload :Decorator, 'mongo_mapper/plugins/querying/decorator'
     end
   end
 

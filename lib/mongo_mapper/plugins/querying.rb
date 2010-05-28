@@ -28,7 +28,7 @@ module MongoMapper
         end
 
         def find_each(options={})
-          query(options).query.find_many.each { |doc| yield load(doc) }
+          query(options).find_many.each { |doc| yield load(doc) }
         end
 
         def find_by_id(id)
@@ -82,11 +82,11 @@ module MongoMapper
         end
 
         def delete(*ids)
-          query(:_id => ids.flatten).query.remove
+          query(:_id => ids.flatten).remove
         end
 
         def delete_all(options={})
-          query(options).query.remove
+          query(options).remove
         end
 
         def destroy(*ids)
@@ -119,7 +119,12 @@ module MongoMapper
 
         # @api private for now
         def query(options={})
-          Query.new(self).update(options)
+          Plucky::Query.new(collection).tap do |query|
+            query.object_ids(object_id_keys)
+            query.update(options)
+            query.extend(MongoMapper::Plugins::Querying::Decorator)
+            query.model(self)
+          end
         end
 
         # @api private for now
