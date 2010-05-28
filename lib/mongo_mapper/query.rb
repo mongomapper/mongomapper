@@ -18,19 +18,15 @@ module MongoMapper
     end
 
     def all(opts={})
-      spawn.update(opts).all.map { |doc| load(doc) }
+      query.all(opts).map { |doc| load(doc) }
     end
 
     def first(opts={})
-      load(spawn.update(opts).first)
+      load(query.first(opts))
     end
 
     def last(opts={})
-      load(spawn.update(opts).last)
-    end
-
-    def spawn
-      query.clone
+      load(query.last(opts))
     end
 
     def update(*args)
@@ -39,32 +35,32 @@ module MongoMapper
     end
 
     def where(*args)
-      query.where(*args)
+      @query = query.where(*args)
       self
     end
 
     def fields(*args)
-      query.fields(*args)
+      @query = query.fields(*args)
       self
     end
 
     def limit(*args)
-      query.limit(*args)
+      @query = query.limit(*args)
       self
     end
 
     def skip(*args)
-      query.skip(*args)
+      @query = query.skip(*args)
       self
     end
 
     def sort(*args)
-      query.sort(*args)
+      @query = query.sort(*args)
       self
     end
 
     def reverse
-      query.reverse
+      @query = query.reverse
       self
     end
 

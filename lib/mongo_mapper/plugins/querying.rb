@@ -28,7 +28,7 @@ module MongoMapper
         end
 
         def find_each(options={})
-          query(options).query.find().each { |doc| yield load(doc) }
+          query(options).query.find_many.each { |doc| yield load(doc) }
         end
 
         def find_by_id(id)
