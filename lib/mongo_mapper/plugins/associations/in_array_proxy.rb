@@ -36,7 +36,7 @@ module MongoMapper
         end
 
         def paginate(options)
-          klass.paginate(scoped_options(options))
+          query.paginate(options)
         end
 
         def all(options={})
@@ -117,6 +117,10 @@ module MongoMapper
         end
 
         private
+          def query(options={})
+            klass.query(scoped_options(options))
+          end
+
           def scoped_conditions
             {:_id => ids}
           end

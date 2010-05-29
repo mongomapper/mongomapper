@@ -16,7 +16,7 @@ module MongoMapper
         end
 
         def paginate(options)
-          klass.paginate(scoped_options(options))
+          query.paginate(options)
         end
 
         def all(options={})
