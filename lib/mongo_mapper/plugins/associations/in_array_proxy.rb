@@ -7,32 +7,12 @@ module MongoMapper
 
         def find(*args)
           options = args.extract_options!
-
-          case args.first
-            when :first
-              first(options)
-            when :last
-              last(options)
-            when :all
-              all(options)
-            else
-              klass.find(*scoped_ids(args) << scoped_options(options))
-          end
+          klass.find(*scoped_ids(args) << scoped_options(options))
         end
 
         def find!(*args)
           options = args.extract_options!
-
-          case args.first
-            when :first
-              first(options)
-            when :last
-              last(options)
-            when :all
-              all(options)
-            else
-              klass.find!(*scoped_ids(args) << scoped_options(options))
-          end
+          klass.find!(*scoped_ids(args) << scoped_options(options))
         end
 
         def paginate(options)

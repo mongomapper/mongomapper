@@ -135,36 +135,30 @@ class InArrayProxyTest < Test::Unit::TestCase
 
       context "all" do
         should "work" do
-          @user.lists.find(:all, :order => :position.asc).should == [@list1, @list2]
           @user.lists.all(:order => :position.asc).should == [@list1, @list2]
         end
 
         should "work with conditions" do
-          @user.lists.find(:all, :name => 'Foo 1').should == [@list1]
           @user.lists.all(:name => 'Foo 1').should == [@list1]
         end
       end
 
       context "first" do
         should "work" do
-          @user.lists.find(:first, :order => 'position').should == @list1
           @user.lists.first(:order => 'position').should == @list1
         end
 
         should "work with conditions" do
-          @user.lists.find(:first, :position => 2).should == @list2
           @user.lists.first(:position => 2).should == @list2
         end
       end
 
       context "last" do
         should "work" do
-          @user.lists.find(:last, :order => 'position').should == @list2
           @user.lists.last(:order => 'position').should == @list2
         end
 
         should "work with conditions" do
-          @user.lists.find(:last, :position => 2, :order => 'position').should == @list2
           @user.lists.last(:position => 2, :order => 'position').should == @list2
         end
       end
