@@ -9,6 +9,16 @@ module MongoMapper
           self
         end
 
+        def find!(*ids)
+          raise DocumentNotFound, "Couldn't find without an ID" if ids.size == 0
+
+          find(*ids).tap do |result|
+            if result.nil? || ids.size != Array(result).size
+              raise DocumentNotFound, "Couldn't find all of the ids (#{ids.join(',')}). Found #{Array(result).size}, but was expecting #{ids.size}"
+            end
+          end
+        end
+
         def all(opts={})
           super.map { |doc| model.load(doc) }
         end

@@ -4,7 +4,7 @@ module MongoMapper
     module Associations
       class ManyDocumentsAsProxy < ManyDocumentsProxy
         protected
-          def scoped_conditions
+          def criteria
             {type_key_name => proxy_owner.class.name, id_key_name => proxy_owner.id}
           end
 

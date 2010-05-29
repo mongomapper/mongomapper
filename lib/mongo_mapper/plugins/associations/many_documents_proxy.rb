@@ -6,13 +6,11 @@ module MongoMapper
         include MongoMapper::Plugins::DynamicQuerying::ClassMethods
 
         def find(*args)
-          options = args.extract_options!
-          klass.find(*args << scoped_options(options))
+          query.find(*args)
         end
 
         def find!(*args)
-          options = args.extract_options!
-          klass.find!(*args << scoped_options(options))
+          query.find!(*args)
         end
 
         def paginate(options)
@@ -78,7 +76,7 @@ module MongoMapper
         end
 
         def delete_all(options={})
-          klass.delete_all(options.merge(scoped_conditions))
+          query(options).remove
           reset
         end
 
@@ -93,15 +91,14 @@ module MongoMapper
 
         protected
           def query(options={})
-            klass.query(scoped_options(options))
+            klass.
+              query(association.query_options).
+              update(options).
+              update(criteria)
           end
 
-          def scoped_conditions
+          def criteria
             {self.foreign_key => proxy_owner.id}
-          end
-
-          def scoped_options(options)
-            association.query_options.merge(options).merge(scoped_conditions)
           end
 
           def find_target

@@ -1,4 +1,5 @@
-0.7.6 => 0.7.7
+0.7.6 => 0.8
   * Proxy#owner has been removed in favor of Proxy#proxy_owner
   * @new instance variable renamed to @_new (you shouldn't be using this anyway)
   * Removed undefining of object_id in proxies and equal? method in Equality. This means checking equal? for a proxy and a regular document will always be false even if proxy refers to same document. Check Proxy#target instead. (ie: root.equal?(item.root.target))
+  * find no longer takes options as a last argument. It only works with id, multiple ids, array of ids.

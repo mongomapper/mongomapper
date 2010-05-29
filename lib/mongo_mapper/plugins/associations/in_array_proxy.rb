@@ -6,13 +6,11 @@ module MongoMapper
         include MongoMapper::Plugins::DynamicQuerying::ClassMethods
 
         def find(*args)
-          options = args.extract_options!
-          klass.find(*scoped_ids(args) << scoped_options(options))
+          query.find(*scoped_ids(args))
         end
 
         def find!(*args)
-          options = args.extract_options!
-          klass.find!(*scoped_ids(args) << scoped_options(options))
+          query.find!(*scoped_ids(args))
         end
 
         def paginate(options)
@@ -20,19 +18,19 @@ module MongoMapper
         end
 
         def all(options={})
-          klass.all(scoped_options(options))
+          query(options).all
         end
 
         def first(options={})
-          klass.first(scoped_options(options))
+          query(options).first
         end
 
         def last(options={})
-          klass.last(scoped_options(options))
+          query(options).last
         end
 
         def count(options={})
-          options.blank? ? ids.size : klass.count(scoped_options(options))
+          options.blank? ? ids.size : query(options).count
         end
 
         def destroy_all(options={})
@@ -44,7 +42,7 @@ module MongoMapper
         end
 
         def delete_all(options={})
-          docs = all(options.merge(:select => ['_id']))
+          docs = query(options).fields(:_id).all
           docs.each { |doc| ids.delete(doc.id) }
           klass.delete(docs.map(&:id))
           reset
@@ -98,22 +96,22 @@ module MongoMapper
 
         private
           def query(options={})
-            klass.query(scoped_options(options))
+            klass.
+              query(association.query_options).
+              update(options).
+              update(criteria)
           end
 
-          def scoped_conditions
+          def criteria
             {:_id => ids}
           end
 
-          def scoped_options(options)
-            association.query_options.merge(options).merge(scoped_conditions)
-          end
-
           def scoped_ids(args)
-            args.flatten.select do |id|
+            valid = args.flatten.select do |id|
               id = ObjectId.to_mongo(id) if klass.using_object_id?
               ids.include?(id)
             end
+            valid.empty? ? nil : valid
           end
 
           def find_target
