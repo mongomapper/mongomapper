@@ -68,7 +68,6 @@ module MongoMapper
           self.class.associations
         end
 
-        # @api private?
         def embedded_associations
           associations.select do |name, association|
             association.embeddable?
@@ -82,7 +81,6 @@ module MongoMapper
             proxy = association.proxy_class.new(self, association)
             self.instance_variable_set(association.ivar, proxy)
           end
-
           proxy
         end
 

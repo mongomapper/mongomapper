@@ -9,14 +9,14 @@ class SafeTest < Test::Unit::TestCase
     should "allow turning safe on" do
       Doc() { safe }.should be_safe
     end
-    
+
     context "inherited with safe setting on" do
       should "set subclass safe setting on" do
         inherited = Class.new(Doc() { safe })
         inherited.should be_safe
       end
     end
-    
+
     context "inherited with safe setting off" do
       should "leave subclass safe setting off" do
         inherited = Class.new(Doc())
@@ -53,7 +53,7 @@ class SafeTest < Test::Unit::TestCase
           end
         end
       end
-      
+
       context "overriding safe setting" do
         should "raise error if safe is true" do
           assert_raises(Mongo::OperationFailure) do
@@ -62,7 +62,7 @@ class SafeTest < Test::Unit::TestCase
             end
           end
         end
-        
+
         should "not raise error if safe is false" do
           assert_nothing_raised do
             2.times do

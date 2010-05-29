@@ -524,7 +524,7 @@ class QueryingTesting < Test::Unit::TestCase
       @query.sort(:age).first.should == @doc3
     end
   end
-  
+
   context ".fields" do
     setup do
       @doc1 = @document.create(:first_name => 'John',  :last_name => 'Nunemaker', :age => '27')
@@ -549,7 +549,7 @@ class QueryingTesting < Test::Unit::TestCase
       @query.sort(:age).all.map(&:age).should == [26, 27, 28]
     end
   end
-  
+
   context ".limit" do
     setup do
       @doc1 = @document.create(:first_name => 'John',  :last_name => 'Nunemaker', :age => '27')
@@ -569,7 +569,7 @@ class QueryingTesting < Test::Unit::TestCase
       @query.count.should > result.size
     end
   end
-  
+
   context ".skip" do
     setup do
       @doc1 = @document.create(:first_name => 'John',  :last_name => 'Nunemaker', :age => '27')

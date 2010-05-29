@@ -7,7 +7,7 @@ module MongoMapper
           attr_reader :_root_document, :_parent_document
         end
       end
-      
+
       module ClassMethods
         def embeddable?
           true

@@ -8,11 +8,11 @@ module MongoMapper
           @model = model
           self
         end
-        
+
         def all(opts={})
           super.map { |doc| model.load(doc) }
         end
-        
+
         def first(opts={})
           model.load(super)
         end

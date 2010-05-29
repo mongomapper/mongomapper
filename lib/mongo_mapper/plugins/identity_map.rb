@@ -30,7 +30,7 @@ module MongoMapper
 
         def find_one(options={})
           query = query(options)
-          
+
           if query.simple? && identity_map.key?(query[:_id])
             identity_map[query[:_id]]
           else

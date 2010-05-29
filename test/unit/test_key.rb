@@ -94,7 +94,7 @@ class KeyTest < Test::Unit::TestCase
   context "for an array with :typecast option" do
     setup   { @key = Key.new(:user_ids, Array, :typecast => 'ObjectId') }
     subject { @key }
-    
+
     should "cast each element correctly" do
       ids = [BSON::ObjectID.new, BSON::ObjectID.new, BSON::ObjectID.new.to_s, BSON::ObjectID.new.to_s]
       subject.set(ids).should == ids.map { |id| ObjectId.to_mongo(id) }
@@ -104,7 +104,7 @@ class KeyTest < Test::Unit::TestCase
   context "for a set with :typecast option" do
     setup   { @key = Key.new(:user_ids, Set, :typecast => 'ObjectId') }
     subject { @key }
-    
+
     should "cast each element correctly" do
       ids = [BSON::ObjectID.new, BSON::ObjectID.new, BSON::ObjectID.new.to_s, BSON::ObjectID.new.to_s]
       subject.set(ids).should == ids.map { |id| ObjectId.to_mongo(id) }

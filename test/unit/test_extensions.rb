@@ -220,7 +220,7 @@ class SupportTest < Test::Unit::TestCase
       Object.from_mongo(21).should == 21
       Object.from_mongo('21').should == '21'
       Object.from_mongo(9223372036854775807).should == 9223372036854775807
-      
+
       id = BSON::ObjectID.new
       ObjectId.from_mongo(id).should == id
     end

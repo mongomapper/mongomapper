@@ -11,9 +11,9 @@ class PaginationTest < Test::Unit::TestCase
         def self.per_page; 1 end
       end
 
-      @doc1 = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
-      @doc2 = @document.create({:first_name => 'Steve', :last_name => 'Smith', :age => '28'})
-      @doc3 = @document.create({:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26'})
+      @doc1 = @document.create(:first_name => 'John',  :last_name => 'Nunemaker', :age => '27')
+      @doc2 = @document.create(:first_name => 'Steve', :last_name => 'Smith',     :age => '28')
+      @doc3 = @document.create(:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26')
     end
 
     should "return the total pages" do

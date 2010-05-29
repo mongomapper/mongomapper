@@ -100,7 +100,7 @@ module MongoMapper
         def where(options={})
           query.where(options)
         end
-        
+
         def fields(*args)
           query.fields(*args)
         end

@@ -7,7 +7,7 @@ module MongoMapper
           false
         end
       end
-      
+
       module InstanceMethods
         def new?
           @_new
