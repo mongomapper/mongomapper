@@ -154,21 +154,6 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
 
-    context "clone" do
-      should "be new" do
-        doc = @document.create(:name => "foo", :age => 27)
-        clone = doc.clone
-        clone.should be_new
-      end
-
-      should "copy the attributes" do
-        doc = @document.create(:name => "foo", :age => 27)
-        clone = doc.clone
-        clone.name.should == "foo"
-        clone.age.should == 27
-      end
-    end
-
     should "call inspect on the document's attributes instead of to_s when inspecting the document" do
       doc = @document.new(:animals => %w(dog cat))
       doc.inspect.should include(%(animals: ["dog", "cat"]))
