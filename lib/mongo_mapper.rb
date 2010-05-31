@@ -176,4 +176,3 @@ end
 
 # FIXME: autoload with proxy is failing, need to investigate
 require 'mongo_mapper/plugins/associations/proxy'
-require 'mongo_mapper/plugins/pagination/proxy'
