@@ -3,10 +3,8 @@ module MongoMapper
   module Plugins
     module Persistence
       module ClassMethods
-        class Unsupported < MongoMapperError; end
-
         def connection(mongo_connection=nil)
-          not_supported_by_embedded
+          assert_supported
           if mongo_connection.nil?
             @connection ||= MongoMapper.connection
           else
@@ -16,17 +14,17 @@ module MongoMapper
         end
 
         def set_database_name(name)
-          not_supported_by_embedded
+          assert_supported
           @database_name = name
         end
 
         def database_name
-          not_supported_by_embedded
+          assert_supported
           @database_name
         end
 
         def database
-          not_supported_by_embedded
+          assert_supported
           if database_name.nil?
             MongoMapper.database
           else
@@ -35,23 +33,25 @@ module MongoMapper
         end
 
         def set_collection_name(name)
-          not_supported_by_embedded
+          assert_supported
           @collection_name = name
         end
 
         def collection_name
-          not_supported_by_embedded
+          assert_supported
           @collection_name ||= self.to_s.tableize.gsub(/\//, '.')
         end
 
         def collection
-          not_supported_by_embedded
+          assert_supported
           database.collection(collection_name)
         end
 
         private
-          def not_supported_by_embedded
-            raise Unsupported.new('This is not supported for embeddable documents at this time.') if embeddable?
+          def assert_supported
+            if embeddable?
+              raise NotSupported.new('This is not supported for embeddable documents at this time.')
+            end
           end
       end
 

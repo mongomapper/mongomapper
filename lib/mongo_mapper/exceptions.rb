@@ -1,18 +1,21 @@
 module MongoMapper
   # generic MM error
-  class MongoMapperError < StandardError; end
+  class Error < StandardError; end
 
   # raised when key expected to exist but not found
-  class KeyNotFound < MongoMapperError; end
+  class KeyNotFound < Error; end
 
   # raised when document expected but not found
-  class DocumentNotFound < MongoMapperError; end
+  class DocumentNotFound < Error; end
 
   # raised when trying to connect using uri with incorrect scheme
-  class InvalidScheme < MongoMapperError; end
+  class InvalidScheme < Error; end
+
+  # raised when trying to do something not supported, mostly for edocs
+  class NotSupported < Error; end
 
   # raised when document not valid and using !
-  class DocumentNotValid < MongoMapperError
+  class DocumentNotValid < Error
     def initialize(document)
       super("Validation failed: #{document.errors.full_messages.join(", ")}")
     end
