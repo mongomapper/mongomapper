@@ -1,3 +1,5 @@
+require 'uri'
+
 module MongoMapper
   module Connection
     # @api public

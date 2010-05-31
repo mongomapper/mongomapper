@@ -1,4 +1,6 @@
 # encoding: UTF-8
+require 'set'
+
 module MongoMapper
   module Extensions
     module Set
