@@ -7,25 +7,6 @@ require 'validatable'
 require 'active_support/all'
 
 module MongoMapper
-  # generic MM error
-  class MongoMapperError < StandardError; end
-
-  # raised when key expected to exist but not found
-  class KeyNotFound < MongoMapperError; end
-
-  # raised when document expected but not found
-  class DocumentNotFound < MongoMapperError; end
-
-  # raised when trying to connect using uri with incorrect scheme
-  class InvalidScheme < MongoMapperError; end
-
-  # raised when document not valid and using !
-  class DocumentNotValid < MongoMapperError
-    def initialize(document)
-      super("Validation failed: #{document.errors.full_messages.join(", ")}")
-    end
-  end
-
   # @api public
   def self.connection
     @@connection ||= Mongo::Connection.new
@@ -102,6 +83,12 @@ module MongoMapper
       end
     end
   end
+
+  autoload :MongoMapperError, 'mongo_mapper/exceptions'
+  autoload :KeyNotFound,      'mongo_mapper/exceptions'
+  autoload :DocumentNotFound, 'mongo_mapper/exceptions'
+  autoload :InvalidScheme,    'mongo_mapper/exceptions'
+  autoload :DocumentNotValid, 'mongo_mapper/exceptions'
 
   autoload :Document,         'mongo_mapper/document'
   autoload :EmbeddedDocument, 'mongo_mapper/embedded_document'
