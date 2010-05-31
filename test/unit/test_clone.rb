@@ -6,8 +6,8 @@ class CloneTest < Test::Unit::TestCase
       @document = Doc()
       @tags = ['red', 'green', 'blue']
       @doc = @document.create({
-        :name => "foo", 
-        :age  => 27, 
+        :name => "foo",
+        :age  => 27,
         :tags => @tags,
       })
     end
@@ -22,18 +22,18 @@ class CloneTest < Test::Unit::TestCase
         clone.name.should == "foo"
         clone.age.should == 27
       end
-      
+
       should "clone duplicable attributes" do
         @doc.clone.tags.should_not equal(@tags)
       end
-      
+
       should "not be destroyed" do
         @doc.destroy
         @doc.clone.should_not be_destroyed
       end
     end
   end
-  
+
   context "EmbeddedDocument" do
     setup do
       @document = EDoc do
