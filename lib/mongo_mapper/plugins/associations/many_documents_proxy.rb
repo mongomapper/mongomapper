@@ -115,7 +115,7 @@ module MongoMapper
 
           def apply_scope(doc)
             ensure_owner_saved
-            doc[foreign_key] = proxy_owner.id
+            criteria.each { |key, value| doc[key] = value }
             doc
           end
 
