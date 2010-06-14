@@ -33,7 +33,7 @@ module MongoMapper
       end
 
       def from_mongo(value)
-        !!value
+        value.nil? ? nil : !!value
       end
     end
   end

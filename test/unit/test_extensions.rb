@@ -76,7 +76,7 @@ class SupportTest < Test::Unit::TestCase
     end
 
     should "be nil for nil" do
-      Boolean.to_mongo(nil).should be_nil
+      Boolean.from_mongo(nil).should be_nil
     end
   end
 
