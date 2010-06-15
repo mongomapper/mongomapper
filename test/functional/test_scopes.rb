@@ -35,7 +35,7 @@ class ScopesTest < Test::Unit::TestCase
         docs[0].name.should == 'John'
       end
     end
-    
+
     context "dynamic scopes" do
       setup do
         @document.class_eval do
@@ -51,7 +51,7 @@ class ScopesTest < Test::Unit::TestCase
         docs.size.should == 1
         docs.first.name.should == 'John'
       end
-      
+
       should "work with multiple arguments" do
         @document.create(:name => 'John', :age => 60)
         @document.create(:name => 'Frank', :age => 50)
@@ -59,6 +59,56 @@ class ScopesTest < Test::Unit::TestCase
         docs = @document.ages(50, 70).all
         docs.size.should == 2
         docs.map(&:name).sort.should == %w(Frank John)
+      end
+    end
+
+    context "chaining" do
+      setup do
+        @document.class_eval do
+          scope :by_age,  lambda { |age| {:age => age} }
+          scope :by_name, lambda { |name| {:name => name} }
+        end
+      end
+
+      should "work with scope methods" do
+        @document.create(:name => 'John', :age => 60)
+        @document.create(:name => 'Frank', :age => 60)
+        @document.create(:name => 'Bill', :age => 50)
+        docs = @document.by_age(60).by_name('John').all
+        docs.size.should == 1
+        docs.first.name.should == 'John'
+      end
+
+      should "work on query methods" do
+        @document.create(:name => 'John', :age => 60)
+        @document.create(:name => 'John', :age => 50)
+        @document.create(:name => 'Bill', :age => 50)
+        docs = @document.where(:name => 'John').by_age(50).all
+        docs.size.should == 1
+        docs.first.age.should == 50
+      end
+      
+      should "work if method on model returns a query" do
+        @document.create(:name => 'John', :age => 10)
+        @document.create(:name => 'John', :age => 20)
+        @document.class_eval do
+          def self.young
+            query(:age.lte => 12)
+          end
+        end
+        docs = @document.by_name('John').young.all
+        docs.size.should == 1
+        docs.first.age.should == 10
+      end
+      
+      should "not work if method on model, but return not a query" do
+        @document.class_eval do
+          def self.age
+            20
+          end
+        end
+
+        lambda { @document.by_name('John').age }.should raise_error(NoMethodError)
       end
     end
   end
