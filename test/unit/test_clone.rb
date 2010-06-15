@@ -4,11 +4,14 @@ class CloneTest < Test::Unit::TestCase
   context "Document" do
     setup do
       @document = Doc()
+      @embedded = EDoc()
+      @document.many :widgets, :class => @embedded
       @tags = ['red', 'green', 'blue']
       @doc = @document.create({
-        :name => "foo",
-        :age  => 27,
-        :tags => @tags,
+        :name    => "foo",
+        :age     => 27,
+        :tags    => @tags,
+        :widgets => [@embedded.new, @embedded.new],
       })
     end
 
@@ -25,6 +28,10 @@ class CloneTest < Test::Unit::TestCase
 
       should "clone duplicable attributes" do
         @doc.clone.tags.should_not equal(@tags)
+      end
+
+      should "clone many embedded documents" do
+        @doc.clone.widgets.should_not equal(@doc.widgets)
       end
 
       should "not be destroyed" do

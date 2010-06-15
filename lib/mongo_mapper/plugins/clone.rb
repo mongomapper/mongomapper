@@ -7,8 +7,10 @@ module MongoMapper
           @_new       = true
           @_destroyed = false
           default_id_value({})
-          other.attributes.clone.except(:_id).each do |key, value|
-            self[key] = value.duplicable? ? value.clone : value
+          self.attributes = other.attributes.clone.except(:_id).inject({}) do |hash, entry|
+            key, value = entry
+            hash[key] = value.duplicable? ? value.clone : value
+            hash
           end
         end
       end
