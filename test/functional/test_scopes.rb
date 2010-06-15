@@ -39,8 +39,9 @@ class ScopesTest < Test::Unit::TestCase
     context "dynamic scopes" do
       setup do
         @document.class_eval do
-          scope :age,  lambda { |age| {:age => age} }
-          scope :ages, lambda { |low, high| {:age.gte => low, :age.lte => high} }
+          scope :age,     lambda { |age| {:age => age} }
+          scope :ages,    lambda { |low, high| {:age.gte => low, :age.lte => high} }
+          scope :ordered, lambda { |sort| sort(sort) }
         end
       end
 
@@ -59,6 +60,31 @@ class ScopesTest < Test::Unit::TestCase
         docs = @document.ages(50, 70).all
         docs.size.should == 2
         docs.map(&:name).sort.should == %w(Frank John)
+      end
+
+      should "work with queries" do
+        john  = @document.create(:name => 'John', :age => 60)
+        frank = @document.create(:name => 'Frank', :age => 50)
+        bill  = @document.create(:name => 'Bill', :age => 40)
+        @document.ordered(:age).all.should == [bill, frank, john]
+      end
+    end
+
+    context "query scopes" do
+      setup do
+        @document.class_eval do
+          scope :boomers, where(:age.gte => 60).sort(:age)
+        end
+      end
+
+      should "work" do
+        todd = @document.create(:name => 'Todd', :age => 65)
+        john = @document.create(:name => 'John', :age => 60)
+        @document.create(:name => 'Frank', :age => 50)
+        @document.create(:name => 'Bill', :age => 40)
+        docs = @document.boomers.all
+        docs[0].should == john
+        docs[1].should == todd
       end
     end
 
@@ -106,6 +132,39 @@ class ScopesTest < Test::Unit::TestCase
           @document.class_eval { def self.age; 20 end }
           lambda { @document.by_name('John').age }.should raise_error(NoMethodError)
         end
+      end
+    end
+
+    context "with single collection inheritance" do
+      setup do
+        class ::Item
+          include MongoMapper::Document
+          scope :by_title,  lambda { |title| {:title => title} }
+          scope :published, lambda { {:published_at.lte => Time.now.utc} }
+
+          key   :title, String
+          key   :published_at, Time
+        end
+        Item.collection.remove
+
+        class ::Page < ::Item; end
+        class ::Blog < ::Item; end
+      end
+
+      teardown do
+        Object.send :remove_const, 'Item' if defined?(::Item)
+        Object.send :remove_const, 'Page' if defined?(::Page)
+        Object.send :remove_const, 'Blog' if defined?(::Blog)
+      end
+
+      should "inherit scopes" do
+        Page.scopes.keys.map(&:to_s).sort.should == %w(by_title published)
+      end
+
+      should "work with _type" do
+        item = Item.create(:title => 'Home')
+        page = Page.create(:title => 'Home')
+        Page.by_title('Home').first.should == page
       end
     end
   end
