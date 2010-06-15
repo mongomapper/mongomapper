@@ -89,7 +89,7 @@ class ScopesTest < Test::Unit::TestCase
       end
 
       context "with model methods" do
-        should "work if method on model returns a query" do
+        should "work if method returns a query" do
           @document.create(:name => 'John', :age => 10)
           @document.create(:name => 'John', :age => 20)
           @document.class_eval do
@@ -102,7 +102,7 @@ class ScopesTest < Test::Unit::TestCase
           docs.first.age.should == 10
         end
 
-        should "not work if method on model, but return not a query" do
+        should "not work if method does not return a query" do
           @document.class_eval { def self.age; 20 end }
           lambda { @document.by_name('John').age }.should raise_error(NoMethodError)
         end
