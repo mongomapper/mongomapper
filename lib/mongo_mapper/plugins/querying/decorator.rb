@@ -30,19 +30,13 @@ module MongoMapper
         def last(opts={})
           model.load(super)
         end
-        
+
         private
           def method_missing(method, *args, &block)
-            if model.respond_to?(method)
-              query = model.send(method, *args, &block)
-              if query.is_a?(Plucky::Query)
-                merge(query)
-              else
-                super
-              end
-            else
-              super
-            end
+            return super unless model.respond_to?(method)
+            result = model.send(method, *args, &block)
+            return super unless result.is_a?(Plucky::Query)
+            merge(result)
           end
       end
     end
