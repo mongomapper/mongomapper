@@ -26,6 +26,7 @@ module MongoMapper
         plugin Plugins::Rails
         plugin Plugins::Safe # needs to be after querying (save_to_collection)
         plugin Plugins::Sci
+        plugin Plugins::Scopes
         plugin Plugins::Serialization
         plugin Plugins::Timestamps
         plugin Plugins::Userstamps
