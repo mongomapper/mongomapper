@@ -87,28 +87,25 @@ class ScopesTest < Test::Unit::TestCase
         docs.size.should == 1
         docs.first.age.should == 50
       end
-      
-      should "work if method on model returns a query" do
-        @document.create(:name => 'John', :age => 10)
-        @document.create(:name => 'John', :age => 20)
-        @document.class_eval do
-          def self.young
-            query(:age.lte => 12)
+
+      context "with model methods" do
+        should "work if method on model returns a query" do
+          @document.create(:name => 'John', :age => 10)
+          @document.create(:name => 'John', :age => 20)
+          @document.class_eval do
+            def self.young
+              query(:age.lte => 12)
+            end
           end
-        end
-        docs = @document.by_name('John').young.all
-        docs.size.should == 1
-        docs.first.age.should == 10
-      end
-      
-      should "not work if method on model, but return not a query" do
-        @document.class_eval do
-          def self.age
-            20
-          end
+          docs = @document.by_name('John').young.all
+          docs.size.should == 1
+          docs.first.age.should == 10
         end
 
-        lambda { @document.by_name('John').age }.should raise_error(NoMethodError)
+        should "not work if method on model, but return not a query" do
+          @document.class_eval { def self.age; 20 end }
+          lambda { @document.by_name('John').age }.should raise_error(NoMethodError)
+        end
       end
     end
   end
