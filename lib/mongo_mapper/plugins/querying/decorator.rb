@@ -3,6 +3,8 @@ module MongoMapper
   module Plugins
     module Querying
       module Decorator
+        include MongoMapper::Plugins::DynamicQuerying::ClassMethods
+
         def model(model=nil)
           return @model if model.nil?
           @model = model

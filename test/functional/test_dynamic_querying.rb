@@ -3,6 +3,8 @@ require 'test_helper'
 class DynamicQueryingTest < Test::Unit::TestCase
   def setup
     @document = Doc do
+      scope :nunes, where(:last_name => 'Nunemaker')
+
       key :first_name, String
       key :last_name, String
       key :age, Integer
@@ -64,5 +66,10 @@ class DynamicQueryingTest < Test::Unit::TestCase
     lambda {
       @document.find_by_first_name_and_last_name!(1,2)
     }.should raise_error(MongoMapper::DocumentNotFound)
+  end
+
+  should "work on scopes" do
+    @document.nunes.find_by_first_name('Steph').should == @doc3
+    @document.nunes.find_all_by_first_name('Steph').should == [@doc3]
   end
 end
