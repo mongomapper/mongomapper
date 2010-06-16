@@ -120,9 +120,9 @@ module MongoMapper
         # @api private for now
         def query(options={})
           Plucky::Query.new(collection).tap do |query|
+            query.extend(MongoMapper::Plugins::Querying::Decorator)
             query.object_ids(object_id_keys)
             query.update(options)
-            query.extend(MongoMapper::Plugins::Querying::Decorator)
             query.model(self)
           end
         end
