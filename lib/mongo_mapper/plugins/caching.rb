@@ -2,7 +2,7 @@ module MongoMapper
   module Plugins
     module Caching
       module InstanceMethods
-        def cache_key(suffix=nil)
+        def cache_key(*suffixes)
           cache_key = case
                         when new?
                           "#{self.class.name}/new"
@@ -11,7 +11,7 @@ module MongoMapper
                         else
                           "#{self.class.name}/#{id}"
                       end
-          cache_key += "/#{suffix}" unless suffix.nil?
+          cache_key += "/#{suffixes.join('/')}" unless suffixes.empty?
           cache_key
         end
       end

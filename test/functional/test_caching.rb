@@ -23,7 +23,11 @@ class CachingTest < Test::Unit::TestCase
       end
 
       should "work with suffix" do
-        @doc.cache_key(:foo).should == 'Post/new/foo'
+        @doc.cache_key(:foo).
+          should == 'Post/new/foo'
+
+        @doc.cache_key(:foo, :bar).
+          should == 'Post/new/foo/bar'
       end
     end
 
@@ -38,7 +42,7 @@ class CachingTest < Test::Unit::TestCase
       context "with updated_at" do
         setup do
           time = Time.utc(2010, 6, 20, 8, 10, 7)
-          @doc.expects(:[]).with(:updated_at).returns(time)
+          @doc.stubs(:[]).with(:updated_at).returns(time)
         end
 
         should "be class/id-timestamp" do
@@ -46,7 +50,11 @@ class CachingTest < Test::Unit::TestCase
         end
 
         should "work with suffix" do
-          @doc.cache_key(:foo).should == "Post/#{@object_id}-20100620081007/foo"
+          @doc.cache_key(:foo).
+            should == "Post/#{@object_id}-20100620081007/foo"
+
+          @doc.cache_key(:foo, :bar).
+            should == "Post/#{@object_id}-20100620081007/foo/bar"
         end
       end
 
@@ -56,7 +64,11 @@ class CachingTest < Test::Unit::TestCase
         end
 
         should "work with suffix" do
-          @doc.cache_key(:foo).should == "Post/#{@object_id}/foo"
+          @doc.cache_key(:foo).
+            should == "Post/#{@object_id}/foo"
+
+          @doc.cache_key(:foo, :bar, :baz).
+            should == "Post/#{@object_id}/foo/bar/baz"
         end
       end
     end
