@@ -15,7 +15,7 @@ module MongoMapper
           self.read_inheritable_attribute(:attr_accessible)
         end
       end
-      
+
       module InstanceMethods
         def assign(attrs={})
           super(filter_inaccessible_attrs(attrs))
@@ -32,7 +32,7 @@ module MongoMapper
         def accessible_attributes
           self.class.accessible_attributes
         end
-        
+
         protected
           def filter_inaccessible_attrs(attrs)
             return attrs if accessible_attributes.blank? || attrs.blank?
