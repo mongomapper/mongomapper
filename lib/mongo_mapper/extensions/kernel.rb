@@ -1,3 +1,4 @@
+# encoding: UTF-8
 module Kernel
   # Returns the object's singleton class.
   def singleton_class

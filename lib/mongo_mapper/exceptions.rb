@@ -1,3 +1,4 @@
+# encoding: UTF-8
 module MongoMapper
   # generic MM error
   class Error < StandardError; end
