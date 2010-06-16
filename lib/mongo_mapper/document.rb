@@ -23,6 +23,7 @@ module MongoMapper
         plugin Plugins::Modifiers
         plugin Plugins::Pagination
         plugin Plugins::Persistence
+        plugin Plugins::Accessible
         plugin Plugins::Protected
         plugin Plugins::Rails
         plugin Plugins::Safe # needs to be after querying (save_to_collection)

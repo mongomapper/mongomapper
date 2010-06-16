@@ -21,4 +21,10 @@ module MongoMapper
       super("Validation failed: #{document.errors.full_messages.join(", ")}")
     end
   end
+
+  class AccessibleOrProtected < Error
+    def initialize(name)
+      super("Declare either attr_protected or attr_accessible for #{name}, but not both.")
+    end
+  end
 end

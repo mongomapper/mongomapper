@@ -6,11 +6,16 @@ module MongoMapper
     module Protected
       module ClassMethods
         def attr_protected(*attrs)
+          raise AccessibleOrProtected.new(name) if try(:accessible_attributes?)
           self.write_inheritable_attribute(:attr_protected, Set.new(attrs) + (protected_attributes || []))
         end
 
         def protected_attributes
           self.read_inheritable_attribute(:attr_protected)
+        end
+
+        def protected_attributes?
+          !protected_attributes.nil?
         end
 
         def key(*args)

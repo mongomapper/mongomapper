@@ -17,6 +17,7 @@ module MongoMapper
         plugin Plugins::Keys
         plugin Plugins::Logger
         plugin Plugins::Persistence
+        plugin Plugins::Accessible
         plugin Plugins::Protected
         plugin Plugins::Rails
         plugin Plugins::Sci

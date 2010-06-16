@@ -5,21 +5,23 @@ require 'validatable'
 require 'active_support/all'
 
 module MongoMapper
-  autoload :Connection,       'mongo_mapper/connection'
+  autoload :Connection,             'mongo_mapper/connection'
 
-  autoload :Error,            'mongo_mapper/exceptions'
-  autoload :KeyNotFound,      'mongo_mapper/exceptions'
-  autoload :DocumentNotFound, 'mongo_mapper/exceptions'
-  autoload :InvalidScheme,    'mongo_mapper/exceptions'
-  autoload :DocumentNotValid, 'mongo_mapper/exceptions'
+  autoload :Error,                  'mongo_mapper/exceptions'
+  autoload :KeyNotFound,            'mongo_mapper/exceptions'
+  autoload :DocumentNotFound,       'mongo_mapper/exceptions'
+  autoload :InvalidScheme,          'mongo_mapper/exceptions'
+  autoload :DocumentNotValid,       'mongo_mapper/exceptions'
+  autoload :AccessibleOrProtected,  'mongo_mapper/exceptions'
 
-  autoload :Document,         'mongo_mapper/document'
-  autoload :EmbeddedDocument, 'mongo_mapper/embedded_document'
-  autoload :Plugins,          'mongo_mapper/plugins'
-  autoload :Version,          'mongo_mapper/version'
+  autoload :Document,               'mongo_mapper/document'
+  autoload :EmbeddedDocument,       'mongo_mapper/embedded_document'
+  autoload :Plugins,                'mongo_mapper/plugins'
+  autoload :Version,                'mongo_mapper/version'
 
   module Plugins
     autoload :Associations,     'mongo_mapper/plugins/associations'
+    autoload :Accessible,       'mongo_mapper/plugins/accessible'
     autoload :Callbacks,        'mongo_mapper/plugins/callbacks'
     autoload :Caching,          'mongo_mapper/plugins/caching'
     autoload :Clone,            'mongo_mapper/plugins/clone'
