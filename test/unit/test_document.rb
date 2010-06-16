@@ -100,6 +100,10 @@ class DocumentTest < Test::Unit::TestCase
       end
     end
 
+    should "respond to cache_key" do
+      @document.new.should respond_to(:cache_key)
+    end
+
     should "create id during initialization" do
       @document.new._id.should be_instance_of(BSON::ObjectID)
     end

@@ -21,6 +21,7 @@ module MongoMapper
   module Plugins
     autoload :Associations,     'mongo_mapper/plugins/associations'
     autoload :Callbacks,        'mongo_mapper/plugins/callbacks'
+    autoload :Caching,          'mongo_mapper/plugins/caching'
     autoload :Clone,            'mongo_mapper/plugins/clone'
     autoload :Descendants,      'mongo_mapper/plugins/descendants'
     autoload :Dirty,            'mongo_mapper/plugins/dirty'

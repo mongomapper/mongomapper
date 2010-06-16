@@ -10,6 +10,7 @@ module MongoMapper
         plugin Plugins::Document
         plugin Plugins::Querying # for now needs to be before associations (save_to_collection)
         plugin Plugins::Associations
+        plugin Plugins::Caching
         plugin Plugins::Clone
         plugin Plugins::Descendants
         plugin Plugins::DynamicQuerying

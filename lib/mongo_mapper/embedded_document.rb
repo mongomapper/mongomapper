@@ -9,6 +9,7 @@ module MongoMapper
 
         plugin Plugins::EmbeddedDocument
         plugin Plugins::Associations
+        plugin Plugins::Caching
         plugin Plugins::Clone
         plugin Plugins::Descendants
         plugin Plugins::Equality

@@ -221,6 +221,10 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         end
       end
 
+      should "respond to cache_key" do
+        @document.new.should respond_to(:cache_key)
+      end
+
       should "have access to class logger" do
         doc = @document.new
         doc.logger.should == @document.logger
