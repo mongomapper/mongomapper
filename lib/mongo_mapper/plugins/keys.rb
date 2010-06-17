@@ -1,4 +1,6 @@
 # encoding: UTF-8
+require 'mongo_mapper/plugins/keys/key'
+
 module MongoMapper
   module Plugins
     module Keys

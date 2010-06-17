@@ -5,13 +5,13 @@ module MongoMapper
       def self.configure(model)
         model.class_eval do
           include Validatable
-          extend Plugins::Validations::DocumentMacros
+          extend Validations::DocumentMacros
         end
       end
 
       module DocumentMacros
         def validates_uniqueness_of(*args)
-          add_validations(args, MongoMapper::Plugins::Validations::ValidatesUniquenessOf)
+          add_validations(args, Validations::ValidatesUniquenessOf)
         end
       end
 

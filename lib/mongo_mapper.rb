@@ -65,22 +65,6 @@ module MongoMapper
       autoload :OneEmbeddedProxy,             'mongo_mapper/plugins/associations/one_embedded_proxy'
       autoload :InArrayProxy,                 'mongo_mapper/plugins/associations/in_array_proxy'
     end
-
-    module DynamicQuerying
-      autoload :DynamicFinder, 'mongo_mapper/plugins/dynamic_querying/dynamic_finder'
-    end
-
-    module Keys
-      autoload :Key, 'mongo_mapper/plugins/keys/key'
-    end
-    
-    module Querying
-      autoload :Decorator, 'mongo_mapper/plugins/querying/decorator'
-    end
-  end
-
-  module Support
-    autoload :DescendantAppends, 'mongo_mapper/support/descendant_appends'
   end
 
   extend Connection
@@ -89,6 +73,8 @@ end
 Dir[File.join(File.dirname(__FILE__), 'mongo_mapper', 'extensions', '*.rb')].each do |extension|
   require extension
 end
+
+require 'mongo_mapper/support/descendant_appends'
 
 # FIXME: autoload with proxy is failing, need to investigate
 require 'mongo_mapper/plugins/associations/proxy'

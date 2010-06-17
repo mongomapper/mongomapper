@@ -1,4 +1,6 @@
 # encoding: UTF-8
+require 'mongo_mapper/plugins/dynamic_querying/dynamic_finder'
+
 module MongoMapper
   module Plugins
     module DynamicQuerying

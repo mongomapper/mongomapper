@@ -3,7 +3,7 @@ module MongoMapper
   module Plugins
     module Associations
       class InArrayProxy < Collection
-        include MongoMapper::Plugins::DynamicQuerying::ClassMethods
+        include DynamicQuerying::ClassMethods
 
         def find(*args)
           query.find(*scoped_ids(args))

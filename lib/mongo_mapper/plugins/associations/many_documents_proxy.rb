@@ -3,7 +3,7 @@ module MongoMapper
   module Plugins
     module Associations
       class ManyDocumentsProxy < Collection
-        include MongoMapper::Plugins::DynamicQuerying::ClassMethods
+        include DynamicQuerying::ClassMethods
 
         def find(*args)
           query.find(*args)
