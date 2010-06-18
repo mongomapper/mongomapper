@@ -45,6 +45,15 @@ class OneEmbeddedProxyTest < Test::Unit::TestCase
     post.author.should == new_author
   end
 
+  should "not have problem loading root document if embedded one is nil" do
+    @post_class.one :author, :class => @author_class
+    post = @post_class.create
+    
+    lambda {
+      @post_class.find(post.id)
+    }.should_not raise_error
+  end
+
   should "have boolean method for testing presence" do
     @post_class.one :author, :class => @author_class
 

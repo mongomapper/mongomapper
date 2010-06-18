@@ -32,7 +32,7 @@ module MongoMapper
           end
 
           def assign_references(doc)
-            doc._parent_document = proxy_owner
+            doc._parent_document = proxy_owner if doc
           end
       end
     end
