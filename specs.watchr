@@ -29,7 +29,7 @@ def run_test_file(file)
 end
 
 def run_all_tests
-  run "rake test"
+  run "rake test:all"
 end
 
 def related_test_files(path)

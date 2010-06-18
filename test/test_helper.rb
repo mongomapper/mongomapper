@@ -1,4 +1,8 @@
-require File.expand_path(File.dirname(__FILE__) + '/../lib/mongo_mapper')
+gem 'activesupport', ENV['ACTIVE_SUPPORT_VERSION']
+require 'active_support/version'
+
+$:.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
+require 'mongo_mapper'
 require 'fileutils'
 
 gem 'jnunemaker-matchy', '0.4.0'
@@ -96,3 +100,5 @@ logger = Logger.new(log_dir + '/test.log')
 MongoMapper.connection = Mongo::Connection.new('127.0.0.1', 27017, :logger => logger)
 MongoMapper.database = "mm-test-#{RUBY_VERSION.gsub('.', '-')}"
 MongoMapper.database.collections.each { |c| c.drop_indexes }
+
+puts "\n--- Active Support Version: #{ActiveSupport::VERSION::STRING} ---\n"
