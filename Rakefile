@@ -6,7 +6,6 @@ require File.expand_path('../lib/mongo_mapper/version', __FILE__)
 namespace :test do
   Rake::TestTask.new(:all) do |test|
     test.libs      << 'lib' << 'test'
-    test.ruby_opts << '-rubygems'
     test.pattern   = 'test/{functional,unit}/**/test_*.rb'
     test.verbose   = true
   end

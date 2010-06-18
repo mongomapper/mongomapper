@@ -1,23 +1,23 @@
-gem 'activesupport', ENV['ACTIVE_SUPPORT_VERSION']
-require 'active_support/version'
+require 'rubygems'
+gem 'activesupport',     ENV['ACTIVE_SUPPORT_VERSION']
+gem 'json',              '~> 1.2.3'
+gem 'jnunemaker-matchy', '~> 0.4.0'
+gem 'shoulda',           '~> 2.10.2'
+gem 'timecop',           '~> 0.3.1'
+gem 'mocha',             '~> 0.9.8'
 
 $:.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
 require 'mongo_mapper'
 require 'fileutils'
-
-gem 'jnunemaker-matchy', '0.4.0'
-gem 'shoulda',           '2.10.2'
-gem 'json',              '>= 1.2.3'
-gem 'timecop',           '0.3.1'
-gem 'mocha',             '0.9.8'
-
 require 'ostruct'
+require 'pp'
+
+require 'active_support/version'
+require 'json'
+require 'matchy'
 require 'shoulda'
 require 'timecop'
-require 'matchy'
 require 'mocha'
-require 'json'
-require 'pp'
 
 class Test::Unit::TestCase
   def Doc(name=nil, &block)
