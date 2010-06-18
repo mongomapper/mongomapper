@@ -8,57 +8,12 @@ module MongoMapper
       module ClassMethods
         include PluckyMethods
 
-        def find(*args)
-          options = args.extract_options!
-          return nil if args.size == 0
-
-          if args.first.is_a?(Array) || args.size > 1
-            find_some(args, options)
-          else
-            find_one(options.merge(:_id => args[0]))
-          end
-        end
-
-        def find!(*args)
-          options = args.extract_options!
-          raise DocumentNotFound, "Couldn't find without an ID" if args.size == 0
-
-          if args.first.is_a?(Array) || args.size > 1
-            find_some!(args, options)
-          else
-            find_one(options.merge(:_id => args[0])) ||
-              raise(DocumentNotFound, "Document match #{options.inspect} does not exist
-                                        in #{collection.name} collection")
-          end
-        end
-
-        def find_each(options={})
-          query(options).find_each.each { |doc| yield load(doc) }
+        def find_each(opts={})
+          super(opts).each { |doc| yield load(doc) }
         end
 
         def find_by_id(id)
           find_one(:_id => id)
-        end
-
-        def first(options={})
-          find_one(options)
-        end
-
-        # All bets are off an actual order if you provide none.
-        def last(options={})
-          find_one(query(options).reverse.to_hash)
-        end
-
-        def all(options={})
-          find_many(options)
-        end
-
-        def count(options={})
-          query(options).count
-        end
-
-        def exists?(options={})
-          !count(options).zero?
         end
 
         def first_or_create(args)

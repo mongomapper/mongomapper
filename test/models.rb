@@ -143,6 +143,12 @@ end
 class Status
   include MongoMapper::Document
 
+  scope :complete, where(:name => 'Complete')
+
+  def self.by_position(position)
+    where(:position => position)
+  end
+
   key :project_id, ObjectId
   key :target_id, ObjectId
   key :target_type, String

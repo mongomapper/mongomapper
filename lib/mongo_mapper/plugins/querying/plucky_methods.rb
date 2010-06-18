@@ -1,27 +1,14 @@
 # encoding: UTF-8
+require 'forwardable'
+
 module MongoMapper
   module Plugins
     module Querying
       module PluckyMethods
-        def where(options={})
-          query.where(options)
-        end
-
-        def fields(*args)
-          query.fields(*args)
-        end
-
-        def limit(*args)
-          query.limit(*args)
-        end
-
-        def skip(*args)
-          query.skip(*args)
-        end
-
-        def sort(*args)
-          query.sort(*args)
-        end
+        extend Forwardable
+        def_delegators :query,  :where, :fields, :limit, :skip, :sort,
+                                :count, :last, :first, :all, :paginate,
+                                :find, :find!, :exists?, :exist?, :find_each
       end
     end
   end

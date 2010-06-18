@@ -345,6 +345,45 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       end
     end
 
+    context "sexy querying" do
+      should "work with where" do
+        @project1.statuses.where(:name => 'New').all.should == [@brand_new]
+      end
+
+      should "work with sort" do
+        @project1.statuses.sort(:name).all.should == [@complete, @brand_new]
+      end
+
+      should "work with limit" do
+        @project1.statuses.sort(:name).limit(1).all.should == [@complete]
+      end
+
+      should "work with skip" do
+        @project1.statuses.sort(:name).skip(1).all.should == [@brand_new]
+      end
+
+      should "work with fields" do
+        @project1.statuses.fields(:position).all.each do |status|
+          status.position.should_not be_nil
+          status.name.should be_nil
+        end
+      end
+
+      should "work with scopes" do
+        @project1.statuses.complete.all.should == [@complete]
+      end
+
+      should "work with methods on class that return query" do
+        @project1.statuses.by_position(1).first.should == @brand_new
+      end
+
+      should "not work with methods on class that do not return query" do
+        Status.class_eval { def self.foo; 'foo' end }
+        lambda { @project1.statuses.foo }.
+          should raise_error(NoMethodError)
+      end
+    end
+
     context "all" do
       should "work" do
         @project1.statuses.all(:order => "position asc").should == [@brand_new, @complete]

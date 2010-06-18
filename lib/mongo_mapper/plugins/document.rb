@@ -18,7 +18,7 @@ module MongoMapper
         end
 
         def reload
-          if doc = self.class.query.find_one(:_id => id)
+          if doc = collection.find_one(:_id => id)
             tap do |instance|
               instance.class.associations.each_key do |association_name|
                 send(association_name).reset if respond_to?(association_name)

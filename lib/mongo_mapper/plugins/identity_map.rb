@@ -30,21 +30,34 @@ module MongoMapper
           @identity_map = v
         end
 
-        def find_one(options={})
-          query = query(options)
+        module IdentityMapQueryMethods
+          def all(opts={})
+            query = clone.update(opts)
+            super.tap do |docs|
+              model.remove_documents_from_map(docs) if query.fields?
+            end
+          end
 
-          if query.simple? && identity_map.key?(query[:_id])
-            identity_map[query[:_id]]
-          else
-            super.tap do |document|
-              remove_documents_from_map(document) if query.fields?
+          def find_one(opts={})
+            query = clone.update(opts)
+
+            if query.simple? && model.identity_map[query[:_id]]
+              model.identity_map[query[:_id]]
+            else
+              super.tap do |doc|
+                model.remove_documents_from_map(doc) if query.fields?
+              end
             end
           end
         end
 
-        def find_many(options)
-          super.tap do |documents|
-            remove_documents_from_map(documents) if query(options).fields?
+        def query(opts={})
+          super.extend(IdentityMapQueryMethods)
+        end
+
+        def remove_documents_from_map(*documents)
+          documents.flatten.compact.each do |document|
+            identity_map.delete(document['_id'])
           end
         end
 
@@ -88,12 +101,6 @@ module MongoMapper
         end
 
         private
-          def remove_documents_from_map(*documents)
-            documents.flatten.compact.each do |document|
-              identity_map.delete(document._id)
-            end
-          end
-
           def selecting_fields?(options)
             !options[:fields].nil?
           end

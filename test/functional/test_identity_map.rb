@@ -327,7 +327,7 @@ class IdentityMapTest < Test::Unit::TestCase
 
       should "return nil for document id not found in collection" do
         assert_in_map(@person)
-        @person_class.find_by_id(1234).should be_nil
+        @person_class.find_by_id(BSON::ObjectID.new).should be_nil
       end
     end
 
@@ -342,13 +342,13 @@ class IdentityMapTest < Test::Unit::TestCase
         @person_class.first(:_id => @person.id, :select => 'name').should == @person
         @person_class.first(:_id => @person.id, 'fields' => ['name']).should == @person
         @person_class.last(:_id => @person.id, :select => 'name', :order => 'name').should == @person
-        @person_class.find(@person.id, :select => 'name').should == @person
+        @person_class.fields(:name).find(@person.id).should == @person
         @person_class.all(:_id => @person.id, :select => 'name').should == [@person]
         assert_not_in_map(@person)
       end
 
       should "return nil if not found" do
-        @person_class.find(1234, :select => 'name').should be_nil
+        @person_class.fields(:name).find(BSON::ObjectID.new).should be_nil
       end
     end
 

@@ -4,34 +4,7 @@ module MongoMapper
     module Associations
       class ManyDocumentsProxy < Collection
         include DynamicQuerying::ClassMethods
-
-        def find(*args)
-          query.find(*args)
-        end
-
-        def find!(*args)
-          query.find!(*args)
-        end
-
-        def paginate(options)
-          query.paginate(options)
-        end
-
-        def all(options={})
-          query(options).all
-        end
-
-        def first(options={})
-          query(options).first
-        end
-
-        def last(options={})
-          query(options).last
-        end
-
-        def count(options={})
-          query(options).count
-        end
+        include Querying::PluckyMethods
 
         def replace(docs)
           load_target
@@ -93,8 +66,17 @@ module MongoMapper
           def query(options={})
             klass.
               query(association.query_options).
-              update(options).
-              update(criteria)
+              update(options).update(criteria)
+          end
+
+          def method_missing(method, *args, &block)
+            if klass.respond_to?(method)
+              result = klass.send(method, *args, &block)
+              result.is_a?(Plucky::Query) ? 
+                query.merge(result) : super
+            else
+              super
+            end
           end
 
           def criteria
