@@ -3,9 +3,6 @@ module MongoMapper
   # generic MM error
   class Error < StandardError; end
 
-  # raised when key expected to exist but not found
-  class KeyNotFound < Error; end
-
   # raised when document expected but not found
   class DocumentNotFound < Error; end
 

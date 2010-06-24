@@ -8,7 +8,6 @@ module MongoMapper
   autoload :Connection,             'mongo_mapper/connection'
 
   autoload :Error,                  'mongo_mapper/exceptions'
-  autoload :KeyNotFound,            'mongo_mapper/exceptions'
   autoload :DocumentNotFound,       'mongo_mapper/exceptions'
   autoload :InvalidScheme,          'mongo_mapper/exceptions'
   autoload :DocumentNotValid,       'mongo_mapper/exceptions'

@@ -290,8 +290,6 @@ module MongoMapper
               value = key.get(instance_variable_get(:"@#{key_name}"))
               set_parent_document(key, value)
               instance_variable_set(:"@#{key_name}", value)
-            else
-              raise KeyNotFound, "Could not find key: #{key_name.inspect}"
             end
           end
 

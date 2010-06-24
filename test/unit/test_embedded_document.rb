@@ -387,9 +387,9 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
             doc[:name].should == 'string'
           end
 
-          should "raise exception when key not found" do
+          should "return nil when not found" do
             doc = @document.new(:name => 'string')
-            assert_raises(MongoMapper::KeyNotFound) { doc[:not_here] }
+            doc[:not_here].should be_nil
           end
         end
 
