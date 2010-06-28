@@ -21,8 +21,8 @@ module MongoMapper
 
         def valid?(instance)
           value = instance[attribute]
-          return true if allow_blank && value.blank?
-          return true if allow_nil && value.nil?
+          return allow_nil if value.nil? and not allow_nil.nil?
+          return allow_blank if value.blank? and not allow_blank.nil?
           base_conditions = case_sensitive ? {self.attribute => value} : {}
           doc = instance.class.first(base_conditions.merge(scope_conditions(instance)).merge(where_conditions(instance)))
           doc.nil? || instance._id == doc._id
