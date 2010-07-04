@@ -13,6 +13,7 @@ class User
   key :age,         Integer
   key :skills,      Array
   key :friend_ids,  Array, :typecast => 'ObjectId'
+  key :links,       Hash
   timestamps!
 end
 User.collection.remove # empties collection
@@ -22,6 +23,7 @@ john = User.create({
   :last_name  => 'Nunemaker',
   :age        => 28,
   :skills     => ['ruby', 'mongo', 'javascript'],
+  :links      => {"Google" => "http://www.google.com"}
 }) 
 
 steve = User.create({
@@ -32,6 +34,7 @@ steve = User.create({
 })
 
 john.friend_ids << steve.id.to_s # will get typecast to ObjectId
+john.links["Ruby on Rails"] = "http://www.rubyonrails.com"
 john.save
 
 pp john
