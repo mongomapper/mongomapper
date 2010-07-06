@@ -11,12 +11,7 @@ module MongoMapper
             :before_save,                 :after_save,
             :before_create,               :after_create,
             :before_update,               :after_update,
-            :before_validation,           :after_validation,
-            :before_validation_on_create, :after_validation_on_create,
-            :before_validation_on_update, :after_validation_on_update,
-            :before_destroy,              :after_destroy,
-            :validate_on_create,          :validate_on_update,
-            :validate
+            :before_destroy,              :after_destroy
           )
         end
       end
