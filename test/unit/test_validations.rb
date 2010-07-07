@@ -157,59 +157,59 @@ class ValidationsTest < Test::Unit::TestCase
              doc.should have_error_on(:name)
            end
          end
-    # 
-    #   context "validating exclusion of" do
-    #     should "throw error if enumerator not provided" do
-    #       @document.key :action, String
-    #       lambda {
-    #         @document.validates_exclusion_of :action
-    #       }.should raise_error(ArgumentError)
-    #     end
-    # 
-    #     should "work with validates_exclusion_of macro" do
-    #       @document.key :action, String
-    #       @document.validates_exclusion_of :action, :within => %w(kick run)
-    # 
-    #       doc = @document.new
-    #       doc.should_not have_error_on(:action)
-    # 
-    #       doc.action = 'fart'
-    #       doc.should_not have_error_on(:action)
-    # 
-    #       doc.action = 'kick'
-    #       doc.should have_error_on(:action, 'is reserved')
-    #     end
-    # 
-    #     should "work with :not_in shortcut on key definition" do
-    #       @document.key :action, String, :not_in => %w(kick run)
-    # 
-    #       doc = @document.new
-    #       doc.should_not have_error_on(:action)
-    # 
-    #       doc.action = 'fart'
-    #       doc.should_not have_error_on(:action)
-    # 
-    #       doc.action = 'kick'
-    #       doc.should have_error_on(:action, 'is reserved')
-    #     end
-    # 
-    #     should "not have error if allow nil is true and value is nil" do
-    #       @document.key :action, String
-    #       @document.validates_exclusion_of :action, :within => %w(kick run), :allow_nil => true
-    # 
-    #       doc = @document.new
-    #       doc.should_not have_error_on(:action)
-    #     end
-    # 
-    #     should "not have error if allow blank is true and value is blank" do
-    #       @document.key :action, String
-    #       @document.validates_exclusion_of :action, :within => %w(kick run), :allow_nil => true
-    # 
-    #       doc = @document.new(:action => '')
-    #       doc.should_not have_error_on(:action)
-    #     end
-    #   end
-    # 
+
+      context "validating exclusion of" do
+        should "throw error if enumerator not provided" do
+          @document.key :action, String
+          lambda {
+            @document.validates_exclusion_of :action
+          }.should raise_error(ArgumentError)
+        end
+    
+        should "work with validates_exclusion_of macro" do
+          @document.key :action, String
+          @document.validates_exclusion_of :action, :in => %w(kick run)
+    
+          doc = @document.new
+          doc.should_not have_error_on(:action)
+    
+          doc.action = 'fart'
+          doc.should_not have_error_on(:action)
+    
+          doc.action = 'kick'
+          doc.should have_error_on(:action, 'is reserved')
+        end
+
+        should "work with :not_in shortcut on key definition" do
+          @document.key :action, String, :not_in => %w(kick run)
+    
+          doc = @document.new
+          doc.should_not have_error_on(:action)
+    
+          doc.action = 'fart'
+          doc.should_not have_error_on(:action)
+    
+          doc.action = 'kick'
+          doc.should have_error_on(:action, 'is reserved')
+        end
+    
+        should "not have error if allow nil is true and value is nil" do
+          @document.key :action, String
+          @document.validates_exclusion_of :action, :in => %w(kick run), :allow_nil => true
+    
+          doc = @document.new
+          doc.should_not have_error_on(:action)
+        end
+    
+        should "not have error if allow blank is true and value is blank" do
+          @document.key :action, String
+          @document.validates_exclusion_of :action, :in => %w(kick run), :allow_nil => true
+    
+          doc = @document.new(:action => '')
+          doc.should_not have_error_on(:action)
+        end
+      end
+    
     #   context "validating inclusion of" do
     #     should "throw error if enumerator not provided" do
     #       @document.key :action, String
@@ -260,8 +260,8 @@ class ValidationsTest < Test::Unit::TestCase
     #       doc = @document.new(:action => '')
     #       doc.should_not have_error_on(:action)
     #     end
-    #   end
-    # 
+      # end
+    
     # end # End on a Document
     # 
     # context "On an EmbeddedDocument" do

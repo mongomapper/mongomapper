@@ -137,7 +137,7 @@ module MongoMapper
             end
 
             if key.options[:not_in]
-              validates_exclusion_of(attribute, :within => key.options[:not_in])
+              validates_exclusion_of(attribute, :in => key.options[:not_in])
             end
 
             if key.options[:length]

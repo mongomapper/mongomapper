@@ -79,10 +79,10 @@ class Test::Unit::TestCase
       matcher.negative_failure_message = "#{receiver} had errors on #{attribute} #{receiver.errors.inspect}"
       !receiver.errors[attribute].blank?
     else
-      actual = receiver.errors[:attribute]
+      actual = receiver.errors[attribute]
       matcher.positive_failure_message = %Q(Expected error on #{attribute} to be "#{expected_message}" but was "#{actual}")
       matcher.negative_failure_message = %Q(Expected error on #{attribute} not to be "#{expected_message}" but was "#{actual}")
-      actual == expected_message
+      actual.include? expected_message
     end
   end
 
