@@ -7,6 +7,7 @@ module MongoMapper
       model.class_eval do
         extend  Plugins
         
+        # TODO: Extract to plugin
         include ActiveModel::Serializers::Xml
         include ActiveModel::Conversion
         include ActiveModel::Naming
