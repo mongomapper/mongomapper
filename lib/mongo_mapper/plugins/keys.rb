@@ -133,7 +133,7 @@ module MongoMapper
             end
 
             if key.options[:in]
-              validates_inclusion_of(attribute, :within => key.options[:in])
+              validates_inclusion_of(attribute, :in => key.options[:in])
             end
 
             if key.options[:not_in]

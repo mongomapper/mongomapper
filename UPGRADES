@@ -1,6 +1,7 @@
 0.8 => ??
   * [attribute]_before_typecast should become [attribute]_before_type_cast (note the extra _)
   * Change validates_exclusion_of :within option to :in
+  * Change validates_inclusion_of :within option to :in
 
 0.7.6 => 0.8
   * Proxy#owner has been removed in favor of Proxy#proxy_owner
