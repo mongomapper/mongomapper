@@ -33,8 +33,8 @@ class TestRails < Test::Unit::TestCase
             write_attribute(:foo, value)
           end
 
-          def bar_before_typecast
-            read_attribute_before_typecast(:foo)
+          def bar_before_type_cast
+            read_attribute_before_type_cast(:foo)
           end
 
           def bar
@@ -51,8 +51,8 @@ class TestRails < Test::Unit::TestCase
         @klass.new(:foo => 'Bar').bar.should == 'Bar'
       end
 
-      should "be able to read key before typecast with read_attribute_before_typecast" do
-        @klass.new(:foo => 21).bar_before_typecast.should == 21
+      should "be able to read key before type cast with read_attribute_before_type_cast" do
+        @klass.new(:foo => 21).bar_before_type_cast.should == 21
         @klass.new(:foo => 21).bar.should == '21'
       end
 
@@ -120,8 +120,8 @@ class TestRails < Test::Unit::TestCase
             write_attribute(:foo, value)
           end
 
-          def bar_before_typecast
-            read_attribute_before_typecast(:foo)
+          def bar_before_type_cast
+            read_attribute_before_type_cast(:foo)
           end
 
           def bar
@@ -138,8 +138,8 @@ class TestRails < Test::Unit::TestCase
         @klass.new(:foo => 'Bar').bar.should == 'Bar'
       end
 
-      should "be able to read key before typecast with read_attribute_before_typecast" do
-        @klass.new(:foo => 21).bar_before_typecast.should == 21
+      should "be able to read key before type cast with read_attribute_before_type_cast" do
+        @klass.new(:foo => 21).bar_before_type_cast.should == 21
         @klass.new(:foo => 21).bar.should == '21'
       end
 

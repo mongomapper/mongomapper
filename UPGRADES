@@ -1,3 +1,6 @@
+0.8 => ??
+  * [attribute]_before_typecast should become [attribute]_before_type_cast (note the extra _)
+
 0.7.6 => 0.8
   * Proxy#owner has been removed in favor of Proxy#proxy_owner
   * @new instance variable renamed to @_new (you shouldn't be using this anyway)
