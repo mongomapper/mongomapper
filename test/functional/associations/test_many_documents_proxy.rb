@@ -145,6 +145,18 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       project.save!
       status.should_not be_new
     end
+
+    should "not save the parent when building associations" do
+      project = Project.new
+      status = project.statuses.build(:name => 'Foo')
+      project.should be_new
+    end
+
+    should "not save the built object" do
+      project = Project.new
+      status = project.statuses.build(:name => 'Foo')
+      status.should be_new
+    end
   end
 
   context "create" do
