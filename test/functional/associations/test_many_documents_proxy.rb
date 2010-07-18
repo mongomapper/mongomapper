@@ -1,4 +1,4 @@
-require 'test_helper'
+require 'test_helper.rb'
 require 'models'
 
 class ManyDocumentsProxyTest < Test::Unit::TestCase
@@ -229,6 +229,24 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       project.statuses.create(:name => 'Other 2')
 
       project.statuses.count(:name => 'Foo').should == 1
+    end
+  end
+
+  context "to_json" do
+    should "work on association" do
+      project = Project.create
+      3.times { |i| project.statuses.create(:name => i.to_s) }
+      
+      JSON.parse(project.statuses.to_json).collect{|status| status["name"] }.sort.should == ["0","1","2"]
+    end
+  end
+
+  context "as_json" do
+    should "work on association" do
+      project = Project.create
+      3.times { |i| project.statuses.create(:name => i.to_s) }
+      
+      project.statuses.as_json.collect{|status| status["name"] }.sort.should == ["0","1","2"]
     end
   end
 
