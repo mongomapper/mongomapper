@@ -175,7 +175,7 @@ module MongoMapper
           !new? && !destroyed?
         end
 
-        def attributes=(attrs)
+        def attributes=(attrs, guard_protected_attributes = true)
           return if attrs.blank?
 
           attrs.each_pair do |key, value|

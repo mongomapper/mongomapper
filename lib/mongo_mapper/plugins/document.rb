@@ -23,7 +23,7 @@ module MongoMapper
               instance.class.associations.each_key do |association_name|
                 send(association_name).reset if respond_to?(association_name)
               end
-              instance.attributes = doc
+              instance.send('attributes=', doc, false)
             end
           else
             raise DocumentNotFound, "Document match #{_id.inspect} does not exist in #{collection.name} collection"
