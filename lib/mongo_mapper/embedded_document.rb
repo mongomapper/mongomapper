@@ -13,13 +13,13 @@ module MongoMapper
         include ActiveModel::Naming
         include ActiveModel::Serialization
         include ActiveModel::Serializers::JSON
+        include ActiveSupport::DescendantsTracker
         extend ActiveModel::Translation
 
         plugin Plugins::EmbeddedDocument
         plugin Plugins::Associations
         plugin Plugins::Caching
         plugin Plugins::Clone
-        plugin Plugins::Descendants
         plugin Plugins::Equality
         plugin Plugins::Inspect
         plugin Plugins::Keys

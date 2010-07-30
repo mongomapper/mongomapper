@@ -13,6 +13,7 @@ module MongoMapper
         include ActiveModel::Naming
         include ActiveModel::Serialization
         include ActiveModel::Serializers::JSON
+        include ActiveSupport::DescendantsTracker
         extend ActiveModel::Translation
 
         plugin Plugins::Document
@@ -20,7 +21,6 @@ module MongoMapper
         plugin Plugins::Associations
         plugin Plugins::Caching
         plugin Plugins::Clone
-        plugin Plugins::Descendants
         plugin Plugins::DynamicQuerying
         plugin Plugins::Equality
         plugin Plugins::Inspect

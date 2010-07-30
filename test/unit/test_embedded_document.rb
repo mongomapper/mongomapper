@@ -207,7 +207,9 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         end
 
         should "be recorded" do
-          Grandparent.descendants.should == [Parent]
+          Grandparent.direct_descendants.should == [Parent]
+          Grandparent.descendants.to_set.should == [Parent, Child, OtherChild].to_set
+          
           Parent.descendants.should      == [Child, OtherChild]
         end
       end
