@@ -84,7 +84,7 @@ class ValidationsTest < Test::Unit::TestCase
       end
     end
   
-    should "work with validate_on_create callback" do
+    should "work with validate :on => :create callback" do
       @document.validate :action_present, :on => :create
   
       doc = @document.create(:action => nil)
@@ -95,20 +95,20 @@ class ValidationsTest < Test::Unit::TestCase
       doc.should_not have_error_on(:action)
     end
   
-    # should "work with validate_on_update callback" do
-    #   @document.validate :action_present, :on => :update
-    #   
-    #   doc = @document.new
-    #   doc.action = nil
-    #   doc.should_not have_error_on(:action)
-    #   doc.save
-    #   
-    #   doc.action = nil
-    #   doc.should have_error_on(:action)
-    #   
-    #   doc.action = 'kick'
-    #   doc.should_not have_error_on(:action)
-    # end
+    should "work with validate :on => :update callback" do
+      @document.validate :action_present, :on => :update
+
+      doc = @document.new
+      doc.action = nil
+      doc.should_not have_error_on(:action)
+      doc.save
+
+      doc.action = nil
+      doc.should have_error_on(:action)
+
+      doc.action = 'kick'
+      doc.should_not have_error_on(:action)
+    end
   end
 
   context "validating uniqueness of" do
