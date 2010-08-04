@@ -12,6 +12,11 @@ module MongoMapper
           end
         end
 
+        def include?(*args)
+          load_target
+          target.include?(*args)
+        end
+
         def reset
           super
           target = []

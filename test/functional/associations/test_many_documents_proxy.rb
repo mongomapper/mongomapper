@@ -307,6 +307,16 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       @project2.save
     end
 
+    context "include?" do
+      should "return true if in association" do
+        @project1.statuses.should include(@brand_new)
+      end
+
+      should "return false if not in association" do
+        @project1.statuses.should_not include(@in_progress)
+      end
+    end
+
     context "dynamic finders" do
       should "work with single key" do
         @project1.statuses.find_by_name('New').should == @brand_new
