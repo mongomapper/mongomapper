@@ -119,43 +119,43 @@ class CallbacksTest < Test::Unit::TestCase
       grand.history.should == CreateCallbackOrder
     end
   
-  #   should "get the order right based on root document updating" do
-  #     grand = @grand_child_class.new(:name => 'Grand Child')
-  #     child = @child_class.new(:name => 'Child', :children => [grand])
-  #     root  = @root_class.create(:name => 'Parent', :children => [child])
-  #     root.clear_history
-  #     root.update_attributes(:name => 'Updated Parent')
-  # 
-  #     child = root.children.first
-  #     child.history.should == UpdateCallbackOrder
-  # 
-  #     grand = root.children.first.children.first
-  #     grand.history.should == UpdateCallbackOrder
-  #   end
-  # 
-  #   should "work for before and after destroy" do
-  #     grand = @grand_child_class.new(:name => 'Grand Child')
-  #     child = @child_class.new(:name => 'Child', :children => [grand])
-  #     root  = @root_class.create(:name => 'Parent', :children => [child])
-  #     root.destroy
-  #     child = root.children.first
-  #     child.history.should include(:before_destroy)
-  #     child.history.should include(:after_destroy)
-  # 
-  #     grand = root.children.first.children.first
-  #     grand.history.should include(:before_destroy)
-  #     grand.history.should include(:after_destroy)
-  #   end
-  # 
-  #   should "not attempt to run callback defined on root that is not defined on embedded association" do
-  #     @root_class.define_callbacks :after_publish
-  #     @root_class.after_save { |d| d.run_callbacks(:after_publish) }
-  # 
-  #     assert_nothing_raised do
-  #       child = @child_class.new(:name => 'Child')
-  #       root  = @root_class.create(:name => 'Parent', :children => [child])
-  #       child.history.should_not include(:after_publish)
-  #     end
-  #   end
+    should "get the order right based on root document updating" do
+      grand = @grand_child_class.new(:name => 'Grand Child')
+      child = @child_class.new(:name => 'Child', :children => [grand])
+      root  = @root_class.create(:name => 'Parent', :children => [child])
+      root.clear_history
+      root.update_attributes(:name => 'Updated Parent')
+  
+      child = root.children.first
+      child.history.should == UpdateCallbackOrder
+  
+      grand = root.children.first.children.first
+      grand.history.should == UpdateCallbackOrder
+    end
+  
+    should "work for before and after destroy" do
+      grand = @grand_child_class.new(:name => 'Grand Child')
+      child = @child_class.new(:name => 'Child', :children => [grand])
+      root  = @root_class.create(:name => 'Parent', :children => [child])
+      root.destroy
+      child = root.children.first
+      child.history.should include(:before_destroy)
+      child.history.should include(:after_destroy)
+  
+      grand = root.children.first.children.first
+      grand.history.should include(:before_destroy)
+      grand.history.should include(:after_destroy)
+    end
+  
+    should "not attempt to run callback defined on root that is not defined on embedded association" do
+      @root_class.define_callbacks :after_publish
+      @root_class.after_save { |d| d.run_callbacks(:after_publish) }
+  
+      assert_nothing_raised do
+        child = @child_class.new(:name => 'Child')
+        root  = @root_class.create(:name => 'Parent', :children => [child])
+        child.history.should_not include(:after_publish)
+      end
+    end
   end
 end
