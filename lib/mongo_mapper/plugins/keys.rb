@@ -217,6 +217,10 @@ module MongoMapper
           save!
         end
 
+        def update_attribute(name, value)
+          update_attributes(name.to_sym => value)
+        end
+
         def id
           _id
         end

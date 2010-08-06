@@ -677,6 +677,17 @@ class QueryingTesting < Test::Unit::TestCase
     end
   end
 
+  context "#update_attribute" do
+    setup do
+      @doc = @document.create(:first_name => 'John', :age => '27')
+    end
+
+    should "update the attribute" do
+      @doc.update_attribute(:first_name, 'Chris').should be_true
+      @doc.reload.first_name.should == 'Chris'
+    end
+  end
+
   context "#save (new document)" do
     setup do
       @doc = @document.new(:first_name => 'John', :age => '27')
