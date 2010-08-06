@@ -1,7 +1,4 @@
 # encoding: UTF-8
-# Almost all of this callback stuff is pulled directly from ActiveSupport
-# in the interest of support rails 2 and 3 at the same time and is the
-# same copyright as rails.
 module MongoMapper
   module Plugins
     module Callbacks
