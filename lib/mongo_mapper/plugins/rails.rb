@@ -2,10 +2,6 @@
 module MongoMapper
   module Plugins
     module Rails
-      def self.configure(model)
-        model.extend ActiveModel::Naming if defined?(ActiveModel)
-      end
-
       module InstanceMethods
         def to_param
           id.to_s if persisted?

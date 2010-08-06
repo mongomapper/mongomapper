@@ -4,7 +4,7 @@ module MongoMapper
     module Validations
       def self.configure(model)
         model.class_eval do
-          include ActiveModel::Validations
+          include ::ActiveModel::Validations
         end
       end
 
@@ -19,7 +19,7 @@ module MongoMapper
       end
 
       # TODO: Add I18n support
-      class UniquenessValidator < ActiveModel::EachValidator
+      class UniquenessValidator < ::ActiveModel::EachValidator
         def initialize(options)
           super(options.reverse_merge(:case_sensitive => true))
         end
@@ -59,7 +59,7 @@ module MongoMapper
         end
       end
       
-      class AssociatedValidator < ActiveModel::EachValidator
+      class AssociatedValidator < ::ActiveModel::EachValidator
         def validate_each(record, attribute, value)
           if !Array.wrap(value).all? { |c| c.nil? || c.valid? }
             record.errors.add(attribute, :invalid, :default => options[:message], :value => value)

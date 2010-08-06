@@ -19,6 +19,7 @@ module MongoMapper
   autoload :Version,                'mongo_mapper/version'
 
   module Plugins
+    autoload :ActiveModel,      'mongo_mapper/plugins/active_model'
     autoload :Associations,     'mongo_mapper/plugins/associations'
     autoload :Accessible,       'mongo_mapper/plugins/accessible'
     autoload :Callbacks,        'mongo_mapper/plugins/callbacks'
