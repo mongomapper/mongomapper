@@ -1,6 +1,6 @@
 require 'rubygems'
 gem 'activesupport',     ENV['ACTIVE_SUPPORT_VERSION']
-gem 'json',              '~> 1.2.3'
+gem 'json'
 gem 'jnunemaker-matchy', '~> 0.4.0'
 gem 'shoulda',           '~> 2.10.2'
 gem 'timecop',           '~> 0.3.1'
