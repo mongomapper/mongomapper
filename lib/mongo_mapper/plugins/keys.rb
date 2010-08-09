@@ -44,6 +44,11 @@ module MongoMapper
           object_id_keys.include?(name.to_sym)
         end
 
+        # API Private
+        def can_default_id?
+          keys['_id'].can_default_id?
+        end
+
         def to_mongo(instance)
           return nil if instance.nil?
           instance.to_mongo
@@ -268,8 +273,8 @@ module MongoMapper
 
           def default_id_value(attrs)
             unless attrs.nil?
-              provided_keys = attrs.keys.map { |k| k.to_s }
-              unless provided_keys.include?('_id') || provided_keys.include?('id')
+              id_provided = attrs.keys.map { |k| k.to_s }.detect { |k| k == 'id' || k == '_id' }
+              if !id_provided && self.class.can_default_id?
                 write_key :_id, BSON::ObjectID.new
               end
             end
