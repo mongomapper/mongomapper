@@ -1,5 +1,9 @@
-# to_prepare is called before each request in development mode and the first request in production
 # See http://groups.google.com/group/mongomapper/browse_thread/thread/68f62e8eda43b43a/4841dba76938290c
+#
+# This is only for development mode. You will still want to clear the identity map before each request in production.
+# See examples/identity_map for more on this.
+#
+# to_prepare is called before each request in development mode and the first request in production.
 Rails.configuration.to_prepare do
   if Rails.configuration.cache_classes
     MongoMapper::Plugins::IdentityMap.clear
