@@ -44,6 +44,10 @@ class JsonSerializationTest < Test::Unit::TestCase
     )
   end
 
+  def teardown
+    Kernel.send(:remove_const, 'TopLevelContact') if Kernel.const_defined?('TopLevelContact')
+  end
+
   should "include root for class with no module" do
     TopLevelContact.include_root_in_json = true
     assert_match %r{^\{"top_level_contact":\s?\{}, convert_to_json(@top_level_contact)
