@@ -63,11 +63,10 @@ module MongoMapper
         def load(attrs)
           return nil if attrs.nil?
           begin
-            klass = attrs['_type'].present? ? attrs['_type'].constantize : self
-            klass.new(attrs, true)
+            attrs['_type'].present? ? attrs['_type'].constantize : self
           rescue NameError
-            new(attrs, true)
-          end
+            self
+          end.allocate.initialize_from_database(attrs)
         end
 
         private
@@ -160,16 +159,16 @@ module MongoMapper
       end
 
       module InstanceMethods
-        def initialize(attrs={}, from_database=false)
+        def initialize(attrs={})
           default_id_value(attrs)
+          @_new = true
+          assign(attrs)
+        end
 
-          if from_database
-            @_new = false
-            load_from_database(attrs)
-          else
-            @_new = true
-            assign(attrs)
-          end
+        def initialize_from_database(attrs={})
+          @_new = false
+          load_from_database(attrs)
+          self
         end
 
         def persisted?

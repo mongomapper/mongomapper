@@ -39,25 +39,29 @@ module MongoMapper
           changed.inject({}) { |h, key| h[key] = key_change(key); h }
         end
 
-        def initialize(*args)
-          super
-          changed_keys.clear if args.first.blank? || !new?
+        def initialize(*)
+          # never register initial id assignment as a change
+          super.tap { changed_keys.delete('_id') }
         end
 
-        def save(*args)
+        def initialize_from_database(*)
+          super.tap { changed_keys.clear }
+        end
+
+        def save(*)
           if status = super
             changed_keys.clear
           end
           status
         end
 
-        def save!(*args)
+        def save!(*)
           status = super
           changed_keys.clear
           status
         end
 
-        def reload(*args)
+        def reload(*)
           document = super
           changed_keys.clear
           document
