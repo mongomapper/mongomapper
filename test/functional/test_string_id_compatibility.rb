@@ -28,7 +28,7 @@ class StringIdCompatibilityTest < Test::Unit::TestCase
     project._id.should be_instance_of(String)
     project.id.size.should == 24
     lambda {
-      BSON::ObjectID.from_string(project.id)
+      BSON::ObjectId.from_string(project.id)
     }.should_not raise_error
   end
 

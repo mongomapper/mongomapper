@@ -275,7 +275,7 @@ module MongoMapper
             unless attrs.nil?
               id_provided = attrs.keys.map { |k| k.to_s }.detect { |k| k == 'id' || k == '_id' }
               if !id_provided && self.class.can_default_id?
-                write_key :_id, BSON::ObjectID.new
+                write_key :_id, BSON::ObjectId.new
               end
             end
           end

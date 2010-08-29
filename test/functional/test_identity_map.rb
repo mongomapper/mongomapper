@@ -140,7 +140,7 @@ class IdentityMapTest < Test::Unit::TestCase
 
     context "#load" do
       setup do
-        @id = BSON::ObjectID.new
+        @id = BSON::ObjectId.new
       end
 
       should "add document to map" do
@@ -327,7 +327,7 @@ class IdentityMapTest < Test::Unit::TestCase
 
       should "return nil for document id not found in collection" do
         assert_in_map(@person)
-        @person_class.find_by_id(BSON::ObjectID.new).should be_nil
+        @person_class.find_by_id(BSON::ObjectId.new).should be_nil
       end
     end
 
@@ -348,7 +348,7 @@ class IdentityMapTest < Test::Unit::TestCase
       end
 
       should "return nil if not found" do
-        @person_class.fields(:name).find(BSON::ObjectID.new).should be_nil
+        @person_class.fields(:name).find(BSON::ObjectId.new).should be_nil
       end
     end
 
@@ -452,7 +452,7 @@ class IdentityMapTest < Test::Unit::TestCase
 
       should "not add to map when loading" do
         @post_class.without_identity_map do
-          post = @post_class.load({'_id' => BSON::ObjectID.new, 'title' => 'Awesome!'})
+          post = @post_class.load({'_id' => BSON::ObjectId.new, 'title' => 'Awesome!'})
           assert_not_in_map(post)
         end
       end

@@ -22,7 +22,7 @@ module MongoMapper
         end
 
         def can_default_id?
-          type && [ObjectId, BSON::ObjectID, String].include?(type)
+          type && [ObjectId, BSON::ObjectId, String].include?(type)
         end
 
         def number?

@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'activesupport',           '>= 2.3.4'
   s.add_dependency 'jnunemaker-validatable',  '~> 1.8.4'
-  s.add_dependency 'plucky',                  '~> 0.3.4'
+  s.add_dependency 'plucky',                  '~> 0.3.5'
 
   s.add_development_dependency 'json'
   s.add_development_dependency 'log_buddy'

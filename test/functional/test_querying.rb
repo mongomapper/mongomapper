@@ -56,8 +56,8 @@ class QueryingTesting < Test::Unit::TestCase
     end
 
     should "automatically set id" do
-      @doc.id.should be_instance_of(BSON::ObjectID)
-      @doc._id.should be_instance_of(BSON::ObjectID)
+      @doc.id.should be_instance_of(BSON::ObjectId)
+      @doc._id.should be_instance_of(BSON::ObjectId)
     end
 
     should "no longer be new?" do
@@ -207,12 +207,12 @@ class QueryingTesting < Test::Unit::TestCase
       end
 
       should "compact not found when using find" do
-        @document.find(@doc1._id, BSON::ObjectID.new.to_s).should == [@doc1]
+        @document.find(@doc1._id, BSON::ObjectId.new.to_s).should == [@doc1]
       end
 
       should "raise error if not all found when using find!" do
         assert_raises(MongoMapper::DocumentNotFound) do
-          @document.find!(@doc1._id, BSON::ObjectID.new.to_s)
+          @document.find!(@doc1._id, BSON::ObjectId.new.to_s)
         end
       end
 
@@ -620,7 +620,7 @@ class QueryingTesting < Test::Unit::TestCase
     end
 
     should "assign an id for the document" do
-      @doc.id.should be_instance_of(BSON::ObjectID)
+      @doc.id.should be_instance_of(BSON::ObjectId)
     end
 
     should "save attributes" do
@@ -688,7 +688,7 @@ class QueryingTesting < Test::Unit::TestCase
     end
 
     should "assign an id for the document" do
-      @doc.id.should be_instance_of(BSON::ObjectID)
+      @doc.id.should be_instance_of(BSON::ObjectId)
     end
 
     should "save attributes" do
