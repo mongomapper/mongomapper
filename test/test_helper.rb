@@ -2,8 +2,8 @@ require 'rubygems'
 gem 'activesupport',     ENV['ACTIVE_SUPPORT_VERSION']
 gem 'json'
 gem 'jnunemaker-matchy', '~> 0.4.0'
-gem 'shoulda',           '~> 2.10.2'
-gem 'timecop',           '~> 0.3.1'
+gem 'shoulda',           '~> 2.11'
+gem 'timecop',           '~> 0.3.5'
 gem 'mocha',             '~> 0.9.8'
 
 $:.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
