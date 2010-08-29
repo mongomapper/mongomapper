@@ -25,12 +25,10 @@ class JsonSerializationTest < Test::Unit::TestCase
     many :tags, :class_name => 'JsonSerializationTest::Tag'
   end
 
-  class ::TopLevelContact
-    include MongoMapper::Document
-    key :name, String
-  end
-
   def setup
+    Kernel.const_set('TopLevelContact', Doc('TopLevelContact'))
+    TopLevelContact.key :name, String
+
     Contact.include_root_in_json = false
     @contact = Contact.new(
       :name        => 'Konata Izumi',
@@ -45,7 +43,7 @@ class JsonSerializationTest < Test::Unit::TestCase
   end
 
   def teardown
-    Kernel.send(:remove_const, 'TopLevelContact') if Kernel.const_defined?('TopLevelContact')
+    Kernel.send(:remove_const, 'TopLevelContact') if Object.const_defined?('TopLevelContact')
   end
 
   should "include root for class with no module" do
