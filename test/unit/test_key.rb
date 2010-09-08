@@ -101,6 +101,21 @@ class KeyTest < Test::Unit::TestCase
     end
   end
 
+  context "for an array with :typecast option of Date" do
+    setup   { @key = Key.new(:dates, Array, :typecast => 'Date') }
+    subject { @key }
+
+    should "cast each element correctly when get" do
+      dates = [Date.yesterday, Date.today, Date.tomorrow.to_s]
+      subject.get(dates).should == dates.map { |date| Date.from_mongo(date) }
+    end
+
+    should "cast each element correctly when set" do
+      dates = [Date.yesterday, Date.today, Date.tomorrow.to_s]
+      subject.set(dates).should == dates.map { |date| Date.to_mongo(date) }
+    end
+  end
+
   context "for a set with :typecast option" do
     setup   { @key = Key.new(:user_ids, Set, :typecast => 'ObjectId') }
     subject { @key }

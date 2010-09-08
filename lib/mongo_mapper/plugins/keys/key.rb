@@ -38,7 +38,11 @@ module MongoMapper
             end
           end
 
-          type.from_mongo(value)
+          if options[:typecast].present?
+            type.from_mongo(value).map! { |v| typecast_class.from_mongo(v) }
+          else
+            type.from_mongo(value)
+          end
         end
 
         def set(value)
@@ -48,7 +52,7 @@ module MongoMapper
             end
           end
         end
-        
+
         private
           def typecast_class
             @typecast_class ||= options[:typecast].constantize
