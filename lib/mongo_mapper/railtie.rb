@@ -8,8 +8,6 @@ module MongoMapper
 
     config.mongo_mapper = ActiveSupport::OrderedOptions.new
 
-    config.paths.config.mongo 'config/mongo.yml'
-
     initializer "mongo_mapper.set_configs" do |app|
       ActiveSupport.on_load(:mongo_mapper) do
         app.config.mongo_mapper.each do |k,v|
@@ -19,11 +17,11 @@ module MongoMapper
     end
 
     # This sets the database configuration and establishes the connection.
-    initializer "mongo_mapper.initialize_database" do
-      config_file = config.paths.config.mongo
+    initializer "mongo_mapper.initialize_database" do |app|
+      config_file = Rails.root.join('config/mongo.yml')
       if config_file.file?
-        settings = YAML.load(ERB.new(config_file.read).result)[Rails.env]
-        MongoMapper.setup(settings)
+        config = YAML.load(ERB.new(config_file.read).result)
+        MongoMapper.setup(config, Rails.env)
       end
     end
 
