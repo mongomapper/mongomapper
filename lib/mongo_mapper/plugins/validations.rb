@@ -29,9 +29,6 @@ module MongoMapper
         end
 
         def validate_each(record, attribute, value)
-          return options[:allow_nil] if value.nil? and not options[:allow_nil].nil?
-          return options[:allow_blank] if value.blank? and not options[:allow_blank].nil?
-
           conditions = scope_conditions(record)
 
           if options[:case_sensitive]

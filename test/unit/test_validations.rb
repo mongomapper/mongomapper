@@ -7,26 +7,6 @@ class ValidationsTest < Test::Unit::TestCase
         @document = Doc('John')
       end
 
-      context "Validating uniqueness of" do
-        should "not validate nil when allow_nil false" do
-          @document.key :name, String
-          @document.validates_uniqueness_of :name, :allow_nil => false
-          doc = @document.new(:name => nil)
-          doc.should have_error_on(:name)
-          doc.name = "Ryan"
-          doc.should_not have_error_on(:name)
-        end
-
-        should "not validate blank when allow_blank false" do
-          @document.key :name, String
-          @document.validates_uniqueness_of :name, :allow_blank => false
-          doc = @document.new(:name => "")
-          doc.should have_error_on(:name)
-          doc.name = "Ryan"
-          doc.should_not have_error_on(:name)
-        end
-      end
-
       context "Validating acceptance of" do
         should "work with validates_acceptance_of macro" do
           @document.key :terms, String
