@@ -19,23 +19,23 @@ module MongoMapper
         end
 
         def destroy
-          _run_destroy_callbacks { super }
-        end        
+          run_callbacks(:destroy) { super }
+        end
 
       private
         def create_or_update(*)
-          _run_save_callbacks do
+          run_callbacks(:save) do
             super
           end
         end
 
         def create(*)
-          _run_create_callbacks { super }
+          run_callbacks(:create) { super }
         end
 
         def update(*)
-          _run_update_callbacks { super }
-        end        
+          run_callbacks(:update) { super }
+        end
       end
     end
   end
