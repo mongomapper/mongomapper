@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'bundler/setup'
 require 'rake'
 require 'rake/testtask'
 require File.expand_path('../lib/mongo_mapper/version', __FILE__)

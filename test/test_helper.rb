@@ -1,24 +1,17 @@
 require 'rubygems'
-gem 'activesupport',     ENV['ACTIVE_SUPPORT_VERSION']
-gem 'json'
-gem 'jnunemaker-matchy', '~> 0.4.0'
-gem 'shoulda',           '~> 2.11'
-gem 'timecop',           '~> 0.3.5'
-gem 'mocha',             '~> 0.9.8'
+require 'bundler/setup'
 
 $:.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
 require 'mongo_mapper'
 require 'fileutils'
 require 'ostruct'
 
-require 'active_support/version'
 require 'json'
 require 'log_buddy'
 require 'matchy'
 require 'shoulda'
 require 'timecop'
 require 'mocha'
-require 'ruby-debug'
 
 class Test::Unit::TestCase
   def Doc(name='Class', &block)
@@ -102,5 +95,3 @@ LogBuddy.init(:logger => logger)
 MongoMapper.connection = Mongo::Connection.new('127.0.0.1', 27017, :logger => logger)
 MongoMapper.database = "mm-test-#{RUBY_VERSION.gsub('.', '-')}"
 MongoMapper.database.collections.each { |c| c.drop_indexes }
-
-puts "\n--- Active Support Version: #{ActiveSupport::VERSION::STRING} ---\n"

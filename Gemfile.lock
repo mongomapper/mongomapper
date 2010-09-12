@@ -1,0 +1,49 @@
+PATH
+  remote: .
+  specs:
+    mongo_mapper (0.8.4)
+      activemodel (~> 3.0.0)
+      activesupport (~> 3.0.0)
+      plucky (~> 0.3.5)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    activemodel (3.0.0)
+      activesupport (= 3.0.0)
+      builder (~> 2.1.2)
+      i18n (~> 0.4.1)
+    activesupport (3.0.0)
+    bson (1.0.7)
+    builder (2.1.2)
+    i18n (0.4.1)
+    jnunemaker-matchy (0.4.0)
+    json (1.4.6)
+    log_buddy (0.5.0)
+    mocha (0.9.8)
+      rake
+    mongo (1.0.8)
+      bson (>= 1.0.5)
+    plucky (0.3.5)
+      mongo (~> 1.0.8)
+    rake (0.8.7)
+    shoulda (2.11.3)
+    timecop (0.3.5)
+    tzinfo (0.3.23)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  activemodel (~> 3.0.0)
+  activesupport (~> 3.0.0)
+  jnunemaker-matchy (~> 0.4.0)
+  json
+  log_buddy
+  mocha (~> 0.9.8)
+  mongo_mapper!
+  plucky (~> 0.3.5)
+  rake
+  shoulda (~> 2.11)
+  timecop (~> 0.3.1)
+  tzinfo
