@@ -1,5 +1,4 @@
 # encoding: UTF-8
-# Make sure you have the correct versions of the gems (see gemspec) in your load path.
 require 'plucky'
 require 'active_support/all'
 require 'active_model'
