@@ -2,6 +2,7 @@
 require 'plucky'
 require 'active_support/all'
 require 'active_model'
+require "mongo_mapper/railtie" if defined?(Rails)
 
 module MongoMapper
   autoload :Connection,             'mongo_mapper/connection'
@@ -77,3 +78,5 @@ require 'mongo_mapper/support/descendant_appends'
 
 # FIXME: autoload with proxy is failing, need to investigate
 require 'mongo_mapper/plugins/associations/proxy'
+
+ActiveSupport.run_load_hooks(:mongo_mapper, MongoMapper)
