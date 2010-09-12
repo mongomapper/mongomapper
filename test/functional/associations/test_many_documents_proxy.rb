@@ -1,4 +1,4 @@
-require 'test_helper'
+require 'test_helper.rb'
 require 'models'
 
 class ManyDocumentsProxyTest < Test::Unit::TestCase
@@ -145,6 +145,18 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       project.save!
       status.should_not be_new
     end
+
+    should "not save the parent when building associations" do
+      project = Project.new
+      status = project.statuses.build(:name => 'Foo')
+      project.should be_new
+    end
+
+    should "not save the built object" do
+      project = Project.new
+      status = project.statuses.build(:name => 'Foo')
+      status.should be_new
+    end
   end
 
   context "create" do
@@ -232,6 +244,24 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
     end
   end
 
+  context "to_json" do
+    should "work on association" do
+      project = Project.create
+      3.times { |i| project.statuses.create(:name => i.to_s) }
+      
+      JSON.parse(project.statuses.to_json).collect{|status| status["name"] }.sort.should == ["0","1","2"]
+    end
+  end
+
+  context "as_json" do
+    should "work on association" do
+      project = Project.create
+      3.times { |i| project.statuses.create(:name => i.to_s) }
+      
+      project.statuses.as_json.collect{|status| status["name"] }.sort.should == ["0","1","2"]
+    end
+  end
+
   context "Unassociating documents" do
     setup do
       @project = Project.create
@@ -305,6 +335,16 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       @another_complete  = Status.create(:name => 'Complete')
       @project2.statuses = [@in_progress, @archived, @another_complete]
       @project2.save
+    end
+
+    context "include?" do
+      should "return true if in association" do
+        @project1.statuses.should include(@brand_new)
+      end
+
+      should "return false if not in association" do
+        @project1.statuses.should_not include(@in_progress)
+      end
     end
 
     context "dynamic finders" do

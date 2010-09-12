@@ -204,7 +204,7 @@ class SupportTest < Test::Unit::TestCase
     end
 
     should "return value if object id" do
-      id = BSON::ObjectID.new
+      id = BSON::ObjectId.new
       ObjectId.to_mongo(id).should be(id)
     end
 
@@ -221,7 +221,7 @@ class SupportTest < Test::Unit::TestCase
       Object.from_mongo('21').should == '21'
       Object.from_mongo(9223372036854775807).should == 9223372036854775807
 
-      id = BSON::ObjectID.new
+      id = BSON::ObjectId.new
       ObjectId.from_mongo(id).should == id
     end
   end
@@ -353,28 +353,28 @@ class SupportTest < Test::Unit::TestCase
     end
   end
 
-  context "BSON::ObjectID" do
+  context "BSON::ObjectId" do
     context "#as_json" do
       should "convert object id to string" do
-        id = BSON::ObjectID.new
+        id = BSON::ObjectId.new
         id.as_json.should == id.to_s
       end
     end
 
     context "#to_json" do
       should "convert object id to string" do
-        id = BSON::ObjectID.new
+        id = BSON::ObjectId.new
         id.to_json.should == %Q("#{id}")
       end
 
       should "support ruby driver syntax also" do
-        id = BSON::ObjectID.new
+        id = BSON::ObjectId.new
         id.original_to_json.should == %Q({"$oid": "#{id}"})
       end
     end
   end
 
-  context "BSON::ObjectID.to_json" do
+  context "BSON::ObjectId.to_json" do
 
   end
 end

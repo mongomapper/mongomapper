@@ -33,7 +33,7 @@ class CachingTest < Test::Unit::TestCase
 
     context "not new" do
       setup do
-        @object_id = BSON::ObjectID.new
+        @object_id = BSON::ObjectId.new
         @doc = @klass.new
         @doc.stubs(:new?).returns(false)
         @doc.stubs(:id).returns(@object_id)

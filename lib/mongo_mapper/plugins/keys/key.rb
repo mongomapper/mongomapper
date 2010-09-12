@@ -21,6 +21,10 @@ module MongoMapper
           type.embeddable?
         end
 
+        def can_default_id?
+          type && [ObjectId, BSON::ObjectId, String].include?(type)
+        end
+
         def number?
           [Integer, Float].include?(type)
         end

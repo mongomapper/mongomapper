@@ -1,19 +1,19 @@
 require 'rubygems'
 gem 'activesupport',     ENV['ACTIVE_SUPPORT_VERSION']
-gem 'json',              '~> 1.2.3'
+gem 'json'
 gem 'jnunemaker-matchy', '~> 0.4.0'
-gem 'shoulda',           '~> 2.10.2'
-gem 'timecop',           '~> 0.3.1'
+gem 'shoulda',           '~> 2.11'
+gem 'timecop',           '~> 0.3.5'
 gem 'mocha',             '~> 0.9.8'
 
 $:.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
 require 'mongo_mapper'
 require 'fileutils'
 require 'ostruct'
-require 'pp'
 
 require 'active_support/version'
 require 'json'
+require 'log_buddy'
 require 'matchy'
 require 'shoulda'
 require 'timecop'
@@ -98,6 +98,7 @@ log_dir = File.expand_path('../../log', __FILE__)
 FileUtils.mkdir_p(log_dir) unless File.exist?(log_dir)
 logger = Logger.new(log_dir + '/test.log')
 
+LogBuddy.init(:logger => logger)
 MongoMapper.connection = Mongo::Connection.new('127.0.0.1', 27017, :logger => logger)
 MongoMapper.database = "mm-test-#{RUBY_VERSION.gsub('.', '-')}"
 MongoMapper.database.collections.each { |c| c.drop_indexes }

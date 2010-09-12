@@ -26,6 +26,9 @@ class JsonSerializationTest < Test::Unit::TestCase
   end
 
   def setup
+    Kernel.const_set('TopLevelContact', Doc('TopLevelContact'))
+    TopLevelContact.key :name, String
+
     Contact.include_root_in_json = false
     @contact = Contact.new(
       :name        => 'Konata Izumi',
@@ -34,6 +37,18 @@ class JsonSerializationTest < Test::Unit::TestCase
       :awesome     => true,
       :preferences => { :shows => 'anime' }
     )
+    @top_level_contact = TopLevelContact.new(
+      :name        => 'Konata Izumi'
+    )
+  end
+
+  def teardown
+    Kernel.send(:remove_const, 'TopLevelContact') if Object.const_defined?('TopLevelContact')
+  end
+
+  should "include root for class with no module" do
+    TopLevelContact.include_root_in_json = true
+    assert_match %r{^\{"top_level_contact":\s?\{}, convert_to_json(@top_level_contact)
   end
 
   should "include demodulized root" do

@@ -52,7 +52,7 @@ module MongoMapper
               hash[key] = value.map do |item|
                 item.respond_to?(:as_json) ? item.as_json(options) : item
               end
-            elsif value.is_a? BSON::ObjectID
+            elsif value.is_a? BSON::ObjectId
               hash[key] = value.to_s
             elsif value.respond_to?(:as_json)
               hash[key] = value.as_json(options)
@@ -60,7 +60,7 @@ module MongoMapper
           end
 
           # Replicate Rails 3 naming - and also bin anytihng after : for use in our dynamic classes from unit tests
-          hash = { ActiveSupport::Inflector.underscore(ActiveSupport::Inflector.demodulize(self)).gsub(/:.*/,'') => hash } if include_root_in_json
+          hash = { ActiveSupport::Inflector.underscore(ActiveSupport::Inflector.demodulize(self.class.name)).gsub(/:.*/,'') => hash } if include_root_in_json
           hash
         end
       end

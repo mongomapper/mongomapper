@@ -12,15 +12,16 @@ Gem::Specification.new do |s|
   s.executables        = ['mmconsole']
   s.version            = MongoMapper::Version
   s.platform           = Gem::Platform::RUBY
-  s.files              = Dir.glob("{bin,examples,lib,test}/**/*") + %w[LICENSE README.rdoc]
+  s.files              = Dir.glob("{bin,examples,lib,rails,test}/**/*") + %w[LICENSE UPGRADES README.rdoc]
 
   s.add_dependency 'activemodel',             '~> 3.0.0'
   s.add_dependency 'activesupport',           '~> 3.0.0'
-  s.add_dependency 'plucky',                  '~> 0.3.1'
+  s.add_dependency 'plucky',                  '~> 0.3.5'
 
-  s.add_development_dependency 'json',              '~> 1.2.3'
+  s.add_development_dependency 'json'
+  s.add_development_dependency 'log_buddy'
   s.add_development_dependency 'jnunemaker-matchy', '~> 0.4.0'
-  s.add_development_dependency 'shoulda',           '~> 2.10.2'
+  s.add_development_dependency 'shoulda',           '~> 2.11'
   s.add_development_dependency 'timecop',           '~> 0.3.1'
   s.add_development_dependency 'mocha',             '~> 0.9.8'
 end

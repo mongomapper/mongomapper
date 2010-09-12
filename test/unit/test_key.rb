@@ -96,7 +96,7 @@ class KeyTest < Test::Unit::TestCase
     subject { @key }
 
     should "cast each element correctly" do
-      ids = [BSON::ObjectID.new, BSON::ObjectID.new, BSON::ObjectID.new.to_s, BSON::ObjectID.new.to_s]
+      ids = [BSON::ObjectId.new, BSON::ObjectId.new, BSON::ObjectId.new.to_s, BSON::ObjectId.new.to_s]
       subject.set(ids).should == ids.map { |id| ObjectId.to_mongo(id) }
     end
   end
@@ -106,7 +106,7 @@ class KeyTest < Test::Unit::TestCase
     subject { @key }
 
     should "cast each element correctly" do
-      ids = [BSON::ObjectID.new, BSON::ObjectID.new, BSON::ObjectID.new.to_s, BSON::ObjectID.new.to_s]
+      ids = [BSON::ObjectId.new, BSON::ObjectId.new, BSON::ObjectId.new.to_s, BSON::ObjectId.new.to_s]
       subject.set(ids).should == ids.map { |id| ObjectId.to_mongo(id) }
     end
   end

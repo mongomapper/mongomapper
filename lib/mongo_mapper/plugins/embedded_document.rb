@@ -4,7 +4,7 @@ module MongoMapper
     module EmbeddedDocument
       def self.configure(model)
         model.class_eval do
-          attr_reader :_root_document, :_parent_document
+          attr_accessor :_parent_document
         end
       end
 
@@ -39,9 +39,8 @@ module MongoMapper
           end
         end
 
-        def _parent_document=(value)
-          @_root_document   = value._root_document
-          @_parent_document = value
+        def _root_document
+          @_root_document ||= _parent_document.try(:_root_document)
         end
       end
     end

@@ -25,6 +25,23 @@ module MongoMapper
           reset
         end
 
+        # Active support in rails 3 beta 4 can override to_json after this is loaded,
+        # at least when run in mongomapper tests. The implementation was changed in master 
+        # some time after this, so not sure whether this is still a problem.
+        #
+        # In rails 2, this isn't a problem however it also solves an issue where
+        # to_json isn't forwarded because it supports to_json itself
+        def to_json(*options)
+          load_target
+          target.to_json(*options)
+        end
+
+        # see comments to to_json
+        def as_json(*options)
+          load_target
+          target.as_json(*options)
+        end
+        
         def inspect
           load_target
           target.inspect

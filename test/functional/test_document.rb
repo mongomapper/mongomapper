@@ -230,7 +230,7 @@ class DocumentTest < Test::Unit::TestCase
 
   context "database has keys not defined in model" do
     setup do
-      @id = BSON::ObjectID.new
+      @id = BSON::ObjectId.new
       @document.collection.insert({
         :_id            => @id,
         :first_name     => 'John',

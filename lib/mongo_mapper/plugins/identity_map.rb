@@ -41,7 +41,7 @@ module MongoMapper
           def find_one(opts={})
             query = clone.update(opts)
 
-            if query.simple? && model.identity_map[query[:_id]]
+            if model.identity_map_on? && query.simple? && model.identity_map[query[:_id]]
               model.identity_map[query[:_id]]
             else
               super.tap do |doc|

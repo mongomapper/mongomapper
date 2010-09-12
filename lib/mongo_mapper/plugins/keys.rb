@@ -44,6 +44,11 @@ module MongoMapper
           object_id_keys.include?(name.to_sym)
         end
 
+        # API Private
+        def can_default_id?
+          keys['_id'].can_default_id?
+        end
+
         def to_mongo(instance)
           return nil if instance.nil?
           instance.to_mongo
@@ -58,11 +63,10 @@ module MongoMapper
         def load(attrs)
           return nil if attrs.nil?
           begin
-            klass = attrs['_type'].present? ? attrs['_type'].constantize : self
-            klass.new(attrs, true)
+            attrs['_type'].present? ? attrs['_type'].constantize : self
           rescue NameError
-            new(attrs, true)
-          end
+            self
+          end.allocate.initialize_from_database(attrs)
         end
 
         private
@@ -155,16 +159,16 @@ module MongoMapper
       end
 
       module InstanceMethods
-        def initialize(attrs={}, from_database=false)
+        def initialize(attrs={})
           default_id_value(attrs)
+          @_new = true
+          assign(attrs)
+        end
 
-          if from_database
-            @_new = false
-            load_from_database(attrs)
-          else
-            @_new = true
-            assign(attrs)
-          end
+        def initialize_from_database(attrs={})
+          @_new = false
+          load_from_database(attrs)
+          self
         end
 
         def persisted?
@@ -272,9 +276,9 @@ module MongoMapper
 
           def default_id_value(attrs)
             unless attrs.nil?
-              provided_keys = attrs.keys.map { |k| k.to_s }
-              unless provided_keys.include?('_id') || provided_keys.include?('id')
-                write_key :_id, BSON::ObjectID.new
+              id_provided = attrs.keys.map { |k| k.to_s }.detect { |k| k == 'id' || k == '_id' }
+              if !id_provided && self.class.can_default_id?
+                write_key :_id, BSON::ObjectId.new
               end
             end
           end

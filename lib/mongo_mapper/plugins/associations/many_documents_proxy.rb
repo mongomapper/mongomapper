@@ -96,7 +96,6 @@ module MongoMapper
           end
 
           def apply_scope(doc)
-            ensure_owner_saved
             criteria.each { |key, value| doc[key] = value }
             doc
           end

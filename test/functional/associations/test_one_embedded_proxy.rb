@@ -54,6 +54,20 @@ class OneEmbeddedProxyTest < Test::Unit::TestCase
     }.should_not raise_error
   end
 
+  should "load the parent and root documents for nested embedded documents" do
+    @address_class = EDoc('Address') do
+      key :city, String
+      key :state, String
+    end
+    @author_class.one :address, :class => @address_class
+    @post_class.one :author, :class => @author_class
+
+    post = @post_class.create(:title => 'Post Title', :author => { :name => 'Frank', :address => { :city => 'Boston', :state => 'MA' } })
+
+    post.author.address._parent_document.should == post.author
+    post.author.address._root_document.should == post
+  end
+
   should "have boolean method for testing presence" do
     @post_class.one :author, :class => @author_class
 

@@ -31,7 +31,7 @@ class CloneTest < Test::Unit::TestCase
       end
 
       should "clone many embedded documents" do
-        @doc.clone.widgets.should_not equal(@doc.widgets)
+        @doc.clone.widgets.object_id.should_not equal(@doc.widgets.object_id)
       end
 
       should "not be destroyed" do
