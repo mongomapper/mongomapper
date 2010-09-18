@@ -6,8 +6,9 @@ class AccessibleTest < Test::Unit::TestCase
       @doc_class = Doc do
         key :name, String
         key :admin, Boolean, :default => false
+				key :some_date, Date
 
-        attr_accessible :name
+        attr_accessible :name, :some_date
       end
 
       @doc = @doc_class.create(:name => 'Steve Sloan')
@@ -78,6 +79,11 @@ class AccessibleTest < Test::Unit::TestCase
 
     should "accept nil as constructor's argument without raising exception" do
       lambda { @doc_class.new(nil) }.should_not raise_error
+    end
+
+    should "accept multi-parameter assignments of accessible attributes" do
+      @doc.update_attributes!("some_date(1i)" => "2000")
+      assert_not_nil? @doc.some_date
     end
   end
 

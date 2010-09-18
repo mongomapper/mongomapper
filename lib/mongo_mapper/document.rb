@@ -34,6 +34,7 @@ module MongoMapper
         plugin Plugins::Userstamps
         plugin Plugins::Validations
         plugin Plugins::Callbacks # for now callbacks needs to be after validations
+        plugin Plugins::MultiParameter
       end
       super
     end

@@ -30,14 +30,6 @@ module MongoMapper
           super(filter_protected_attrs(attrs))
         end
 
-        def update_attributes(attrs={})
-          super(filter_protected_attrs(attrs))
-        end
-
-        def update_attributes!(attrs={})
-          super(filter_protected_attrs(attrs))
-        end
-
         def protected_attributes
           self.class.protected_attributes
         end
@@ -45,7 +37,9 @@ module MongoMapper
         protected
           def filter_protected_attrs(attrs)
             return attrs if protected_attributes.blank? || attrs.blank?
-            attrs.dup.delete_if { |key, val| protected_attributes.include?(key.to_sym) }
+            attrs.dup.delete_if do |key, val| 
+              protected_attributes.include?(key.to_s.split("(").first.to_sym)
+            end
           end
       end
     end

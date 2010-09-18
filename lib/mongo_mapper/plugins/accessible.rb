@@ -21,14 +21,6 @@ module MongoMapper
           super(filter_inaccessible_attrs(attrs))
         end
 
-        def update_attributes(attrs={})
-          super(filter_inaccessible_attrs(attrs))
-        end
-
-        def update_attributes!(attrs={})
-          super(filter_inaccessible_attrs(attrs))
-        end
-
         def accessible_attributes
           self.class.accessible_attributes
         end
@@ -36,7 +28,9 @@ module MongoMapper
         protected
           def filter_inaccessible_attrs(attrs)
             return attrs if accessible_attributes.blank? || attrs.blank?
-            attrs.dup.delete_if { |key, val| !accessible_attributes.include?(key.to_sym) }
+            attrs.dup.delete_if do |key, val| 
+              !accessible_attributes.include?(key.to_s.split("(").first.to_sym)
+            end
           end
       end
     end
