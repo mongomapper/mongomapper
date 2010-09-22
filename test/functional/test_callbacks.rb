@@ -128,16 +128,17 @@ class CallbacksTest < Test::Unit::TestCase
       @child_class.many :children, :class => @grand_child_class
     end
 
-    should_eventually "get the order right based on root document creation" do
+    should "get the order right based on root document creation" do
       grand = @grand_child_class.new(:name => 'Grand Child')
       child = @child_class.new(:name => 'Child', :children => [grand])
       root  = @root_class.create(:name => 'Parent', :children => [child])
 
-      child.history.should == CreateCallbackOrder
-      grand.history.should == CreateCallbackOrder
+
+      root.children.first.history.should == CreateCallbackOrder
+      root.children.first.children.first.history.should == CreateCallbackOrder
     end
 
-    should_eventually "get the order right based on root document updating" do
+    should "get the order right based on root document updating" do
       grand = @grand_child_class.new(:name => 'Grand Child')
       child = @child_class.new(:name => 'Child', :children => [grand])
       root  = @root_class.create(:name => 'Parent', :children => [child])
@@ -151,7 +152,7 @@ class CallbacksTest < Test::Unit::TestCase
       grand.history.should == UpdateCallbackOrder
     end
 
-    should_eventually "work for before and after destroy" do
+    should "work for before and after destroy" do
       grand = @grand_child_class.new(:name => 'Grand Child')
       child = @child_class.new(:name => 'Child', :children => [grand])
       root  = @root_class.create(:name => 'Parent', :children => [child])

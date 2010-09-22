@@ -69,11 +69,7 @@ module MongoMapper
         end
 
         def embedded_associations
-          associations.select do |name, association|
-            association.embeddable?
-          end.map do |name, association|
-            association
-          end
+          associations.values.select(&:embeddable?)
         end
 
         def get_proxy(association)
