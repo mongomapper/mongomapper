@@ -33,3 +33,9 @@ module MongoMapper
     end
   end
 end
+
+ActiveModel::Validations::Callbacks.class_eval do
+  def run_validations!
+    run_callbacks(:validation) { super }
+  end
+end
