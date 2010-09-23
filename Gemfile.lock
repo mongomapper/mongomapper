@@ -14,7 +14,7 @@ GEM
       builder (~> 2.1.2)
       i18n (~> 0.4.1)
     activesupport (3.0.0)
-    bson (1.0.7)
+    bson (1.0.9)
     bson_ext (1.0.9)
     builder (2.1.2)
     i18n (0.4.1)
@@ -23,7 +23,7 @@ GEM
     log_buddy (0.5.0)
     mocha (0.9.8)
       rake
-    mongo (1.0.8)
+    mongo (1.0.9)
       bson (>= 1.0.5)
     plucky (0.3.5)
       mongo (~> 1.0.8)
@@ -43,6 +43,7 @@ DEPENDENCIES
   json
   log_buddy
   mocha (~> 0.9.8)
+  mongo (~> 1.0.9)
   mongo_mapper!
   plucky (~> 0.3.5)
   rake
