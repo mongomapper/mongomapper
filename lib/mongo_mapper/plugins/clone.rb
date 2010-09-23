@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Clone
+      extend ActiveSupport::Concern
+
       module InstanceMethods
         def initialize_copy(other)
           @_new       = true

@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Scopes
+      extend ActiveSupport::Concern
+
       module ClassMethods
         def scope(name, scope_options={})
           scopes[name] = lambda do |*args|

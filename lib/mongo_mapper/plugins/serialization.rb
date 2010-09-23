@@ -4,8 +4,10 @@ require 'active_support/json'
 module MongoMapper
   module Plugins
     module Serialization
-      def self.configure(model)
-        model.class_eval { cattr_accessor :include_root_in_json, :instance_writer => true }
+      extend ActiveSupport::Concern
+
+      included do
+        cattr_accessor :include_root_in_json, :instance_writer => true
       end
 
       module InstanceMethods

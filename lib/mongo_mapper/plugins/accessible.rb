@@ -1,6 +1,8 @@
 module MongoMapper
   module Plugins
     module Accessible
+      extend ActiveSupport::Concern
+
       module ClassMethods
         def attr_accessible(*attrs)
           raise AccessibleOrProtected.new(name) if try(:protected_attributes?)

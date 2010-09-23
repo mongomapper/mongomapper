@@ -2,10 +2,10 @@
 module MongoMapper
   module Plugins
     module EmbeddedDocument
-      def self.configure(model)
-        model.class_eval do
-          attr_accessor :_parent_document
-        end
+      extend ActiveSupport::Concern
+
+      included do
+        attr_accessor :_parent_document
       end
 
       module ClassMethods

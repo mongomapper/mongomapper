@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Dirty
+      extend ActiveSupport::Concern
+
       module InstanceMethods
         def method_missing(method, *args, &block)
           if method.to_s =~ /(_changed\?|_change|_will_change!|_was)$/

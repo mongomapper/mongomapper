@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Caching
+      extend ActiveSupport::Concern
+
       module InstanceMethods
         def cache_key(*suffixes)
           cache_key = case

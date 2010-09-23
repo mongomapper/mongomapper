@@ -2,8 +2,6 @@ require 'test_helper'
 require 'models'
 
 class KeyTest < Test::Unit::TestCase
-  include MongoMapper::Plugins::Keys
-
   context ".new with no id and _id of type integer" do
     should "not error" do
       lambda {

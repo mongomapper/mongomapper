@@ -2,10 +2,10 @@
 module MongoMapper
   module Plugins
     module Validations
-      def self.configure(model)
-        model.class_eval do
-          include ::ActiveModel::Validations
-        end
+      extend ActiveSupport::Concern
+
+      included do
+        include ::ActiveModel::Validations
       end
 
       module ClassMethods
