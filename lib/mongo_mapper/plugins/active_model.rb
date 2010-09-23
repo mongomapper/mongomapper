@@ -4,14 +4,14 @@ module MongoMapper
     module ActiveModel
       extend ActiveSupport::Concern
 
-      included do
-        include ::ActiveModel::Naming
-        include ::ActiveModel::Conversion
-        include ::ActiveModel::Serialization
-        include ::ActiveModel::Serializers::Xml
-        include ::ActiveModel::Serializers::JSON
-        include ::ActiveSupport::DescendantsTracker
+      include ::ActiveModel::Naming
+      include ::ActiveModel::Conversion
+      include ::ActiveModel::Serialization
+      include ::ActiveModel::Serializers::Xml
+      include ::ActiveModel::Serializers::JSON
+      include ::ActiveSupport::DescendantsTracker
 
+      included do
         extend ::ActiveModel::Translation
       end
     end
