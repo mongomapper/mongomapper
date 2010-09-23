@@ -8,7 +8,6 @@ namespace :test do
   Rake::TestTask.new(:all) do |test|
     test.libs      << 'lib' << 'test'
     test.pattern   = 'test/{functional,unit}/**/test_*.rb'
-    test.verbose   = true
   end
 
   desc "Run active model lint test"
