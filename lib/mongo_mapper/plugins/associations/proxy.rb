@@ -26,7 +26,7 @@ module MongoMapper
         end
 
         # Active support in rails 3 beta 4 can override to_json after this is loaded,
-        # at least when run in mongomapper tests. The implementation was changed in master 
+        # at least when run in mongomapper tests. The implementation was changed in master
         # some time after this, so not sure whether this is still a problem.
         #
         # In rails 2, this isn't a problem however it also solves an issue where
@@ -41,7 +41,7 @@ module MongoMapper
           load_target
           target.as_json(*options)
         end
-        
+
         def inspect
           load_target
           target.inspect
@@ -106,11 +106,7 @@ module MongoMapper
         protected
           def method_missing(method, *args, &block)
             if load_target
-              if block_given?
-                target.send(method, *args)  { |*block_args| block.call(*block_args) }
-              else
-                target.send(method, *args)
-              end
+              target.send(method, *args, &block)
             end
           end
 
