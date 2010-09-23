@@ -33,8 +33,8 @@ module MongoMapper
         plugin Plugins::Timestamps
         plugin Plugins::Userstamps
         plugin Plugins::Validations
-        plugin Plugins::Callbacks # for now callbacks needs to be after validations
         plugin Plugins::EmbeddedCallbacks
+        plugin Plugins::Callbacks # for now callbacks needs to be after validations
       end
       super
     end

@@ -2,16 +2,6 @@
 module MongoMapper
   module Plugins
     module Callbacks
-      def self.configure(model)
-        model.class_eval do
-          extend  ::ActiveModel::Callbacks
-          include ::ActiveModel::Validations::Callbacks
-
-          define_model_callbacks :validation, :save, :create, :update, :destroy, :only => [ :before, :after ]
-          define_model_callbacks :initialize, :find, :only => :after
-        end
-      end
-
       module InstanceMethods
         def initialize(attrs = {})
           super.tap { run_callbacks(:initialize) }

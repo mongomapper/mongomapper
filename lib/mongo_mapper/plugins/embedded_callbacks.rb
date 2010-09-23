@@ -2,6 +2,16 @@
 module MongoMapper
   module Plugins
     module EmbeddedCallbacks
+      def self.configure(model)
+        model.class_eval do
+          extend  ::ActiveModel::Callbacks
+          include ::ActiveModel::Validations::Callbacks
+
+          define_model_callbacks :validation, :save, :create, :update, :destroy, :only => [ :before, :after ]
+          define_model_callbacks :initialize, :find, :only => :after
+        end
+      end
+
       module InstanceMethods
         def run_callbacks(callback, &block)
           embedded_docs = []

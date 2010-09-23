@@ -23,7 +23,7 @@ module MongoMapper
         plugin Plugins::Sci
         plugin Plugins::Serialization
         plugin Plugins::Validations
-        plugin Plugins::Callbacks
+        plugin Plugins::EmbeddedCallbacks
       end
       super
     end
