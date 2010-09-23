@@ -17,7 +17,7 @@ module MongoMapper
           embedded_docs = []
 
           embedded_associations.each do |association|
-            embedded_docs += Array(get_proxy(association).target)
+            embedded_docs += Array(get_proxy(association).send(:load_target))
           end
 
           chain = embedded_docs.inject(block) do |block, doc|
