@@ -15,6 +15,7 @@ GEM
       i18n (~> 0.4.1)
     activesupport (3.0.0)
     bson (1.0.7)
+    bson_ext (1.0.9)
     builder (2.1.2)
     i18n (0.4.1)
     jnunemaker-matchy (0.4.0)
@@ -37,6 +38,7 @@ PLATFORMS
 DEPENDENCIES
   activemodel (~> 3.0.0)
   activesupport (~> 3.0.0)
+  bson_ext
   jnunemaker-matchy (~> 0.4.0)
   json
   log_buddy
