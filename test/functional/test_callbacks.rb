@@ -133,7 +133,6 @@ class CallbacksTest < Test::Unit::TestCase
       child = @child_class.new(:name => 'Child', :children => [grand])
       root  = @root_class.create(:name => 'Parent', :children => [child])
 
-
       root.children.first.history.should == CreateCallbackOrder
       root.children.first.children.first.history.should == CreateCallbackOrder
     end
@@ -145,11 +144,8 @@ class CallbacksTest < Test::Unit::TestCase
       root.clear_history
       root.update_attributes(:name => 'Updated Parent')
 
-      child = root.children.first
-      child.history.should == UpdateCallbackOrder
-
-      grand = root.children.first.children.first
-      grand.history.should == UpdateCallbackOrder
+      root.children.first.history.should == UpdateCallbackOrder
+      root.children.first.children.first.history.should == UpdateCallbackOrder
     end
 
     should "work for before and after destroy" do

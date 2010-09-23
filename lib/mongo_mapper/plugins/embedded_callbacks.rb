@@ -11,7 +11,11 @@ module MongoMapper
           end
 
           chain = embedded_docs.inject(block) do |block, doc|
-            lambda { doc.run_callbacks(callback, &block) }
+            if doc.class.respond_to?("_#{callback}_callbacks")
+              lambda { doc.run_callbacks(callback, &block) }
+            else
+              block
+            end
           end
           super callback, &chain
         end

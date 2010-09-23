@@ -39,9 +39,7 @@ module MongoMapper
 
       private
         def create_or_update(*)
-          run_callbacks(:save) do
-            super
-          end
+          run_callbacks(:save) { super }
         end
 
         def create(*)
