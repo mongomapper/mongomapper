@@ -2,30 +2,28 @@
 module MongoMapper
   module EmbeddedDocument
     extend Support::DescendantAppends
+    extend ActiveSupport::Concern
 
-    def self.included(model)
-      model.class_eval do
-        extend Plugins
+    include Plugins::ActiveModel
+    include Plugins::EmbeddedDocument
+    include Plugins::Associations
+    include Plugins::Caching
+    include Plugins::Clone
+    include Plugins::Equality
+    include Plugins::Inspect
+    include Plugins::Keys
+    include Plugins::Logger
+    include Plugins::Persistence
+    include Plugins::Accessible
+    include Plugins::Protected
+    include Plugins::Rails
+    include Plugins::Sci
+    include Plugins::Serialization
+    include Plugins::Validations
+    include Plugins::EmbeddedCallbacks
 
-        plugin Plugins::ActiveModel
-        plugin Plugins::EmbeddedDocument
-        plugin Plugins::Associations
-        plugin Plugins::Caching
-        plugin Plugins::Clone
-        plugin Plugins::Equality
-        plugin Plugins::Inspect
-        plugin Plugins::Keys
-        plugin Plugins::Logger
-        plugin Plugins::Persistence
-        plugin Plugins::Accessible
-        plugin Plugins::Protected
-        plugin Plugins::Rails
-        plugin Plugins::Sci
-        plugin Plugins::Serialization
-        plugin Plugins::Validations
-        plugin Plugins::EmbeddedCallbacks
-      end
-      super
+    included do
+      extend Plugins
     end
   end
 end
