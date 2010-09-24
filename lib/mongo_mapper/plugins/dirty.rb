@@ -15,43 +15,31 @@ module MongoMapper
         end
 
         def initialize_from_database(*)
-          super.tap { clear_changes }
+          super.tap { changed_attributes.clear }
         end
 
         def save(*)
-          if status = super
-            clear_changes
-          end
-          status
+          super.tap { changed_attributes.clear }
         end
 
         def save!(*)
-          status = super
-          clear_changes
-          status
+          super.tap { changed_attributes.clear }
         end
 
         def reload(*)
-          document = super
-          clear_changes
-          document
+          super.tap { changed_attributes.clear }
         end
 
-        protected
+      protected
 
         def attribute_method?(attr)
-          #This overrides ::ActiveSupport::Dirty#attribute_method? to allow attributes to be any key
-          #in the attributes hash ( default ) or any key defined on the model that may not yet have
-          #had a value stored in the attributes collection.
+          # This overrides ::ActiveSupport::Dirty#attribute_method? to allow attributes to be any key
+          # in the attributes hash ( default ) or any key defined on the model that may not yet have
+          # had a value stored in the attributes collection.
           super || key_names.include?(attr)
         end
 
-        private
-
-        def clear_changes
-          @previously_changed = changes
-          changed_attributes.clear
-        end
+      private
 
         def write_key(key, value)
           key = key.to_s
