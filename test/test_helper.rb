@@ -15,7 +15,8 @@ require 'mocha'
 
 class Test::Unit::TestCase
   def Doc(name='Class', &block)
-    klass = Class.new do
+    klass = Class.new
+    klass.class_eval do
       include MongoMapper::Document
       set_collection_name :test
 

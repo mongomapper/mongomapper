@@ -34,6 +34,9 @@ module MongoMapper
   end
 end
 
+# Need to monkey patch ActiveModel for now since it uses the internal
+# _run_validation_callbacks, which is impossible to override due to the
+# way ActiveSupport::Callbacks is implemented.
 ActiveModel::Validations::Callbacks.class_eval do
   def run_validations!
     run_callbacks(:validation) { super }

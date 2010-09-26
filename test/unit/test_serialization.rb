@@ -19,7 +19,7 @@ class SerializationTest < Test::Unit::TestCase
     )
   end
 
-  [:json].each do |format|
+  [:json, :xml].each do |format|
     context format do
       should "be reversable" do
         serialized = @instance.send("to_#{format}")
