@@ -8,6 +8,12 @@ module MongoMapper
 
     config.mongo_mapper = ActiveSupport::OrderedOptions.new
 
+    config.generators.orm :mongo_mapper, :migration => false
+
+    rake_tasks do
+      load "mongo_mapper/tasks/database.rake"
+    end
+
     initializer "mongo_mapper.set_configs" do |app|
       ActiveSupport.on_load(:mongo_mapper) do
         app.config.mongo_mapper.each do |k,v|
