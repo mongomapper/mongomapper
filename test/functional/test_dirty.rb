@@ -160,4 +160,21 @@ class DirtyTest < Test::Unit::TestCase
       milestone.changed.should == %w(project_id)
     end
   end
+
+  context "save with an invalid document" do
+    should "not clear changes" do
+      validated_class = Doc do
+        key :name, String
+        key :required, String, :required=>true
+      end
+      validated_doc = validated_class.new
+      validated_doc.name = "I'm a changin"
+      validated_doc.save
+      validated_doc.changed?.should be_true
+
+      validated_doc.required = 1
+      validated_doc.save
+      validated_doc.changed?.should be_false
+    end
+  end
 end

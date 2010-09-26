@@ -19,7 +19,7 @@ module MongoMapper
         end
 
         def save(*)
-          super.tap { changed_attributes.clear }
+          super.tap { |saved| changed_attributes.clear if saved }
         end
 
         def save!(*)
