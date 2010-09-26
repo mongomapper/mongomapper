@@ -1,5 +1,6 @@
 # encoding: UTF-8
 require 'active_model/serializers/json'
+require 'active_model/serializers/xml'
 
 module MongoMapper
   module Plugins
@@ -7,6 +8,7 @@ module MongoMapper
       def self.configure(model)
         model.class_eval do
           include ::ActiveModel::Serializers::JSON
+          include ::ActiveModel::Serializers::Xml
           self.include_root_in_json = false
         end
       end
@@ -26,6 +28,10 @@ module MongoMapper
       module ClassMethods
         def from_json(json)
           self.new.from_json(json)
+        end
+
+        def from_xml(xml)
+          self.new.from_xml(xml)
         end
       end
 
