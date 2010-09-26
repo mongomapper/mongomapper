@@ -4,22 +4,9 @@ require 'rake'
 require 'rake/testtask'
 require File.expand_path('../lib/mongo_mapper/version', __FILE__)
 
-namespace :test do
-  Rake::TestTask.new(:all) do |test|
-    test.libs      << 'lib' << 'test'
-    test.pattern   = 'test/{functional,unit}/**/test_*.rb'
-  end
-
-  desc "Run active model lint test"
-  task :am_lint do
-    sh 'ruby -Itest -rubygems test/test_active_model_lint.rb'
-  end
-end
-
-desc 'Runs all tests and ActiveModel lint'
-task :test do
-  Rake::Task['test:all'].invoke
-  Rake::Task['test:am_lint'].invoke
+Rake::TestTask.new(:test) do |test|
+  test.libs      << 'lib' << 'test'
+  test.pattern   = 'test/**/test_*.rb'
 end
 
 task :default => :test
