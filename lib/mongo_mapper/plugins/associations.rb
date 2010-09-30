@@ -33,20 +33,22 @@ module MongoMapper
             association = Associations::Base.new(type, name, options, &extension)
             associations[association.name] = association
 
-            define_method(association.name) do
-              get_proxy(association)
-            end
-
-            define_method("#{association.name}=") do |value|
-              get_proxy(association).replace(value)
-              value
-            end
-
-            if association.one? || association.belongs_to?
-              define_method("#{association.name}?") do
-                get_proxy(association).present?
+            include(Module.new do
+              define_method(association.name) do
+                get_proxy(association)
               end
-            end
+
+              define_method("#{association.name}=") do |value|
+                get_proxy(association).replace(value)
+                value
+              end
+
+              if association.one? || association.belongs_to?
+                define_method("#{association.name}?") do
+                  get_proxy(association).present?
+                end
+              end
+            end)
 
             if association.options[:dependent] && association.many? && !association.embeddable?
               after_destroy do |doc|
