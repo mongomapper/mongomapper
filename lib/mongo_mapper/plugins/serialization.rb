@@ -14,14 +14,39 @@ module MongoMapper
       end
 
       module InstanceMethods
+        def serializable_attributes
+          attributes.keys.map(&:to_s) + ['id'] - ['_id']
+        end
+
         def serializable_hash(options = nil)
           options ||= {}
 
-          unless options[:only]
-            options[:methods] = Array(options[:methods]).map(&:to_sym) + [:id]
+          options[:only]   = Array.wrap(options[:only]).map(&:to_s)
+          options[:except] = Array.wrap(options[:except]).map(&:to_s)
+
+          attribute_names = serializable_attributes
+
+          if options[:only].any?
+            attribute_names &= options[:only]
+          elsif options[:except].any?
+            attribute_names -= options[:except]
           end
-          options[:except] = Array(options[:except]).map(&:to_sym) + [:_id]
-          super options
+
+          attribute_names += Array.wrap(options[:methods]).map(&:to_s).select do |method|
+            respond_to?(method)
+          end
+
+          attribute_names.sort.inject({}) do |hash, name|
+            value = send(name)
+            hash[name] = if value.is_a?(Array)
+              value.map {|v| v.respond_to?(:serializable_hash) ? v.serializable_hash : v }
+            elsif value.respond_to?(:serializable_hash)
+              value.serializable_hash
+            else
+              value
+            end
+            hash
+          end
         end
       end
 

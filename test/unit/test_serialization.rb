@@ -19,6 +19,48 @@ class SerializationTest < Test::Unit::TestCase
     )
   end
 
+  context "#serializable_hash" do
+    class List
+      include MongoMapper::Document
+      key :name
+      many :items, :class_name => 'SerializationTest::Item'
+    end
+
+    class Item
+      include MongoMapper::EmbeddedDocument
+
+      key :title
+      key :description
+
+      def serializable_hash(options = {})
+        super({:only => :title}.merge(options))
+      end
+    end
+
+    setup do
+      @list = List.new(:name => 'Awesome Things', :items => [
+        Item.new(:title => 'MongoMapper', :description => 'The best ODM evar!')
+      ])
+    end
+
+    should "call #serializable_hash on embedded many docs" do
+      @list.serializable_hash.should == {
+        'id'    => @list.id,
+        'name'  => 'Awesome Things',
+        'items' => [{'title' => 'MongoMapper'}]
+      }
+    end
+
+    should "call #serializable_hash on single embedded doc" do
+      @list.serializable_hash.should == {
+        'id'    => @list.id,
+        'name'  => 'Awesome Things',
+        'items' => [{'title' => 'MongoMapper'}]
+      }
+    end
+
+  end
+
   [:json, :xml].each do |format|
     context format do
       should "be reversable" do
