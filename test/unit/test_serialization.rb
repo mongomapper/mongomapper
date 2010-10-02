@@ -23,42 +23,115 @@ class SerializationTest < Test::Unit::TestCase
     class List
       include MongoMapper::Document
       key :name
-      many :items, :class_name => 'SerializationTest::Item'
+      many :items,          :class_name => 'SerializationTest::Item'
+      belongs_to :creator,  :class_name => 'SerializationTest::User'
     end
 
     class Item
-      include MongoMapper::EmbeddedDocument
+      include MongoMapper::Document
 
       key :title
       key :description
+      many :assignments, :class_name => 'SerializationTest::Assignment'
 
-      def serializable_hash(options = {})
-        super({:only => :title}.merge(options))
+      def a_method
+        1
       end
     end
 
+    class Assignment
+      include MongoMapper::EmbeddedDocument
+      belongs_to :assigned_by,  :class_name => 'SerializationTest::User'
+      belongs_to :user,         :class_name => 'SerializationTest::User'
+
+      def serializable_hash(options = {})
+        super({:only => :user_id}.merge(options))
+      end
+    end
+
+    class User
+      include MongoMapper::Document
+      key :name, String
+    end
+
     setup do
-      @list = List.new(:name => 'Awesome Things', :items => [
-        Item.new(:title => 'MongoMapper', :description => 'The best ODM evar!')
-      ])
+      @user1 = User.new(:name => 'Brandon')
+      @user2 = User.new(:name => 'John')
+      @item = Item.new(
+        :title => 'Serialization',
+        :description => 'Make it work like magic!',
+        :assignments => [
+          Assignment.new(:assigned_by => @user1, :user => @user2)
+        ]
+      )
+    end
+
+    should "only include specified attributes with :only option" do
+      @item.serializable_hash(:only => :title).should == {'title' => 'Serialization'}
+    end
+
+    should "exclude attributes specified with :except option" do
+      hash = @item.serializable_hash(:except => :description)
+      hash['title'].should_not be_nil
+      hash['description'].should be_nil
+    end
+
+    should "add :methods with :only option" do
+      @item.serializable_hash(:only => :title, :methods => :a_method).should == {
+        'title' => 'Serialization',
+        'a_method' => 1
+      }
     end
 
     should "call #serializable_hash on embedded many docs" do
-      @list.serializable_hash.should == {
-        'id'    => @list.id,
-        'name'  => 'Awesome Things',
-        'items' => [{'title' => 'MongoMapper'}]
+      @item.serializable_hash.should == {
+        'id'          => @item.id,
+        'title'       => 'Serialization',
+        'description' => 'Make it work like magic!',
+        'assignments' => [{'user_id' => @user2.id}]
       }
     end
 
-    should "call #serializable_hash on single embedded doc" do
-      @list.serializable_hash.should == {
-        'id'    => @list.id,
-        'name'  => 'Awesome Things',
-        'items' => [{'title' => 'MongoMapper'}]
-      }
-    end
+    context "with :include" do
+      setup do
+        @list = List.new(:title => 'MongoMapper', :items => [@item], :creator => @user1)
+      end
 
+      should "add many association" do
+        hash = @list.serializable_hash(:include => :items)
+        hash['items'].should be_instance_of(Array)
+        hash['items'].first['title'].should == 'Serialization'
+      end
+
+      should "add belongs_to association" do
+        hash = @list.serializable_hash(:include => :creator)
+        hash['creator'].should == @user1.serializable_hash
+      end
+
+      should "add one association" do
+        author_class = Doc do
+          key :post_id, ObjectId
+        end
+        post_class = Doc('Post') do
+          one :author, :class => author_class
+        end
+
+        author = author_class.new
+        hash = post_class.new(:author => author).serializable_hash(:include => :author)
+        hash['author'].should == author.serializable_hash
+      end
+
+      should "include multiple associations" do
+        hash = @list.serializable_hash(:include => [:items, :creator])
+        hash['items'].should be_instance_of(Array)
+        hash['creator'].should == @user1.serializable_hash
+      end
+
+      should "include multiple associations with options" do
+        hash = @list.serializable_hash(:include => {:creator => {:only => :name}})
+        hash['creator'].should == @user1.serializable_hash(:only => :name)
+      end
+    end
   end
 
   [:json, :xml].each do |format|

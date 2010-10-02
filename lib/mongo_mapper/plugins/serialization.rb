@@ -36,7 +36,7 @@ module MongoMapper
             respond_to?(method)
           end
 
-          attribute_names.sort.inject({}) do |hash, name|
+          hash = attribute_names.sort.inject({}) do |hash, name|
             value = send(name)
             hash[name] = if value.is_a?(Array)
               value.map {|v| v.respond_to?(:serializable_hash) ? v.serializable_hash : v }
@@ -47,7 +47,39 @@ module MongoMapper
             end
             hash
           end
+
+          serializable_add_includes(options) do |association, records, opts|
+            hash[association.to_s] = records.is_a?(Array) ?
+              records.map { |r| r.serializable_hash(opts) } :
+              records.serializable_hash(opts)
+          end
+
+          hash
         end
+
+      private
+
+        def serializable_add_includes(options = {})
+          return unless include_associations = options.delete(:include)
+
+          base_only_or_except = { :except => options[:except],
+                                  :only => options[:only] }
+
+          include_has_options = include_associations.is_a?(Hash)
+          associations = include_has_options ? include_associations.keys : Array.wrap(include_associations)
+
+          associations.each do |association|
+            records = get_proxy(self.class.associations[association])
+            unless records.nil?
+              association_options = include_has_options ? include_associations[association] : base_only_or_except
+              opts = options.merge(association_options)
+              yield(association, records, opts)
+            end
+          end
+
+          options[:include] = include_associations
+        end
+
       end
 
       module ClassMethods
