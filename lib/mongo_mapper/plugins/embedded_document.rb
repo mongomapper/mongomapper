@@ -29,14 +29,18 @@ module MongoMapper
 
         def save(options={})
           _root_document.try(:save, options).tap do |result|
-            @_new = false if result
+            persist if result
           end
         end
 
         def save!(options={})
           _root_document.try(:save, options).tap do |result|
-            @_new = false if result
+            persist if result
           end
+        end
+
+        def persist
+          @_new = false
         end
 
         def _root_document

@@ -66,7 +66,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @klass.key :foo, @address_class
     end
 
-    should "be true until document is saved" do
+    should "be true until document is created" do
       address = @address_class.new(:city => 'South Bend', :state => 'IN')
       doc = @klass.new(:foo => address)
       address.new?.should be_true
@@ -89,7 +89,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
   end
 
-  context "new? (embedded association)" do
+  context "new? (embedded many association)" do
     setup do
       @doc = @klass.new(:pets => [{:name => 'poo bear'}])
     end
@@ -110,7 +110,31 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       @doc.reload
       @doc.pets.first.should_not be_new
     end
+
+    should "be true until existing document is saved" do
+      @doc.save
+      pet = @doc.pets.build(:name => 'Rasmus')
+      pet.new?.should be_true
+      @doc.save
+      pet.new?.should be_false
+    end
   end
+
+  context "new? (embedded one association)" do
+    setup do
+      @klass.one :address, :class => @address_class
+      @doc = @klass.new
+    end
+
+    should "be true until existing document is saved" do
+      @doc.save
+      @doc.address.build(:city => 'Holland', :state => 'MI')
+      @doc.address.new?.should be_true
+      @doc.save
+      @doc.address.new?.should be_false
+    end
+  end
+
 
   context "#destroyed?" do
     setup do
