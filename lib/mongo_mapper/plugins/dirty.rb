@@ -15,22 +15,22 @@ module MongoMapper
         end
 
         def initialize_from_database(*)
-          super.tap { changed_attributes.clear }
+          try_change{super}
         end
 
         def save(*)
-          super.tap { |saved| changed_attributes.clear if saved }
+          try_change{super}
         end
 
         def save!(*)
-          super.tap { changed_attributes.clear }
+          try_change{super}
         end
 
         def reload(*)
-          super.tap { changed_attributes.clear }
+          try_change{super}
         end
 
-      protected
+        protected
 
         def attribute_method?(attr)
           # This overrides ::ActiveSupport::Dirty#attribute_method? to allow attributes to be any key
@@ -39,13 +39,28 @@ module MongoMapper
           super || key_names.include?(attr)
         end
 
-      private
+        private
+
+        def try_change
+          previous = changes
+          yield.tap do |result|
+            unless result==false #failed validation; nil is OK.
+              @previously_changed = previous
+              changed_attributes.clear
+            end
+          end
+        end
 
         def write_key(key, value)
           key = key.to_s
           old = read_key(key)
-          attribute_will_change!(key) if value_changed?(key,old,value)
+          attribute_will_change!(key) if attribute_should_change?(key,old,value)
+          changed_attributes.delete(key) unless value_changed?(key,attribute_was(key),value)
           super(key, value)
+        end
+
+        def attribute_should_change?(key,old,value)
+          attribute_changed?(key) == false && value_changed?(key,old,value)
         end
 
         def value_changed?(key_name, old, value)
