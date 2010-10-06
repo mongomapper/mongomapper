@@ -177,4 +177,51 @@ class DirtyTest < Test::Unit::TestCase
       validated_doc.changed?.should be_false
     end
   end
+
+  context "changing an already changed attribute" do
+    should "preserve the original value" do
+      doc = @document.create(:a=>"b")
+      doc.a = "c"
+      doc.a_change.should == ["b","c"]
+      doc.a = "d"
+      doc.a_change.should == ["b","d"]
+    end
+    should "reset changes when set back to the original value" do
+      doc = @document.create(:a=>"b")
+      doc.a = "c"
+      doc.a = "b"
+      doc.changed?.should be_false
+    end
+  end
+
+  context "reset_attribute!" do
+    should "reset the attribute back to the previous value" do
+      doc = @document.create(:a=>"b")
+      doc.a = "c"
+      doc.reset_a!
+      doc.changed?.should be_false
+      doc.a.should == "b"
+    end
+    should "reset the attribute back to the original value after several changes" do
+      doc = @document.create(:a=>"b")
+      doc.a = "c"
+      doc.a = "d"
+      doc.a = "e"
+      doc.reset_a!
+      doc.changed?.should be_false
+      doc.a.should == "b"
+    end
+  end
+
+  context "previous_changes" do
+    should "reflect previously committed change" do
+      doc = @document.create(:a=>"b")
+      doc.a = "c"
+      changes = doc.changes
+      doc.save!
+      doc.previous_changes.should == changes
+    end
+  end
+
+
 end
