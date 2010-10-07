@@ -64,7 +64,8 @@ class Test::Unit::TestCase
   end
 
   custom_matcher :have_error_on do |receiver, matcher, args|
-    receiver.valid?
+    context = args[2]
+    receiver.valid?(context)
     attribute = args[0]
     expected_message = args[1]
 

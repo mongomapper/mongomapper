@@ -546,4 +546,39 @@ class ValidationsTest < Test::Unit::TestCase
         doc.should_not have_error_on(:action)
       end
     end
+
+  context "validating associated" do
+    setup do
+      @topic = Doc('Topic') do
+        key :title
+      end
+      @reply = EDoc('Reply') do
+        key :content
+      end
+    end
+
+    should "validate associated many with custom validation context" do
+      @topic.many :replies, :class => @reply
+      @topic.validates_associated :replies, :on => :custom_context
+      @reply.validates_presence_of :content, :on => :custom_context
+
+      topic = @topic.new
+      topic.replies << @reply.new
+      topic.should_not have_error_on(:replies)
+      topic.should have_error_on(:replies, nil, :custom_context)
+      topic.replies[0].errors[:content].join.should =~ /blank/
+    end
+
+    should "validate associated one with custom validation context" do
+      @topic.one :reply, :class => @reply
+      @topic.validates_associated :reply, :on => :custom_context
+      @reply.validates_presence_of :content, :on => :custom_context
+
+      topic = @topic.new
+      topic.reply = @reply.new
+      topic.should_not have_error_on(:reply)
+      topic.should have_error_on(:reply, nil, :custom_context)
+      topic.reply.errors[:content].join.should =~ /blank/
+    end
+  end
 end
