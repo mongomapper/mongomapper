@@ -24,7 +24,10 @@ module MongoMapper
           return allow_nil if value.nil? and not allow_nil.nil?
           return allow_blank if value.blank? and not allow_blank.nil?
           base_conditions = case_sensitive ? {self.attribute => value} : {}
-          doc = instance.class.first(base_conditions.merge(scope_conditions(instance)).merge(where_conditions(instance)))
+
+          klass = instance.attributes['_type'].present? ? instance.class.collection.name.camelize.singularize.constantize : instance.class
+
+          doc = klass.first(base_conditions.merge(scope_conditions(instance)).merge(where_conditions(instance)))
           doc.nil? || instance._id == doc._id
         end
 

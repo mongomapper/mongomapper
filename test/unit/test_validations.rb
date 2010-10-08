@@ -1,5 +1,30 @@
 require 'test_helper'
 
+class AlfaRomeo
+  include MongoMapper::Document
+
+  key :name, String
+  key :_type, String
+
+  validates_uniqueness_of :name
+end
+
+class StiTest < AlfaRomeo
+end
+
+class Audi
+  include MongoMapper::Document
+
+  key :name, String
+  key :_type, String
+
+  validates_uniqueness_of :name
+end
+
+class Sti < Audi
+end
+
+
 class ValidationsTest < Test::Unit::TestCase
   context "Validations" do
     context "on a Document" do
@@ -24,6 +49,40 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should have_error_on(:name)
           doc.name = "Ryan"
           doc.should_not have_error_on(:name)
+        end
+
+        context "for single table inheritance" do
+          context "single word class name" do
+            setup do
+              Audi.destroy_all
+              Audi.create(:name => 'test')
+            end
+
+            context "validating uniqness of for base subclass" do
+              setup do
+                Sti.create(:name => 'test')
+              end
+
+              should_not_change("number of Audu objects") { Audi.count }
+              should_not_change("number of Sti objects") { Sti.count }
+            end
+          end
+
+          context "multiple word class name" do
+            setup do
+              AlfaRomeo.destroy_all
+              AlfaRomeo.create(:name => 'test')
+            end
+
+            context "validating uniqness of for base subclass" do
+              setup do
+                StiTest.create(:name => 'test')
+              end
+
+              should_not_change("number of AlfaRomeo objects") { AlfaRomeo.count }
+              should_not_change("number of StiTest objects") { StiTest.count }
+            end
+          end
         end
       end
 
