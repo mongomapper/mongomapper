@@ -22,7 +22,7 @@ module MongoMapper
         end
 
         def save_to_collection(options={})
-          @target.persist if @target
+          @target.persist(options) if @target
         end
 
         protected

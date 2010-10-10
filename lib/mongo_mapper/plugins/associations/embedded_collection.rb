@@ -31,7 +31,7 @@ module MongoMapper
         alias_method :concat, :<<
 
         def save_to_collection(options={})
-          @target.each { |doc| doc.persist } if @target
+          @target.each { |doc| doc.persist(options) } if @target
         end
 
         private

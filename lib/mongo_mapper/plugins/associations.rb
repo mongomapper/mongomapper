@@ -81,7 +81,7 @@ module MongoMapper
         end
 
         def save_to_collection(options={})
-          super
+          super if defined?(super)
           associations.each do |association_name, association|
             proxy = get_proxy(association)
             proxy.save_to_collection(options) if proxy.proxy_respond_to?(:save_to_collection)
