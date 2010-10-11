@@ -75,7 +75,7 @@ module MongoMapper
     def handle_passenger_forking
       if defined?(PhusionPassenger)
         PhusionPassenger.on_event(:starting_worker_process) do |forked|
-          connection.connect_to_master if forked
+          connection.connect if forked
         end
       end
     end
