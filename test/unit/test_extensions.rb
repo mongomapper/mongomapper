@@ -373,8 +373,4 @@ class SupportTest < Test::Unit::TestCase
       end
     end
   end
-
-  context "BSON::ObjectId.to_json" do
-
-  end
 end
