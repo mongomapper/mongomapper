@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'activemodel',             '~> 3.0.0'
   s.add_dependency 'activesupport',           '~> 3.0.0'
-  s.add_dependency 'plucky',                  '~> 0.3.5'
+  s.add_dependency 'plucky',                  '~> 0.3.6'
 
   s.add_development_dependency 'rake'
   s.add_development_dependency 'tzinfo'

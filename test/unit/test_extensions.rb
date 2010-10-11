@@ -20,12 +20,12 @@ class SupportTest < Test::Unit::TestCase
   end
 
   context "Binary.to_mongo" do
-    should "convert to byte buffer if not byte buffer" do
-      Binary.to_mongo('asdfsadasdfs').is_a?(BSON::ByteBuffer).should be_true
+    should "convert to binary if not binary" do
+      Binary.to_mongo('asdfsadasdfs').is_a?(BSON::Binary).should be_true
     end
 
-    should "be byte buffer if byte buffer" do
-      Binary.to_mongo('asdfsadasdfs').is_a?(BSON::ByteBuffer).should be_true
+    should "be binary if binary" do
+      Binary.to_mongo(BSON::Binary.new('asdfsadasdfs')).is_a?(BSON::Binary).should be_true
     end
 
     should "be nil if nil" do
@@ -35,8 +35,8 @@ class SupportTest < Test::Unit::TestCase
 
   context "Binary.from_mongo" do
     should "return value" do
-      buffer = BSON::ByteBuffer.new('asdfasdfasdf')
-      Binary.from_mongo(buffer).to_s.should == buffer.to_s
+      binary = BSON::Binary.new('asdfasdfasdf')
+      Binary.from_mongo(binary).to_s.should == binary.to_s
     end
   end
 

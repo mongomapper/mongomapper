@@ -10,7 +10,7 @@ class BinaryTest < Test::Unit::TestCase
     doc.save
 
     doc = doc.reload
-    doc.contents.to_s.should == BSON::ByteBuffer.new('010101').to_s
+    doc.contents.to_s.should == BSON::Binary.new('010101').to_s
   end
 
   context "Saving a document with a blank binary value" do
