@@ -15,19 +15,19 @@ module MongoMapper
         end
 
         def initialize_from_database(*)
-          super.tap{clear_changes}
+          super.tap { clear_changes }
         end
 
         def save(*)
-          try_clear_changes{super}
+          clear_changes { super }
         end
 
         def save!(*)
-          try_clear_changes{super}
+          clear_changes { super }
         end
 
         def reload(*)
-          super.tap{clear_changes}
+          super.tap { clear_changes }
         end
 
         protected
@@ -39,38 +39,32 @@ module MongoMapper
           super || key_names.include?(attr)
         end
 
-        def try_clear_changes
+        def clear_changes
           previous = changes
           (block_given? ? yield : true).tap do |result|
-            unless result==false #failed validation; nil is OK.
+            unless result == false #failed validation; nil is OK.
               @previously_changed = previous
               changed_attributes.clear
             end
           end
         end
-        alias clear_changes try_clear_changes
 
         private
 
         def write_key(key, value)
           key = key.to_s
           old = read_key(key)
-          attribute_will_change!(key) if attribute_should_change?(key,old,value)
-          changed_attributes.delete(key) unless value_changed?(key,attribute_was(key),value)
+          attribute_will_change!(key) if attribute_should_change?(key, old, value)
+          changed_attributes.delete(key) unless value_changed?(key, attribute_was(key), value)
           super(key, value)
         end
 
-        def attribute_should_change?(key,old,value)
-          attribute_changed?(key) == false && value_changed?(key,old,value)
+        def attribute_should_change?(key, old, value)
+          attribute_changed?(key) == false && value_changed?(key, old, value)
         end
 
         def value_changed?(key_name, old, value)
-          key = keys[key_name]
-
-          if key.number? && value.blank?
-            value = nil
-          end
-
+          value = nil if keys[key_name].number? && value.blank?
           old != value
         end
       end
