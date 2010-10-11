@@ -15,19 +15,19 @@ module MongoMapper
         end
 
         def initialize_from_database(*)
-          try_change{super}
+          super.tap{clear_changes}
         end
 
         def save(*)
-          try_change{super}
+          try_clear_changes{super}
         end
 
         def save!(*)
-          try_change{super}
+          try_clear_changes{super}
         end
 
         def reload(*)
-          try_change{super}
+          super.tap{clear_changes}
         end
 
         protected
@@ -39,17 +39,18 @@ module MongoMapper
           super || key_names.include?(attr)
         end
 
-        private
-
-        def try_change
+        def try_clear_changes
           previous = changes
-          yield.tap do |result|
+          (block_given? ? yield : true).tap do |result|
             unless result==false #failed validation; nil is OK.
               @previously_changed = previous
               changed_attributes.clear
             end
           end
         end
+        alias clear_changes try_clear_changes
+
+        private
 
         def write_key(key, value)
           key = key.to_s

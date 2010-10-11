@@ -120,6 +120,22 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
   end
 
+  context "new? (nested embedded many association)" do
+    setup do
+      @pet_klass.many :addresses, :class=> @address_class
+      @doc = @klass.new
+      @doc.pets.build(:name => 'Rasmus')
+      @doc.save
+    end
+
+    should "be true until existing document is saved" do
+      address = @doc.pets.first.addresses.build(:city => 'Holland', :state => 'MI')
+      address.new?.should be_true
+      @doc.save
+      address.new?.should be_false
+    end
+  end
+
   context "new? (embedded one association)" do
     setup do
       @klass.one :address, :class => @address_class
@@ -135,6 +151,21 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
   end
 
+  context "new? (nested embedded one association)" do
+    setup do
+      @pet_klass.one :address, :class => @address_class
+      @doc = @klass.new
+      @doc.pets.build(:name => 'Rasmus')
+      @doc.save
+    end
+
+    should "be true until existing document is saved" do
+      address = @doc.pets.first.address.build(:city => 'Holland', :stats => 'MI')
+      address.new?.should be_true
+      @doc.save
+      address.new?.should be_false
+    end
+  end
 
   context "#destroyed?" do
     setup do
