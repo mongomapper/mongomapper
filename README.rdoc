@@ -2,6 +2,10 @@
 
 A Ruby Object Mapper for Mongo.
 
+== Install
+
+    $ gem install mongo_mapper
+
 == Note on Patches/Pull Requests
 
 * Fork the project.
@@ -10,9 +14,11 @@ A Ruby Object Mapper for Mongo.
 * Commit, do not mess with rakefile, version, or history. (if you want to have your own version, that is fine but bump version in a commit by itself in another branch so I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
-== Install
+== Development
 
- $ gem install mongo_mapper
+    $ gem install bundler (if you don't have it)
+    $ bundle install
+    $ bundle exec rake
 
 == Problems or Questions?
 

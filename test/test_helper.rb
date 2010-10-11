@@ -1,10 +1,5 @@
 require 'rubygems'
-gem 'activesupport',     ENV['ACTIVE_SUPPORT_VERSION']
-gem 'json'
-gem 'jnunemaker-matchy', '~> 0.4.0'
-gem 'shoulda',           '~> 2.11'
-gem 'timecop',           '~> 0.3.5'
-gem 'mocha',             '~> 0.9.8'
+require 'bundler/setup'
 
 $:.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
 require 'mongo_mapper'
@@ -55,7 +50,7 @@ class Test::Unit::TestCase
       klass.collection.drop_indexes
     end
   end
-  
+
   custom_matcher :be_true do |receiver, matcher, args|
     matcher.positive_failure_message = "Expected #{receiver} to be true but it wasn't"
     matcher.negative_failure_message = "Expected #{receiver} not to be true but it was"
