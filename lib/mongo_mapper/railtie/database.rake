@@ -56,3 +56,5 @@ namespace :db do
     end
   end
 end
+
+task 'test:prepare' => 'db:test:prepare'
