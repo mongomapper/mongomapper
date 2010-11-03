@@ -161,7 +161,7 @@ module MongoMapper
           end
 
           def create(options={})
-            save_to_collection(options)
+            insert_to_collection(options)
           end
 
           def update(options={})
@@ -171,6 +171,11 @@ module MongoMapper
           def save_to_collection(options={})
             @_new = false
             collection.save(to_mongo, :safe => options[:safe])
+          end
+
+          def insert_to_collection(options={})
+            @_new = false
+            collection.insert(to_mongo, :safe => options[:safe])
           end
       end
     end
