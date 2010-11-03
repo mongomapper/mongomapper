@@ -75,6 +75,11 @@ class QueryingTesting < Test::Unit::TestCase
       document = Doc()
       lambda { document.create }.should change { document.count }.by(1)
     end
+
+    should "fail if it is provided with the id of an existing document" do
+      @document.create({:id => @doc.id, :first_name => 'Raphael'})
+      @doc.reload.first_name.should == 'John'
+    end
   end
 
   context ".create (multiple documents)" do
@@ -742,6 +747,12 @@ class QueryingTesting < Test::Unit::TestCase
         doc.save
         doc.date.should == Date.new(2009, 12, 1)
       end
+    end
+
+    should "fail if it is provided with the id of an existing document" do
+      new_doc = @document.new({:id => @doc.id, :first_name => 'Raphael'})
+      new_doc.save
+      @doc.reload.first_name.should == 'John'
     end
   end
 

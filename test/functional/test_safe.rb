@@ -52,6 +52,16 @@ class SafeTest < Test::Unit::TestCase
             end
           end
         end
+
+        should "raise error when creating with the id of an existing document" do
+          first_doc = @klass.new({:first_name => 'Raphael'})
+          first_doc.save
+          second_doc = @klass.new({:id => first_doc.id, :first_name => 'John'})
+          assert_raises(Mongo::OperationFailure) do
+            second_doc.save
+          end
+          first_doc.reload.first_name.should == 'Raphael'
+        end
       end
 
       context "overriding safe setting" do
