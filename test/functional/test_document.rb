@@ -204,6 +204,17 @@ class DocumentTest < Test::Unit::TestCase
       })
     end
 
+    should "not overwrite documents when setting associations" do
+      foo = @instance.foos.first
+      foo_hash = foo.collection.find_one(foo.id)
+      instance_hash = @instance.collection.find_one(@instance.id)
+      instance_hash.should_not == foo_hash
+    end
+
+    should "not affect a newly created document" do
+      @instance.to_mongo.should == @instance.reload.to_mongo
+    end
+
     should "reload keys from the database" do
       @instance.age = 37
       @instance.age.should == 37

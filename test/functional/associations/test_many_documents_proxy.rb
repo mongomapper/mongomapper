@@ -198,6 +198,17 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       project.statuses.create(:name => 'Foo!')
       project.statuses.size.should == 1
     end
+
+    should "not set duplicate ids" do
+      project = Project.create(
+        :name => 'Save once.',
+        :statuses => [Status.new(:name => 'Fantastic!')]
+      )
+      status = project.statuses.first
+      status_hash = Status.collection.find_one(status.id)
+      project_hash = Project.collection.find_one(project.id)
+      project_hash.should_not == status_hash
+    end
   end
 
   context "create!" do
