@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mongo_mapper (0.8.4)
+    mongo_mapper (0.8.6)
       activesupport (>= 2.3.4)
       jnunemaker-validatable (~> 1.8.4)
       plucky (~> 0.3.6)
@@ -16,7 +16,7 @@ GEM
     bson (1.1)
     bson_ext (1.1)
     builder (2.1.2)
-    i18n (0.4.1)
+    i18n (0.4.2)
     jnunemaker-matchy (0.4.0)
     jnunemaker-validatable (1.8.4)
       activesupport (>= 2.3.4)
