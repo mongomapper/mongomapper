@@ -85,13 +85,12 @@ class OneProxyTest < Test::Unit::TestCase
 
   should "unset the association" do
     @post_class.one :author, :class => @author_class
-    post = @post_class.new
-    author = @author_class.new
-    post.author = author
+    post = @post_class.create
+    author = @author_class.create
+    post.update_attributes!(:author => author)
     post.reload
-
     post.author = nil
-    post.author.nil?.should be_false
+    post.author.nil?.should be_true
   end
 
   should "work with :dependent delete" do
