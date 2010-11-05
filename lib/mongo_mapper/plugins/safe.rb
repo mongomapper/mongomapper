@@ -24,6 +24,10 @@ module MongoMapper
           options[:safe] = self.class.safe? unless options.key?(:safe)
           super
         end
+        def insert_to_collection(options={})
+          options[:safe] = self.class.safe? unless options.key?(:safe)
+          super
+        end
       end
     end
   end
