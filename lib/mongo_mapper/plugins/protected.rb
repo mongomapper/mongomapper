@@ -41,10 +41,10 @@ module MongoMapper
         def protected_attributes
           self.class.protected_attributes
         end
-        
+
         def attributes=(attrs={}, guard_protected_attributes = true)
           attrs = filter_protected_attrs(attrs) if guard_protected_attributes
-          super(attrs)
+          super(attrs, guard_protected_attributes)
         end
 
         protected

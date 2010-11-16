@@ -70,6 +70,24 @@ class AccessibleTest < Test::Unit::TestCase
       @doc.admin.should be_false
     end
 
+    should "ignore inaccessible attribute on #attributes=" do
+      @doc.attributes = { :name => 'Ren Hoek', :admin => true}
+      @doc.name.should == 'Ren Hoek'
+      @doc.admin.should be_false
+    end
+
+    should "not ignore inaccessible attribute on #attributes= without guard flag" do
+      @doc.send("attributes=", {:name => 'Ren Hoek', :admin => true}, false)
+      @doc.name.should == 'Ren Hoek'
+      @doc.admin.should be_true
+    end
+
+    should "not ignore protected attribute on #reload for not saved object" do
+      @doc.admin = true
+
+      @doc.reload.admin.should be_false
+    end
+
     should "be indifferent to whether the accessible keys are strings or symbols" do
       @doc.update_attributes!("name" => 'Stimpson J. Cat', "admin" => true)
       @doc.name.should == 'Stimpson J. Cat'

@@ -33,6 +33,11 @@ module MongoMapper
           self.class.accessible_attributes
         end
 
+        def attributes=(attrs={}, guard_protected_attributes = true)
+          attrs = filter_inaccessible_attrs(attrs) if guard_protected_attributes
+          super(attrs)
+        end
+
         protected
           def filter_inaccessible_attrs(attrs)
             return attrs if accessible_attributes.blank? || attrs.blank?
