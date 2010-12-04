@@ -8,20 +8,23 @@ PATH
 
 GEM
   specs:
-    activemodel (3.0.0)
-      activesupport (= 3.0.0)
+    activemodel (3.0.0.beta3)
+      activesupport (= 3.0.0.beta3)
+    activesupport (3.0.0.beta3)
       builder (~> 2.1.2)
-      i18n (~> 0.4.1)
-    activesupport (3.0.0)
+      i18n (~> 0.3.6)
+      memcache-client (>= 1.7.5)
+      tzinfo (~> 0.3.16)
     bson (1.1)
     bson_ext (1.1)
     builder (2.1.2)
-    i18n (0.4.2)
+    i18n (0.3.7)
     jnunemaker-matchy (0.4.0)
     jnunemaker-validatable (1.8.4)
       activesupport (>= 2.3.4)
     json (1.4.6)
     log_buddy (0.5.0)
+    memcache-client (1.8.5)
     mocha (0.9.8)
       rake
     mongo (1.1)
@@ -31,7 +34,7 @@ GEM
     rake (0.8.7)
     shoulda (2.11.3)
     timecop (0.3.5)
-    tzinfo (0.3.23)
+    tzinfo (0.3.22)
 
 PLATFORMS
   ruby

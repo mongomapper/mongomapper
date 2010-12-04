@@ -77,5 +77,18 @@ class OneEmbeddedProxyTest < Test::Unit::TestCase
     post.author = @author_class.new(:name => 'Frank')
     post.author?.should be_true
   end
+  
+  should "initialize id for nested embedded document created from hash" do
+    @address_class = EDoc('Address') do
+      key :city, String
+      key :state, String
+    end
+    @author_class.one :address, :class => @address_class
+    @post_class.one :author, :class => @author_class
+
+    post = @post_class.create(:title => 'Post Title', :author => { :name => 'Frank', :address => { :city => 'Boston', :state => 'MA' } })
+
+    post.author.address.id.should_not be_nil    
+  end
 
 end
