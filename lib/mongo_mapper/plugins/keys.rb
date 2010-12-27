@@ -258,6 +258,13 @@ module MongoMapper
           keys.values.select { |key| key.embeddable? }
         end
 
+        def default_id_value(attrs={})
+          id_provided = !attrs.nil? && attrs.keys.map { |k| k.to_s }.detect { |k| k == 'id' || k == '_id' }
+          if !id_provided && self.class.can_default_id?
+            write_key :_id, BSON::ObjectId.new
+          end
+        end
+
         private
           def load_from_database(attrs)
             return if attrs.blank?
@@ -266,15 +273,6 @@ module MongoMapper
                 self.send(:"#{key}=", value)
               else
                 self[key] = value
-              end
-            end
-          end
-
-          def default_id_value(attrs)
-            unless attrs.nil?
-              id_provided = attrs.keys.map { |k| k.to_s }.detect { |k| k == 'id' || k == '_id' }
-              if !id_provided && self.class.can_default_id?
-                write_key :_id, BSON::ObjectId.new
               end
             end
           end
