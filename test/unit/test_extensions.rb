@@ -8,6 +8,23 @@ class SupportTest < Test::Unit::TestCase
       Array.to_mongo({'1' => '2', '3' => '4'}).should == [['1', '2'], ['3', '4']]
     end
   end
+  
+  context "Fixnum.to_base62" do
+    should "encode to Bas62" do
+      # 1
+      1.to_base62.should eql 'b'
+      2.to_base62.should eql 'c'
+      # 62
+      62.to_base62.should eql 'ba'
+      63.to_base62.should eql 'bb'
+      # 62 * 62 = 3844
+      3844.to_base62.should eql 'baa'
+      3845.to_base62.should eql 'bab'
+      # 62 * 62 * 62 = 238328
+      238328.to_base62.should eql 'baaa'
+      238329.to_base62.should eql 'baab'
+    end
+  end
 
   context "Array.from_mongo" do
     should "be array if array" do
