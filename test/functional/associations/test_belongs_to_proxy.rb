@@ -14,6 +14,10 @@ class BelongsToProxyTest < Test::Unit::TestCase
   should "default to nil" do
     @comment_class.new.post.nil?.should be_true
   end
+  
+  should "return nil instead of a proxy" do
+    nil.should === @comment_class.new.post
+  end
 
   should "have boolean presence method" do
     comment = @comment_class.new(:name => 'Foo!')

@@ -426,7 +426,7 @@ class IdentityMapTest < Test::Unit::TestCase
 
       should "work correctly with one proxy create" do
         root = Item.create(:title => 'Root')
-        blog = root.blog.create(:title => 'Blog')
+        blog = root.create_blog(:title => 'Blog')
         blog.parent.should equal(root)
       end
     end
