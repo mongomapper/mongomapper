@@ -33,15 +33,21 @@ module MongoMapper
             association = Associations::Base.new(type, name, options, &extension)
             associations[association.name] = association
 
-            define_method("#{association.name}=") do |value|
-              get_proxy(association).replace(value)
-              value
-            end
-
             if association.one? || association.belongs_to?
               define_method(association.name) do
                 proxy = get_proxy(association)
                 proxy.nil? ? nil : proxy
+              end
+              
+              define_method("#{association.name}=") do |value|
+                proxy = get_proxy(association)
+                
+                if (proxy.nil? || proxy.target != value)
+                  proxy = build_proxy(association)
+                end
+                
+                proxy.replace(value)
+                value
               end
               
               define_method("#{association.name}?") do
@@ -64,6 +70,11 @@ module MongoMapper
             else
               define_method(association.name) do
                 get_proxy(association)
+              end
+              
+              define_method("#{association.name}=") do |value|
+                get_proxy(association).replace(value)
+                value
               end
               
             end
@@ -95,11 +106,17 @@ module MongoMapper
             association
           end
         end
-
+        
+        def build_proxy(association)
+          proxy = association.proxy_class.new(self, association)
+          self.instance_variable_set(association.ivar, proxy)
+          
+          proxy
+        end
+        
         def get_proxy(association)
           unless proxy = self.instance_variable_get(association.ivar)
-            proxy = association.proxy_class.new(self, association)
-            self.instance_variable_set(association.ivar, proxy)
+            proxy = build_proxy(association)
           end
           proxy
         end

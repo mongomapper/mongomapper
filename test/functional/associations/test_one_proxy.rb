@@ -47,8 +47,28 @@ class OneProxyTest < Test::Unit::TestCase
         post.author = new_author
         post.author.should == new_author
       end
-    end
+      
+      should "generate a new proxy instead of modifying the existing one" do
+        @post_class.one :author, :class => @author_class
 
+        post = @post_class.new
+        author = @author_class.new(:name => 'Frank')
+        post.author = author
+        post.reload
+
+        post.author.should == author
+        post.author.nil?.should be_false
+
+        original_author = post.author
+        original_author.name.should == 'Frank'
+        new_author = @author_class.new(:name => 'Emily')
+        post.author = new_author
+        post.author.should == new_author
+        
+        original_author.name.should == 'Frank'
+      end
+    end
+    
     context "with a Hash" do
       should "convert to an object of the class and work" do
         @post_class.one :author, :class => @author_class
