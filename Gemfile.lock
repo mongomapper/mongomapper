@@ -7,6 +7,7 @@ PATH
       plucky (~> 0.3.6)
 
 GEM
+  remote: http://rubygems.org/
   specs:
     activemodel (3.0.0)
       activesupport (= 3.0.0)
