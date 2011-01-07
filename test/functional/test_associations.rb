@@ -36,7 +36,7 @@ class AssociationsTest < Test::Unit::TestCase
     tag2 = AwesomeTag.new(:name => 'grand')
     post1 = AwesomePost.create(:creator => user, :tags => [tag1])
     post2 = AwesomePost.create(:creator => user, :tags => [tag2])
-        
+
     user.reload
     user.posts.should == [post1, post2]
 

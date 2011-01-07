@@ -465,11 +465,11 @@ class IdentityMapTest < Test::Unit::TestCase
           loaded.should_not equal(post)
         end
       end
-      
+
       should "not load attributes from map when finding" do
         post = @post_class.create(:title => 'Awesome!')
         post.title = 'Temporary'
-        @post_class.without_identity_map do 
+        @post_class.without_identity_map do
           @post_class.find(post.id).title.should == 'Awesome!'
         end
       end

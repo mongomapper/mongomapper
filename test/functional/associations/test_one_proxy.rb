@@ -47,7 +47,7 @@ class OneProxyTest < Test::Unit::TestCase
         post.author = new_author
         post.author.should == new_author
       end
-      
+
       should "generate a new proxy instead of modifying the existing one" do
         @post_class.one :author, :class => @author_class
 
@@ -64,11 +64,11 @@ class OneProxyTest < Test::Unit::TestCase
         new_author = @author_class.new(:name => 'Emily')
         post.author = new_author
         post.author.should == new_author
-        
+
         original_author.name.should == 'Frank'
       end
     end
-    
+
     context "with a Hash" do
       should "convert to an object of the class and work" do
         @post_class.one :author, :class => @author_class

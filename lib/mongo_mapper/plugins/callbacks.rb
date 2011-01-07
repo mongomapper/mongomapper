@@ -83,7 +83,7 @@ module MongoMapper
           self.class.send(callback_chain_method).run(self, options, &block)
           self.embedded_associations.each do |association|
             if association.one?
-              if (!self.send("#{association.name}").nil?)
+              if !self.send("#{association.name}").nil?
                 self.send(association.name).run_callbacks(kind, options, &block)
               end
             else
