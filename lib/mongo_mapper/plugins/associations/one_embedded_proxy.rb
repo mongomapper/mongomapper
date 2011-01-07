@@ -16,6 +16,7 @@ module MongoMapper
           else
             @target = klass.load(doc)
           end
+          @target.default_id_value if @target && @target.id.nil?
           assign_references(@target)
           loaded
           @target
