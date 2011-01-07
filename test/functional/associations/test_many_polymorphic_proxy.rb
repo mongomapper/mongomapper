@@ -138,6 +138,7 @@ class ManyPolymorphicProxyTest < Test::Unit::TestCase
       @hm2 = Message.create(:body => 'Hall the king!', :position => 2)
       @hall.messages = [@hm1, @hm2, @hm3]
       @hall.save
+      @hall.reload
     end
 
     context "dynamic finders" do

@@ -20,7 +20,7 @@ class OneEmbeddedProxyTest < Test::Unit::TestCase
     @post_class.one :author, :class => @author_class
 
     post = @post_class.create
-    author = post.author.build(:name => "John")
+    author = post.build_author(:name => "John")
     post.author.should be_instance_of(@author_class)
     post.author.should be_new
     post.author.name.should == 'John'
