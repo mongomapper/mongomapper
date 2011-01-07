@@ -18,6 +18,10 @@ module MongoMapper
   autoload :Plugins,                'mongo_mapper/plugins'
   autoload :Version,                'mongo_mapper/version'
 
+  module Middleware
+    autoload :IdentityMap, 'mongo_mapper/middleware/identity_map'
+  end
+
   module Plugins
     autoload :ActiveModel,        'mongo_mapper/plugins/active_model'
     autoload :Associations,       'mongo_mapper/plugins/associations'

@@ -27,6 +27,9 @@ GEM
       bson (>= 1.1.1)
     plucky (0.3.6)
       mongo (~> 1.1)
+    rack (1.2.1)
+    rack-test (0.5.7)
+      rack (>= 1.0)
     rake (0.8.7)
     shoulda (2.11.3)
     timecop (0.3.5)
@@ -46,6 +49,7 @@ DEPENDENCIES
   mongo_mapper!
   plucky (~> 0.3.6)
   rake
+  rack-test
   shoulda (~> 2.11)
   timecop (~> 0.3.1)
   tzinfo

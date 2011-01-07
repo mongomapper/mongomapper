@@ -1,3 +1,3 @@
-source 'http://rubygems.org'
+source :rubygems
 gem 'bson_ext'
 gemspec
