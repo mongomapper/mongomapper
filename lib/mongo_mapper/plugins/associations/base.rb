@@ -3,45 +3,32 @@ module MongoMapper
   module Plugins
     module Associations
       class Base
-        attr_reader :type, :name, :options, :query_options
+        attr_reader :name, :options, :query_options
 
         # Options that should not be considered MongoDB query options/criteria
         AssociationOptions = [:as, :class, :class_name, :dependent, :extend, :foreign_key, :in, :polymorphic]
 
-        def initialize(type, name, options={}, &extension)
-          @type, @name, @options, @query_options, @original_options = type, name, {}, {}, options
+        def initialize(name, options={}, &extension)
+          @name, @options, @query_options, @original_options = name, {}, {}, options
           options.symbolize_keys!
           options[:extend] = modularized_extensions(extension, options[:extend])
           separate_options_and_conditions
         end
 
         def class_name
-          return @class_name if defined?(@class_name)
-
-          @class_name =
-            if cn = options[:class_name]
-              cn
-            elsif many?
-              name.to_s.singularize.camelize
-            else
-              name.to_s.camelize
-            end
+          @class_name ||= options[:class_name] || name.to_s.camelize
         end
 
         def klass
           @klass ||= options[:class] || class_name.constantize
         end
 
-        def many?
-          @type == :many
-        end
-
         def belongs_to?
-          @type == :belongs_to
+          self.is_a?(BelongsToAssociation)
         end
 
         def one?
-          @type == :one
+          self.is_a?(OneAssociation)
         end
 
         def polymorphic?
@@ -57,11 +44,11 @@ module MongoMapper
         end
 
         def embeddable?
-          (one? || many?) && klass.embeddable?
+          klass.embeddable?
         end
 
         def type_key_name
-          many? ? '_type' : "#{as}_type"
+          "#{as}_type"
         end
 
         def as
@@ -76,30 +63,11 @@ module MongoMapper
           @ivar ||= "@_#{name}"
         end
 
-        # hate this, need to revisit
         def proxy_class
-          return @proxy_class if defined?(@proxy_class)
+          raise NotImplementedError
+        end
 
-          @proxy_class =
-            if many?
-              if klass.embeddable?
-                polymorphic? ? ManyEmbeddedPolymorphicProxy : ManyEmbeddedProxy
-              else
-                if polymorphic?
-                  ManyPolymorphicProxy
-                elsif as?
-                  ManyDocumentsAsProxy
-                elsif in_array?
-                  InArrayProxy
-                else
-                  ManyDocumentsProxy
-                end
-              end
-            elsif one?
-              klass.embeddable? ? OneEmbeddedProxy : OneProxy
-            else
-              polymorphic? ? BelongsToPolymorphicProxy : BelongsToProxy
-            end
+        def setup(model)
         end
 
         private

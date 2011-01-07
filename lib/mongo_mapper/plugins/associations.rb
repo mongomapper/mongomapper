@@ -9,15 +9,15 @@ module MongoMapper
         end
 
         def belongs_to(association_id, options={}, &extension)
-          create_association(:belongs_to, association_id, options, &extension)
+          create_association(BelongsToAssociation.new(association_id, options, &extension))
         end
 
         def many(association_id, options={}, &extension)
-          create_association(:many, association_id, options, &extension)
+          create_association(ManyAssociation.new(association_id, options, &extension))
         end
 
         def one(association_id, options={}, &extension)
-          create_association(:one, association_id, options, &extension)
+          create_association(OneAssociation.new(association_id, options, &extension))
         end
 
         def associations
@@ -29,9 +29,9 @@ module MongoMapper
         end
 
         private
-          def create_association(type, name, options, &extension)
-            association = Associations::Base.new(type, name, options, &extension)
+          def create_association(association)
             associations[association.name] = association
+            association.setup(self)
 
             if association.one? || association.belongs_to?
               define_method(association.name) do
@@ -77,19 +77,6 @@ module MongoMapper
                 value
               end
 
-            end
-
-            if association.options[:dependent] && association.many? && !association.embeddable?
-              after_destroy do |doc|
-                case association.options[:dependent]
-                  when :destroy
-                    doc.get_proxy(association).destroy_all
-                  when :delete_all
-                    doc.get_proxy(association).delete_all
-                  when :nullify
-                    doc.get_proxy(association).nullify
-                end
-              end
             end
           end
       end
