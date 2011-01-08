@@ -181,6 +181,11 @@ class KeyTest < Test::Unit::TestCase
       @key.get(nil).should == 'baz'
     end
 
+    should "return a dup of the default value" do
+      @key.get(nil).replace('bar')
+      @key.get(nil).should == 'baz'
+    end
+
     should "return value if not blank" do
       @key.get('foobar').should == 'foobar'
     end
