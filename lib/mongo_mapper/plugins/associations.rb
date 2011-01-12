@@ -53,20 +53,6 @@ module MongoMapper
               define_method("#{association.name}?") do
                 get_proxy(association).present?
               end
-
-              if association.one?
-                define_method("build_#{association.name}") do |*args|
-                  get_proxy(association).build(*args)
-                end
-
-                define_method("create_#{association.name}") do |*args|
-                  get_proxy(association).create(*args)
-                end
-
-                define_method("create_#{association.name}!") do |*args|
-                  get_proxy(association).create!(*args)
-                end
-              end
             end
           end
       end
