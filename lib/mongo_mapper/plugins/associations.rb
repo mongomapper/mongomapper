@@ -67,16 +67,6 @@ module MongoMapper
                   get_proxy(association).create!(*args)
                 end
               end
-            else
-              define_method(association.name) do
-                get_proxy(association)
-              end
-
-              define_method("#{association.name}=") do |value|
-                get_proxy(association).replace(value)
-                value
-              end
-
             end
           end
       end

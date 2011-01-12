@@ -30,6 +30,17 @@ module MongoMapper
         end
 
         def setup(model)
+          model.class_eval <<-end_eval
+            def #{name}
+              get_proxy(associations[#{name.inspect}])
+            end
+
+            def #{name}=(value)
+              get_proxy(associations[#{name.inspect}]).replace(value)
+              value
+            end
+          end_eval
+
           if options[:dependent] && !embeddable?
             model.after_destroy do |doc|
               case options[:dependent]
