@@ -20,10 +20,8 @@ module MongoMapper
         def reload
           if doc = collection.find_one(:_id => id)
             tap do |instance|
-              instance.class.associations.each_key do |association_name|
-                if self.respond_to?(association_name) && !self.send(association_name).nil?
-                  self.send(association_name).reset
-                end
+              instance.class.associations.each_value do |association|
+                get_proxy(association).reset
               end
               instance.attributes = doc
             end
