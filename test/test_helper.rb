@@ -12,6 +12,7 @@ require 'matchy'
 require 'shoulda'
 require 'timecop'
 require 'mocha'
+require 'ruby-debug'
 
 class Test::Unit::TestCase
   def Doc(name='Class', &block)

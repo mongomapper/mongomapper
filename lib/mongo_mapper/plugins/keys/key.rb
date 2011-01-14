@@ -34,7 +34,9 @@ module MongoMapper
             if default_value.respond_to?(:call)
               return default_value.call
             else
-              return default_value
+              # Using Marshal is easiest way to get a copy of mutable objects
+              # without getting an error on immutable objects
+              return Marshal.load(Marshal.dump(default_value))
             end
           end
 

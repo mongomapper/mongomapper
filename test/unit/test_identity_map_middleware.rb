@@ -8,7 +8,7 @@ class IdentityMapMiddlewareTest < Test::Unit::TestCase
     @app ||= Rack::Builder.new do
       use MongoMapper::Middleware::IdentityMap
       map "/" do
-        run lambda {|env| [200, {}, ''] }
+        run lambda {|env| [200, {}, []] }
       end
       map "/fail" do
         run lambda {|env| raise "FAIL!" }

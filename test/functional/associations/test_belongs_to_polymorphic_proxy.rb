@@ -54,6 +54,7 @@ class BelongsToPolymorphicProxyTest < Test::Unit::TestCase
       @status.target = project
       @status.save.should be_true
       project.destroy
+      @status.reload
     end
 
     should "return nil instead of raising error" do
