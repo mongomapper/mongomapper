@@ -144,7 +144,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
 
     should "be true until existing document is saved" do
       @doc.save
-      @doc.address.build(:city => 'Holland', :state => 'MI')
+      @doc.build_address(:city => 'Holland', :state => 'MI')
       @doc.address.new?.should be_true
       @doc.save
       @doc.address.new?.should be_false
@@ -160,7 +160,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end
 
     should "be true until existing document is saved" do
-      address = @doc.pets.first.address.build(:city => 'Holland', :stats => 'MI')
+      address = @doc.pets.first.build_address(:city => 'Holland', :stats => 'MI')
       address.new?.should be_true
       @doc.save
       address.new?.should be_false
