@@ -53,6 +53,11 @@ class ManyAssociationTest < Test::Unit::TestCase
       base = ManyAssociation.new(:medias, :polymorphic => true)
       base.proxy_class.should == ManyEmbeddedPolymorphicProxy
     end
+
+    should "be InArrayProxy for many with :in option" do
+      base = ManyAssociation.new(:messages, :in => :message_ids)
+      base.proxy_class.should == InArrayProxy
+    end
   end
 
 end

@@ -32,28 +32,6 @@ module MongoMapper
           def create_association(association)
             associations[association.name] = association
             association.setup(self)
-
-            if association.one? || association.belongs_to?
-              define_method(association.name) do
-                proxy = get_proxy(association)
-                proxy.nil? ? nil : proxy
-              end
-
-              define_method("#{association.name}=") do |value|
-                proxy = get_proxy(association)
-
-                if proxy.nil? || proxy.target != value
-                  proxy = build_proxy(association)
-                end
-
-                proxy.replace(value)
-                value
-              end
-
-              define_method("#{association.name}?") do
-                get_proxy(association).present?
-              end
-            end
           end
       end
 

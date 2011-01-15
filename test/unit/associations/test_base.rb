@@ -16,17 +16,6 @@ class AssociationBaseTest < Test::Unit::TestCase
     base.options[:polymorphic].should be_true
   end
 
-  context "class_name" do
-    should "work for belongs_to" do
-      BelongsToAssociation.new(:user).class_name.should == 'User'
-    end
-
-    should "be changeable using class_name option" do
-      base = ManyAssociation.new(:smart_people, :class_name => 'IntelligentPerson')
-      base.class_name.should == 'IntelligentPerson'
-    end
-  end
-
   context "klass" do
     should "default to class_name constantized" do
       BelongsToAssociation.new(:foo_monster).klass.should == FooMonster
@@ -35,26 +24,6 @@ class AssociationBaseTest < Test::Unit::TestCase
     should "be the specified class" do
       anonnymous_class = Class.new
       BelongsToAssociation.new(:foo_monster, :class => anonnymous_class).klass.should == anonnymous_class
-    end
-  end
-
-  context "one?" do
-    should "be true if one" do
-      OneAssociation.new(:foo).one?.should be_true
-    end
-
-    should "be false if not one" do
-      ManyAssociation.new(:foo).one?.should be_false
-    end
-  end
-
-  context "belongs_to?" do
-    should "be true if belongs_to" do
-      BelongsToAssociation.new(:foo).belongs_to?.should be_true
-    end
-
-    should "be false if not belongs_to" do
-      ManyAssociation.new(:foos).belongs_to?.should be_false
     end
   end
 
@@ -161,11 +130,6 @@ class AssociationBaseTest < Test::Unit::TestCase
     should "be OneEmbeddedProxy for one embedded" do
       base = OneAssociation.new(:media)
       base.proxy_class.should == OneEmbeddedProxy
-    end
-
-    should "be InArrayProxy for many with :in option" do
-      base = ManyAssociation.new(:messages, :in => :message_ids)
-      base.proxy_class.should == InArrayProxy
     end
   end
 

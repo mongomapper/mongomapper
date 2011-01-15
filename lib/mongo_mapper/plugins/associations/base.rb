@@ -23,14 +23,6 @@ module MongoMapper
           @klass ||= options[:class] || class_name.constantize
         end
 
-        def belongs_to?
-          self.is_a?(BelongsToAssociation)
-        end
-
-        def one?
-          self.is_a?(OneAssociation)
-        end
-
         def polymorphic?
           !!@options[:polymorphic]
         end
