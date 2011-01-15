@@ -28,6 +28,25 @@ module MongoMapper
           @associations = hash
         end
 
+        def associations_module_defined?
+          if method(:const_defined?).arity == 1 # Ruby 1.9 compat check
+            const_defined?('MongoMapperAssociations')
+          else
+            const_defined?('MongoMapperAssociations', false)
+          end
+        end
+
+        def associations_module
+          if associations_module_defined?
+            const_get 'MongoMapperAssociations'
+          else
+            Module.new.tap do |m|
+              const_set 'MongoMapperAssociations', m
+              include m
+            end
+          end
+        end
+
         private
           def create_association(association)
             associations[association.name] = association

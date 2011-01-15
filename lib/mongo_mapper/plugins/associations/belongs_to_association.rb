@@ -13,8 +13,7 @@ module MongoMapper
         end
 
         def setup(model)
-
-          model.class_eval <<-end_eval
+          model.associations_module.module_eval <<-end_eval
             def #{name}
               proxy = get_proxy(associations[#{name.inspect}])
               proxy.nil? ? nil : proxy

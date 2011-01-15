@@ -14,7 +14,7 @@ module MongoMapper
         def setup(model)
           super(model)
 
-          model.class_eval <<-end_eval
+          model.associations_module.module_eval <<-end_eval
             def build_#{name}(attrs={})
               get_proxy(associations[#{name.inspect}]).build(attrs)
             end

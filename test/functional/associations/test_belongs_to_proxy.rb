@@ -27,6 +27,19 @@ class BelongsToProxyTest < Test::Unit::TestCase
     comment.post?.should be_true
   end
 
+  should "allow overriding association methods" do
+    @comment_class.class_eval do
+      def post?
+        super
+      end
+    end
+
+    instance = @comment_class.new
+    instance.post?.should be_false
+    instance.post = @post_class.new
+    instance.post?.should be_true
+  end
+
   should "be able to replace the association" do
     post = @post_class.new(:name => 'mongomapper')
     comment = @comment_class.new(:name => 'Foo!', :post => post)
