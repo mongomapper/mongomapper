@@ -410,7 +410,6 @@ class IdentityMapTest < Test::Unit::TestCase
         assert_in_map(root)
 
         blog = Blog.create(:title => 'Jill', :parent => root)
-        blog.parent.inspect
         assert_in_map(blog)
         root.should equal(blog.parent.target)
       end
