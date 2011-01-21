@@ -9,15 +9,15 @@ module MongoMapper
         end
 
         def belongs_to(association_id, options={}, &extension)
-          create_association(:belongs_to, association_id, options, &extension)
+          create_association(BelongsToAssociation.new(association_id, options, &extension))
         end
 
         def many(association_id, options={}, &extension)
-          create_association(:many, association_id, options, &extension)
+          create_association(ManyAssociation.new(association_id, options, &extension))
         end
 
         def one(association_id, options={}, &extension)
-          create_association(:one, association_id, options, &extension)
+          create_association(OneAssociation.new(association_id, options, &extension))
         end
 
         def associations
@@ -28,72 +28,30 @@ module MongoMapper
           @associations = hash
         end
 
-        private
-          def create_association(type, name, options, &extension)
-            association = Associations::Base.new(type, name, options, &extension)
-            associations[association.name] = association
-
-            if association.one? || association.belongs_to?
-              define_method(association.name) do
-                proxy = get_proxy(association)
-                proxy.nil? ? nil : proxy
-              end
-
-              define_method("#{association.name}=") do |value|
-                proxy = get_proxy(association)
-
-                if proxy.nil? || proxy.target != value
-                  proxy = build_proxy(association)
-                end
-
-                proxy.replace(value)
-                value
-              end
-
-              define_method("#{association.name}?") do
-                get_proxy(association).present?
-              end
-
-              if association.one?
-                define_method("build_#{association.name}") do |*args|
-                  get_proxy(association).build(*args)
-                end
-
-                define_method("create_#{association.name}") do |*args|
-                  get_proxy(association).create(*args)
-                end
-
-                define_method("create_#{association.name}!") do |*args|
-                  get_proxy(association).create!(*args)
-                end
-              end
-            else
-              define_method(association.name) do
-                get_proxy(association)
-              end
-
-              define_method("#{association.name}=") do |value|
-                get_proxy(association).replace(value)
-                value
-              end
-
-            end
-
-            if association.options[:dependent] && association.many? && !association.embeddable?
-              after_destroy do |doc|
-                case association.options[:dependent]
-                  when :destroy
-                    doc.get_proxy(association).destroy_all
-                  when :delete_all
-                    doc.get_proxy(association).delete_all
-                  when :nullify
-                    doc.get_proxy(association).nullify
-                end
-              end
-            end
-            association
+        def associations_module_defined?
+          if method(:const_defined?).arity == 1 # Ruby 1.9 compat check
+            const_defined?('MongoMapperAssociations')
+          else
+            const_defined?('MongoMapperAssociations', false)
           end
+        end
 
+        def associations_module
+          if associations_module_defined?
+            const_get 'MongoMapperAssociations'
+          else
+            Module.new.tap do |m|
+              const_set 'MongoMapperAssociations', m
+              include m
+            end
+          end
+        end
+
+        private
+          def create_association(association)
+            associations[association.name] = association
+            association.setup(self)
+          end
       end
 
       module InstanceMethods
