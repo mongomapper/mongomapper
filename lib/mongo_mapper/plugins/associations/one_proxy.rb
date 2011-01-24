@@ -32,11 +32,11 @@ module MongoMapper
             end
           end
 
-          reset
-
-          unless doc.nil?
+          if doc.nil?
+            target.update_attributes(foreign_key => nil) unless target.nil?
+          else
             proxy_owner.save if proxy_owner.new?
-            doc = klass.new(doc) unless klass === doc
+            doc = klass.new(doc) unless doc.is_a?(klass)
             doc[foreign_key] = proxy_owner.id
             doc.save if doc.new?
             loaded

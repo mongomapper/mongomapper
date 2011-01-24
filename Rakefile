@@ -3,25 +3,21 @@ require 'rake'
 require 'rake/testtask'
 require File.expand_path('../lib/mongo_mapper/version', __FILE__)
 
+Rake::TestTask.new(:test) do |test|
+  test.libs      << 'lib' << 'test'
+  test.pattern   = 'test/{functional,unit}/**/test_*.rb'
+end
+
 namespace :test do
-  Rake::TestTask.new(:all) do |test|
+  Rake::TestTask.new(:lint) do |test|
     test.libs      << 'lib' << 'test'
-    test.pattern   = 'test/{functional,unit}/**/test_*.rb'
+    test.pattern   = 'test/test_active_model_lint.rb'
   end
 
-  desc "Run active model lint test"
-  task :am_lint do
-    sh 'ruby -Itest -rubygems test/test_active_model_lint.rb'
-  end
+  task :all => ['test', 'test:lint']
 end
 
-desc 'Runs all tests against ActiveSupport 2 and 3'
-task :test do
-  Rake::Task['test:all'].invoke
-  Rake::Task['test:am_lint'].invoke
-end
-
-task :default => :test
+task :default => 'test:all'
 
 desc 'Builds the gem'
 task :build do

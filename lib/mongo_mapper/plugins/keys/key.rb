@@ -34,11 +34,17 @@ module MongoMapper
             if default_value.respond_to?(:call)
               return default_value.call
             else
-              return default_value
+              # Using Marshal is easiest way to get a copy of mutable objects
+              # without getting an error on immutable objects
+              return Marshal.load(Marshal.dump(default_value))
             end
           end
 
-          type.from_mongo(value)
+          if options[:typecast].present?
+            type.from_mongo(value).map! { |v| typecast_class.from_mongo(v) }
+          else
+            type.from_mongo(value)
+          end
         end
 
         def set(value)
@@ -48,7 +54,7 @@ module MongoMapper
             end
           end
         end
-        
+
         private
           def typecast_class
             @typecast_class ||= options[:typecast].constantize

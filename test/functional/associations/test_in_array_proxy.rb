@@ -141,6 +141,12 @@ class InArrayProxyTest < Test::Unit::TestCase
         should "work with conditions" do
           @user.lists.all(:name => 'Foo 1').should == [@list1]
         end
+
+        should "not hit the database if ids key is empty" do
+          @user.list_ids = []
+          @user.lists.expects(:query).never
+          @user.lists.all.should == []
+        end
       end
 
       context "first" do
@@ -151,6 +157,12 @@ class InArrayProxyTest < Test::Unit::TestCase
         should "work with conditions" do
           @user.lists.first(:position => 2).should == @list2
         end
+
+        should "not hit the database if ids key is empty" do
+          @user.list_ids = []
+          @user.lists.expects(:query).never
+          @user.lists.first.should be_nil
+        end
       end
 
       context "last" do
@@ -160,6 +172,12 @@ class InArrayProxyTest < Test::Unit::TestCase
 
         should "work with conditions" do
           @user.lists.last(:position => 2, :order => 'position').should == @list2
+        end
+
+        should "not hit the database if ids key is empty" do
+          @user.list_ids = []
+          @user.lists.expects(:query).never
+          @user.lists.last.should be_nil
         end
       end
 
@@ -208,6 +226,12 @@ class InArrayProxyTest < Test::Unit::TestCase
 
         should "return the subject" do
           @lists.collect(&:name).should == ['Foo 1']
+        end
+
+        should "not hit the database if ids key is empty" do
+          @user.list_ids = []
+          @user.lists.expects(:query).never
+          @user.lists.paginate(:page => 1).should == []
         end
       end
 
@@ -265,6 +289,12 @@ class InArrayProxyTest < Test::Unit::TestCase
       should "return correct count when given criteria" do
         @user.lists.count(:name => 'Foo 1').should == 1
         @user2.lists.count(:name => 'Foo 1').should == 0
+      end
+
+      should "not hit the database if ids key is empty" do
+        @user.list_ids = []
+        @user.lists.expects(:query).never
+        @user.lists.count(:name => 'Foo 1').should == 0
       end
     end
 
