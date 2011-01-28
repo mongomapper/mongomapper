@@ -34,9 +34,8 @@ module MongoMapper
         end
 
         def save!(options={})
-          _root_document.try(:save, options).tap do |result|
-            @_new = false if result
-          end
+          valid? || raise(DocumentNotValid.new(self))
+          _root_document.save!(options)
         end
 
         def _root_document
