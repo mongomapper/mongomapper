@@ -22,6 +22,19 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
     project.statuses.should == []
   end
 
+  should "allow overriding association methods" do
+    @owner_class.class_eval do
+      def pets
+        super
+      end
+    end
+
+    instance = @owner_class.new
+    instance.pets.should == []
+    instance.pets.build
+    instance.pets.should_not be_empty
+  end
+
   should "allow assignment of many associated documents using a hash" do
     person_attributes = {
       'name' => 'Mr. Pet Lover',
@@ -248,7 +261,7 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
     should "work on association" do
       project = Project.create
       3.times { |i| project.statuses.create(:name => i.to_s) }
-      
+
       JSON.parse(project.statuses.to_json).collect{|status| status["name"] }.sort.should == ["0","1","2"]
     end
   end
@@ -257,7 +270,7 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
     should "work on association" do
       project = Project.create
       3.times { |i| project.statuses.create(:name => i.to_s) }
-      
+
       project.statuses.as_json.collect{|status| status["name"] }.sort.should == ["0","1","2"]
     end
   end
