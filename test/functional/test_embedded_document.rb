@@ -219,6 +219,17 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     person.pets.first.should == pet
   end
 
+  should "be able to save!" do
+    person = @klass.create
+
+    pet = @pet_klass.new(:name => 'sparky')
+    person.pets << pet
+    pet.should be_new
+
+    person.expects(:save!)
+    pet.save!
+  end
+
   should "be able to dynamically add new keys and save" do
     person = @klass.create
 

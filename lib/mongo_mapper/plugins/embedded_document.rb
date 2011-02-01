@@ -34,7 +34,7 @@ module MongoMapper
         end
 
         def save!(options={})
-          _root_document.try(:save, options).tap do |result|
+          _root_document.try(:save!, options).tap do |result|
             persist(options) if result
           end
         end
