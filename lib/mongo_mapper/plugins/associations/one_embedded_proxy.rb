@@ -22,6 +22,10 @@ module MongoMapper
           @target
         end
 
+        def save_to_collection(options={})
+          @target.persist(options) if @target
+        end
+
         protected
 
           def find_target

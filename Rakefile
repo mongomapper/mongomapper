@@ -1,23 +1,15 @@
 require 'rubygems'
+require 'bundler/setup'
 require 'rake'
 require 'rake/testtask'
 require File.expand_path('../lib/mongo_mapper/version', __FILE__)
 
 Rake::TestTask.new(:test) do |test|
   test.libs      << 'lib' << 'test'
-  test.pattern   = 'test/{functional,unit}/**/test_*.rb'
+  test.pattern   = 'test/**/test_*.rb'
 end
 
-namespace :test do
-  Rake::TestTask.new(:lint) do |test|
-    test.libs      << 'lib' << 'test'
-    test.pattern   = 'test/test_active_model_lint.rb'
-  end
-
-  task :all => ['test', 'test:lint']
-end
-
-task :default => 'test:all'
+task :default => :test
 
 desc 'Builds the gem'
 task :build do

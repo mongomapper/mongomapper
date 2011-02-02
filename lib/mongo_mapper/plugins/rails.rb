@@ -2,10 +2,6 @@
 module MongoMapper
   module Plugins
     module Rails
-      def self.configure(model)
-        model.extend ActiveModel::Naming if defined?(ActiveModel)
-      end
-
       module InstanceMethods
         def to_param
           id.to_s if persisted?
@@ -27,8 +23,8 @@ module MongoMapper
           self[name]
         end
 
-        def read_attribute_before_typecast(name)
-          read_key_before_typecast(name)
+        def read_attribute_before_type_cast(name)
+          read_key_before_type_cast(name)
         end
 
         def write_attribute(name, value)

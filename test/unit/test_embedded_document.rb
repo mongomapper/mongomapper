@@ -158,10 +158,10 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
           @document.new.should respond_to(:foo)
         end
 
-        should "create reader before typecast method" do
-          @document.new.should_not respond_to(:foo_before_typecast)
+        should "create reader before type cast method" do
+          @document.new.should_not respond_to(:foo_before_type_cast)
           @document.key(:foo, String)
-          @document.new.should respond_to(:foo_before_typecast)
+          @document.new.should respond_to(:foo_before_type_cast)
         end
 
         should "create writer method" do
@@ -207,7 +207,9 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         end
 
         should "be recorded" do
-          Grandparent.descendants.should == [Parent]
+          Grandparent.direct_descendants.should == [Parent]
+          Grandparent.descendants.to_set.should == [Parent, Child, OtherChild].to_set
+          
           Parent.descendants.should      == [Child, OtherChild]
         end
       end
@@ -339,7 +341,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
           doc.passwd.should == 'secret'
         end
 
-        should "typecast key values" do
+        should "type cast key values" do
           doc = @document.new(:name => 1234, :age => '21')
           doc.name.should == '1234'
           doc.age.should == 21
@@ -463,18 +465,18 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       context "reading a key before typcasting" do
         should "work for defined keys" do
           doc = @document.new(:name => 12)
-          doc.name_before_typecast.should == 12
+          doc.name_before_type_cast.should == 12
         end
 
         should "raise no method error for undefined keys" do
           doc = @document.new
-          lambda { doc.foo_before_typecast }.should raise_error(NoMethodError)
+          lambda { doc.foo_before_type_cast }.should raise_error(NoMethodError)
         end
 
         should "be accessible for use in a document" do
           @document.class_eval do
             def untypcasted_name
-              read_key_before_typecast(:name)
+              read_key_before_type_cast(:name)
             end
           end
 
@@ -496,7 +498,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
           lambda { doc.fart = 'poof!' }.should raise_error(NoMethodError)
         end
 
-        should "typecast value" do
+        should "type cast value" do
           doc = @document.new
           doc.name = 1234
           doc.name.should == '1234'

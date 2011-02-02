@@ -92,8 +92,8 @@ module MongoMapper
                 read_key(:#{key.name})
               end
 
-              def #{key.name}_before_typecast
-                read_key_before_typecast(:#{key.name})
+              def #{key.name}_before_type_cast
+                read_key_before_type_cast(:#{key.name})
               end
 
               def #{key.name}=(value)
@@ -137,11 +137,11 @@ module MongoMapper
             end
 
             if key.options[:in]
-              validates_inclusion_of(attribute, :within => key.options[:in])
+              validates_inclusion_of(attribute, :in => key.options[:in])
             end
 
             if key.options[:not_in]
-              validates_exclusion_of(attribute, :within => key.options[:not_in])
+              validates_exclusion_of(attribute, :in => key.options[:not_in])
             end
 
             if key.options[:length]
@@ -221,6 +221,10 @@ module MongoMapper
           save!
         end
 
+        def update_attribute(name, value)
+          update_attributes(name.to_sym => value)
+        end
+
         def id
           _id
         end
@@ -295,14 +299,14 @@ module MongoMapper
             end
           end
 
-          def read_key_before_typecast(name)
-            instance_variable_get(:"@#{name}_before_typecast")
+          def read_key_before_type_cast(name)
+            instance_variable_get(:"@#{name}_before_type_cast")
           end
 
           def write_key(name, value)
             key = keys[name.to_s]
             set_parent_document(key, value)
-            instance_variable_set :"@#{name}_before_typecast", value
+            instance_variable_set :"@#{name}_before_type_cast", value
             instance_variable_set :"@#{name}", key.set(value)
           end
       end

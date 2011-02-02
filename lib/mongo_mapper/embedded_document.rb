@@ -5,13 +5,13 @@ module MongoMapper
 
     def self.included(model)
       model.class_eval do
-        extend  Plugins
+        extend Plugins
 
+        plugin Plugins::ActiveModel
         plugin Plugins::EmbeddedDocument
         plugin Plugins::Associations
         plugin Plugins::Caching
         plugin Plugins::Clone
-        plugin Plugins::Descendants
         plugin Plugins::Equality
         plugin Plugins::Inspect
         plugin Plugins::Keys
@@ -23,7 +23,7 @@ module MongoMapper
         plugin Plugins::Sci
         plugin Plugins::Serialization
         plugin Plugins::Validations
-        plugin Plugins::Callbacks
+        plugin Plugins::EmbeddedCallbacks
       end
       super
     end

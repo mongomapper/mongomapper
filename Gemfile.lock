@@ -2,8 +2,8 @@ PATH
   remote: .
   specs:
     mongo_mapper (0.8.6)
-      activesupport (>= 2.3.4)
-      jnunemaker-validatable (~> 1.8.4)
+      activemodel (~> 3.0.0)
+      activesupport (~> 3.0.0)
       plucky (~> 0.3.6)
 
 GEM
@@ -22,8 +22,6 @@ GEM
     columnize (0.3.2)
     i18n (0.4.2)
     jnunemaker-matchy (0.4.0)
-    jnunemaker-validatable (1.8.4)
-      activesupport (>= 2.3.4)
     json (1.4.6)
     linecache (0.43)
     linecache19 (0.5.11)
@@ -64,18 +62,17 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activemodel
-  activesupport (>= 2.3.4)
-  bson_ext (~> 1.1)
-  i18n
+  activemodel (~> 3.0.0)
+  activesupport (~> 3.0.0)
+  bson_ext
   jnunemaker-matchy (~> 0.4.0)
-  jnunemaker-validatable (~> 1.8.4)
   json
   log_buddy
   mocha (~> 0.9.8)
   mongo_mapper!
   plucky (~> 0.3.6)
   rack-test
+  rake
   ruby-debug
   ruby-debug19
   shoulda (~> 2.11)

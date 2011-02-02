@@ -42,14 +42,17 @@ module MongoMapper
           end_eval
 
           if options[:dependent] && !embeddable?
-            model.after_destroy do |doc|
+            association = self
+            options = self.options
+
+            model.after_destroy do
               case options[:dependent]
                 when :destroy
-                  doc.get_proxy(self).destroy_all
+                  self.get_proxy(association).destroy_all
                 when :delete_all
-                  doc.get_proxy(self).delete_all
+                  self.get_proxy(association).delete_all
                 when :nullify
-                  doc.get_proxy(self).nullify
+                  self.get_proxy(association).nullify
               end
             end
           end

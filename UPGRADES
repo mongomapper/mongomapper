@@ -1,3 +1,11 @@
+0.8 => ??
+  * [attribute]_before_typecast should become [attribute]_before_type_cast (note the extra _)
+  * Change validates_exclusion_of :within option to :in
+  * Change validates_inclusion_of :within option to :in
+  * descendants now returns all descendants use direct_descendants for just children
+  * Switch validate_on_create and validate_on_update use validate :on => :create syntax
+  * Added #update_attribute
+
 0.7.6 => 0.8
   * Proxy#owner has been removed in favor of Proxy#proxy_owner
   * @new instance variable renamed to @_new (you shouldn't be using this anyway)

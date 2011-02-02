@@ -1,8 +1,8 @@
 # encoding: UTF-8
-# Make sure you have the correct versions of the gems (see gemspec) in your load path.
 require 'plucky'
-require 'validatable'
 require 'active_support/all'
+require 'active_model'
+require "mongo_mapper/railtie" if defined?(Rails)
 
 module MongoMapper
   autoload :Connection,             'mongo_mapper/connection'
@@ -23,35 +23,37 @@ module MongoMapper
   end
 
   module Plugins
-    autoload :Associations,     'mongo_mapper/plugins/associations'
-    autoload :Accessible,       'mongo_mapper/plugins/accessible'
-    autoload :Callbacks,        'mongo_mapper/plugins/callbacks'
-    autoload :Caching,          'mongo_mapper/plugins/caching'
-    autoload :Clone,            'mongo_mapper/plugins/clone'
-    autoload :Descendants,      'mongo_mapper/plugins/descendants'
-    autoload :Dirty,            'mongo_mapper/plugins/dirty'
-    autoload :Document,         'mongo_mapper/plugins/document'
-    autoload :DynamicQuerying,  'mongo_mapper/plugins/dynamic_querying'
-    autoload :EmbeddedDocument, 'mongo_mapper/plugins/embedded_document'
-    autoload :Equality,         'mongo_mapper/plugins/equality'
-    autoload :IdentityMap,      'mongo_mapper/plugins/identity_map'
-    autoload :Inspect,          'mongo_mapper/plugins/inspect'
-    autoload :Indexes,          'mongo_mapper/plugins/indexes'
-    autoload :Keys,             'mongo_mapper/plugins/keys'
-    autoload :Logger,           'mongo_mapper/plugins/logger'
-    autoload :Modifiers,        'mongo_mapper/plugins/modifiers'
-    autoload :Pagination,       'mongo_mapper/plugins/pagination'
-    autoload :Persistence,      'mongo_mapper/plugins/persistence'
-    autoload :Protected,        'mongo_mapper/plugins/protected'
-    autoload :Querying,         'mongo_mapper/plugins/querying'
-    autoload :Rails,            'mongo_mapper/plugins/rails'
-    autoload :Safe,             'mongo_mapper/plugins/safe'
-    autoload :Sci,              'mongo_mapper/plugins/sci'
-    autoload :Scopes,           'mongo_mapper/plugins/scopes'
-    autoload :Serialization,    'mongo_mapper/plugins/serialization'
-    autoload :Timestamps,       'mongo_mapper/plugins/timestamps'
-    autoload :Userstamps,       'mongo_mapper/plugins/userstamps'
-    autoload :Validations,      'mongo_mapper/plugins/validations'
+    autoload :ActiveModel,        'mongo_mapper/plugins/active_model'
+    autoload :Associations,       'mongo_mapper/plugins/associations'
+    autoload :Accessible,         'mongo_mapper/plugins/accessible'
+    autoload :Callbacks,          'mongo_mapper/plugins/callbacks'
+    autoload :Caching,            'mongo_mapper/plugins/caching'
+    autoload :Clone,              'mongo_mapper/plugins/clone'
+    autoload :Descendants,        'mongo_mapper/plugins/descendants'
+    autoload :Dirty,              'mongo_mapper/plugins/dirty'
+    autoload :Document,           'mongo_mapper/plugins/document'
+    autoload :DynamicQuerying,    'mongo_mapper/plugins/dynamic_querying'
+    autoload :EmbeddedCallbacks,  'mongo_mapper/plugins/embedded_callbacks'
+    autoload :EmbeddedDocument,   'mongo_mapper/plugins/embedded_document'
+    autoload :Equality,           'mongo_mapper/plugins/equality'
+    autoload :IdentityMap,        'mongo_mapper/plugins/identity_map'
+    autoload :Inspect,            'mongo_mapper/plugins/inspect'
+    autoload :Indexes,            'mongo_mapper/plugins/indexes'
+    autoload :Keys,               'mongo_mapper/plugins/keys'
+    autoload :Logger,             'mongo_mapper/plugins/logger'
+    autoload :Modifiers,          'mongo_mapper/plugins/modifiers'
+    autoload :Pagination,         'mongo_mapper/plugins/pagination'
+    autoload :Persistence,        'mongo_mapper/plugins/persistence'
+    autoload :Protected,          'mongo_mapper/plugins/protected'
+    autoload :Querying,           'mongo_mapper/plugins/querying'
+    autoload :Rails,              'mongo_mapper/plugins/rails'
+    autoload :Safe,               'mongo_mapper/plugins/safe'
+    autoload :Sci,                'mongo_mapper/plugins/sci'
+    autoload :Scopes,             'mongo_mapper/plugins/scopes'
+    autoload :Serialization,      'mongo_mapper/plugins/serialization'
+    autoload :Timestamps,         'mongo_mapper/plugins/timestamps'
+    autoload :Userstamps,         'mongo_mapper/plugins/userstamps'
+    autoload :Validations,        'mongo_mapper/plugins/validations'
 
     module Associations
       autoload :Base,                         'mongo_mapper/plugins/associations/base'
@@ -84,3 +86,5 @@ require 'mongo_mapper/support/descendant_appends'
 
 # FIXME: autoload with proxy is failing, need to investigate
 require 'mongo_mapper/plugins/associations/proxy'
+
+ActiveSupport.run_load_hooks(:mongo_mapper, MongoMapper)

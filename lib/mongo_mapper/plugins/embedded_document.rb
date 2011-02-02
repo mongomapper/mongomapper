@@ -29,14 +29,20 @@ module MongoMapper
 
         def save(options={})
           _root_document.try(:save, options).tap do |result|
-            @_new = false if result
+            persist(options) if result
           end
         end
 
         def save!(options={})
           _root_document.try(:save!, options).tap do |result|
-            @_new = false if result
+            persist(options) if result
           end
+        end
+
+        def persist(options={})
+          @_new = false
+          clear_changes if respond_to?(:clear_changes)
+          save_to_collection(options)
         end
 
         def _root_document

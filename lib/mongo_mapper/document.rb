@@ -5,14 +5,14 @@ module MongoMapper
 
     def self.included(model)
       model.class_eval do
-        extend  Plugins
-
+        extend Plugins
+        
+        plugin Plugins::ActiveModel
         plugin Plugins::Document
         plugin Plugins::Querying # for now needs to be before associations (save_to_collection)
         plugin Plugins::Associations
         plugin Plugins::Caching
         plugin Plugins::Clone
-        plugin Plugins::Descendants
         plugin Plugins::DynamicQuerying
         plugin Plugins::Equality
         plugin Plugins::Inspect
@@ -33,6 +33,7 @@ module MongoMapper
         plugin Plugins::Timestamps
         plugin Plugins::Userstamps
         plugin Plugins::Validations
+        plugin Plugins::EmbeddedCallbacks
         plugin Plugins::Callbacks # for now callbacks needs to be after validations
       end
       super

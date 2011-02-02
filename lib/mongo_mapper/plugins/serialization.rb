@@ -1,73 +1,94 @@
 # encoding: UTF-8
-require 'active_support/json'
+require 'active_model/serializers/json'
+require 'active_model/serializers/xml'
 
 module MongoMapper
   module Plugins
     module Serialization
       def self.configure(model)
-        model.class_eval { cattr_accessor :include_root_in_json, :instance_writer => true }
+        model.class_eval do
+          include ::ActiveModel::Serializers::JSON
+          include ::ActiveModel::Serializers::Xml
+          self.include_root_in_json = false
+        end
       end
 
       module InstanceMethods
-        def as_json options={}
+        def serializable_attributes
+          attributes.keys.map(&:to_s) + ['id'] - ['_id']
+        end
+
+        def serializable_hash(options = nil)
           options ||= {}
-          unless options[:only]
-            methods = [options.delete(:methods)].flatten.compact
-            methods << :id
-            options[:methods] = methods.uniq
+
+          options[:only]   = Array.wrap(options[:only]).map(&:to_s)
+          options[:except] = Array.wrap(options[:except]).map(&:to_s)
+
+          attribute_names = serializable_attributes
+
+          if options[:only].any?
+            attribute_names &= options[:only]
+          elsif options[:except].any?
+            attribute_names -= options[:except]
           end
 
-          except = [options.delete(:except)].flatten.compact
-          except << :_id
-          options[:except] = except
-
-          # Direct rip from Rails 3 ActiveModel Serialization (#serializable_hash)
-          hash = begin
-            options[:only]   = Array.wrap(options[:only]).map { |n| n.to_s }
-            options[:except] = Array.wrap(options[:except]).map { |n| n.to_s }
-
-            attribute_names = attributes.keys.sort
-            if options[:only].any?
-              attribute_names &= options[:only]
-            elsif options[:except].any?
-              attribute_names -= options[:except]
-            end
-
-            method_names = Array.wrap(options[:methods]).inject([]) do |methods, name|
-              methods << name if respond_to?(name.to_s)
-              methods
-            end
-
-            (attribute_names + method_names).inject({}) { |hash, name|
-              hash[name] = send(name)
-              hash
-            }
-          end
-          # End rip
-
-          options.delete(:only) if options[:only].nil? or options[:only].empty?
-
-          hash.each do |key, value|
-            if value.is_a?(Array)
-              hash[key] = value.map do |item|
-                item.respond_to?(:as_json) ? item.as_json(options) : item
-              end
-            elsif value.is_a? BSON::ObjectId
-              hash[key] = value.to_s
-            elsif value.respond_to?(:as_json)
-              hash[key] = value.as_json(options)
-            end
+          attribute_names += Array.wrap(options[:methods]).map(&:to_s).select do |method|
+            respond_to?(method)
           end
 
-          # Replicate Rails 3 naming - and also bin anytihng after : for use in our dynamic classes from unit tests
-          hash = { ActiveSupport::Inflector.underscore(ActiveSupport::Inflector.demodulize(self.class.name)).gsub(/:.*/,'') => hash } if include_root_in_json
+          hash = attribute_names.sort.inject({}) do |hash, name|
+            value = send(name)
+            hash[name] = if value.is_a?(Array)
+              value.map {|v| v.respond_to?(:serializable_hash) ? v.serializable_hash : v }
+            elsif value.respond_to?(:serializable_hash)
+              value.serializable_hash
+            else
+              value
+            end
+            hash
+          end
+
+          serializable_add_includes(options) do |association, records, opts|
+            hash[association.to_s] = records.is_a?(Array) ?
+              records.map { |r| r.serializable_hash(opts) } :
+              records.serializable_hash(opts)
+          end
+
           hash
         end
+
+      private
+
+        def serializable_add_includes(options = {})
+          return unless include_associations = options.delete(:include)
+
+          base_only_or_except = { :except => options[:except],
+                                  :only => options[:only] }
+
+          include_has_options = include_associations.is_a?(Hash)
+          associations = include_has_options ? include_associations.keys : Array.wrap(include_associations)
+
+          associations.each do |association|
+            records = get_proxy(self.class.associations[association])
+            unless records.nil?
+              association_options = include_has_options ? include_associations[association] : base_only_or_except
+              opts = options.merge(association_options)
+              yield(association, records, opts)
+            end
+          end
+
+          options[:include] = include_associations
+        end
+
       end
 
       module ClassMethods
         def from_json(json)
-          self.new(ActiveSupport::JSON.decode(json))
+          self.new.from_json(json)
+        end
+
+        def from_xml(xml)
+          self.new.from_xml(xml)
         end
       end
 

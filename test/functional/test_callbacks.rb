@@ -4,15 +4,14 @@ module CallbacksSupport
   def self.included base
     base.key :name, String
 
-    [ :before_validation_on_create, :before_validation_on_update,
+    [ :after_find,        :after_initialize,
       :before_validation, :after_validation,
       :before_create,     :after_create,
       :before_update,     :after_update,
       :before_save,       :after_save,
-      :before_destroy,    :after_destroy].each do |callback|
-      callback_method = "#{callback}_callback"
-      base.send(callback, callback_method)
-      define_method(callback_method) do
+      :before_destroy,    :after_destroy
+    ].each do |callback|
+      base.send(callback) do
         history << callback.to_sym
       end
     end
@@ -29,12 +28,44 @@ module CallbacksSupport
 end
 
 class CallbacksTest < Test::Unit::TestCase
-  CreateCallbackOrder = [:before_validation, :before_validation_on_create, :after_validation, :before_save, :before_create, :after_create, :after_save]
-  UpdateCallbackOrder = [:before_validation, :before_validation_on_update, :after_validation, :before_save, :before_update, :after_update, :after_save]
+  CreateCallbackOrder = [
+    :after_initialize,
+    :before_validation,
+    :after_validation,
+    :before_save,
+    :before_create,
+    :after_create,
+    :after_save
+  ]
+
+  UpdateCallbackOrder = [
+    :before_validation,
+    :after_validation,
+    :before_save,
+    :before_update,
+    :after_update,
+    :after_save
+  ]
 
   context "Defining and running callbacks on documents" do
     setup do
       @document = Doc { include CallbacksSupport }
+    end
+
+    should "run after_initialize" do
+      doc = @document.new
+      doc.history.should == [:after_initialize]
+    end
+
+    should "run callbacks on find" do
+      doc = @document.create(:name => 'John Nunemaker')
+      @document.find!(doc.id).history.should == [:after_find, :after_initialize]
+    end
+
+    should "run after_initialize when cloning an object" do
+      doc = @document.create(:name => 'John Nunemaker')
+      doc.clear_history
+      doc.dup.history.should == [:after_initialize]
     end
 
     should "get the order right for creating documents" do
@@ -102,11 +133,8 @@ class CallbacksTest < Test::Unit::TestCase
       child = @child_class.new(:name => 'Child', :children => [grand])
       root  = @root_class.create(:name => 'Parent', :children => [child])
 
-      child = root.children.first
-      child.history.should == CreateCallbackOrder
-
-      grand = root.children.first.children.first
-      grand.history.should == CreateCallbackOrder
+      root.children.first.history.should == CreateCallbackOrder
+      root.children.first.children.first.history.should == CreateCallbackOrder
     end
 
     should "get the order right based on root document updating" do
@@ -116,11 +144,8 @@ class CallbacksTest < Test::Unit::TestCase
       root.clear_history
       root.update_attributes(:name => 'Updated Parent')
 
-      child = root.children.first
-      child.history.should == UpdateCallbackOrder
-
-      grand = root.children.first.children.first
-      grand.history.should == UpdateCallbackOrder
+      root.children.first.history.should == UpdateCallbackOrder
+      root.children.first.children.first.history.should == UpdateCallbackOrder
     end
 
     should "work for before and after destroy" do
