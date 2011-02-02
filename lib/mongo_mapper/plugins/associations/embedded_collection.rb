@@ -30,6 +30,10 @@ module MongoMapper
         alias_method :push, :<<
         alias_method :concat, :<<
 
+        def save_to_collection(options={})
+          @target.each { |doc| doc.persist(options) } if @target
+        end
+
         private
           def assign_references(*docs)
             docs.each { |doc| doc._parent_document = proxy_owner }

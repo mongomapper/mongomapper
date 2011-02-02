@@ -14,22 +14,27 @@ module MongoMapper
         end
 
         def paginate(options)
+          return [] if ids.blank?
           query.paginate(options)
         end
 
         def all(options={})
+          return [] if ids.blank?
           query(options).all
         end
 
         def first(options={})
+          return nil if ids.blank?
           query(options).first
         end
 
         def last(options={})
+          return nil if ids.blank?
           query(options).last
         end
 
         def count(options={})
+          return 0 if ids.blank?
           options.blank? ? ids.size : query(options).count
         end
 
@@ -115,7 +120,8 @@ module MongoMapper
           end
 
           def find_target
-            ids.blank? ? [] : all
+            return [] if ids.blank?
+            all
           end
 
           def ids

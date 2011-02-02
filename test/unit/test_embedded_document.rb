@@ -550,11 +550,6 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         end
       end
 
-      should "call inspect on the document's attributes instead of to_s when inspecting the document" do
-        doc = @document.new(:animals => %w(dog cat))
-        doc.inspect.should include(%(animals: ["dog", "cat"]))
-      end
-
       context "equality" do
         setup do
           @oid = BSON::ObjectId.new

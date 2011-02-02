@@ -13,6 +13,11 @@ class OneProxyTest < Test::Unit::TestCase
     @post_class.new.author.nil?.should be_true
   end
 
+  should "return nil instead of a proxy" do
+    @post_class.one :author, :class => @author_class
+    nil.should === @post_class.new.author
+  end
+
   should "allow assignment of associated document using a hash" do
     @post_class.one :author, :class => @author_class
 
@@ -41,6 +46,26 @@ class OneProxyTest < Test::Unit::TestCase
         new_author = @author_class.new(:name => 'Emily')
         post.author = new_author
         post.author.should == new_author
+      end
+
+      should "generate a new proxy instead of modifying the existing one" do
+        @post_class.one :author, :class => @author_class
+
+        post = @post_class.new
+        author = @author_class.new(:name => 'Frank')
+        post.author = author
+        post.reload
+
+        post.author.should == author
+        post.author.nil?.should be_false
+
+        original_author = post.author
+        original_author.name.should == 'Frank'
+        new_author = @author_class.new(:name => 'Emily')
+        post.author = new_author
+        post.author.should == new_author
+
+        original_author.name.should == 'Frank'
       end
     end
 
@@ -85,13 +110,12 @@ class OneProxyTest < Test::Unit::TestCase
 
   should "unset the association" do
     @post_class.one :author, :class => @author_class
-    post = @post_class.new
-    author = @author_class.new
-    post.author = author
+    post = @post_class.create
+    author = @author_class.create
+    post.update_attributes!(:author => author)
     post.reload
-
     post.author = nil
-    post.author.nil?.should be_false
+    post.author.nil?.should be_true
   end
 
   should "work with :dependent delete" do
@@ -136,7 +160,7 @@ class OneProxyTest < Test::Unit::TestCase
     @post_class.one :author, :class => @author_class
 
     post = @post_class.create
-    author = post.author.build(:name => 'John')
+    author = post.build_author(:name => 'John')
     post.author.should be_instance_of(@author_class)
     post.author.should be_new
     post.author.name.should == 'John'
@@ -148,7 +172,7 @@ class OneProxyTest < Test::Unit::TestCase
     @post_class.one :author, :class => @author_class
 
     post = @post_class.create
-    author = post.author.create(:name => 'John')
+    author = post.create_author(:name => 'John')
     post.author.should be_instance_of(@author_class)
     post.author.should_not be_new
     post.author.name.should == 'John'
@@ -165,13 +189,13 @@ class OneProxyTest < Test::Unit::TestCase
     should "raise exception if invalid" do
       post = @post_class.create
       assert_raises(MongoMapper::DocumentNotValid) do
-        post.author.create!
+        post.create_author!
       end
     end
 
     should "work if valid" do
       post = @post_class.create
-      author = post.author.create!(:name => 'John')
+      author = post.create_author!(:name => 'John')
       post.author.should be_instance_of(@author_class)
       post.author.should_not be_new
       post.author.name.should == 'John'

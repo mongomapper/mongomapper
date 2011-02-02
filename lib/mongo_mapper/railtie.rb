@@ -8,6 +8,10 @@ module MongoMapper
 
     config.mongo_mapper = ActiveSupport::OrderedOptions.new
 
+    rake_tasks do
+      load "mongo_mapper/railtie/database.rake"
+    end
+
     initializer "mongo_mapper.set_configs" do |app|
       ActiveSupport.on_load(:mongo_mapper) do
         app.config.mongo_mapper.each do |k,v|
@@ -26,12 +30,8 @@ module MongoMapper
     end
 
     # Clear the identity map after each request
-    initializer "mongo_mapper.clear_identity_map", :before => :set_clear_dependencies_hook do |app|
-      ActiveSupport.on_load(:mongo_mapper) do
-        ActionDispatch::Callbacks.after do
-          MongoMapper::Plugins::IdentityMap.clear
-        end
-      end
+    initializer "mongo_mapper.clear_identity_map" do |app|
+      app.config.middleware.use 'MongoMapper::Middleware::IdentityMap'
     end
 
     initializer "mongo_mapper.prepare_dispatcher" do |app|

@@ -18,6 +18,10 @@ module MongoMapper
   autoload :Plugins,                'mongo_mapper/plugins'
   autoload :Version,                'mongo_mapper/version'
 
+  module Middleware
+    autoload :IdentityMap, 'mongo_mapper/middleware/identity_map'
+  end
+
   module Plugins
     autoload :ActiveModel,        'mongo_mapper/plugins/active_model'
     autoload :Associations,       'mongo_mapper/plugins/associations'
@@ -55,6 +59,9 @@ module MongoMapper
       autoload :Base,                         'mongo_mapper/plugins/associations/base'
       autoload :Collection,                   'mongo_mapper/plugins/associations/collection'
       autoload :EmbeddedCollection,           'mongo_mapper/plugins/associations/embedded_collection'
+      autoload :ManyAssociation,              'mongo_mapper/plugins/associations/many_association'
+      autoload :BelongsToAssociation,         'mongo_mapper/plugins/associations/belongs_to_association'
+      autoload :OneAssociation,               'mongo_mapper/plugins/associations/one_association'
       autoload :ManyDocumentsProxy,           'mongo_mapper/plugins/associations/many_documents_proxy'
       autoload :BelongsToProxy,               'mongo_mapper/plugins/associations/belongs_to_proxy'
       autoload :BelongsToPolymorphicProxy,    'mongo_mapper/plugins/associations/belongs_to_polymorphic_proxy'

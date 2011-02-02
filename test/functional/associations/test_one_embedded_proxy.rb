@@ -20,7 +20,7 @@ class OneEmbeddedProxyTest < Test::Unit::TestCase
     @post_class.one :author, :class => @author_class
 
     post = @post_class.create
-    author = post.author.build(:name => "John")
+    author = post.build_author(:name => "John")
     post.author.should be_instance_of(@author_class)
     post.author.should be_new
     post.author.name.should == 'John'
@@ -48,7 +48,7 @@ class OneEmbeddedProxyTest < Test::Unit::TestCase
   should "not have problem loading root document if embedded one is nil" do
     @post_class.one :author, :class => @author_class
     post = @post_class.create
-    
+
     lambda {
       @post_class.find(post.id)
     }.should_not raise_error
@@ -76,6 +76,25 @@ class OneEmbeddedProxyTest < Test::Unit::TestCase
 
     post.author = @author_class.new(:name => 'Frank')
     post.author?.should be_true
+  end
+
+  should "initialize id for nested embedded document created from hash" do
+    @address_class = EDoc('Address') do
+      key :city, String
+      key :state, String
+    end
+    @author_class.one(:address, :class => @address_class)
+    @post_class.one(:author, :class => @author_class)
+
+    post = @post_class.create(:title => 'Post Title', :author => {
+      :name => 'Frank',
+      :address => {
+        :city => 'Boston',
+        :state => 'MA'
+      }
+    })
+
+    post.author.address.id.should_not be_nil
   end
 
 end

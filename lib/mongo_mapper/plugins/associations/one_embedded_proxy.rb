@@ -16,9 +16,14 @@ module MongoMapper
           else
             @target = klass.load(doc)
           end
+          @target.default_id_value if @target && @target.id.nil?
           assign_references(@target)
           loaded
           @target
+        end
+
+        def save_to_collection(options={})
+          @target.persist(options) if @target
         end
 
         protected

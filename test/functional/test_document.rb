@@ -192,11 +192,15 @@ class DocumentTest < Test::Unit::TestCase
 
       @document.many :foos, :class => @foo_class
       @document.many :bars, :class => @bar_class
+      @document.belongs_to :foo, :class => @foo_class
+      @document.one :bar, :class => @bar_class
 
       @instance = @document.create({
-        :age => 39,
+        :age  => 39,
         :foos => [@foo_class.new(:name => '1')],
         :bars => [@bar_class.new(:name => '1')],
+        :foo  => @foo_class.new(:name => '2'),
+        :bar  => @bar_class.new(:name => '2')
       })
     end
 
@@ -207,10 +211,25 @@ class DocumentTest < Test::Unit::TestCase
       @instance.age.should == 39
     end
 
-    should "reset all associations" do
+    should "reset many associations" do
       @instance.foos.expects(:reset).at_least_once
       @instance.bars.expects(:reset).at_least_once
       @instance.reload
+    end
+
+    should "reset belongs_to association" do
+      @instance.foo = nil
+      @instance.reload
+      @instance.foo.should_not be_nil
+    end
+
+    should "reset one association" do
+      @instance.bar = nil
+      @instance.reload
+      @instance.bar.should_not be_nil
+    end
+
+    should "reset nil one association" do
     end
 
     should "reinstantiate embedded associations" do

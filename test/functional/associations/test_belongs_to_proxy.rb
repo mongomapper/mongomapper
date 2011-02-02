@@ -15,12 +15,29 @@ class BelongsToProxyTest < Test::Unit::TestCase
     @comment_class.new.post.nil?.should be_true
   end
 
+  should "return nil instead of a proxy" do
+    nil.should === @comment_class.new.post
+  end
+
   should "have boolean presence method" do
     comment = @comment_class.new(:name => 'Foo!')
     comment.post?.should be_false
 
     comment.post = @post_class.new(:name => 'mongomapper')
     comment.post?.should be_true
+  end
+
+  should "allow overriding association methods" do
+    @comment_class.class_eval do
+      def post?
+        super
+      end
+    end
+
+    instance = @comment_class.new
+    instance.post?.should be_false
+    instance.post = @post_class.new
+    instance.post?.should be_true
   end
 
   should "be able to replace the association" do
@@ -31,6 +48,26 @@ class BelongsToProxyTest < Test::Unit::TestCase
     comment = comment.reload
     comment.post.should == post
     comment.post.nil?.should be_false
+  end
+
+  should "generate a new proxy when replacing the association" do
+    post1 = @post_class.create(:name => 'post1')
+    post2 = @post_class.create(:name => 'post2')
+
+    comment = @comment_class.new(:name => 'Foo!', :post => post1)
+    comment.save.should be_true
+
+
+    comment = comment.reload
+    comment.post.should == post1
+    comment.post.nil?.should be_false
+
+    original_post = comment.post
+    original_post.name.should == 'post1'
+
+    comment.post = post2
+    comment.post.name.should == 'post2'
+    original_post.name.should == 'post1'
   end
 
   should "unset the association" do
