@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Persistence
+      extend ActiveSupport::Concern
+
       module ClassMethods
         def connection(mongo_connection=nil)
           assert_supported

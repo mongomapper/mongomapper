@@ -4,6 +4,8 @@ require 'set'
 module MongoMapper
   module Plugins
     module IdentityMap
+      extend ActiveSupport::Concern
+
       def self.models
         @models ||= Set.new
       end
@@ -12,8 +14,8 @@ module MongoMapper
         models.each { |m| m.identity_map.clear }
       end
 
-      def self.configure(model)
-        IdentityMap.models << model
+      included do
+        IdentityMap.models << self
       end
 
       module ClassMethods

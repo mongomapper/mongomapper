@@ -2,11 +2,9 @@
 module MongoMapper
   module Plugins
     module Validations
-      def self.configure(model)
-        model.class_eval do
-          include ::ActiveModel::Validations
-        end
-      end
+      extend ActiveSupport::Concern
+
+      include ::ActiveModel::Validations
 
       module ClassMethods
         def validates_uniqueness_of(*attr_names)

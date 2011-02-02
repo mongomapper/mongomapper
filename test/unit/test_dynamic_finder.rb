@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class DynamicFinderTest < Test::Unit::TestCase
-  include MongoMapper::Plugins::DynamicQuerying
+  DynamicFinder = MongoMapper::Plugins::DynamicQuerying::DynamicFinder
 
   should "initialize with method" do
     finder = DynamicFinder.new(:foobar)

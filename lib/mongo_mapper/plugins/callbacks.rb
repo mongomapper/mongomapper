@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Callbacks
+      extend ActiveSupport::Concern
+
       module InstanceMethods
         def initialize(attrs = {})
           super.tap { run_callbacks(:initialize) }

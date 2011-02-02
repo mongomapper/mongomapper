@@ -12,7 +12,7 @@ class FooType < Struct.new(:bar)
 end
 
 class KeyTest < Test::Unit::TestCase
-  include MongoMapper::Plugins::Keys
+  Key = MongoMapper::Plugins::Keys::Key
 
   context "Initializing a new key" do
     should "allow setting the name" do
