@@ -9,7 +9,6 @@ module MongoMapper
       include ::ActiveModel::Serialization
       include ::ActiveModel::Serializers::Xml
       include ::ActiveModel::Serializers::JSON
-      include ::ActiveSupport::DescendantsTracker
 
       included do
         extend ::ActiveModel::Translation

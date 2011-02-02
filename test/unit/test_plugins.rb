@@ -48,6 +48,45 @@ class PluginsTest < Test::Unit::TestCase
     should "add plugin to plugins" do
       @document.plugins.should include(MyConcern)
     end
+
+    context "Document" do
+      setup do
+        MongoMapper::Document.plugins.delete(MyConcern)
+      end
+
+      should 'allow plugins on Document' do
+        MongoMapper::Document.plugin(MyConcern)
+        Doc().should respond_to(:class_foo)
+        Doc().new.should respond_to(:instance_foo)
+      end
+
+      should 'add plugins to classes that include Document before they are added' do
+        article = Doc()
+        MongoMapper::Document.plugin(MyConcern)
+        article.should respond_to(:class_foo)
+        article.new.should respond_to(:instance_foo)
+      end
+    end
+
+    context "EmbeddedDocument" do
+      setup do
+        MongoMapper::EmbeddedDocument.plugins.delete(MyConcern)
+      end
+
+      should 'allow plugins on EmbeddedDocument' do
+        MongoMapper::EmbeddedDocument.plugin(MyConcern)
+        article = EDoc()
+        article.should respond_to(:class_foo)
+        article.new.should respond_to(:instance_foo)
+      end
+
+      should 'add plugins to classes that include EmbeddedDocument before they are added' do
+        article = EDoc()
+        MongoMapper::EmbeddedDocument.plugin(MyConcern)
+        article.should respond_to(:class_foo)
+        article.new.should respond_to(:instance_foo)
+      end
+    end
   end
 
   context "deprecated plugin" do

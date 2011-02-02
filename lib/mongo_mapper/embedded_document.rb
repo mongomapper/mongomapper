@@ -3,6 +3,7 @@ module MongoMapper
   module EmbeddedDocument
     extend Support::DescendantAppends
     extend ActiveSupport::Concern
+    extend Plugins
 
     include Plugins::ActiveModel
     include Plugins::EmbeddedDocument
