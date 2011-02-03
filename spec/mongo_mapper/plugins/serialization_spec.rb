@@ -1,7 +1,7 @@
-require 'test_helper'
+require 'spec_helper'
 
-class SerializationTest < Test::Unit::TestCase
-  def setup
+describe MongoMapper::Plugins::Serialization do
+  before do
     @document = EDoc do
       key :name, String
       key :age, Integer
@@ -23,8 +23,8 @@ class SerializationTest < Test::Unit::TestCase
     class List
       include MongoMapper::Document
       key :name
-      many :items,          :class_name => 'SerializationTest::Item'
-      belongs_to :creator,  :class_name => 'SerializationTest::User'
+      many :items,          :class_name => 'Item'
+      belongs_to :creator,  :class_name => 'User'
     end
 
     class Item
@@ -32,7 +32,7 @@ class SerializationTest < Test::Unit::TestCase
 
       key :title
       key :description
-      many :assignments, :class_name => 'SerializationTest::Assignment'
+      many :assignments, :class_name => 'Assignment'
 
       def a_method
         1
@@ -41,8 +41,8 @@ class SerializationTest < Test::Unit::TestCase
 
     class Assignment
       include MongoMapper::EmbeddedDocument
-      belongs_to :assigned_by,  :class_name => 'SerializationTest::User'
-      belongs_to :user,         :class_name => 'SerializationTest::User'
+      belongs_to :assigned_by,  :class_name => 'User'
+      belongs_to :user,         :class_name => 'User'
 
       def serializable_hash(options = {})
         super({:only => :user_id}.merge(options))
@@ -54,7 +54,7 @@ class SerializationTest < Test::Unit::TestCase
       key :name, String
     end
 
-    setup do
+    before do
       @user1 = User.new(:name => 'Brandon')
       @user2 = User.new(:name => 'John')
       @item = Item.new(
@@ -66,24 +66,24 @@ class SerializationTest < Test::Unit::TestCase
       )
     end
 
-    should "only include specified attributes with :only option" do
+    it "should only include specified attributes with :only option" do
       @item.serializable_hash(:only => :title).should == {'title' => 'Serialization'}
     end
 
-    should "exclude attributes specified with :except option" do
+    it "should exclude attributes specified with :except option" do
       hash = @item.serializable_hash(:except => :description)
       hash['title'].should_not be_nil
       hash['description'].should be_nil
     end
 
-    should "add :methods with :only option" do
+    it "should add :methods with :only option" do
       @item.serializable_hash(:only => :title, :methods => :a_method).should == {
         'title' => 'Serialization',
         'a_method' => 1
       }
     end
 
-    should "call #serializable_hash on embedded many docs" do
+    it "should call #serializable_hash on embedded many docs" do
       @item.serializable_hash.should == {
         'id'          => @item.id,
         'title'       => 'Serialization',
@@ -93,22 +93,22 @@ class SerializationTest < Test::Unit::TestCase
     end
 
     context "with :include" do
-      setup do
+      before do
         @list = List.new(:title => 'MongoMapper', :items => [@item], :creator => @user1)
       end
 
-      should "add many association" do
+      it "should add many association" do
         hash = @list.serializable_hash(:include => :items)
         hash['items'].should be_instance_of(Array)
         hash['items'].first['title'].should == 'Serialization'
       end
 
-      should "add belongs_to association" do
+      it "should add belongs_to association" do
         hash = @list.serializable_hash(:include => :creator)
         hash['creator'].should == @user1.serializable_hash
       end
 
-      should "add one association" do
+      it "should add one association" do
         author_class = Doc do
           key :post_id, ObjectId
         end
@@ -121,13 +121,13 @@ class SerializationTest < Test::Unit::TestCase
         hash['author'].should == author.serializable_hash
       end
 
-      should "include multiple associations" do
+      it "should include multiple associations" do
         hash = @list.serializable_hash(:include => [:items, :creator])
         hash['items'].should be_instance_of(Array)
         hash['creator'].should == @user1.serializable_hash
       end
 
-      should "include multiple associations with options" do
+      it "should include multiple associations with options" do
         hash = @list.serializable_hash(:include => {:creator => {:only => :name}})
         hash['creator'].should == @user1.serializable_hash(:only => :name)
       end
@@ -136,30 +136,30 @@ class SerializationTest < Test::Unit::TestCase
 
   [:json, :xml].each do |format|
     context format do
-      should "be reversable" do
+      it "should be reversable" do
         serialized = @instance.send("to_#{format}")
         unserialized = @document.send("from_#{format}", serialized)
 
-        assert_equal @instance, unserialized
+        @instance.should == unserialized
       end
 
-      should "allow attribute only filtering" do
+      it "should allow attribute only filtering" do
         serialized = @instance.send("to_#{format}", :only => [ :age, :name ])
         unserialized = @document.send("from_#{format}", serialized)
 
-        assert_equal @instance.name, unserialized.name
-        assert_equal @instance.age, unserialized.age
-        assert ! unserialized.awesome
-        assert_nil unserialized.created_at
+        @instance.name.should == unserialized.name
+        @instance.age.should == unserialized.age
+        unserialized.awesome.should be_false
+        unserialized.created_at.should be_nil
       end
 
-      should "allow attribute except filtering" do
+      it "shouldallow attribute except filtering" do
         serialized = @instance.send("to_#{format}", :except => [ :age, :name ])
         unserialized = @document.send("from_#{format}", serialized)
 
-        assert_nil unserialized.name
-        assert_nil unserialized.age
-        assert_equal @instance.awesome, unserialized.awesome
+        unserialized.name.should be_nil
+        unserialized.age.should be_nil
+        @instance.awesome.should == unserialized.awesome
       end
     end
   end
