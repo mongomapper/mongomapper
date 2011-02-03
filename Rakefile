@@ -9,7 +9,21 @@ Rake::TestTask.new(:test) do |test|
   test.pattern   = 'test/**/test_*.rb'
 end
 
-task :default => :test
+require 'rspec/core/rake_task'
+
+desc "Run all specs"
+RSpec::Core::RakeTask.new do |t|
+  t.pattern = "./spec/**/*_spec.rb"
+end
+
+desc "Run all specs with rcov"
+RSpec::Core::RakeTask.new(:rcov => :spec) do |t|
+  t.rcov = true
+  t.pattern = "./spec/**/*_spec.rb"
+  t.rcov_opts = '--exclude /gems/,/Library/,/usr/,lib/tasks,.bundle,config,/lib/rspec/,/lib/rspec-'
+end
+
+task :default => [:spec, :test]
 
 desc 'Builds the gem'
 task :build do
