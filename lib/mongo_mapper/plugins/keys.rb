@@ -284,7 +284,7 @@ module MongoMapper
           end
 
           def ensure_key_exists(name)
-            self.class.key(name) unless respond_to?("#{name}=")
+            self.class.key(name) unless respond_to?(:"#{name}=")
           end
 
           def set_parent_document(key, value)
