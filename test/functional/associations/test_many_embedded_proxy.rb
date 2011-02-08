@@ -98,6 +98,35 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     owner.pets[1].species.should == 'Siberian Husky'
   end
 
+  context "passing documents between versions of code" do
+    setup do
+      @old_klass = Doc do
+        set_collection_name 'generic_parents'
+        key :name, String
+      end
+
+      @updated_klass = Doc do
+        set_collection_name 'generic_parents'
+        key :name, String
+      end
+      @updated_klass.many :pets, :class => @pet_class
+    end
+
+    should "not break many embedded proxy" do
+      @old_klass.collection.drop
+      created_by_new_code = @updated_klass.create!
+      created_by_new_code.pets.should == []
+
+      @old_klass.first # ensure_key_exists calls @old_klass.key(:embedded_docs) (not @old_klass.many(:embedded_docs))
+      @old_klass.create!(:name => 'created in old code') # creates doc with {embedded_docs : null}
+
+      lambda {
+        loaded_in_new_code = @updated_klass.find_by_name('created in old code')
+        loaded_in_new_code.pets.should == []
+      }.should_not raise_error
+    end
+  end
+
   context "embedding many embedded documents" do
     setup do
       @klass = Doc()
