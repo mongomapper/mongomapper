@@ -9,8 +9,13 @@ module MongoMapper
             id = doc.id
           end
 
+          reset
           proxy_owner[association.foreign_key] = id
-          reload
+          unless doc.nil?
+            loaded
+            @target = doc
+          end
+          @target
         end
 
         protected

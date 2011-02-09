@@ -49,6 +49,12 @@ class BelongsToProxyTest < Test::Unit::TestCase
     comment.post.should == post
     comment.post.nil?.should be_false
   end
+  
+  should "not reload the association when replacing" do
+    post = @post_class.new(:name => 'mongomapper')
+    comment = @comment_class.new(:name => 'Foo!', :post => post)
+    comment.post.proxy_target.object_id.should == post.object_id
+  end
 
   should "generate a new proxy when replacing the association" do
     post1 = @post_class.create(:name => 'post1')
