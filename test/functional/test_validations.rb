@@ -161,9 +161,9 @@ class ValidationsTest < Test::Unit::TestCase
         .returns(doc)
     
       doc2 = @document.new("name" => "joe")
-      doc2.should have_error_on(:name)
+      doc2.should have_error_on(:name, "has already been taken")
     end
-    
+
     should "allow multiple blank entries if :allow_blank => true" do
       document = Doc do
         key :name
@@ -316,6 +316,29 @@ class ValidationsTest < Test::Unit::TestCase
       end
     end
   end
+
+  context "validates uniqueness of with customized error message" do
+    setup do
+       @document = Doc do
+         key :name, String
+         validates_uniqueness_of :name, :message => "unique New York"
+       end
+     end
+
+    should "use the custom message" do
+      doc = @document.new("name" => "joe")
+      doc.save.should be_true
+
+      @document \
+        .stubs(:first) \
+        .with(:name => 'joe') \
+        .returns(doc)
+
+      doc2 = @document.new("name" => "joe")
+      doc2.should have_error_on(:name, "unique New York")
+    end
+  end
+
 
   # context "validates uniqueness of with :unique shortcut" do
   #   should "work" do

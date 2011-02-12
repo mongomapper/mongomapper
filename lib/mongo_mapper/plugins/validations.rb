@@ -39,7 +39,9 @@ module MongoMapper
           conditions[:_id.ne] = record._id if record._id
 
           if @klass.exists?(conditions)
-            record.errors.add(attribute, :taken, :default => options[:message], :value => value)
+            error_options = {:value => value}
+            error_options[:default] = options[:message] if options[:message]
+            record.errors.add(attribute, :taken, error_options)
           end
         end
 
