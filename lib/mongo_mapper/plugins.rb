@@ -11,7 +11,7 @@ module MongoMapper
       if ActiveSupport::Concern === mod
         include mod
       else
-        warn "[DEPRECATED] Plugins must extend ActiveSupport::Concern"
+        warn "[DEPRECATED] Plugins must extend ActiveSupport::Concern (#{mod.name})"
         extend mod::ClassMethods     if mod.const_defined?(:ClassMethods)
         include mod::InstanceMethods if mod.const_defined?(:InstanceMethods)
         mod.configure(self)          if mod.respond_to?(:configure)

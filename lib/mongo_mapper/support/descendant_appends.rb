@@ -15,7 +15,7 @@ module MongoMapper
 
       # @api public
       def append_extensions(*extensions)
-        warn "[DEPRECATED] append_extensions is deprecated. Use #plugin with a module that extends ActiveSupport::Concern."
+        warn "[DEPRECATED] append_extensions is deprecated. Use #plugin with a module that extends ActiveSupport::Concern. (#{extensions.map(&:name).join(', ')})"
         extra_extensions.concat(extensions)
         direct_descendants.each do |model|
           extensions.each { |extension| model.extend(extension) }
@@ -24,7 +24,7 @@ module MongoMapper
 
       # @api public
       def append_inclusions(*inclusions)
-        warn "[DEPRECATED] append_inclusions is deprecated. Use #plugin with a module that extends ActiveSupport::Concern."
+        warn "[DEPRECATED] append_inclusions is deprecated. Use #plugin with a module that extends ActiveSupport::Concern. (#{inclusions.map(&:name).join(', ')})"
         extra_inclusions.concat(inclusions)
         direct_descendants.each do |model|
           inclusions.each { |inclusion| model.send(:include, inclusion) }
