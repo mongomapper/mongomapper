@@ -101,7 +101,7 @@ module MongoMapper
           end
 
           def foreign_key
-            options[:foreign_key] || proxy_owner.class.name.to_s.underscore.gsub("/", "_") + "_id"
+            options[:foreign_key] || proxy_owner.class.name.foreign_key
           end
       end
     end

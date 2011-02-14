@@ -231,3 +231,13 @@ module TrModels
     key :name, String
   end
 end
+
+module News
+  class Paper
+    include MongoMapper::Document
+  end
+
+  class Article
+    include MongoMapper::Document
+  end
+end

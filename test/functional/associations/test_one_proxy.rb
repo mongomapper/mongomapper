@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'models'
 
 class OneProxyTest < Test::Unit::TestCase
   def setup
@@ -201,6 +202,21 @@ class OneProxyTest < Test::Unit::TestCase
       post.author.name.should == 'John'
       post.author.should == author
       post.author.post_id.should == post.id
+    end
+  end
+
+  context "namespaced foreign keys" do
+    setup do
+      News::Paper.one :article, :class_name => 'News::Article'
+      News::Article.belongs_to :paper, :class_name => 'News::Paper'
+
+      @paper = News::Paper.create
+    end
+
+    should "properly infer the foreign key" do
+      article = @paper.create_article
+      article.should respond_to(:paper_id)
+      article.paper_id.should == @paper.id
     end
   end
 end
