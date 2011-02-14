@@ -12,8 +12,12 @@ require 'matchy'
 require 'shoulda'
 require 'timecop'
 require 'mocha'
-require 'turn'
 require 'ruby-debug'
+
+#TODO Remove condition when turn is 1.9-ready.
+unless RUBY_VERSION =~ /^1\.9/
+  require 'turn'
+end
 
 class Test::Unit::TestCase
   def Doc(name='Class', &block)
