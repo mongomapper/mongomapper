@@ -801,4 +801,23 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       article.paper_id.should == @paper.id
     end
   end
+
+  context "criteria" do
+    setup do
+      News::Paper.many :articles, :class_name => 'News::Article'
+      News::Article.belongs_to :paper, :class_name => 'News::Paper'
+
+      @paper = News::Paper.create
+    end
+
+    should "should find associated instances by an object ID" do
+      article = News::Article.create(:paper_id => @paper.id)
+      @paper.articles.should include(article)
+    end
+
+    should "should find associated instances by a string" do
+      article = News::Article.create(:paper_id => @paper.id.to_s)
+      @paper.articles.should include(article)
+    end
+  end
 end
