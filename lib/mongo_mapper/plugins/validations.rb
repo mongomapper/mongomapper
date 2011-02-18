@@ -16,7 +16,6 @@ module MongoMapper
         end
       end
 
-      # TODO: Add I18n support
       class UniquenessValidator < ::ActiveModel::EachValidator
         def initialize(options)
           super(options.reverse_merge(:case_sensitive => true))
@@ -39,7 +38,7 @@ module MongoMapper
           conditions[:_id.ne] = record._id if record._id
 
           if @klass.exists?(conditions)
-            record.errors.add(attribute, :taken, :default => options[:message], :value => value)
+            record.errors.add(attribute, :taken, options.except(:case_sensitive, :scope).merge(:value => value))
           end
         end
 
