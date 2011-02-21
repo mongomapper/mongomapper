@@ -1,5 +1,5 @@
 en:
-  activemodel:
+  mongo_mapper:
     errors:
       messages:
         taken: "has already been taken"

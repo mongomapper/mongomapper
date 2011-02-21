@@ -4,6 +4,8 @@ require 'active_support/all'
 require 'active_model'
 require "mongo_mapper/railtie" if defined?(Rails)
 
+I18n.load_path << File.expand_path('../mongo_mapper/locale/en.yml', __FILE__)
+
 module MongoMapper
   autoload :Connection,             'mongo_mapper/connection'
 
@@ -16,6 +18,7 @@ module MongoMapper
   autoload :Document,               'mongo_mapper/document'
   autoload :EmbeddedDocument,       'mongo_mapper/embedded_document'
   autoload :Plugins,                'mongo_mapper/plugins'
+  autoload :Translation,            'mongo_mapper/translation'
   autoload :Version,                'mongo_mapper/version'
 
   module Middleware

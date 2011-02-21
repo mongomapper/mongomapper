@@ -102,5 +102,3 @@ LogBuddy.init(:logger => logger)
 MongoMapper.connection = Mongo::Connection.new('127.0.0.1', 27017, :logger => logger)
 MongoMapper.database = "mm-test-#{RUBY_VERSION.gsub('.', '-')}"
 MongoMapper.database.collections.each { |c| c.drop_indexes }
-
-I18n.load_path << File.expand_path('../fixtures/en.yml', __FILE__)
