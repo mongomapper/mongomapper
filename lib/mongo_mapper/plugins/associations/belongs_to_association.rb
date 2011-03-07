@@ -34,6 +34,18 @@ module MongoMapper
             def #{name}?
               get_proxy(associations[#{name.inspect}]).present?
             end
+
+            def build_#{name}(attrs={})
+              get_proxy(associations[#{name.inspect}]).build(attrs)
+            end
+
+            def create_#{name}(attrs={})
+              get_proxy(associations[#{name.inspect}]).create(attrs)
+            end
+
+            def create_#{name}!(attrs={})
+              get_proxy(associations[#{name.inspect}]).create!(attrs)
+            end
           end_eval
         end
       end

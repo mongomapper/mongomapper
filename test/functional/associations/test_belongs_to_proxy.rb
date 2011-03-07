@@ -5,7 +5,7 @@ class BelongsToProxyTest < Test::Unit::TestCase
   def setup
     @post_class = Doc()
     @comment_class = Doc do
-      key :post_id, String
+      key :post_id, ObjectId
     end
 
     @comment_class.belongs_to :post, :class => @post_class
@@ -131,6 +131,54 @@ class BelongsToProxyTest < Test::Unit::TestCase
         @property1.destroy
         Thing.count.should == 1
       end
+    end
+  end
+
+  should "be able to build" do
+    @comment_class.belongs_to :post, :class => @post_class
+
+    comment = @comment_class.create
+    post = comment.build_post(:title => 'Hello, world!')
+    comment.post.should be_instance_of(@post_class)
+    comment.post.should be_new
+    comment.post.title.should == 'Hello, world!'
+    comment.post.should == post
+    comment.post_id.should == post.id
+  end
+
+  should "be able to create" do
+    @comment_class.belongs_to :post, :class => @post_class
+
+    comment = @comment_class.create
+    post = comment.create_post(:title => 'Hello, world!')
+    comment.post.should be_instance_of(@post_class)
+    comment.post.should_not be_new
+    comment.post.title.should == 'Hello, world!'
+    comment.post.should == post
+    comment.post_id.should == post.id
+  end
+
+  context "#create!" do
+    setup do
+      @post_class.key :title, String, :required => true
+      @comment_class.belongs_to :post, :class => @post_class
+    end
+
+    should "raise exception if invalid" do
+      comment = @comment_class.create
+      assert_raises(MongoMapper::DocumentNotValid) do
+        comment.create_post!
+      end
+    end
+
+    should "work if valid" do
+      comment = @comment_class.create
+      post = comment.create_post!(:title => 'Hello, world!')
+      comment.post.should be_instance_of(@post_class)
+      comment.post.should_not be_new
+      comment.post.title.should == 'Hello, world!'
+      comment.post.should == post
+      comment.post_id.should == post.id
     end
   end
 end
