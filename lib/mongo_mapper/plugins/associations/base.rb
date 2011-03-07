@@ -6,7 +6,7 @@ module MongoMapper
         attr_reader :name, :options, :query_options
 
         # Options that should not be considered MongoDB query options/criteria
-        AssociationOptions = [:as, :class, :class_name, :dependent, :extend, :foreign_key, :in, :polymorphic]
+        AssociationOptions = [:as, :class, :class_name, :dependent, :extend, :foreign_key, :in, :polymorphic, :autosave]
 
         def initialize(name, options={}, &extension)
           @name, @options, @query_options, @original_options = name, {}, {}, options

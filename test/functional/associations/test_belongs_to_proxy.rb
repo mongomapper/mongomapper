@@ -181,4 +181,32 @@ class BelongsToProxyTest < Test::Unit::TestCase
       comment.post_id.should == post.id
     end
   end
+
+  context 'autosave' do
+    should 'not be true by default' do
+      @comment_class.associations[:post].options[:autosave].should_not be_true
+    end
+
+    should 'save parent changes when true' do
+      @comment_class.associations[:post].options[:autosave] = true
+
+      comment = @comment_class.create
+      post = comment.create_post(:title => 'Hello, world!')
+
+      comment.post.attributes = {:title => 'Hi, world.'}
+      comment.save
+
+      post.reload.title.should == 'Hi, world.'
+    end
+
+    should 'not save parent changes when false' do
+      comment = @comment_class.create
+      post = comment.create_post(:title => 'Hello, world!')
+
+      comment.post.attributes = {:title => 'Hi, world.'}
+      comment.save
+
+      post.reload.title.should == 'Hello, world!'
+    end
+  end
 end

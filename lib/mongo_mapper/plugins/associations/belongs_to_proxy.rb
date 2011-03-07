@@ -30,6 +30,10 @@ module MongoMapper
           instantiate_target(:create!, attrs)
         end
 
+        def save_to_collection(options={})
+          @target.save(options) if @target
+        end
+
         protected
           def find_target
             return nil if proxy_owner[association.foreign_key].nil?
