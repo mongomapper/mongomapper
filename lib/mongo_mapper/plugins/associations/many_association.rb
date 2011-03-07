@@ -58,6 +58,9 @@ module MongoMapper
           end
         end
 
+        def autosave?
+          options.fetch(:autosave, true)
+        end
       end
     end
   end

@@ -48,6 +48,10 @@ module MongoMapper
             end
           end_eval
         end
+
+        def autosave?
+          options.fetch(:autosave, false)
+        end
       end
     end
   end

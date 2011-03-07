@@ -62,6 +62,10 @@ module MongoMapper
         def setup(model)
         end
 
+        def autosave?
+          raise NotImplementedError
+        end
+
         private
           def separate_options_and_conditions
             @original_options.each_pair do |key, value|
