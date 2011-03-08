@@ -3,6 +3,8 @@ require 'uri'
 
 module MongoMapper
   module Connection
+    @@use_replset = false
+
     # @api public
     def connection
       if @@use_replset
@@ -15,6 +17,7 @@ module MongoMapper
     # @api public
     def connection=(new_connection)
       @@connection = new_connection
+      @@use_replset = true if new_connection.kind_of? Mongo::ReplSetConnection
     end
 
     # @api public
