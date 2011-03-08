@@ -55,6 +55,54 @@ class BelongsToProxyTest < Test::Unit::TestCase
     comment = @comment_class.new(:name => 'Foo!', :post => post)
     comment.post.proxy_target.object_id.should == post.object_id
   end
+  
+  should "work (create!)" do
+    account_class = Doc()
+    agent_class = Doc() do
+      one :account, :class => account_class
+    end
+    account_class.belongs_to :agent, :class => agent_class
+    
+    account = account_class.create!(:agent => agent_class.create!)
+    
+    agent = account.agent
+    # debugger
+    agent.account
+    agent.account.should == account
+  end
+
+  should "work the other way (create!)" do
+    account_class = Doc()
+    agent_class = Doc() do
+      one :account, :class => account_class
+    end
+    account_class.belongs_to :agent, :class => agent_class
+    
+    agent = agent_class.create!(:account => account_class.create!)
+    agent.account.agent.should == agent
+  end
+  
+  should "work (new)" do
+    account_class = Doc()
+    agent_class = Doc() do
+      one :account, :class => account_class
+    end
+    account_class.belongs_to :agent, :class => agent_class
+    
+    account = account_class.create!(:agent => agent_class.new)
+    account.agent.account.should == account
+  end
+
+  should "work (new new)" do
+    account_class = Doc()
+    agent_class = Doc() do
+      one :account, :class => account_class
+    end
+    account_class.belongs_to :agent, :class => agent_class
+    
+    account = account_class.new(:agent => agent_class.new)
+    account.agent.account.should == account
+  end
 
   should "generate a new proxy when replacing the association" do
     post1 = @post_class.create(:name => 'post1')
