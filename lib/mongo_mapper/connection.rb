@@ -5,7 +5,11 @@ module MongoMapper
   module Connection
     # @api public
     def connection
-      @@connection ||= Mongo::Connection.new
+      if @@use_replset
+        @@connection ||= Mongo::ReplSetConnection.new
+      else
+        @@connection ||= Mongo::Connection.new
+      end
     end
 
     # @api public
@@ -61,7 +65,16 @@ module MongoMapper
     def connect(environment, options={})
       raise 'Set config before connecting. MongoMapper.config = {...}' if config.blank?
       env = config_for_environment(environment)
-      MongoMapper.connection = Mongo::Connection.new(env['host'], env['port'], options)
+
+      if env['replication_set']
+        @@use_replset = true
+        puts "Starting replication set connection"
+        MongoMapper.connection = Mongo::ReplSetConnection.new([env['host'], env['port']], options.merge(:rs_name => env['replication_set']))
+      else
+        @@use_replset = false
+        MongoMapper.connection = Mongo::Connection.new(env['host'], env['port'], options)
+      end
+
       MongoMapper.database = env['database']
       MongoMapper.database.authenticate(env['username'], env['password']) if env['username'] && env['password']
     end
