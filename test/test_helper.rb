@@ -14,11 +14,6 @@ require 'timecop'
 require 'mocha'
 require 'ruby-debug'
 
-#TODO Remove condition when turn is 1.9-ready.
-unless RUBY_VERSION =~ /^1\.9/
-  require 'turn'
-end
-
 class Test::Unit::TestCase
   def Doc(name='Class', &block)
     klass = Class.new

@@ -14,7 +14,6 @@ GEM
       builder (~> 2.1.2)
       i18n (~> 0.4.1)
     activesupport (3.0.0)
-    ansi (1.2.2)
     archive-tar-minitar (0.5.2)
     bson (1.1)
     bson_ext (1.1)
@@ -31,6 +30,7 @@ GEM
       rake
     mongo (1.1)
       bson (>= 1.0.5)
+    perftools.rb (0.5.6)
     plucky (0.3.6)
       mongo (~> 1.1)
     rack (1.2.1)
@@ -54,8 +54,6 @@ GEM
       archive-tar-minitar (>= 0.5.2)
     shoulda (2.11.3)
     timecop (0.3.5)
-    turn (0.8.1)
-      ansi (>= 1.2.2)
     tzinfo (0.3.23)
 
 PLATFORMS
@@ -70,6 +68,7 @@ DEPENDENCIES
   log_buddy
   mocha (~> 0.9.8)
   mongo_mapper!
+  perftools.rb
   plucky (~> 0.3.6)
   rack-test
   rake
@@ -77,5 +76,4 @@ DEPENDENCIES
   ruby-debug19
   shoulda (~> 2.11)
   timecop (~> 0.3.1)
-  turn (~> 0.8.1)
   tzinfo
