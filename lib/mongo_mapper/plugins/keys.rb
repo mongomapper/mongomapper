@@ -39,7 +39,7 @@ module MongoMapper
         end
 
         def object_id_keys
-          keys.keys.select { |key| keys[key].type == ObjectId }.map(&:to_sym)
+          keys.keys.select { |key| keys[key].type == ObjectId }.map { |k| k.to_sym }
         end
 
         def object_id_key?(name)

@@ -8,7 +8,7 @@ module MongoMapper
 
         def replace(docs)
           load_target
-          target.map(&:destroy)
+          target.each { |t| t.destroy }
           docs.each { |doc| prepare(doc).save }
           reset
         end
@@ -44,7 +44,7 @@ module MongoMapper
         end
 
         def destroy_all(options={})
-          all(options).map(&:destroy)
+          all(options).each { |doc| doc.destroy }
           reset
         end
 
@@ -72,7 +72,7 @@ module MongoMapper
           def method_missing(method, *args, &block)
             if klass.respond_to?(method)
               result = klass.send(method, *args, &block)
-              result.is_a?(Plucky::Query) ? 
+              result.is_a?(Plucky::Query) ?
                 query.merge(result) : super
             else
               super

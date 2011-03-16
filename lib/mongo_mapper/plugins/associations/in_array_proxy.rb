@@ -49,7 +49,7 @@ module MongoMapper
         def delete_all(options={})
           docs = query(options).fields(:_id).all
           docs.each { |doc| ids.delete(doc.id) }
-          klass.delete(docs.map(&:id))
+          klass.delete(docs.map { |d| d.id })
           reset
         end
 

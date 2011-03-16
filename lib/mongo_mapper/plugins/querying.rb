@@ -52,7 +52,7 @@ module MongoMapper
         end
 
         def destroy(*ids)
-          find_some!(ids.flatten).each(&:destroy)
+          find_some!(ids.flatten).each { |doc| doc.destroy }
         end
 
         def destroy_all(options={})
