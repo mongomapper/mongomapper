@@ -17,11 +17,11 @@ class UserstampsTest < Test::Unit::TestCase
     end
 
     should "add belongs_to creator" do
-      @document.associations.keys.should include('creator')
+      @document.associations.keys.should include(:creator)
     end
 
     should "add belongs_to updater" do
-      @document.associations.keys.should include('updater')
+      @document.associations.keys.should include(:updater)
     end
   end
 end

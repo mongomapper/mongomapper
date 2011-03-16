@@ -9,7 +9,7 @@ module MongoMapper
         AssociationOptions = [:as, :class, :class_name, :dependent, :extend, :foreign_key, :in, :polymorphic, :autosave]
 
         def initialize(name, options={}, &extension)
-          @name, @options, @query_options, @original_options = name, {}, {}, options
+          @name, @options, @query_options, @original_options = name.to_sym, {}, {}, options
           options.symbolize_keys!
           options[:extend] = modularized_extensions(extension, options[:extend])
           separate_options_and_conditions

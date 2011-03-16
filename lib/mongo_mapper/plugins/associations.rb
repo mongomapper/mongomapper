@@ -23,7 +23,7 @@ module MongoMapper
         end
 
         def associations
-          @associations ||= HashWithIndifferentAccess.new
+          @associations ||= {}
         end
 
         def associations=(hash)

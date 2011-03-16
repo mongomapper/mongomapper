@@ -62,7 +62,7 @@ module MongoMapper
         end
 
         def value_changed?(key_name, old, value)
-          value = nil if keys[key_name].number? && value.blank?
+          value = nil if keys[key_name.to_s].number? && value.blank?
           old != value
         end
       end

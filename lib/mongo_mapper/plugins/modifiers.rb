@@ -19,7 +19,7 @@ module MongoMapper
         def set(*args)
           criteria, updates = criteria_and_keys_from_args(args)
           updates.each do |key, value|
-            updates[key] = keys[key].set(value) if key?(key)
+            updates[key] = keys[key.to_s].set(value) if key?(key)
           end
           collection.update(criteria, {'$set' => updates}, :multi => true)
         end

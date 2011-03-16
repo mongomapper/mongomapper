@@ -75,10 +75,10 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     should "default associations to inherited class" do
-      Message.associations.keys.should include("room")
-      Enter.associations.keys.should   include("room")
-      Exit.associations.keys.should    include("room")
-      Chat.associations.keys.should    include("room")
+      Message.associations.keys.should include(:room)
+      Enter.associations.keys.should   include(:room)
+      Exit.associations.keys.should    include(:room)
+      Chat.associations.keys.should    include(:room)
     end
   end
 
