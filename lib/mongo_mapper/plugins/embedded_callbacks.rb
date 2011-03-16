@@ -8,8 +8,7 @@ module MongoMapper
         extend  ::ActiveModel::Callbacks
         include ::ActiveModel::Validations::Callbacks
 
-        define_model_callbacks :validation, :save, :create, :update, :destroy, :only => [ :before, :after ]
-        define_model_callbacks :initialize, :find, :only => :after
+        define_model_callbacks :validation, :save, :create, :update, :destroy, :only => [:before, :after]
       end
 
       module InstanceMethods

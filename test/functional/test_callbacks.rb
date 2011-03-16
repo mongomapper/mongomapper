@@ -4,8 +4,7 @@ module CallbacksSupport
   def self.included base
     base.key :name, String
 
-    [ :after_find,        :after_initialize,
-      :before_validation, :after_validation,
+    [ :before_validation, :after_validation,
       :before_create,     :after_create,
       :before_update,     :after_update,
       :before_save,       :after_save,
@@ -29,7 +28,6 @@ end
 
 class CallbacksTest < Test::Unit::TestCase
   CreateCallbackOrder = [
-    :after_initialize,
     :before_validation,
     :after_validation,
     :before_save,
@@ -50,22 +48,6 @@ class CallbacksTest < Test::Unit::TestCase
   context "Defining and running callbacks on documents" do
     setup do
       @document = Doc { include CallbacksSupport }
-    end
-
-    should "run after_initialize" do
-      doc = @document.new
-      doc.history.should == [:after_initialize]
-    end
-
-    should "run callbacks on find" do
-      doc = @document.create(:name => 'John Nunemaker')
-      @document.find!(doc.id).history.should == [:after_find, :after_initialize]
-    end
-
-    should "run after_initialize when cloning an object" do
-      doc = @document.create(:name => 'John Nunemaker')
-      doc.clear_history
-      doc.dup.history.should == [:after_initialize]
     end
 
     should "get the order right for creating documents" do
