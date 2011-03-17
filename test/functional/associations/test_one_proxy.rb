@@ -114,8 +114,8 @@ class OneProxyTest < Test::Unit::TestCase
   # that gave it a "loaded" nil proxy, causing parent.child.parent to be nil
   # these tests are to avoid a regression
   should "properly assign the associated object when assigning the association with create" do
-    child_class = Doc()
-    parent_class = Doc()
+    child_class = Doc('Child')
+    parent_class = Doc('Parent')
     
     parent_class.one :child, :class => child_class
     child_class.belongs_to :parent, :class => parent_class
@@ -125,8 +125,8 @@ class OneProxyTest < Test::Unit::TestCase
   end
   
   should "properly assign the associated object when assigning the association with new" do
-    child_class = Doc()
-    parent_class = Doc()
+    child_class = Doc('Child')
+    parent_class = Doc('Parent')
     
     parent_class.one :child, :class => child_class
     child_class.belongs_to :parent, :class => parent_class
