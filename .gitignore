@@ -9,4 +9,5 @@ tmp
 log
 .yardoc
 doc
+docs
 .bundle
