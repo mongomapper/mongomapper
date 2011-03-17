@@ -108,32 +108,6 @@ class OneProxyTest < Test::Unit::TestCase
     post.author.should == author
     post.primary_author.should == primary
   end
-  
-  # concerning the following two tests:
-  # when parent was being assigned to child, it was first saved, which autosaved its currently nil child 
-  # that gave it a "loaded" nil proxy, causing parent.child.parent to be nil
-  # these tests are to avoid a regression
-  should "properly assign the associated object when assigning the association with create" do
-    child_class = Doc()
-    parent_class = Doc()
-    
-    parent_class.one :child, :class => child_class
-    child_class.belongs_to :parent, :class => parent_class
-    
-    parent = parent_class.create(:child => child_class.create)
-    parent.child.parent.should == parent
-  end
-  
-  should "properly assign the associated object when assigning the association with new" do
-    child_class = Doc()
-    parent_class = Doc()
-    
-    parent_class.one :child, :class => child_class
-    child_class.belongs_to :parent, :class => parent_class
-    
-    parent = parent_class.create(:child => child_class.create)
-    parent.child.parent.should == parent
-  end
 
   should "unset the association" do
     @post_class.one :author, :class => @author_class
