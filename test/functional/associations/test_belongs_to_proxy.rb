@@ -56,52 +56,30 @@ class BelongsToProxyTest < Test::Unit::TestCase
     comment.post.proxy_target.object_id.should == post.object_id
   end
   
-  should "work (create!)" do
-    account_class = Doc()
-    agent_class = Doc() do
-      one :account, :class => account_class
-    end
-    account_class.belongs_to :agent, :class => agent_class
+  # concerning the following two tests:
+  # when parent was being assigned to child, it was first saved, which autosaved its currently nil child 
+  # that gave it a "loaded" nil proxy, causing child.parent.child to be nil
+  # these tests are to avoid a regression
+  should "properly assign the associated object when assigning the association with create" do
+    child_class = Doc()
+    parent_class = Doc()
     
-    account = account_class.create!(:agent => agent_class.create!)
+    parent_class.one :child, :class => child_class
+    child_class.belongs_to :parent, :class => parent_class
     
-    agent = account.agent
-    # debugger
-    agent.account
-    agent.account.should == account
-  end
-
-  should "work the other way (create!)" do
-    account_class = Doc()
-    agent_class = Doc() do
-      one :account, :class => account_class
-    end
-    account_class.belongs_to :agent, :class => agent_class
-    
-    agent = agent_class.create!(:account => account_class.create!)
-    agent.account.agent.should == agent
+    child = child_class.create(:parent => parent_class.create)
+    child.parent.child.should == child
   end
   
-  should "work (new)" do
-    account_class = Doc()
-    agent_class = Doc() do
-      one :account, :class => account_class
-    end
-    account_class.belongs_to :agent, :class => agent_class
+  should "properly assign the associated object when assigning the association with new" do
+    child_class = Doc()
+    parent_class = Doc()
     
-    account = account_class.create!(:agent => agent_class.new)
-    account.agent.account.should == account
-  end
-
-  should "work (new new)" do
-    account_class = Doc()
-    agent_class = Doc() do
-      one :account, :class => account_class
-    end
-    account_class.belongs_to :agent, :class => agent_class
+    parent_class.one :child, :class => child_class
+    child_class.belongs_to :parent, :class => parent_class
     
-    account = account_class.new(:agent => agent_class.new)
-    account.agent.account.should == account
+    child = child_class.new(:parent => parent_class.new)
+    child.parent.child.should == child
   end
 
   should "generate a new proxy when replacing the association" do

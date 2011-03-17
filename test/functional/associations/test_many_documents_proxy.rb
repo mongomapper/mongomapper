@@ -60,6 +60,32 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
     owner.pets[1].name.should == 'Sasha'
     owner.pets[1].species.should == 'Siberian Husky'
   end
+  
+  # concerning the following two tests:
+  # when parent was being assigned to child, it was first saved, which autosaved its currently nil child 
+  # that gave it a "loaded" nil proxy, causing parent.child.parent to be nil
+  # these tests are to avoid a regression
+  should "properly assign the associated object when assigning the association with create" do
+    child_class = Doc()
+    parent_class = Doc()
+    
+    parent_class.many :children, :class => child_class
+    child_class.belongs_to :parent, :class => parent_class
+    
+    parent = parent_class.create(:children => [child_class.create])
+    parent.children[0].parent.should == parent
+  end
+  
+  should "properly assign the associated object when assigning the association with new" do
+    child_class = Doc()
+    parent_class = Doc()
+    
+    parent_class.many :children, :class => child_class
+    child_class.belongs_to :parent, :class => parent_class
+    
+    parent = parent_class.create(:children => [child_class.create])
+    parent.children[0].parent.should == parent
+  end
 
   should "allow adding to association like it was an array" do
     project = Project.new
