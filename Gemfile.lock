@@ -9,18 +9,18 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
-    activemodel (3.0.0)
-      activesupport (= 3.0.0)
+    activemodel (3.0.5)
+      activesupport (= 3.0.5)
       builder (~> 2.1.2)
-      i18n (~> 0.4.1)
-    activesupport (3.0.0)
+      i18n (~> 0.4)
+    activesupport (3.0.5)
     ansi (1.2.2)
     archive-tar-minitar (0.5.2)
-    bson (1.1)
+    bson (1.2.4)
     bson_ext (1.1)
     builder (2.1.2)
     columnize (0.3.2)
-    i18n (0.4.2)
+    i18n (0.5.0)
     jnunemaker-matchy (0.4.0)
     json (1.4.6)
     linecache (0.43)
@@ -29,9 +29,9 @@ GEM
     log_buddy (0.5.0)
     mocha (0.9.8)
       rake
-    mongo (1.1)
-      bson (>= 1.0.5)
-    plucky (0.3.6)
+    mongo (1.2.4)
+      bson (>= 1.2.4)
+    plucky (0.3.7)
       mongo (~> 1.1)
     rack (1.2.1)
     rack-test (0.5.7)
@@ -62,15 +62,12 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activemodel (~> 3.0.0)
-  activesupport (~> 3.0.0)
   bson_ext
   jnunemaker-matchy (~> 0.4.0)
   json
   log_buddy
   mocha (~> 0.9.8)
   mongo_mapper!
-  plucky (~> 0.3.6)
   rack-test
   rake
   ruby-debug
