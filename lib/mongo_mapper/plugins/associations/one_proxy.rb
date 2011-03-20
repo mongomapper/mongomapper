@@ -19,7 +19,7 @@ module MongoMapper
           load_target
 
           if !target.nil? && target != doc
-            if options[:dependent] && !target.new?
+            if options[:dependent] && target.persisted?
               case options[:dependent]
                 when :delete
                   target.delete
@@ -35,10 +35,10 @@ module MongoMapper
           if doc.nil?
             target.update_attributes(foreign_key => nil) unless target.nil?
           else
-            proxy_owner.save if proxy_owner.new?
+            proxy_owner.save unless proxy_owner.persisted?
             doc = klass.new(doc) unless doc.is_a?(klass)
             doc[foreign_key] = proxy_owner.id
-            doc.save if doc.new?
+            doc.save unless doc.persisted?
             loaded
             @target = doc
           end

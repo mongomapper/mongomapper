@@ -60,7 +60,7 @@ module MongoMapper
 
         def create(attrs={})
           doc = klass.create(attrs)
-          unless doc.new?
+          if doc.persisted?
             ids << doc.id
             proxy_owner.save
             reset
@@ -70,7 +70,7 @@ module MongoMapper
 
         def create!(attrs={})
           doc = klass.create!(attrs)
-          unless doc.new?
+          if doc.persisted?
             ids << doc.id
             proxy_owner.save
             reset
@@ -80,7 +80,7 @@ module MongoMapper
 
         def <<(*docs)
           flatten_deeper(docs).each do |doc|
-            doc.save if doc.new?
+            doc.save unless doc.persisted?
             unless ids.include?(doc.id)
               ids << doc.id
             end
@@ -92,7 +92,7 @@ module MongoMapper
 
         def replace(docs)
           doc_ids = docs.map do |doc|
-            doc.save if doc.new?
+            doc.save unless doc.persisted?
             doc.id
           end
           ids.replace(doc_ids.uniq)

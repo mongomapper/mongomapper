@@ -5,7 +5,7 @@ module MongoMapper
       class BelongsToProxy < Proxy
         def replace(doc)
           if doc
-            doc.save if doc.new?
+            doc.save if !doc.persisted?
             id = doc.id
           end
 

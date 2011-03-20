@@ -8,6 +8,7 @@ class CachingTest < Test::Unit::TestCase
         plugin MongoMapper::Plugins::Caching
       end
       @klass.stubs(:name).returns('Post')
+      @klass.any_instance.stubs(:persisted?).returns(true)
       @klass.any_instance.stubs(:[]).returns(nil)
       @klass.any_instance.stubs(:[]=).returns(nil)
     end
@@ -15,7 +16,7 @@ class CachingTest < Test::Unit::TestCase
     context "new" do
       setup do
         @doc = @klass.new
-        @doc.stubs(:new?).returns(true)
+        @doc.stubs(:persisted?).returns(false)
       end
 
       should "be class/new" do
@@ -35,7 +36,7 @@ class CachingTest < Test::Unit::TestCase
       setup do
         @object_id = BSON::ObjectId.new
         @doc = @klass.new
-        @doc.stubs(:new?).returns(false)
+        @doc.stubs(:persisted).returns(true)
         @doc.stubs(:id).returns(@object_id)
       end
 

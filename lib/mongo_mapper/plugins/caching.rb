@@ -7,7 +7,7 @@ module MongoMapper
       module InstanceMethods
         def cache_key(*suffixes)
           cache_key = case
-                        when new?
+                        when !persisted?
                           "#{self.class.name}/new"
                         when timestamp = self[:updated_at]
                           "#{self.class.name}/#{id}-#{timestamp.to_s(:number)}"

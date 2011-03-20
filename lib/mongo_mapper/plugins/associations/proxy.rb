@@ -113,7 +113,7 @@ module MongoMapper
           def load_target
             unless loaded?
               if @target.is_a?(Array) && @target.any?
-                @target = find_target + @target.find_all { |record| record.new? }
+                @target = find_target + @target.find_all { |record| !record.persisted? }
               else
                 @target = find_target
               end

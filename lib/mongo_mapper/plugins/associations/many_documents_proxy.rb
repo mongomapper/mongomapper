@@ -88,7 +88,7 @@ module MongoMapper
           end
 
           def ensure_owner_saved
-            proxy_owner.save if proxy_owner.new?
+            proxy_owner.save unless proxy_owner.persisted?
           end
 
           def prepare(doc)
