@@ -7,6 +7,7 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       included do
+        extend ActiveSupport::DescendantsTracker
         key :_id, ObjectId
       end
 

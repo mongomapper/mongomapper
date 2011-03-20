@@ -40,10 +40,7 @@ module MongoMapper
       ActionDispatch::Callbacks.to_prepare do
         unless app.config.cache_classes
           # Rails reloading was making descendants fill up and leak memory, these make sure they get cleared
-          MongoMapper::Document.descendants.each {|m| m.descendants.clear if m.respond_to?(:descendants) }
-          MongoMapper::Document.descendants.clear
-          MongoMapper::EmbeddedDocument.descendants.each {|m| m.descendants.clear if m.respond_to?(:descendants) }
-          MongoMapper::EmbeddedDocument.descendants.clear
+          ActiveSupport::DescendantsTracker.clear
           MongoMapper::Plugins::IdentityMap.models.clear
         end
       end

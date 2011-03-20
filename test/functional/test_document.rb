@@ -269,4 +269,9 @@ class DocumentTest < Test::Unit::TestCase
       doc.skills.should == ['ruby', 'rails', 'javascript', 'xhtml', 'css']
     end
   end
+
+  should "not walk ObjectSpace when creating a model" do
+    ObjectSpace.expects(:each_object).never
+    Doc()
+  end
 end
