@@ -14,7 +14,7 @@ module MongoMapper
         end
 
         def embedded_in(owner_name)
-          define_method(owner_name) { _parent_document }
+          alias_method owner_name, :_parent_document
         end
       end
 
