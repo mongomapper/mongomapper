@@ -56,6 +56,17 @@ class BelongsToProxyTest < Test::Unit::TestCase
     comment.post.proxy_target.object_id.should == post.object_id
   end
 
+  should "properly assign the associated object when assigning the association with create" do
+    child_class = Doc('Child')
+    parent_class = Doc('Parent')
+    
+    parent_class.one :child, :class => child_class
+    child_class.belongs_to :parent, :class => parent_class
+    
+    child = child_class.create(:parent => parent_class.create)
+    child.parent.child.should == child
+  end
+
   should "generate a new proxy when replacing the association" do
     post1 = @post_class.create(:name => 'post1')
     post2 = @post_class.create(:name => 'post2')

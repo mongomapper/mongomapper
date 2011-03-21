@@ -16,7 +16,6 @@ IRB.conf[:MAIN_CONTEXT] = irb.context
 
 irb.context.evaluate("require 'irb/completion'", 0)
 irb.context.evaluate(%@
-include MongoMapper
 
 MongoMapper.database = "mm-test"
 $db = MongoMapper.database

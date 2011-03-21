@@ -9,7 +9,7 @@ module MongoMapper
         alias :proxy_respond_to? :respond_to?
         alias :proxy_extend :extend
 
-        instance_methods.each { |m| undef_method m unless m =~ /(^__|^nil\?$|^send$|proxy_|^object_id$)/ }
+        instance_methods.each { |m| undef_method m unless m =~ /(^__|^nil\?$|^send$|proxy_|^respond_to_missing\?$|^object_id$)/ }
 
         attr_reader :proxy_owner, :association, :target
 
