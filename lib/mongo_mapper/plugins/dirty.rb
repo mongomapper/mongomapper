@@ -13,7 +13,7 @@ module MongoMapper
         end
 
         def initialize_from_database(*)
-          super.tap { clear_changes }
+          super.tap { changed_attributes.clear }
         end
 
         def save(*)

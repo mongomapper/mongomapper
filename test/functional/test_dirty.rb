@@ -221,6 +221,11 @@ class DirtyTest < Test::Unit::TestCase
       doc.save!
       doc.previous_changes.should == changes
     end
+
+    should "not include attributes loaded from db" do
+      doc = @document.create(:a => "b")
+      @document.find(doc.id).previous_changes.should be_blank
+    end
   end
 
   context "Embedded documents" do
