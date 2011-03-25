@@ -22,6 +22,7 @@ module MongoMapper
   end
 end
 
+# @private
 module Rails
   module Generators 
     class GeneratedAttribute #:nodoc:
