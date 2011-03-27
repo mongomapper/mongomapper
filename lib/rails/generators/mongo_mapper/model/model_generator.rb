@@ -21,14 +21,3 @@ module MongoMapper
     end
   end
 end
-
-# @private
-module Rails
-  module Generators 
-    class GeneratedAttribute #:nodoc:
-      def type_class
-        return type.to_s.camelcase
-      end
-    end
-  end
-end
