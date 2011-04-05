@@ -15,7 +15,11 @@ module MongoMapper
 
       module InstanceMethods
         def serializable_attributes
-          attributes.keys.map { |k| k.to_s } + ['id'] - ['_id']
+          acc = []
+          attributes.keys.each { |k| acc << k.to_s }
+          acc << 'id'
+          acc.delete('_id')
+          acc
         end
 
         def serializable_hash(options = nil)
