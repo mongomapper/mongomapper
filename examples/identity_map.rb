@@ -28,6 +28,4 @@ puts "#{User.find(user.id).object_id} != #{user.object_id}"
 # User gets removed from map on destroy
 user = User.create
 user.destroy
-puts "Should be nil: " + User.identity_map[user.id].inspect
-
-
+puts "Should be nil: " << User.identity_map[user.id].inspect

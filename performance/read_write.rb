@@ -8,7 +8,7 @@ require 'rubygems'
 # to test with slow version just do this:
 # gem 'mongo_mapper', '0.6.10'
 # and comment out this:
-$:.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
+$:.unshift File.expand_path(File.dirname(__FILE__) << '/../lib')
 
 require 'mongo_mapper'
 
