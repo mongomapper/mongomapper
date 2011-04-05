@@ -12,11 +12,12 @@ module MongoMapper
           associations.each do |name, association|
             instance_variable_set(association.ivar, nil)
           end
-          self.attributes = other.attributes.clone.except(:_id).inject({}) do |hash, entry|
-            key, value = entry
-            hash[key] = value.duplicable? ? value.clone : value
-            hash
-          end
+          self.attributes = Hash[
+            other.attributes.clone.except(:_id).map do |entry|
+              key, value = entry
+              [key, value.duplicable? ? value.clone : value]
+            end
+          ]
         end
       end
     end

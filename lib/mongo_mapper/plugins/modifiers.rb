@@ -33,7 +33,7 @@ module MongoMapper
           end
 
           criteria  = criteria_hash(criteria).to_hash
-          modifiers = keys.inject({}) { |hash, key| hash[key] = 1; hash }
+          modifiers = Hash[ keys.map { |key| [key, 1] } ]
           collection.update(criteria, {'$unset' => modifiers}, :multi => true)
         end
 

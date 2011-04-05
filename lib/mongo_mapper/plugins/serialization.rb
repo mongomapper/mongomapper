@@ -36,17 +36,19 @@ module MongoMapper
             respond_to?(method)
           end
 
-          hash = attribute_names.sort.inject({}) do |hash, name|
-            value = send(name)
-            hash[name] = if value.is_a?(Array)
-              value.map {|v| v.respond_to?(:serializable_hash) ? v.serializable_hash : v }
-            elsif value.respond_to?(:serializable_hash)
-              value.serializable_hash
-            else
-              value
+          hash = Hash[
+            attribute_names.sort.map do |name|
+              value = send(name)
+              processed_value = if value.is_a?(Array)
+                value.map {|v| v.respond_to?(:serializable_hash) ? v.serializable_hash : v }
+              elsif value.respond_to?(:serializable_hash)
+                value.serializable_hash
+              else
+                value
+              end
+              [name, processed_value]
             end
-            hash
-          end
+          ]
 
           serializable_add_includes(options) do |association, records, opts|
             hash[association.to_s] = records.is_a?(Array) ?

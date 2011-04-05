@@ -47,9 +47,11 @@ module MongoMapper
         end
 
         def scope_conditions(instance)
-          Array(options[:scope] || []).inject({}) do |conditions, key|
-            conditions.merge(key => instance[key])
-          end
+          Hash[
+            Array(options[:scope] || []).map do |key|
+              [key, instance[key]]
+            end
+          ]
         end
       end
 
