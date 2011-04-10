@@ -171,6 +171,7 @@ module MongoMapper
         def initialize_from_database(attrs={})
           @_new = false
           load_from_database(attrs)
+          default_id_value(attrs)
           self
         end
 

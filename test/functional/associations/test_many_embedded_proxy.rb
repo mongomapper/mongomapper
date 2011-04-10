@@ -83,8 +83,10 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
 
     owner = @owner_class.new(person_attributes)
     owner.name.should == 'Mr. Pet Lover'
+    owner.pets[0].id.class.should == BSON::ObjectId
     owner.pets[0].name.should == 'Jimmy'
     owner.pets[0].species.should == 'Cocker Spainel'
+    owner.pets[1].id.class.should == BSON::ObjectId
     owner.pets[1].name.should == 'Sasha'
     owner.pets[1].species.should == 'Siberian Husky'
 
@@ -92,8 +94,10 @@ class ManyEmbeddedProxyTest < Test::Unit::TestCase
     owner.reload
 
     owner.name.should == 'Mr. Pet Lover'
+    owner.pets[0].id.class.should == BSON::ObjectId
     owner.pets[0].name.should == 'Jimmy'
     owner.pets[0].species.should == 'Cocker Spainel'
+    owner.pets[1].id.class.should == BSON::ObjectId
     owner.pets[1].name.should == 'Sasha'
     owner.pets[1].species.should == 'Siberian Husky'
   end
