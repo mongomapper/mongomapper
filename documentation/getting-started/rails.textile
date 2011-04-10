@@ -1,0 +1,33 @@
+---
+layout: documentation
+title: Rails
+---
+
+h1. Rails 3
+
+Add MongoMapper to your <kbd>Gemfile</kbd> and run @bundle install@:
+
+{% highlight ruby %}
+gem 'mongo_mapper'
+gem 'bson_ext'
+{% endhighlight %}
+
+If you're not going to be using ActiveRecord in your app, open <kbd>config/application.rb</kbd> and replace
+
+{% highlight ruby %}
+require 'rails/all'
+{% endhighlight %}
+
+with
+
+{% highlight ruby %}
+require "action_controller/railtie"
+require "action_mailer/railtie"
+require "active_resource/railtie"
+{% endhighlight %}
+
+Generate @config/mongo.yml@ by running:
+
+{% highlight bash %}
+script/rails generate mongo_mapper:config
+{% endhighlight %}
