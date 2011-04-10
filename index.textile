@@ -25,11 +25,49 @@ h1. A Mongo ORM for Ruby
 
 p(introduction). Built from the ground up to be simple and extendable, MongoMapper is a lovely way to model your applications and persist your data in MongoDB. It has all the bells and whistles you need to get the job done and have fun along the way.
 
-h2. Installation
+h2. Getting Started
+
+Install the MongoMapper gem:
 
 {% highlight sh %}
 $ gem install mongo_mapper
 {% endhighlight %}
+
+Define your models:
+
+{% highlight ruby %}
+class User
+  include MongoMapper::Document
+
+  key :name, String
+  key :age,  Integer
+
+  many :hobbies
+end
+
+
+class Hobby
+  include MongoMapper::EmbeddedDocument
+
+  key :name,    String
+  key :started, Time
+end
+{% endhighlight %}
+
+Use your models to create and find documents:
+
+{% highlight ruby %}
+user = User.new(:name => 'Brandon')
+user.hobbies.build(:name => 'Programming',
+  :started => 10.years.ago)
+
+user.save!
+
+User.where(:name => 'Brandon').first
+{% endhighlight %}
+
+
+Check out the "Documentation":/documentation/
 
 h2. Who's Using MongoMapper?
 
