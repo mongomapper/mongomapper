@@ -1,8 +1,15 @@
 {% include header.html %}
 
-<h1>{{ page.title }}</h1>
-<h4>Posted {% if page.author %}by {{ page.author }}{% endif %} on {{ page.date | date: '%B %d, %Y' }}</h4>
+<section>
+  <h1>{{ page.title }}</h1>
+  <h4>Posted {% if page.author %}by {{ page.author }}{% endif %} on {{ page.date | date: '%B %d, %Y' }}</h4>
 
-{{ content }}
+  {{ content }}
+</section>
+
+<aside>
+  {% include recent_posts.html %}
+  {% include recent_commits.html %}
+</aside>
 
 {% include footer.html %}

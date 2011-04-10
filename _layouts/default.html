@@ -1,3 +1,11 @@
 {% include header.html %}
-{{ content }}
+<section>
+  {{ content }}
+</section>
+
+<aside>
+  {% include recent_posts.html %}
+  {% include recent_commits.html %}
+</aside>
+
 {% include footer.html %}

@@ -1,0 +1,22 @@
+{% include header.html %}
+
+<section>
+  {{ content }}
+</section>
+<aside>
+  <ul id="nav-secondary">
+    <li><a href="/documentation/getting-started/">Getting Started</a>
+      <ul>
+        <li><a href="/documentation/getting-started/rails.html">Rails 3</a></li>
+        <li><a href="/documentation/getting-started/console.html">Console</a></li>
+      </ul>
+    </li>
+    <li><a href="/documentation/document/">Document</a></li>
+    <li><a href="/documentation/embedded-document/">EmbeddedDocument</a></li>
+    <li id="nav-secondary-plugins"><a href="/documentation/plugins/">Plugins</a></li>
+    <li id="nav-secondary-types"><a href="/documentation/types/">Types</a></li>
+    <li id="nav-secondary-exceptions"><a href="/documentation/exceptions/">Exceptions</a></li>
+  </ul>
+</aside>
+
+{% include footer.html %}
