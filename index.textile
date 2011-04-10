@@ -1,0 +1,45 @@
+---
+layout: default
+companies:
+  - name: New York Times
+    link: http://open.blogs.nytimes.com/2010/05/25/building-a-better-submission-form/
+    logo: nyt.png
+  - name: Heroku
+    link: http://heroku.com
+    logo: heroku.png
+  - name: Harmony
+    link: http://harmonyapp.com
+    logo: harmony.png
+  - name: Posterous
+    link: http://posterous.com
+    logo: posterous.png
+  - name: The Movie DB
+    link: http://www.themoviedb.org/
+    logo: themoviedb.png
+  - name: Yottaa
+    link: http://www.yottaa.com/
+    logo: yottaa.jpg
+---
+
+h1. A Mongo ORM for Ruby
+
+p(introduction). Built from the ground up to be simple and extendable, MongoMapper is a lovely way to model your applications and persist your data in MongoDB. It has all the bells and whistles you need to get the job done and have fun along the way.
+
+h2. Installation
+
+{% highlight sh %}
+$ gem install mongo_mapper
+{% endhighlight %}
+
+h2. Who's Using MongoMapper?
+
+<ul class="using">
+  {% for company in page.companies %}
+    <li>
+      <a href="{{ company.link }}">
+        <img src="/images/using/{{ company.logo }}" alt="{{ company.name }}" />
+      </a>
+    </li>
+  {% endfor %}
+</ul>
+

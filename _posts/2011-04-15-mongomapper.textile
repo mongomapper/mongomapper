@@ -1,0 +1,13 @@
+---
+title: MongoMapper.com
+layout: post
+author: John Nunemaker
+---
+
+For quite some time now, MongoMapper.com has been simply an image that links to a blog post. I am happy to announce that it is that no longer. The site has been filled out with documentation and several tutorials.
+
+I am also quite excited about the blog as I think it will give me an opportunity to post MongoMapper specific things that would maybe get annoying on "MongoTips":http://mongotips.com or "RailsTips":http://railstips.org.
+
+This site marks a maturation of MongoMapper. What started as an experiment, simply to learn MongoDB, has turned into a nice piece of software with a wonderful community wrapped around it.
+
+I am excited about the future as there is definitely some hot stuff coming down the pipe. Stay tuned.
