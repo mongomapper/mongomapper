@@ -1,9 +1,7 @@
 ---
 layout: documentation
-title: Rails
+title: Console
 ---
-
-h1. Console
 
 The MongoMapper Console is a great way to start playing with MongoMapper. Simply enter @mmconsole@ in your terminal and you will be dropped into @irb@ with MongoMapper included and your database set to 'mm-test'.
 

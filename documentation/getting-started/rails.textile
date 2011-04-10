@@ -3,8 +3,6 @@ layout: documentation
 title: Rails
 ---
 
-h1. Rails 3
-
 Add MongoMapper to your <kbd>Gemfile</kbd> and run @bundle install@:
 
 {% highlight ruby %}
