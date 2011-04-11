@@ -15,7 +15,7 @@ Yes. There is already a "Rails 3 branch":https://github.com/jnunemaker/mongomapp
 
 h2. What is the difference between a Document and an Embedded Document?
 
-A "Document":/documentation/document/ is a top level entity that has its own collection. An "EmbeddedDocument":/documentation/embedded-document.html is embedded inside of a Document. For example, in the document below, Template would be a MongoMapper::Document and would have a filename key. Field would be a MongoMapper::EmbeddedDocument and would be stored inside of the template document as an array of fields.
+A "Document":/documentation/document.html is a top level entity that has its own collection. An "EmbeddedDocument":/documentation/embedded-document.html is embedded inside of a Document. For example, in the document below, Template would be a MongoMapper::Document and would have a filename key. Field would be a MongoMapper::EmbeddedDocument and would be stored inside of the template document as an array of fields.
 
 {% highlight javascript %}
 {

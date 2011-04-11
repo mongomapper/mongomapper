@@ -3,7 +3,7 @@ layout: documentation
 title: EmbeddeDocument
 ---
 
-Embedded documents are almost identical to "Documents":/documentation/document/ with one exception: they are saved inside of another document instead of in their own collection. For example, lets say we have orders and orders have line items.
+Embedded documents are almost identical to "Documents":/documentation/document.html with one exception: they are saved inside of another document instead of in their own collection. For example, lets say we have orders and orders have line items.
 
 {% highlight ruby %}
 class Order

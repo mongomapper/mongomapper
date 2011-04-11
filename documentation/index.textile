@@ -3,7 +3,7 @@ layout: documentation
 title: Documentation
 ---
 
-The two document types are "Document":/documentation/document/ and "EmbeddedDocument":/documentation/embedded-document.html. They are made up of "Plugins":/documentation/plugins/. Also built-in is a simple "type":/documentation/types/ system that supports all of Mongo's types out of the box and allows you to add your own.
+The two document types are "Document":/documentation/document.html and "EmbeddedDocument":/documentation/embedded-document.html. They are made up of "Plugins":/documentation/plugins/. Also built-in is a simple "type":/documentation/types/ system that supports all of Mongo's types out of the box and allows you to add your own.
 
 h2. Presentations
 
