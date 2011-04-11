@@ -31,8 +31,7 @@ h4                                 {margin-bottom:16px;}
 a                                  {text-decoration:none; color:#65B453;}
 a:hover                            {color:#360;}
 p                                  {margin:0 0 20px;}
-<!--pre code                           {margin:0 0 20px; padding:17px 20px; color:#6c0; background:#222; display:block; font-size:16px; font-family:Monaco, courier; -webkit-font-smoothing: antialiased; overflow:auto;}-->
-
+pre code                           {background-color:#eee; display:block; padding:17px 20px; margin:0 0 20px; font-size:14px; font-family:Monaco, courier; -webkit-font-smoothing: antialiased; overflow:auto; -webkit-border-radius:5px;}
 
 /* blocks */
 ul.using                           {}
@@ -51,7 +50,7 @@ header, section, footer, aside,nav {display:block;}
 header                             {width:220px; float:left; padding:27px 0 37px 10px;}
 header h1                          {margin:0;}
 header h1 a                        {display:block; width:200px; height:153px; text-indent:-9999px; background:url(images/logo.png) no-repeat;}
-section                            {width:550px; float:right; font-size:18px; line-height:1.6; -webkit-font-smoothing: antialiased;}
+section                            {width:550px; float:right; font-size:16px; line-height:1.6; -webkit-font-smoothing: antialiased;}
 section ul                         {margin:0 0 20px 25px;}
 section ul li                      {margin:0 0 0 0; list-style-type:square;}
 section ol                         {margin:0 0 20px 25px;}
