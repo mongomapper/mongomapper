@@ -80,7 +80,7 @@ In this one-to-one relations, an employee can only use one desk, and each desk c
 
 h2(#embedded). Embedded Documents
 
-When one document will almost always be fetched with another, it makes sense to just embed it into the same document. "@many@":#many and "@one@":#one associations can be used with embedded models. See "EmbeddedDocument":/documentation/embedded-document/ for more information.
+When one document will almost always be fetched with another, it makes sense to just embed it into the same document. "@many@":#many and "@one@":#one associations can be used with embedded models. See "EmbeddedDocument":/documentation/embedded-document.html for more information.
 
 h2(#extensions). Association Extensions
 
