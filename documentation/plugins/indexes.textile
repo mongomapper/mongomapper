@@ -45,7 +45,7 @@ Unique indexes guarantee that no documents are inserted whose values for the ind
 
 If the app attempts to insert a document with a duplicate value after the unique index is set, the insert operation will fail.
 
-*Important note*: Notification of this failure in the form of a raised exception will only occur if the document is saved with :safe => true. You can read more about the "safe plugin":/documentation/plugins/safe/ and "updates in the driver":http://blog.mongodb.org/post/2844804263/the-state-of-mongodb-and-ruby that allow forcing safe-ness.
+*Important note*: Notification of this failure in the form of a raised exception will only occur if the document is saved with :safe => true. You can read more about the "safe plugin":/documentation/plugins/safe.html and "updates in the driver":http://blog.mongodb.org/post/2844804263/the-state-of-mongodb-and-ruby that allow forcing safe-ness.
 
 h2. References
 
