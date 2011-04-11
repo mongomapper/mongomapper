@@ -69,8 +69,6 @@ Paginate the query.
 patients = Patient.sort(:created_at).paginate(:per_page => 25, :page => 3)
 {% endhighlight %}
 
-See "Pagination":/documentation/plugins/pagination.html for more information.
-
 h2(#criteria). Criteria
 
 Mongo has rich support for "dynamic queries":http://www.mongodb.org/display/DOCS/Querying. MongoMapper uses ["Plucky":https://github.com/jnunemaker/plucky] to construct query proxy objects that only retrieve data from Mongo when needed.  This allows a query to be composed of several conditions before being evaluated.
