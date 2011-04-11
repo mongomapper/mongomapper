@@ -1,0 +1,129 @@
+---
+layout: documentation
+title: Associations
+---
+
+MongoMapper allows you to define the relationship between your models.  When you define an association, MongoMapper creates methods on your model that make it easy to create, break, find, and persist the connections between models in your application.
+
+* "Defining Associations":#defining
+** "One-to-Many":#one-to-many
+** "Many-to-Many":#many-to-many
+** "One-to-One":#one-to-one
+* "Embedded Documents":#embedded
+* "Association Extensions":#extensions
+
+h2(#defining). Defining Associations
+
+Associations between models in MongoMapper are defined by combining the "@many@":#many, "@belongs_to@":#belongs_to, and "@one@":#one methods. These three methods can form a one-to-many, many-to-many, or one-to-one association.
+
+h3(#one-to-many). One-to-Many
+
+Use "@many@":#many and "@belongs_to@":#belongs_to in your models to form a one-to-many association.
+
+{% highlight ruby %}
+class Tree
+  include MongoMapper::Document
+  many :birds
+end
+
+class Bird
+  include MongoMapper::Document
+  belongs_to :tree
+end
+{% endhighlight %}
+
+In this one-to-many relationship, one tree can have many birds perching on it, and a bird can only be in one tree at a time.
+
+h3(#many-to-many). Many-to-Many
+
+In a relational database, you might model a many-to-many relationship by creating a "join table."  MongoDB doesn't have joins. But because arrays are first class citizens in MongoDB, you can simply store an array of ObjectId's.
+
+Use an array key and "@many@":#many with the @:in@ option in your model to form a many-to-many association.
+
+{% highlight ruby %}
+class Book
+  include MongoMapper::Document
+  key :title
+  key :author_ids, Array
+  many :authors, :in => :author_ids
+end
+
+class Author
+  include MongoMapper::Document
+  key :name
+end
+{% endhighlight %}
+
+Each book stores an array of the id's of its authors in the @author_ids@ key. This allows books to have many authors, and authors to have many books.
+
+Currently, many-to-many associations are one-sided in MongoMapper. "Support will be added":https://github.com/jnunemaker/mongomapper/issues/240 in the near future for the inverse.
+
+h3(#one-to-one). One-to-One
+
+Use "@one@":#one and "@belongs_to@":#belongs_to in your models to form a one-to-one association.
+
+{% highlight ruby %}
+class Employee
+  include MongoMapper::Document
+  key :name
+  one :desk
+end
+
+class Desk
+  include MongoMapper::Document
+  key :color
+  belongs_to :employee
+end
+{% endhighlight %}
+
+In this one-to-one relations, an employee can only use one desk, and each desk can only be used by one employee.
+
+h2(#embedded). Embedded Documents
+
+When one document will almost always be fetched with another, it makes sense to just embed it into the same document. "@many@":#many and "@one@":#one associations can be used with embedded models. See "EmbeddedDocument":/documentation/embedded-document/ for more information.
+
+h2(#extensions). Association Extensions
+
+You can extend your core model associations to help you return variations on the associated objects, or encapsulate behavior related to the association.
+
+{% highlight ruby %}
+class Blog
+  include MongoMapper::Document
+
+  many :posts do
+    def published
+      where(:published => true)
+    end
+  end
+end
+
+@blog = Blog.first
+@blog.posts.published
+{% endhighlight %}
+
+If you want reuse an extension between many associations, define a module.
+
+{% highlight ruby %}
+module Publishable
+  def published
+    where(:published => true)
+  end
+
+  def publish!
+    set(:published => true)
+  end
+end
+
+class Blog
+  include MongoMapper::Document
+
+  many :posts, :extend => Publishable
+  many :comments, :extend => Publishable
+end
+{% endhighlight %}
+
+Sometimes you need access to the proxy owner or target objects in your extension. The following methods are available inside of your extension:
+
+* proxy_owner - the object the association is part of.
+* proxy_target - the target of the association, either a single object for a belongs_to or one association, or an array for a many association.
+* proxy_association - the object that describes the association.
