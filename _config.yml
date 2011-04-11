@@ -1,3 +1,2 @@
 permalink:  /blog/:year/:month/:day/:title
 pygments:   true
-auto:       true
