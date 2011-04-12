@@ -13,12 +13,12 @@ companies:
   - name: Posterous
     link: http://posterous.com
     logo: posterous.png
-  - name: The Movie DB
-    link: http://www.themoviedb.org/
-    logo: themoviedb.png
   - name: Yottaa
     link: http://www.yottaa.com/
     logo: yottaa.jpg
+  - name: The Movie DB
+    link: http://www.themoviedb.org/
+    logo: themoviedb.png
 ---
 
 h1. A Mongo ORM for Ruby
