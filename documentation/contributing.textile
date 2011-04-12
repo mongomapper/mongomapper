@@ -3,9 +3,32 @@ layout: documentation
 title: Contributing
 ---
 
-MongoMapper needs your help to make the documentation better. Fork the "repo on GitHub":http://github.com/jnunemaker/mongomapper and check out the gh-pages branch.
+h2. Documentation
 
-h2. Suggestions
+MongoMapper needs your help to make the documentation better. Here's how to contribute:
+
+
+# Fork the "repo on GitHub":http://github.com/jnunemaker/mongomapper and check out the gh-pages branch.
+{% highlight sh %}
+$ git checkout -b gh-pages origin/gh-pages
+{% endhighlight %}
+# Install the Jekyll gem
+{% highlight sh %}
+$ gem install jekyll
+{% endhighlight %}
+# Install "Pygments":http://pygments.org/docs/installation/
+{% highlight sh %}
+$ sudo easy_install Pygments
+{% endhighlight %}
+# Run the Jekyll server
+{% highlight sh %}
+jekyll --auto --server
+{% endhighlight %}
+# Open up http://localhost:4000/ in your web browser
+# Make your documentation changes
+# Push your changes and submit a pull request
+
+h3. Suggestions
 
 Here are some ways you can contribute:
 
@@ -14,7 +37,7 @@ Here are some ways you can contribute:
 * "Association methods (many, belongs_to, one)":https://github.com/jnunemaker/mongomapper/blob/master/lib/mongo_mapper/plugins/associations.rb
 * Polymorphic associations
 
-h2. Guidelines
+h3. Guidelines
 
 In order to maintain quality, here are some guidelines for contributing to the MongoMapper documentation.
 
