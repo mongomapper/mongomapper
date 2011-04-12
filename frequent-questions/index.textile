@@ -11,7 +11,7 @@ Everyone is pretty responsive on the "mailing list":http://groups.google.com/gro
 
 h2. Will MongoMapper use Active Model at some point?
 
-Yes. There is already a "Rails 3 branch":https://github.com/jnunemaker/mongomapper/tree/rails3 that is ready to rock. Currently, it is really easy for a Rails 3 app to deal with git branches so until Rails 2 support is deprecated, it will remain in the branch.
+Yes. As of 0.9, Active Model is used.
 
 h2. What is the difference between a Document and an Embedded Document?
 
