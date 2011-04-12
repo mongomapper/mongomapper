@@ -35,8 +35,3 @@ MongoMapper now has some "documentation":/documentation/. It is far from compreh
 
 There is a lot of work to do, so "please help us out":/documentation/contributing.html.
 
-h2. Roadmap
-
-In the coming days, MongoMapper 0.9 will be released. It is the first release specifically targeting Rails 3. There may be one more 0.8.x release for Rails 2, but the future is focused on Rails 3.
-
-After 0.9 is released, 1.0 will soon follow.
