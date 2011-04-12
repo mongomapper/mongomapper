@@ -6,6 +6,8 @@ author: Brandon Keepers
 
 After months of hard work rewriting MongoMappers internals to use ActiveModel, MongoMapper 0.9 is finally here.
 
+This release support Rails 3 only. There may be one or two more 0.8.x maintenance releases for Rails 2, but the future of MongoMapper is focused on Rails 3.
+
 h2. Changelog
 
 * A whole lot of Rails 3 goodness.
@@ -16,7 +18,7 @@ h2. Changelog
 * Added :autosave option to associations. "Commit":https://github.com/jnunemaker/mongomapper/commit/e6bd6d3008b14b2c9d91a20205871ebc0e5520b8 and "Commit":https://github.com/jnunemaker/mongomapper/commit/7cf80d8729d8eb5bfc43e4fb1f63469f70a9c2ca
 * Many, many bug fixes
 
-See the "full change log":https://github.com/jnunemaker/mongomapper/compare/v0.8.6...v0.9.0.
+See the "full change log":https://github.com/jnunemaker/mongomapper/compare/v0.8.6...v0.9.0. This release is not a drop in replacement for 0.8, so check out "UPGRADES":https://github.com/jnunemaker/mongomapper/blob/master/UPGRADES for things that have changed.
 
 h2. Credits
 
