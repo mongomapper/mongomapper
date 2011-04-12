@@ -1,6 +1,6 @@
 ---
 layout: documentation
-title: Rails
+title: Getting Started
 ---
 
 Add MongoMapper to your <kbd>Gemfile</kbd> and run @bundle install@:
