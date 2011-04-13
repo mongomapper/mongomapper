@@ -159,7 +159,7 @@ Though you can't have polymorphism on the @belongs_to@ side with the "basic meth
 {% highlight ruby %}
 class Site
   include MongoMapper::Document
-  many :pages, :polymorphic => true
+  many :pages
 end
 
 class Page
