@@ -1,0 +1,44 @@
+---
+layout: documentation
+title: Serialization
+---
+
+MongoMapper provides an ActiveModel-compatible serialization functionality for those times when you need to return an XML or a JSON representation of your object or collection. It provides a few simple methods that return the desired representation.
+
+h2. Examples
+
+{% highlight ruby %}class User
+  include MongoMapper::Document
+
+  key :name, String
+  key :email, String
+end
+
+user = User.create(:name => "Foo", :email => "foo@bar.com")
+
+#returns {"id"=>BSON::ObjectId('4da66b02217dd45643000323'), "name" => "Foo", "email" => "foo@bar.com"}
+hash = user.serializable_hash
+{% endhighlight %}
+
+The *serializable_hash* method takes a few options, namely *:only*, *:except* and *:include*. The first two are straightforward filters for the generation of the hash:
+
+{% highlight ruby %}
+#returns {"name" => "Foo"}
+user.serializable_hash(:only => :name)
+
+#returns {"id"=>BSON::ObjectId('4da66b02217dd45643000323'), "name" => "Foo"} 
+user.serializable_hash(:except => :email)
+{% endhighlight %}
+
+The method *as_json* is essentially a synonym for *serializable_hash* shown above and it will return the same result.
+
+The other convenience methods this plugin provides are *to_json* and *to_xml*:
+
+{% highlight ruby %}
+#returns {\"id\" : \"4da66b02217dd45643000323\", \"name\" : \"Foo\", \"email\" : \"foo@bar.com\"}
+user.to_json
+
+#returns "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<user>\n  <_id type=\"yaml\">--- !ruby/object:BSON::ObjectId\ndata:\n- 77\n- 166\n- 107\n- 2\n- 33\n- 125\n- 212\n- 86\n- 67\n- 3\n- 2\n- 3\n</_id>\n  <name>Foo</name>\n <email>foo@bar.com</email>\n </user>\n"
+user.to_xml
+
+{% endhighlight %}
