@@ -5,7 +5,7 @@ title: Identity Map
 
 The identity map plugin in MongoMapper caches the result of each object being loaded from the database on a per-model basis. If there is an attempt to load that object again from the database, it is loaded from the identity map.
 
-Identity map is not enabled by default in MongoMapper. Turning on the identity map has two effects. First, You never have two instance in memory of the same object. Second, when possible, MongoMapper attempts to reduce queries by checking the map before querying the database. Whenever you do simple finds by id, the map is checked first which reduces n + 1 queries.
+Identity map is not enabled by default in MongoMapper. Turning on the identity map has two effects. First, you never have two instances of the same object in memory. Second, when possible, MongoMapper attempts to reduce the number of queries executed by checking the map before querying the database. Whenever you do simple finds by id, the map is checked first which reduces the n + 1 query problem.
 
 h2. Examples
 
