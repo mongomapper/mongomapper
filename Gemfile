@@ -1,5 +1,5 @@
 source :rubygems
-gem 'bson_ext'
+gem 'bson_ext', '~>1.3.0'
 gemspec
 
 gem 'ruby-debug', :platform => :ruby_18
