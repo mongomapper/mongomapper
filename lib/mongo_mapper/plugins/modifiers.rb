@@ -95,9 +95,17 @@ module MongoMapper
         def push(hash)
           self.class.push(id, hash)
         end
+        
+        def push_all(hash)
+          self.class.push_all(id, hash)
+        end
 
         def pull(hash)
           self.class.pull(id, hash)
+        end
+        
+        def pull_all(hash)
+          self.class.pull_all(id, hash)
         end
 
         def add_to_set(hash)
