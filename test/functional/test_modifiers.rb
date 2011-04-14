@@ -387,7 +387,7 @@ class ModifierTest < Test::Unit::TestCase
     
     should "be able to pull_all with criteria and modifier hashes" do
       page = @page_class.create(:tags => %w(foo bar baz))
-      page.pull(:tags => %w(foo bar))
+      page.pull_all(:tags => %w(foo bar))
 
       page.reload
       page.tags.should == %w(baz)
