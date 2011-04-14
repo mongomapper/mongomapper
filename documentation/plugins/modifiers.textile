@@ -1,0 +1,274 @@
+---
+layout: documentation
+title: Modifiers
+---
+
+* "Introduction":#introduction
+* "Collection Operations":#collection_operations
+** "increment":#increment_col
+** "decrement":#decrement_col
+** "set":#set_col
+** "unset":#unset_col
+** "push":#push_col
+** "push_all":#push_all_col
+** "add_to_set":#add_to_set_col
+** "push_uniq":#push_uniq_col
+** "pull":#pull_col
+** "pull_all":#pull_all_col
+** "pop":#pop_col
+* "Document Operations":#document_operations
+** "increment":#increment_doc
+** "decrement":#decrement_doc
+** "set":#set_doc
+** "unset":#unset_doc
+** "push":#push_doc
+** "add_to_set":#add_to_set_doc
+** "push_uniq":#push_uniq_doc
+** "pull":#pull_doc
+** "pop":#pop_doc
+* "Notes":#notes
+* "Related Resources":#related_resources
+
+h2(#introduction). Introduction
+
+Along with traditional updates (i.e. replacing an entire document), MongoDB supports atomic, in-place updates. It supports "Modifier Operations":http://www.mongodb.org/display/DOCS/Updating#Updating-ModifierOperations which allow you to update existing values for a document.
+
+
+MongoMapper allows us to perform these atomic operations on documents matching a certain criteria or document ID (s) via "Collection Operations":#collection_operations and on individual documents themselves via "Document Operations":#document_operations.
+
+Let's start with a simple Page model:
+
+{% highlight ruby %}
+class Page
+  include MongoMapper::Document
+
+  key :title,       String
+  key :day_count,   Integer, :default => 0
+  key :week_count,  Integer, :default => 0
+  key :month_count, Integer, :default => 0
+  key :tags,        Array
+end
+{% endhighlight %}
+
+h2(#collection_operations). Collection Operations
+
+Note that for modifiers on a collection, you can either pass the ID (s) of the documents you wish to modify, or you can specify the criteria for the documents.
+
+See "Criteria":querying.html#criteria for the preferred way of selecting certain documents.
+
+h3(#increment_col). increment
+
+Increment the value(s) for key(s) by ID (s) or certain criteria.
+
+{% highlight ruby %}
+Page.increment({:title => 'Home'}, :day_count => 1, :week_count => 2, :month_count => 3)
+{% endhighlight %}
+
+{% highlight ruby %}
+Page.increment(@page.id, @page2.id, :day_count => 1, :week_count => 2, :month_count => 3)
+{% endhighlight %}
+
+h3(#decrement_col). decrement
+
+Decrement the value(s) for key(s) by ID (s) or certain criteria.
+
+{% highlight ruby %}
+Page.decrement({:title => 'Home'}, :day_count => 1, :week_count => 2, :month_count => 3)
+{% endhighlight %}
+
+{% highlight ruby %}
+Page.decrement(@page.id, @page2.id, :day_count => 1, :week_count => 2, :month_count => 3)
+{% endhighlight %}
+
+h3(#set_col). set
+
+Set the value(s) for key(s) by ID (s) or certain criteria.
+
+{% highlight ruby %}
+Page.set({:title => 'Home'}, :title => "New Home")
+{% endhighlight %}
+
+{% highlight ruby %}
+Page.set(@page.id, @page2.id, :title => "New Home")
+{% endhighlight %}
+
+h3(#unset_col). unset
+
+Unset or remove the value(s) for key(s) by ID (s) or certain criteria. The value(s) for the key(s) will be set to nil.
+
+{% highlight ruby %}
+Page.unset({:title => 'Home'}, :title)
+{% endhighlight %}
+
+{% highlight ruby %}
+Page.unset(@page.id, @page2.id, :title)
+{% endhighlight %}
+
+h3(#push_col). push
+
+Append *one* value to array key(s) by ID (s) or certain criteria.
+
+{% highlight ruby %}
+Page.push({:title => 'Home'}, :tags => 'foo')
+{% endhighlight %}
+
+{% highlight ruby %}
+Page.push(@page.id, @page2.id, :tags => 'foo')
+{% endhighlight %}
+
+h3(#push_all_col). push_all
+
+Append *several* values to array key(s) by ID (s) or certain criteria.
+
+{% highlight ruby %}
+Page.push_all({:title => 'Home'}, :tags => ['foo','bar'])
+{% endhighlight %}
+
+{% highlight ruby %}
+Page.push_all(@page.id, @page2.id, :tags => ['foo','bar'])
+{% endhighlight %}
+
+
+h3(#add_to_set_col). add_to_set
+
+Append *one* value to array key(s) by ID (s) or certain criteria, *if the value is unique*.
+
+{% highlight ruby %}
+Page.push({:title => 'Home'}, :tags => 'foo')
+{% endhighlight %}
+
+{% highlight ruby %}
+Page.push(@page.id, @page2.id, :tags => 'foo')
+{% endhighlight %}
+
+h3(#push_uniq_col). push_uniq
+
+This is an alias for "add_to_set":#add_to_set_col
+
+h3(#pull_col). pull
+
+Remove *one* value from array key(s) by ID (s) or certain criteria.
+
+{% highlight ruby %}
+Page.push_all({:title => 'Home'}, :tags => 'foo')
+{% endhighlight %}
+
+{% highlight ruby %}
+Page.push_all(@page.id, @page2.id, :tags => 'foo')
+{% endhighlight %}
+
+h3(#pull_all_col). pull_all
+
+Remove *several* values from array key(s) by ID (s) or certain criteria.
+
+{% highlight ruby %}
+Page.push_all({:title => 'Home'}, :tags => ['foo','bar'])
+{% endhighlight %}
+
+{% highlight ruby %}
+Page.push_all(@page.id, @page2.id, :tags => ['foo','bar'])
+{% endhighlight %}
+
+h3(#pop_col). pop
+
+Remove the *last element* from array key(s) by ID (s) or certain criteria.
+
+{% highlight ruby %}
+Page.pop({:title => 'Home'}, :tags => 1)
+{% endhighlight %}
+
+{% highlight ruby %}
+Page.pop(@page.id, @page2.id, :tags => 1)
+{% endhighlight %}
+
+Note that if you pass *-1*, it will remove the *first element* from array key(s).
+
+h2(#document_operations). Document Operations
+
+You can also perform modifier operations on documents, instances of your MongoMapper class.
+
+h3(#increment_doc). increment
+
+Increment the value(s) for key(s).
+
+{% highlight ruby %}
+@page.increment(:day_count => 1, :week_count => 2, :month_count => 3)
+{% endhighlight %}
+
+h3(#decrement_doc). decrement
+
+Decrement the value(s) for key(s).
+
+{% highlight ruby %}
+@page.decrement(:day_count => 1, :week_count => 2, :month_count => 3)
+{% endhighlight %}
+
+h3(#set_doc). set
+
+Set the value(s) for key(s).
+
+{% highlight ruby %}
+@page.set(:title => "New Home")
+{% endhighlight %}
+
+h3(#unset_doc). unset
+
+Unset or remove the value(s) for key(s). The value(s) for the key(s) will be set to nil.
+
+{% highlight ruby %}
+@page.unset(:title)
+{% endhighlight %}
+
+h3(#push_doc). push
+
+Append *one* value to array key(s).
+
+{% highlight ruby %}
+@page.push(:tags => 'foo')
+{% endhighlight %}
+
+h3(#add_to_set_doc). add_to_set
+
+Append *one* value to array key(s), *if the value is unique*.
+
+{% highlight ruby %}
+@page.push(:tags => 'foo')
+{% endhighlight %}
+
+h3(#push_uniq). push_uniq
+
+This is an alias of "add_to_set":#add_to_set_doc
+
+h3(#pull_doc). pull
+
+Remove *one* value from array key(s).
+
+{% highlight ruby %}
+@page.pull(:tags => 'foo')
+{% endhighlight %}
+
+h3(#pop_doc). pop
+
+Remove the *last element* from array key(s).
+
+{% highlight ruby %}
+@page.pop(:tags => 1)
+{% endhighlight %}
+
+Note that if you pass *-1*, it will remove the *first element* from array key(s).
+
+h3(#notes). Notes
+
+When applying a modifier operation on a variable (local or instance), make sure to reload the variable. MongoMapper does not update the state of the variable unless you explicitly tell it to like so:
+
+{% highlight ruby %}
+@page.set(:title => "Something New")
+@page.title # => "Something Old"
+@page.reload
+@page.title # => "Something New"
+{% endhighlight %}
+
+
+h2(#related_resources). Related Resources
+
+"MongoDB Modifier Operations Documentation":http://www.mongodb.org/display/DOCS/Updating#Updating-ModifierOperations

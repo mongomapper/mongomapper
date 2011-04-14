@@ -32,7 +32,6 @@ h3. Suggestions
 
 Here are some ways you can contribute:
 
-* "Modifiers":https://github.com/jnunemaker/mongomapper/blob/master/lib/mongo_mapper/plugins/modifiers.rb
 * "Serialization":https://github.com/jnunemaker/mongomapper/blob/master/lib/mongo_mapper/plugins/serialization.rb
 * "Association methods (many, belongs_to, one)":https://github.com/jnunemaker/mongomapper/blob/master/lib/mongo_mapper/plugins/associations.rb
 * Polymorphic associations
