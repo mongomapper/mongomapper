@@ -1,0 +1,190 @@
+---
+layout: documentation
+title: Modifiers
+---
+
+* "Introduction":#introduction
+* "Collection Operations":#collection_operations
+** "increment":#increment
+** "decrement":#decrement
+** "set":#set
+** "unset":#unset
+** "push":#push
+** "push_all":#push_all
+** "add_to_set":#add_to_set
+** "push_uniq":#push_uniq
+** "pull":#pull
+** "pull_all":#pull_all
+** "pop":#pop
+* "Document Operations":#document_operations
+** "increment":#increment
+** "decrement":#decrement
+** "set":#set
+** "unset":#unset
+** "push":#push
+** "add_to_set":#add_to_set
+** "push_uniq":#push_uniq
+** "pull":#pull
+** "pop":#pop
+* "Related Resources":#related_resources
+
+h2(#introduction). Introduction
+
+Along with traditional updates (i.e. replacing an entire document), MongoDB supports atomic, in-place updates. It supports "Modifier Operations Documentation":http://www.mongodb.org/display/DOCS/Updating#Updating-ModifierOperations which allow you to update existing values for a document. MongoMapper allows us to perform these atomic operations on documents matching a certain criteria or document ID (s) via "Collection Operations":#collection_operations and on individual documents themselves via "Document Operations":#document_operations.
+
+Let's start with a simple Page model:
+
+{% highlight ruby %}
+class Page
+  include MongoMapper::Document
+
+  key :title,       String
+  key :day_count,   Integer, :default => 0
+  key :week_count,  Integer, :default => 0
+  key :month_count, Integer, :default => 0
+  key :tags,        Array
+end
+{% endhighlight %}
+
+h2(#collection_operations). Collection Operations
+
+Note that for modifiers on a collection, you can either pass the ID (s) of the documents you wish to modify, or you can specify the criteria for the documents.
+See "Criteria":querying.html#criteria for the preferred way of selecting certain documents.
+
+h3(#increment). increment
+
+Increment the value(s) for key(s) by ID (s) or certain criteria.
+
+{% highlight ruby %}
+Page.increment({:title => 'Home'}, :day_count => 1, :week_count => 2, :month_count => 3)
+{% endhighlight %}
+
+{% highlight ruby %}
+Page.increment(@page.id, @page2.id, :day_count => 1, :week_count => 2, :month_count => 3)
+{% endhighlight %}
+
+h3(#decrement). decrement
+
+Decrement the value(s) for key(s) by ID (s) or certain criteria.
+
+{% highlight ruby %}
+Page.decrement({:title => 'Home'}, :day_count => 1, :week_count => 2, :month_count => 3)
+{% endhighlight %}
+
+{% highlight ruby %}
+Page.decrement(@page.id, @page2.id, :day_count => 1, :week_count => 2, :month_count => 3)
+{% endhighlight %}
+
+h3(#set). set
+
+Set the value(s) for key(s) by ID (s) or certain criteria.
+
+{% highlight ruby %}
+Page.set({:title => 'Home'}, :title => "New Home")
+{% endhighlight %}
+
+{% highlight ruby %}
+Page.set(@page.id, @page2.id, :title => "New Home")
+{% endhighlight %}
+
+h3(#unset). unset
+
+Unset or remove the value(s) for key(s) by ID (s) or certain criteria. The value(s) for the key(s) will be set to nil.
+
+{% highlight ruby %}
+Page.unset({:title => 'Home'}, :title)
+{% endhighlight %}
+
+{% highlight ruby %}
+Page.unset(@page.id, @page2.id, :title)
+{% endhighlight %}
+
+h3(#push). push
+
+Foo.
+
+h3(#push_all). push_all
+
+Foo.
+
+
+h3(#add_to_set). add_to_set
+
+Foo.
+
+h3(#push_uniq). push_uniq
+
+Foo.
+
+h3(#pull). pull
+
+Foo.
+
+h3(#pull_all). pull_all
+
+Foo.
+
+h3(#pop). pop
+
+Foo.
+
+h2(#document_operations). Document Operations
+
+You can also perform modifier operations on documents, instances of your MongoMapper class.
+
+h3(#increment). increment
+
+Increment the value(s) for key(s).
+
+{% highlight ruby %}
+@page.increment(:day_count => 1, :week_count => 2, :month_count => 3)
+{% endhighlight %}
+
+h3(#decrement). decrement
+
+Decrement the value(s) for key(s).
+
+{% highlight ruby %}
+@page.decrement(:day_count => 1, :week_count => 2, :month_count => 3)
+{% endhighlight %}
+
+h3(#set). set
+
+Set the value(s) for key(s).
+
+{% highlight ruby %}
+@page.set(:title => "New Home")
+{% endhighlight %}
+
+h3(#unset). unset
+
+Unset or remove the value(s) for key(s). The value(s) for the key(s) will be set to nil.
+
+{% highlight ruby %}
+@page.unset(:title)
+{% endhighlight %}
+
+h3(#push). push
+
+Foo.
+
+h3(#add_to_set). add_to_set
+
+Foo.
+
+h3(#push_uniq). push_uniq
+
+Foo.
+
+h3(#pull). pull
+
+Foo.
+
+h3(#pop). pop
+
+Foo.
+
+
+h2(#related_resources). Related Resources
+
+"MongoDB Modifier Operations Documentation":http://www.mongodb.org/display/DOCS/Updating#Updating-ModifierOperations
