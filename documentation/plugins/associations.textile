@@ -136,7 +136,7 @@ Polymorphism can also be provided by "Single Collection Inheritance":/documentat
 {% highlight ruby %}
 class Commentable
   include MongoMapper::Document
-  many :comments, :as => :commentable
+  many :comments
 end
 
 class Article < Commentable
@@ -150,7 +150,7 @@ end
 class Comment
   include MongoMapper::Document
   key :text
-  belongs_to :commentable, :polymorphic => true
+  belongs_to :commentable
 end
 {% endhighlight %}
 
@@ -233,7 +233,7 @@ class Address
   include MongoMapper::EmbeddedDocument
   key :street_address
   key :city
-  embedded_in :human  
+  embedded_in :human
 end
 {% endhighlight %}
 
