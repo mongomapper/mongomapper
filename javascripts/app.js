@@ -15,6 +15,7 @@ var App = {
   },
 
   init: function() {
+    this.selectNav();
     this.commits = jQuery('#recent-commits ul');
     new GitHub.Repo('jnunemaker', 'mongomapper').commits('master', this.loadCommits);
   },
@@ -42,6 +43,15 @@ var App = {
       contents += '</li>';
     }
     App.commits.append(contents);
+  },
+
+  selectNav: function() {
+    $('#nav a').each(function() {
+      if(window.location.pathname.indexOf(this.getAttribute('href')) == 0) {
+        $('#nav a.current').removeClass('current');
+        $(this).addClass('current');
+      }
+    });
   }
 };
 

@@ -63,7 +63,7 @@ nav ul                             {list-style-type:none; margin:0; padding:0;}
 nav li                             {float:left; margin:0 20px 0 0;}
 nav a                              {display:block; text-decoration:none; text-transform:uppercase; color:#000; border-bottom:5px solid transparent; line-height:1; padding:0 0 7px;}
 nav a:hover                        {color:#000; border-color:#ccc;}
-nav .current a                     {border-color:#65B453; color:#65B453;}
+nav a.current                      {border-color:#65B453; color:#65B453;}
 
 aside                              {width:220px; float:left; padding:0 5px 0;}
 #nav-secondary li                  {}
