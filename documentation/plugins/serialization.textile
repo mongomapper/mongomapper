@@ -7,6 +7,8 @@ MongoMapper provides an ActiveModel-compatible serialization functionality for t
 
 h2. Examples
 
+We'll set up two classes, User and Interest, with User having many Interests.
+
 {% highlight ruby %}class User
   include MongoMapper::Document
 
@@ -14,23 +16,30 @@ h2. Examples
   key :email, String
 end
 
-user = User.create(:name => "Foo", :email => "foo@bar.com")
+class Interest
+  include MongoMapper::Document
+
+  key :title, String
+end
+
+user = User.create(:name => "Foo", :email => "foo@bar.com", :interests => [Interest.new(:title => "Movies")])
 
 #returns {"id"=>BSON::ObjectId('4da66b02217dd45643000323'), "name" => "Foo", "email" => "foo@bar.com"}
 hash = user.serializable_hash
 {% endhighlight %}
 
-The *serializable_hash* method takes a few options, namely *:only*, *:except* and *:include*. The first two are straightforward filters for the generation of the hash:
+The *serializable_hash* method takes a few options, namely *:only*, *:except* and *:include*. The first two are straightforward filters for the generation of the hash, the third one lets you include the related document collection:
 
 {% highlight ruby %}
 #returns {"name" => "Foo"}
 user.serializable_hash(:only => :name)
 
 #returns {"id"=>BSON::ObjectId('4da66b02217dd45643000323'), "name" => "Foo"} 
-user.serializable_hash(:except => :email)
-{% endhighlight %}
+user.as_json(:except => :email) # as_json is a synonym for serializable_hash
 
-The method *as_json* is essentially a synonym for *serializable_hash* shown above and it will return the same result.
+#returns {"id"=>BSON::ObjectId('4da66b02217dd45643000323'), "name" => "Foo", "email" => "foo@bar.com", "interests" => [{"id" => "BSON_ID_HERE", "title" => "Movies"]}
+user.serializable_hash(:include => :interests)
+{% endhighlight %}
 
 The other convenience methods this plugin provides are *to_json* and *to_xml*:
 
@@ -42,3 +51,6 @@ user.to_json
 user.to_xml
 
 {% endhighlight %}
+
+It's also worthy of note that embedded documents are included in the *serializable_hash* call without any intervention from the developer.
+
