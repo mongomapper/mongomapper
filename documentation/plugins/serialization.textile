@@ -47,13 +47,13 @@ Call @to_json or @to_xml@ on your model to return a serialized string, or @seria
 {% highlight xml %}
 <?xml version="1.0" encoding="UTF-8"?>
 <user>
-  <id type="BSON::ObjectId">4da66b02217dd45643000323</id>
+  <id>4da66b02217dd45643000323</id>
   <name>Foo</name>
   <email>foo@bar.com</email>
   <interests type="array">
     <interest>
       <title>Movies</title>
-      <id type="BSON::ObjectId">4dac5ce0c198a70912000003</id>
+      <id>4dac5ce0c198a70912000003</id>
     </interest>
 </user>
 {% endhighlight %}
