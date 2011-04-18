@@ -30,11 +30,7 @@ jekyll --auto --server
 
 h3. Suggestions
 
-Here are some ways you can contribute:
-
-* "Serialization":https://github.com/jnunemaker/mongomapper/blob/master/lib/mongo_mapper/plugins/serialization.rb
-* "Association methods (many, belongs_to, one)":https://github.com/jnunemaker/mongomapper/blob/master/lib/mongo_mapper/plugins/associations.rb
-* Polymorphic associations
+If you want to help with the documentation, but don't know how to help, "here are some ideas":https://github.com/jnunemaker/mongomapper/issues?labels=documentation of things that need documented.
 
 h3. Guidelines
 
