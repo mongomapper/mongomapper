@@ -57,6 +57,10 @@ module MongoMapper
           hash
         end
 
+        def to_xml(options = {}, &block)
+          XmlSerializer.new(self, options).serialize(&block)
+        end
+
       private
 
         def serializable_add_includes(options = {})
@@ -91,7 +95,13 @@ module MongoMapper
           self.new.from_xml(xml)
         end
       end
+    end
 
+    # Override default Serializer to use #serializable_hash
+    class XmlSerializer < ::ActiveModel::Serializers::Xml::Serializer
+      def attributes_hash
+        @serializable.serializable_hash(options)
+      end
     end
   end
 end
