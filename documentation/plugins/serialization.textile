@@ -3,54 +3,83 @@ layout: documentation
 title: Serialization
 ---
 
-MongoMapper provides an ActiveModel-compatible serialization functionality for those times when you need to return an XML or a JSON representation of your object or collection. It provides a few simple methods that return the desired representation.
+MongoMapper provides ActiveModel-compatible serialization for building an XML or JSON representation of your model.
 
-h2. Examples
-
-We'll set up two classes, User and Interest, with User having many Interests.
-
-{% highlight ruby %}class User
+{% highlight ruby %}
+class User
   include MongoMapper::Document
 
-  key :name, String
-  key :email, String
+  key :name,        String
+  key :email,       String
+  key :friend_ids,  Array
+
+  many :interests
+  many :friends, :class_name => 'User', :in => :friend_ids
+
+  def newest_friend
+    User.find(friend_ids.last)
+  end
 end
 
 class Interest
-  include MongoMapper::Document
+  include MongoMapper::EmbeddedDocument
 
   key :title, String
 end
 
-user = User.create(:name => "Foo", :email => "foo@bar.com", :interests => [Interest.new(:title => "Movies")])
-
-#returns {"id"=>BSON::ObjectId('4da66b02217dd45643000323'), "name" => "Foo", "email" => "foo@bar.com"}
-hash = user.serializable_hash
+user = User.create(:name => "Foo", :email => "foo@bar.com",
+    :interests => [Interest.new(:title => "Movies")])
 {% endhighlight %}
 
-The *serializable_hash* method takes a few options, namely *:only*, *:except* and *:include*. The first two are straightforward filters for the generation of the hash, the third one lets you include the related document collection:
+Call @to_json or @to_xml@ on your model to return a serialized string, or @serializable_hash@ to simply return a plain Ruby hash.
+
+{% highlight javascript %}
+{
+  "id":       "4da66b02217dd45643000323",
+  "name":     "Foo",
+  "email":    "foo@bar.com",
+  "interests": [
+    {"id": "4dac5bd2c198a708f5000001", "title": "Movies"}
+  ]
+}
+{% endhighlight %}
+
+{% highlight xml %}
+<?xml version="1.0" encoding="UTF-8"?>
+<user>
+  <id type="BSON::ObjectId">4da66b02217dd45643000323</id>
+  <name>Foo</name>
+  <email>foo@bar.com</email>
+  <interests type="array">
+    <interest>
+      <title>Movies</title>
+      <id type="BSON::ObjectId">4dac5ce0c198a70912000003</id>
+    </interest>
+</user>
+{% endhighlight %}
+
+Note that "embedded documents":/documentation/embedded-document.html are included in the serialized output without any intervention.
+
+h2. Customizing Serialized Output
+
+The @to_json@ and @to_xml@ methods take a few options, namely *:only*, *:except* and *:include*. The first two are straightforward filters for the generation of the serialized output.
 
 {% highlight ruby %}
-#returns {"name" => "Foo"}
-user.serializable_hash(:only => :name)
+user.to_json(:only => :name)
 
-#returns {"id"=>BSON::ObjectId('4da66b02217dd45643000323'), "name" => "Foo"} 
-user.as_json(:except => :email) # as_json is a synonym for serializable_hash
-
-#returns {"id"=>BSON::ObjectId('4da66b02217dd45643000323'), "name" => "Foo", "email" => "foo@bar.com", "interests" => [{"id" => "BSON_ID_HERE", "title" => "Movies"]}
-user.serializable_hash(:include => :interests)
+user.to_json(:except => :email)
 {% endhighlight %}
 
-The other convenience methods this plugin provides are *to_json* and *to_xml*:
+*:include* lets you include an association or the result of a method in the serialized output.
 
 {% highlight ruby %}
-#returns {\"id\" : \"4da66b02217dd45643000323\", \"name\" : \"Foo\", \"email\" : \"foo@bar.com\"}
-user.to_json
-
-#returns "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<user>\n  <_id type=\"yaml\">--- !ruby/object:BSON::ObjectId\ndata:\n- 77\n- 166\n- 107\n- 2\n- 33\n- 125\n- 212\n- 86\n- 67\n- 3\n- 2\n- 3\n</_id>\n  <name>Foo</name>\n <email>foo@bar.com</email>\n </user>\n"
-user.to_xml
-
+user.to_json(:include => [:friends, :newest_friend])
 {% endhighlight %}
 
-It's also worthy of note that embedded documents are included in the *serializable_hash* call without any intervention from the developer.
+Internally, the @serializable_hash@ method is used on your model to generate the serialized string. Override it provide your own implementation or to set defaults.
 
+{% highlight ruby %}
+  def serializable_hash(options = {})
+    super({:except => :password}.merge(options))
+  end
+{% endhighlight %}
