@@ -11,7 +11,7 @@ module MongoMapper
         include PluckyMethods
 
         def find_each(opts={})
-          super(opts).each { |doc| yield load(doc) }
+          super(opts).each { |doc| yield(doc) }
         end
 
         def find_by_id(id)
@@ -61,12 +61,12 @@ module MongoMapper
 
         # @api private for now
         def query(options={})
-          Plucky::Query.new(collection).tap do |query|
-            query.extend(Decorator)
-            query.object_ids(object_id_keys)
-            query.update(options)
-            query.model(self)
-          end
+          query = Plucky::Query.new(collection, :transformer => transformer)
+          query.extend(Decorator)
+          query.object_ids(object_id_keys)
+          query.update(options)
+          query.model(self)
+          query
         end
 
         # @api private for now
@@ -75,6 +75,10 @@ module MongoMapper
         end
 
         private
+          def transformer
+            @transformer ||= lambda { |doc| load(doc) }
+          end
+
           def find_some(ids, options={})
             query = query(options).update(:_id => ids.flatten.compact.uniq)
             find_many(query.to_hash).compact

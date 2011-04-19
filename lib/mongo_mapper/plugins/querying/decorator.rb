@@ -21,18 +21,6 @@ module MongoMapper
           end
         end
 
-        def all(opts={})
-          super.map { |doc| model.load(doc) }
-        end
-
-        def first(opts={})
-          model.load(super)
-        end
-
-        def last(opts={})
-          model.load(super)
-        end
-
         private
           def method_missing(method, *args, &block)
             return super unless model.respond_to?(method)
