@@ -19,6 +19,12 @@ companies:
   - name: The Movie DB
     link: http://www.themoviedb.org/
     logo: themoviedb.png
+  - name: IGN
+    link: http://www.ign.com/
+    logo: ign.png
+  - name: Intuit
+    link: http://www.intuit.com/
+    logo: intuit.png
 ---
 
 h1. A Mongo ORM for Ruby
