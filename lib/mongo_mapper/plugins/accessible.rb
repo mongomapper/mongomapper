@@ -4,21 +4,17 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       included do
-        class_attribute :_attr_accessible
+        class_attribute :accessible_attributes
       end
 
       module ClassMethods
         def attr_accessible(*attrs)
           raise AccessibleOrProtected.new(name) if try(:protected_attributes?)
-          self._attr_accessible = Set.new(attrs) + (accessible_attributes || [])
+          self.accessible_attributes = Set.new(attrs) + (accessible_attributes || [])
         end
 
         def accessible_attributes?
           !accessible_attributes.nil?
-        end
-
-        def accessible_attributes
-          self._attr_accessible
         end
       end
 
