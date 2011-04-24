@@ -39,6 +39,10 @@ module MongoMapper
   end
 end
 
-class Boolean
+unless defined?(::Boolean)
+  class ::Boolean; end
+end
+
+::Boolean.module_eval do 
   extend MongoMapper::Extensions::Boolean
 end
