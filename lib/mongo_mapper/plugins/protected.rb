@@ -16,10 +16,6 @@ module MongoMapper
           self.protected_attributes = Set.new(attrs) + (protected_attributes || [])
         end
 
-        def protected_attributes?
-          !protected_attributes.nil?
-        end
-
         def key(*args)
           key = super
           attr_protected key.name.to_sym if key.options[:protected]
@@ -38,10 +34,6 @@ module MongoMapper
 
         def update_attributes!(attrs={})
           super(filter_protected_attrs(attrs))
-        end
-
-        def protected_attributes
-          self.class.protected_attributes
         end
 
         protected
