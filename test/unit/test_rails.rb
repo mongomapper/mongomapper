@@ -4,7 +4,7 @@ class TestRails < Test::Unit::TestCase
   context "Document" do
     setup do
       @klass = Doc('Post') do
-        key :foo, String
+        key :foo, String, :default => 20
       end
     end
 
@@ -54,6 +54,11 @@ class TestRails < Test::Unit::TestCase
       should "be able to read key before type cast with read_attribute_before_type_cast" do
         @klass.new(:foo => 21).bar_before_type_cast.should == 21
         @klass.new(:foo => 21).bar.should == '21'
+      end
+
+      should "be able to read default value of key before type cast with read_attribute_before_type_cast" do
+        @klass.new().bar_before_type_cast.should == 20
+        @klass.new().bar.should == '20'
       end
 
       should "be able to write key with write_attribute" do
@@ -92,7 +97,7 @@ class TestRails < Test::Unit::TestCase
 
   context "EmbeddedDocument" do
     setup do
-      @klass = EDoc('Post') { key :foo, String }
+      @klass = EDoc('Post') { key :foo, String, :default => 20 }
     end
 
     context "Class methods" do
@@ -141,6 +146,11 @@ class TestRails < Test::Unit::TestCase
       should "be able to read key before type cast with read_attribute_before_type_cast" do
         @klass.new(:foo => 21).bar_before_type_cast.should == 21
         @klass.new(:foo => 21).bar.should == '21'
+      end
+
+      should "be able to read default value of key before type cast with read_attribute_before_type_cast" do
+        @klass.new().bar_before_type_cast.should == 20
+        @klass.new().bar.should == '20'
       end
 
       should "be able to write key with write_attribute" do
