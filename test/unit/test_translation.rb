@@ -9,19 +9,27 @@ class TranslationTest < Test::Unit::TestCase
     Doc().i18n_scope.should == :mongo_mapper
   end
 
-  should "translate document attributes" do
-    I18n.config.backend.store_translations(:en, :mongo_mapper => {:attributes => {:thing => {:foo => 'Bar'}}})
-    doc = Doc('Thing') do
+  should "translate document model name and attributes" do
+    I18n.config.backend.store_translations(:en, :mongo_mapper => {
+      :models     => {:foo => 'Bar'},
+      :attributes => {:foo => {:foo => 'Bar'}}
+    })
+    doc = Doc('Foo') do
       key :foo, String
     end
+    doc.model_name.human.should == 'Bar'
     doc.human_attribute_name(:foo).should == 'Bar'
   end
 
-  should "translate embedded document attributes" do
-    I18n.config.backend.store_translations(:en, :mongo_mapper => {:attributes => {:thing => {:foo => 'Bar'}}})
-    doc = EDoc('Thing') do
+  should "translate embedded document model name and attributes" do
+    I18n.config.backend.store_translations(:en, :mongo_mapper => {
+      :models     => {:foo => 'Bar'},
+      :attributes => {:foo => {:foo => 'Bar'}}
+    })
+    doc = EDoc('Foo') do
       key :foo, String
     end
+    doc.model_name.human.should == 'Bar'
     doc.human_attribute_name(:foo).should == 'Bar'
   end
 end

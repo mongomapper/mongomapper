@@ -21,8 +21,8 @@ class TestRails < Test::Unit::TestCase
         @klass.column_names.sort.should == ['_id', 'foo']
       end
 
-      should "implement human_name" do
-        @klass.human_name.should == 'Post'
+      should "implement model_name.human" do
+        @klass.model_name.human.should == 'Post'
       end
     end
 
@@ -113,8 +113,8 @@ class TestRails < Test::Unit::TestCase
         @klass.column_names.sort.should == ['_id', 'foo']
       end
 
-      should "implement human_name" do
-        @klass.human_name.should == 'Post'
+      should "implement model_name.human" do
+        @klass.model_name.human.should == 'Post'
       end
     end
 
