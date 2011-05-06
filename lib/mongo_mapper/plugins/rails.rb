@@ -39,8 +39,8 @@ module MongoMapper
           one(*args)
         end
 
-        def has_many(*args)
-          many(*args)
+        def has_many(*args, &extension)
+          many(*args, &extension)
         end
 
         def column_names
