@@ -13,6 +13,16 @@ class TestRails < Test::Unit::TestCase
         @klass.should respond_to(:has_many)
       end
 
+      should 'pass on block given in has_many' do
+        @klass.class_eval do
+          has_many :posts do
+            def foo_bars; true; end
+          end
+        end
+
+        @klass.new.posts.should respond_to(:foo_bars)
+      end
+
       should "alias has_one to one" do
         @klass.should respond_to(:has_one)
       end
