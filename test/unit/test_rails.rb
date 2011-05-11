@@ -30,10 +30,6 @@ class TestRails < Test::Unit::TestCase
       should "have column names" do
         @klass.column_names.sort.should == ['_id', 'foo']
       end
-
-      should "implement human_name" do
-        @klass.human_name.should == 'Post'
-      end
     end
 
     context "Instance methods" do
@@ -116,10 +112,6 @@ class TestRails < Test::Unit::TestCase
 
       should "have column names" do
         @klass.column_names.sort.should == ['_id', 'foo']
-      end
-
-      should "implement human_name" do
-        @klass.human_name.should == 'Post'
       end
     end
 
