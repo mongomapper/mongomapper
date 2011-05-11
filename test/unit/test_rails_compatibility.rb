@@ -39,14 +39,14 @@ class TestRailsCompatibility < Test::Unit::TestCase
       instance.new_record?.should == instance.new?
     end
 
-    should "implement human_name" do
-      Item.human_name.should == 'Item'
+    should "implement model_name.human" do
+      Item.model_name.human.should == 'Item'
     end
   end
 
   context "Document" do
-    should "implement human_name" do
-      BigStuff.human_name.should == 'Big Stuff'
+    should "implement model_name.human" do
+      BigStuff.model_name.human.should == 'Big stuff'
     end
   end
 end
