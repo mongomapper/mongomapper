@@ -21,6 +21,10 @@ module MongoMapper
           end
         end
 
+        def as_json(options = nil)
+          map { |doc| doc.as_json(options) }
+        end
+
         private
           def method_missing(method, *args, &block)
             return super unless model.respond_to?(method)
