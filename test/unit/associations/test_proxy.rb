@@ -28,11 +28,6 @@ class ProxyTest < Test::Unit::TestCase
     @blank_proxy = FakeBlankProxy.new(@owner, @association)
   end
 
-  should 'return true for === target' do
-    @proxy = FakeProxy.new(@owner, @association)
-    @proxy.should === Array
-  end
-
   should "set target to nil when reset is called" do
     @proxy.reset
     @proxy.target.should be_nil
