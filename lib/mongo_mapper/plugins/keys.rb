@@ -8,7 +8,7 @@ module MongoMapper
 
       included do
         extend ActiveSupport::DescendantsTracker
-        key :_id, ObjectId
+        key :_id, ObjectId, :default => lambda { BSON::ObjectId.new }
       end
 
       module ClassMethods
@@ -45,11 +45,6 @@ module MongoMapper
 
         def object_id_key?(name)
           object_id_keys.include?(name.to_sym)
-        end
-
-        # API Private
-        def can_default_id?
-          keys['_id'].can_default_id?
         end
 
         def to_mongo(instance)
@@ -163,7 +158,6 @@ module MongoMapper
 
       module InstanceMethods
         def initialize(attrs={})
-          default_id_value(attrs)
           @_new = true
           assign(attrs)
         end
@@ -171,7 +165,6 @@ module MongoMapper
         def initialize_from_database(attrs={})
           @_new = false
           load_from_database(attrs)
-          default_id_value(attrs)
           self
         end
 
@@ -264,13 +257,6 @@ module MongoMapper
 
         def embedded_keys
           keys.values.select { |key| key.embeddable? }
-        end
-
-        def default_id_value(attrs={})
-          id_provided = !attrs.nil? && attrs.keys.map { |k| k.to_s }.detect { |k| k == 'id' || k == '_id' }
-          if !id_provided && self.class.can_default_id?
-            write_key :_id, BSON::ObjectId.new
-          end
         end
 
         private

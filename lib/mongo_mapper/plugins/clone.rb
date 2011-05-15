@@ -8,7 +8,7 @@ module MongoMapper
         def initialize_copy(other)
           @_new       = true
           @_destroyed = false
-          default_id_value
+          @_id        = nil
           associations.each do |name, association|
             instance_variable_set(association.ivar, nil)
           end

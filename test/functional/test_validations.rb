@@ -323,6 +323,34 @@ class ValidationsTest < Test::Unit::TestCase
     end
   end
 
+  context "validating associated docs" do
+    setup do
+      @child_class = EDoc do
+        key :name, :required => true
+      end
+
+      @root_class = Doc { }
+      @root_class.many :children, :class => @child_class
+      @root_class.validates_associated :children, :message => 'are invalid'
+    end
+    
+    should "pass if there are no associated docs" do
+      doc = @root_class.new
+      doc.save.should be_true
+    end
+    
+    should "pass if the associated doc is valid" do
+      doc = @root_class.new
+      doc.children.build(:name => 'Joe')
+      doc.save.should be_true
+    end
+
+    should "fail if the associated doc is invalid" do
+      doc = @root_class.new
+      doc.children.build
+      doc.should have_error_on(:children, 'are invalid')
+    end
+  end
   # context "validates uniqueness of with :unique shortcut" do
   #   should "work" do
   #     @document = Doc do
