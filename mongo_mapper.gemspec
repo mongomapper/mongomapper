@@ -6,7 +6,6 @@ Gem::Specification.new do |s|
   s.homepage           = 'http://github.com/jnunemaker/mongomapper'
   s.summary            = 'A Ruby Object Mapper for Mongo'
   s.require_path       = 'lib'
-  s.default_executable = 'mmconsole'
   s.authors            = ['John Nunemaker']
   s.email              = ['nunemaker@gmail.com']
   s.executables        = ['mmconsole']
