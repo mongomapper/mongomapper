@@ -99,6 +99,13 @@ class DirtyTest < Test::Unit::TestCase
     should "be false if no keys changed" do
       @document.new.changed?.should be_false
     end
+
+    should "not raise when key name is 'value'" do
+      @document.key :value, Integer
+
+      doc = @document.new
+      doc.value_changed?.should be_false
+    end
   end
 
   context "changes" do
