@@ -85,6 +85,36 @@ class OneProxyTest < Test::Unit::TestCase
         post.author.name.should == 'Emily'
       end
     end
+    
+    should "destroy the existing document" do
+      @post_class.one :author, :class => @author_class
+
+      post = @post_class.new
+      author = @author_class.new(:name => 'Frank')
+      post.author = author
+      @author_class.any_instance.expects(:destroy).once
+      post.author = @author_class.new(:name => 'Arthur')
+    end
+    
+    context "with nil" do
+      setup do
+        @post_class.one :author, :class => @author_class
+
+        @post = @post_class.new
+        @author = @author_class.new(:name => 'Frank')        
+        @post.author = @author
+      end
+      
+      should "destroy the existing document" do
+        @author_class.any_instance.expects(:destroy).once
+        @post.author = nil
+      end
+
+      should "set the target to nil" do
+        @post.author = nil
+        @post.author.should == nil
+      end
+    end
   end
 
   should "have boolean method for testing presence" do
@@ -118,44 +148,87 @@ class OneProxyTest < Test::Unit::TestCase
     post.author = nil
     post.author.nil?.should be_true
   end
+  
+  context ":dependent" do
+    context "=> destroy" do
+      setup do
+        @post_class.one :author, :class => @author_class, :dependent => :destroy
 
-  should "work with :dependent delete" do
-    @post_class.one :author, :class => @author_class, :dependent => :delete
+        @post = @post_class.create
+        @author = @author_class.new
+        @post.author = @author
+      end
 
-    post = @post_class.create
-    author = @author_class.new
-    post.author = author
-    post.reload
+      should "should call destroy on the associated documents" do
+        @author_class.any_instance.expects(:destroy).once
+        @post.destroy
+      end
+      
+      should "should remove the associated documents" do
+        @author_class.count.should == 1
+        @post.destroy
+        @post.author.should == nil
+        @author_class.count.should == 0
+      end
+    end
 
-    @author_class.any_instance.expects(:delete).once
-    post.author = @author_class.new
+    context "=> delete" do
+      setup do
+        @post_class.one :author, :class => @author_class, :dependent => :delete
+
+        @post = @post_class.create
+        @author = @author_class.new
+        @post.author = @author
+      end
+
+      should "should call delete the associated documents" do
+        @author_class.any_instance.expects(:delete).once
+        @post.destroy
+      end
+
+      should "remove the associated documents" do
+        @author_class.count.should == 1
+        @post.destroy
+        @post.author.should == nil
+        @author_class.count.should == 0
+      end
+    end
+
+    context "=> nullify" do
+      should "should nullify the relationship but not destroy the associated document" do
+        @post_class.one :author, :class => @author_class, :dependent => :nullify
+
+        post = @post_class.create
+        author = @author_class.new
+        post.author = author
+
+        @author_class.count.should == 1
+        post.destroy
+        post.author.should == nil
+        @author_class.count.should == 1
+
+        @author_class.first.should == author
+        author.post_id.should == nil
+      end
+    end
+    
+    context "unspecified" do
+      should "behave like many and do nothing" do
+        @post_class.one :author, :class => @author_class
+
+        post = @post_class.create
+        author = @author_class.new
+        post.author = author
+
+        @author_class.count.should == 1
+        post.destroy
+        post.author.should == author
+        author.post_id.should == post.id
+        @author_class.count.should == 1
+      end
+    end
   end
-
-  should "work with :dependent destroy" do
-    @post_class.one :author, :class => @author_class, :dependent => :destroy
-
-    post = @post_class.create
-    author = @author_class.new
-    post.author = author
-    post.reload
-
-    @author_class.any_instance.expects(:destroy).once
-    post.author = @author_class.new
-  end
-
-  should "work with :dependent nullify" do
-    @post_class.one :author, :class => @author_class, :dependent => :nullify
-
-    post = @post_class.create
-    author = @author_class.new
-    post.author = author
-    post.reload
-
-    post.author = @author_class.new
-
-    author.reload
-    author.post_id.should be_nil
-  end
+  
 
   should "be able to build" do
     @post_class.one :author, :class => @author_class
