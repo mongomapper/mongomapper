@@ -8,7 +8,7 @@ module MongoMapper
 
       included do
         extend ActiveSupport::DescendantsTracker
-        key :_id, ObjectId
+        key :_id, ObjectId, :default => lambda { BSON::ObjectId.new }
       end
 
       module ClassMethods
@@ -269,6 +269,11 @@ module MongoMapper
         def default_id_value(attrs={})
           id_provided = !attrs.nil? && attrs.keys.map { |k| k.to_s }.detect { |k| k == 'id' || k == '_id' }
           if !id_provided && self.class.can_default_id?
+            unless keys['_id'].default_value
+              warn "[DEPRECATED] Custom IDs will no longer be automatically populated. If you definte your own :_id key, set a default:\n  key :_id, String, :default => lambda { BSON::ObjectId.new }"
+              warn caller.grep(/test/).join("\n")
+            end
+
             write_key :_id, BSON::ObjectId.new
           end
         end

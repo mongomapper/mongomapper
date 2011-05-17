@@ -23,7 +23,7 @@ class StringIdCompatibilityTest < Test::Unit::TestCase
   end
 
   should "assign correct _id for documents" do
-    project = @project_class.create
+    project = silence_stderr { @project_class.create }
     project._id.should == project.id
     project._id.should be_instance_of(String)
     project.id.size.should == 24
@@ -33,35 +33,43 @@ class StringIdCompatibilityTest < Test::Unit::TestCase
   end
 
   should "assign correct _id for embedded documents" do
-    note = @note_class.new
-    note.id.should == note._id
-    note.id.size.should == 24
+    silence_stderr do
+      note = @note_class.new
+      note.id.should == note._id
+      note.id.size.should == 24
+    end
   end
 
   should "find records" do
-    project = @project_class.create
-    @project_class.find(project.id).should == project
+    silence_stderr do
+      project = @project_class.create
+      @project_class.find(project.id).should == project
+    end
   end
 
   should "save embedded docs" do
-    n1 = @note_class.new
-    n2 = @note_class.new
-    n3 = @note_class.new
-    project = @project_class.create(:notes => [n1, n2, n3])
+    silence_stderr do
+      n1 = @note_class.new
+      n2 = @note_class.new
+      n3 = @note_class.new
+      project = @project_class.create(:notes => [n1, n2, n3])
 
-    project = project.reload
-    project.notes.size.should == 3
-    project.notes.should == [n1, n2, n3]
+      project = project.reload
+      project.notes.size.should == 3
+      project.notes.should == [n1, n2, n3]
+    end
   end
 
   should "be able to associate records" do
-    t1 = @task_class.new(:body => 'First task', :position => 1)
-    t2 = @task_class.new(:body => 'Second task', :position => 2)
-    t3 = @task_class.new(:body => 'Third task', :position => 3)
-    project = @project_class.create(:name => 'MM', :tasks => [t1, t2, t3])
+    silence_stderr do
+      t1 = @task_class.new(:body => 'First task', :position => 1)
+      t2 = @task_class.new(:body => 'Second task', :position => 2)
+      t3 = @task_class.new(:body => 'Third task', :position => 3)
+      project = @project_class.create(:name => 'MM', :tasks => [t1, t2, t3])
 
-    project = project.reload
-    project.tasks.count.should == 3
-    project.tasks.should == [t1, t2, t3]
+      project = project.reload
+      project.tasks.count.should == 3
+      project.tasks.should == [t1, t2, t3]
+    end
   end
 end

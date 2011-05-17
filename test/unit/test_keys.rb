@@ -9,7 +9,7 @@ class KeyTest < Test::Unit::TestCase
           key :_id, Integer
         end
         # No sensible default id for integer, people better pass them in if they user this
-        klass.new.id.should be_nil
+        silence_stderr { klass.new.id.should be_nil }
       }.should_not raise_error
     end
   end
@@ -20,7 +20,7 @@ class KeyTest < Test::Unit::TestCase
         klass = Doc() do
           key :_id, String
         end
-        klass.new.id.should_not be_nil
+        silence_stderr { klass.new.id.should_not be_nil }
       }.should_not raise_error
     end
   end
@@ -31,7 +31,7 @@ class KeyTest < Test::Unit::TestCase
         klass = Doc() do
           key :_id, ObjectId
         end
-        klass.new.should_not be_nil
+        silence_stderr { klass.new.should_not be_nil }
       }.should_not raise_error
     end
   end
