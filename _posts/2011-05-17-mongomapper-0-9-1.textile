@@ -1,0 +1,22 @@
+---
+title: MongoMapper 0.9.1 Release
+layout: post
+author: Brandon Keepers
+---
+
+MongoMapper 0.9.1 has been released, featuring a handful of bug fixes and minor enhancements.
+
+h2. Changelog
+
+* Update dependency on Rails to allow working with Rails 3.1. "Commit":https://github.com/jnunemaker/mongomapper/commit/f114bf915f049ba3ab2acbb79cfd01163bed7d7a
+* added push_all and pull_all modifiers to documents. "Commit":https://github.com/jnunemaker/mongomapper/commit/2d20223a45f17101aa1f104def666d71caa7f424
+* Don't reload belongs_to associations when assigning. "Commit":https://github.com/jnunemaker/mongomapper/commit/41c518e289006d625bb886776ef4ef745db90c97
+* Fix to_xml to use #serializable_hash and properly return ObjectIds. "Commit":https://github.com/jnunemaker/mongomapper/commit/462403555ab1c565afa17bca964bfb202357098f
+* Only define Boolean class if it it's not already defined. "Commit":https://github.com/jnunemaker/mongomapper/commit/5bce74d4c1303ec27528a5f118e5524c81adc691
+* Allow using #value_changed? for key with name 'value'. "Commit":https://github.com/jnunemaker/mongomapper/commit/1d9bbb4cac954876b5213e21a232bb99004a5b3d
+* Fixed case equality. "Commit":https://github.com/jnunemaker/mongomapper/commit/bfc9a72dbcb3b1b57112b0fc999cc28fe2f94ed2
+* Removed custom implementation of human_name. "Commit":https://github.com/jnunemaker/mongomapper/commit/f2ce33738b7f98960a9b0d7f9adedba8dbca976b
+* Fix deprecation warning on validations with a message. "Commit":https://github.com/jnunemaker/mongomapper/commit/d46ed59c5213cfe2633bfee544c1f8c2c5a1020d
+* Fix deprecation warning on class_inheritable_attribute. "Commit":https://github.com/jnunemaker/mongomapper/commit/bebdeca9b0c5241526765a2602dbf9e142b3af1a
+
+See the "full change log":https://github.com/jnunemaker/mongomapper/compare/v0.9.0...v0.9.1.
