@@ -84,8 +84,6 @@ Dir[File.join(File.dirname(__FILE__), 'mongo_mapper', 'extensions', '*.rb')].eac
   require extension
 end
 
-require 'mongo_mapper/support/descendant_appends'
-
 # FIXME: autoload with proxy is failing, need to investigate
 require 'mongo_mapper/plugins/associations/proxy'
 

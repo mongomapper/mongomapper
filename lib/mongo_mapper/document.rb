@@ -3,7 +3,6 @@ module MongoMapper
   module Document
     extend ActiveSupport::Concern
     extend Plugins
-    extend Support::DescendantAppends
 
     include Plugins::ActiveModel
     include Plugins::Document
