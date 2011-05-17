@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mongo_mapper (0.9.0)
+    mongo_mapper (0.9.1)
       activemodel (~> 3.0)
       activesupport (~> 3.0)
       plucky (~> 0.3.8)
