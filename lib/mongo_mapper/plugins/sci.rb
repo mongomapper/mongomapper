@@ -7,18 +7,25 @@ module MongoMapper
       module ClassMethods
         def inherited(subclass)
           key :_type, String unless key?(:_type)
-          subclass.instance_variable_set("@single_collection_inherited", true)
+          subclass.instance_variable_set("@single_collection_inherited", [])
           subclass.set_collection_name(collection_name) unless subclass.embeddable?
+          @single_collection_inherited << subclass if single_collection_inherited?
           super
         end
 
         def single_collection_inherited?
-          @single_collection_inherited == true
+          !!@single_collection_inherited
+        end
+
+        def query_class_names
+          @single_collection_inherited.inject([name]) do |names, subclass|
+            names + subclass.query_class_names
+          end
         end
 
         def query(options={})
           super.tap do |query|
-            query[:_type] = name if single_collection_inherited?
+            query[:_type] = {'$in' => query_class_names} if single_collection_inherited?
           end
         end
       end
