@@ -4,6 +4,10 @@ module MongoMapper
     module Sci
       extend ActiveSupport::Concern
 
+      included do
+        extend ActiveSupport::DescendantsTracker
+      end
+
       module ClassMethods
         def inherited(subclass)
           key :_type, String unless key?(:_type)
@@ -18,7 +22,7 @@ module MongoMapper
 
         def query(options={})
           super.tap do |query|
-            query[:_type] = name if single_collection_inherited?
+            query[:_type] = {'$in' => [name] + descendants.map(&:name)} if single_collection_inherited?
           end
         end
       end
