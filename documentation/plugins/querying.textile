@@ -23,26 +23,26 @@ h2(#finders). Finders
 
 h3. find
 
-Find a document by ID, or by certain criteria.
+Find one or more documents by their _id.
 
 {% highlight ruby %}
+# works with string representation of object id
 Patient.find('4da32870c198a73ca3000001')
-{% endhighlight %}
 
-{% highlight ruby %}
-@patients = Patient.find(:last_name => 'Smith', :order => :first_name)
-{% endhighlight %}
+# or with actual object id
+Patient.find(BSON::ObjectId.from_string('4da32870c198a73ca3000001'))
 
-See "Criteria":#criteria for the preferred way of selecting certain documents.
+# also works with array of ids or multiple arguments
+Patient.find(['4da32870c198a73ca3000001', '4da32870c198a73ca3000002'])
+Patient.find('4da32870c198a73ca3000001', '4da32870c198a73ca3000002')
+{% endhighlight %}
 
 h3(#all). all
 
-Get all of the documents in a query as an array.
+Get all of the documents in a query as an array. Works with options or criteria.
 
 {% highlight ruby %}
-Patient.where(:last_name => "Johnson").order(:last_name).all.each do |patient|
-  puts patient.last_name
-end
+Patient.all(:last_name => 'Johnson', :order => :last_name.asc)
 {% endhighlight %}
 
 h3(#first). first
@@ -50,7 +50,8 @@ h3(#first). first
 Get the first document in a query. Naturally, this makes the most sense when you have also provided a means of "sorting":#sort.
 
 {% highlight ruby %}
-Patient.sort(:created_at.desc).first
+Patient.first(:order => :created_at.desc)
+Patient.first(:email => 'john@doe.com')
 {% endhighlight %}
 
 h3(#last). last
@@ -58,7 +59,7 @@ h3(#last). last
 Get the last document in a query. Naturally, this makes the most sense when you have also provided a means of "sorting":#sort.
 
 {% highlight ruby %}
-Patient.sort(:created_at).last
+Patient.last(:order => :created_at.asc)
 {% endhighlight %}
 
 h3. paginate
@@ -66,7 +67,11 @@ h3. paginate
 Paginate the query.
 
 {% highlight ruby %}
-patients = Patient.sort(:created_at).paginate(:per_page => 25, :page => 3)
+Patient.paginate({
+  :order    => :created_at.asc,
+  :per_page => 25, 
+  :page     => 3,
+})
 {% endhighlight %}
 
 h2(#criteria). Criteria
