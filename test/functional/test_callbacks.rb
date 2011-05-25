@@ -155,4 +155,31 @@ class CallbacksTest < Test::Unit::TestCase
       end
     end
   end
+
+  context "Running validation callbacks with conditional execution" do
+    setup do
+      @document = Doc do
+        include CallbacksSupport
+        key :message, String
+
+        before_validation :set_message, :on => 'create'
+        def set_message
+          self['message'] = 'Hi!'
+        end
+      end
+    end
+
+    should 'run callback on create' do
+      doc = @document.create
+      doc.history.should include(:before_validation)
+      doc.message.should == 'Hi!'
+    end
+
+    should 'skip callback on update' do
+      doc = @document.create
+      doc.message = 'Ho!'
+      doc.save
+      doc.message.should == 'Ho!'
+    end
+  end
 end
