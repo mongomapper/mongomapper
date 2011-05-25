@@ -5,11 +5,6 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       module InstanceMethods
-        def valid?(context = nil)
-          context ||= (new_record? ? :create : :update)
-          super(context) && errors.empty?
-        end
-
         def destroy
           run_callbacks(:destroy) { super }
         end

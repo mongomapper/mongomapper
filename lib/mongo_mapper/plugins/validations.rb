@@ -5,6 +5,7 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       include ::ActiveModel::Validations
+      include ::ActiveModel::Validations::Callbacks
 
       module ClassMethods
         def validates_uniqueness_of(*attr_names)
@@ -13,6 +14,18 @@ module MongoMapper
 
         def validates_associated(*attr_names)
           validates_with AssociatedValidator, _merge_attributes(attr_names)
+        end
+      end
+
+      module InstanceMethods
+        def save(options = {})
+          options.reverse_merge!(:validate => true)
+          !options[:validate] || valid? ? super : false
+        end
+
+        def valid?(context = nil)
+          context ||= (new_record? ? :create : :update)
+          super(context)
         end
       end
 
@@ -62,5 +75,14 @@ module MongoMapper
       end
 
     end
+  end
+end
+
+# Need to monkey patch ActiveModel for now since it uses the internal
+# _run_validation_callbacks, which is impossible to override due to the
+# way ActiveSupport::Callbacks is implemented.
+ActiveModel::Validations::Callbacks.class_eval do
+  def run_validations!
+    run_callbacks(:validation) { super }
   end
 end

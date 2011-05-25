@@ -140,8 +140,7 @@ module MongoMapper
       module InstanceMethods
         def save(options={})
           options.assert_valid_keys(:validate, :safe)
-          options.reverse_merge!(:validate => true)
-          !options[:validate] || valid? ? create_or_update(options) : false
+          create_or_update(options)
         end
 
         def save!(options={})
