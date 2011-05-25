@@ -6,7 +6,6 @@ module MongoMapper
 
       included do
         extend  ::ActiveModel::Callbacks
-        include ::ActiveModel::Validations::Callbacks
 
         define_model_callbacks :validation, :save, :create, :update, :destroy, :only => [:before, :after]
       end
@@ -30,14 +29,5 @@ module MongoMapper
         end
       end
     end
-  end
-end
-
-# Need to monkey patch ActiveModel for now since it uses the internal
-# _run_validation_callbacks, which is impossible to override due to the
-# way ActiveSupport::Callbacks is implemented.
-ActiveModel::Validations::Callbacks.class_eval do
-  def run_validations!
-    run_callbacks(:validation) { super }
   end
 end
