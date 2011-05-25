@@ -31,7 +31,7 @@ user = User.create(:name => "Foo", :email => "foo@bar.com",
     :interests => [Interest.new(:title => "Movies")])
 {% endhighlight %}
 
-Call @to_json or @to_xml@ on your model to return a serialized string, or @serializable_hash@ to simply return a plain Ruby hash.
+Call @to_json@ or @to_xml@ on your model to return a serialized string, or @serializable_hash@ to simply return a plain Ruby hash.
 
 {% highlight javascript %}
 {
