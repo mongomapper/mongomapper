@@ -19,11 +19,12 @@ class Test::Unit::TestCase
     klass = Class.new
     klass.class_eval do
       include MongoMapper::Document
-      set_collection_name :test
 
       if name
         class_eval "def self.name; '#{name}' end"
         class_eval "def self.to_s; '#{name}' end"
+      else
+        set_collection_name :test
       end
     end
 

@@ -93,6 +93,13 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
         project.statuses[0].name.should == "ready"
       end
     end
+    
+    should "destory existing documents" do
+      project = Project.new
+      project.statuses = [Status.new(:name => "ready")]
+      project.statuses[0].expects(:destroy).once
+      project.statuses = [Status.new(:name => "in progress")]
+    end
   end
 
   context "using <<, push and concat" do
