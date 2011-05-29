@@ -5,7 +5,7 @@ class SupportTest < Test::Unit::TestCase
     should "convert value to_a" do
       Array.to_mongo([1, 2, 3, 4]).should == [1, 2, 3, 4]
       Array.to_mongo('1').should == ['1']
-      Array.to_mongo({'1' => '2', '3' => '4'}).should == [['1', '2'], ['3', '4']]
+      Array.to_mongo({'1' => '2', '3' => '4'}).should include(['1', '2'], ['3', '4'])
     end
   end
 
