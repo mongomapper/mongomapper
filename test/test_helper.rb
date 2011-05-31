@@ -1,18 +1,12 @@
 require 'rubygems'
 require 'bundler/setup'
 
-$:.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
+$:.unshift File.expand_path('../../lib', __FILE__)
 require 'mongo_mapper'
 require 'fileutils'
 require 'ostruct'
 
-require 'json'
-require 'log_buddy'
-require 'matchy'
-require 'shoulda'
-require 'timecop'
-require 'mocha'
-require 'ruby-debug'
+Bundler.require(:development)
 
 class Test::Unit::TestCase
   def Doc(name='Class', &block)
