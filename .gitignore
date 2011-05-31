@@ -11,3 +11,4 @@ log
 .yardoc
 doc
 .bundle
+*.rbc
