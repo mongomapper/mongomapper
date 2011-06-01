@@ -1,6 +1,8 @@
 0.9 => 1.0
   * Using String IDs are no longer supported. If you are declaring your own ID, ensure it is an ObjectId, and set the default
       key :_id, ObjectId, :default => lambda { BSON::ObjectId.new }
+  * The :dependent association option now applies to both when the parent is destroyed and when the association is reassigned (one and many associations)
+  * The default :dependent option is now :nullify for both when the parent is destroyed and when the association is reassigned
 
 0.8.6 => 0.9
   * [attribute]_before_typecast should become [attribute]_before_type_cast (note the extra _)

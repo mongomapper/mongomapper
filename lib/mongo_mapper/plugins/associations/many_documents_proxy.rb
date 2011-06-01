@@ -8,7 +8,15 @@ module MongoMapper
 
         def replace(docs)
           load_target
-          target.each { |t| t.destroy }
+          
+          (target - docs).each do |t|
+            case options[:dependent]
+              when :destroy    then t.destroy
+              when :delete_all then t.delete
+              else t.update_attributes(self.foreign_key => nil)
+            end
+          end
+          
           docs.each { |doc| prepare(doc).save }
           reset
         end

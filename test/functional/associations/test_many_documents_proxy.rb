@@ -93,6 +93,144 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
         project.statuses[0].name.should == "ready"
       end
     end
+    
+    context "with :dependent" do
+      setup do
+        @broker_class = Doc('Broker')
+        @property_class = Doc('Property') do
+          key :broker_id, ObjectId
+          belongs_to :broker
+        end
+      end
+      
+      context "=> destroy" do
+        setup do
+          @broker_class.many :properties, :class => @property_class, :dependent => :destroy
+    
+          @broker = @broker_class.create(:name => "Bob")
+          @property1 = @property_class.create
+          @property2 = @property_class.create
+          @property3 = @property_class.create
+          @broker.properties << @property1
+          @broker.properties << @property2
+          @broker.properties << @property3
+        end
+            
+        should "call destroy the existing documents" do
+          @broker.properties[0].expects(:destroy).once
+          @broker.properties[1].expects(:destroy).once
+          @broker.properties[2].expects(:destroy).once
+          @broker.properties = [@property_class.new]
+        end
+        
+        should "remove the existing document from the database" do
+          @property_class.count.should == 3
+          @broker.properties = []
+          @property_class.count.should == 0
+        end
+        
+        should "skip over documents that are the same" do
+          @broker.properties[0].expects(:destroy).never
+          @broker.properties[1].expects(:destroy).once
+          @broker.properties[2].expects(:destroy).never
+          @broker.properties = [@property3, @property1]
+        end
+      end
+      
+      context "=> delete_all" do
+        setup do
+          @broker_class.many :properties, :class => @property_class, :dependent => :delete_all
+    
+          @broker = @broker_class.create(:name => "Bob")
+          @property1 = @property_class.create
+          @property2 = @property_class.create
+          @property3 = @property_class.create
+          @broker.properties << @property1
+          @broker.properties << @property2
+          @broker.properties << @property3
+        end
+            
+        should "call delete the existing documents" do
+          @broker.properties[0].expects(:delete).once
+          @broker.properties[1].expects(:delete).once
+          @broker.properties[2].expects(:delete).once
+          @broker.properties = [@property_class.new]
+        end
+        
+        should "remove the existing document from the database" do
+          @property_class.count.should == 3
+          @broker.properties = []
+          @property_class.count.should == 0
+        end
+        
+        should "skip over documents that are the same" do
+          @broker.properties[0].expects(:delete).never
+          @broker.properties[1].expects(:delete).once
+          @broker.properties[2].expects(:delete).never
+          @broker.properties = [@property3, @property1]
+        end
+      end
+      
+      context "=> nullify" do
+        setup do
+          @broker_class.many :properties, :class => @property_class, :dependent => :nullify
+    
+          @broker = @broker_class.create(:name => "Bob")
+          @property1 = @property_class.create
+          @property2 = @property_class.create
+          @property3 = @property_class.create
+          @broker.properties << @property1
+          @broker.properties << @property2
+          @broker.properties << @property3
+        end
+            
+        should "nullify the existing documents" do
+          @property1.reload.broker_id.should == @broker.id
+          @property2.reload.broker_id.should == @broker.id
+          @property3.reload.broker_id.should == @broker.id
+
+          @broker.properties = [@property_class.new]
+          
+          @property1.reload.broker_id.should be_nil
+          @property2.reload.broker_id.should be_nil
+          @property3.reload.broker_id.should be_nil
+        end
+        
+        should "skip over documents that are the same" do
+          @broker.properties = [@property3, @property1]
+
+          @property1.reload.broker_id.should == @broker.id
+          @property2.reload.broker_id.should be_nil
+          @property3.reload.broker_id.should == @broker.id
+        end
+        
+        should "work" do
+          old_properties = @broker.properties
+          @broker.properties = [@property1, @property2, @property3]
+          old_properties.should == @broker.properties
+        end
+      end
+      
+      context "unspecified" do
+        should "nullify the existing documents" do
+          @broker_class.many :properties, :class => @property_class
+    
+          @broker = @broker_class.create(:name => "Bob")
+          @property1 = @property_class.create
+          @property2 = @property_class.create
+          @property3 = @property_class.create
+          @broker.properties << @property1
+          @broker.properties << @property2
+          @broker.properties << @property3
+
+          @broker.properties = [@property_class.new]
+          
+          @property1.reload.broker_id.should be_nil
+          @property2.reload.broker_id.should be_nil
+          @property3.reload.broker_id.should be_nil
+        end
+      end
+    end
   end
 
   context "using <<, push and concat" do
@@ -603,6 +741,29 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
     end
 
     context "=> nullify" do
+      setup do
+        Property.key :thing_id, ObjectId
+        Property.belongs_to :thing
+        Thing.has_many :properties, :dependent => :nullify
+
+        @thing = Thing.create(:name => "Tree")
+        @property1 = Property.create
+        @property2 = Property.create
+        @property3 = Property.create
+        @thing.properties << @property1
+        @thing.properties << @property2
+        @thing.properties << @property3
+      end
+
+      should "should nullify relationship but not destroy associated documents" do
+        @thing.properties.count.should == 3
+        @thing.destroy
+        @thing.properties.count.should == 0
+        Property.count.should == 3
+      end
+    end
+    
+    context "unspecified" do
       setup do
         Property.key :thing_id, ObjectId
         Property.belongs_to :thing
