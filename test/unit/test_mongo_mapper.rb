@@ -96,6 +96,19 @@ class MongoMapperTest < Test::Unit::TestCase
       }
       assert_raises(MongoMapper::InvalidScheme) { MongoMapper.connect('development') }
     end
+
+    should "create a replica set connection if config contains multiple hosts" do
+      config = {
+        'development' => {
+          'hosts' => [ ['127.0.0.1', 27017], ['127.0.0.1', 27017] ],
+          'database' => 'test'
+        }
+      }
+      MongoMapper.config = config
+
+      MongoMapper.connect('development')
+      MongoMapper.connection.should be_instance_of(Mongo::ReplSetConnection)
+    end
   end
 
   context "setup" do
