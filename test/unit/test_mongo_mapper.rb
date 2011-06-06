@@ -98,16 +98,17 @@ class MongoMapperTest < Test::Unit::TestCase
     end
 
     should "create a replica set connection if config contains multiple hosts" do
-      config = {
+      MongoMapper.config = {
         'development' => {
-          'hosts' => [ ['127.0.0.1', 27017], ['127.0.0.1', 27017] ],
+          'hosts' => [ ['127.0.0.1', 27017], ['localhost', 27017] ],
           'database' => 'test'
         }
       }
-      MongoMapper.config = config
 
-      MongoMapper.connect('development')
-      MongoMapper.connection.should be_instance_of(Mongo::ReplSetConnection)
+      Mongo::ReplSetConnection.expects(:new).with( ['127.0.0.1', 27017], ['localhost', 27017], {'read_secondary' => true} )
+      MongoMapper.expects(:database=).with('test')
+      Mongo::DB.any_instance.expects(:authenticate).never
+      MongoMapper.connect('development', 'read_secondary' => true)
     end
   end
 
