@@ -59,12 +59,13 @@ module MongoMapper
     end
 
     def connect(environment, options={})
-      raise 'Set config before connecting. MongoMapper.config = {...}' if config.blank?      
+      raise 'Set config before connecting. MongoMapper.config = {...}' if config.blank?
       env = config_for_environment(environment)
-      if env['hosts']
-        MongoMapper.connection = Mongo::ReplSetConnection.new(*env['hosts'])
+
+      MongoMapper.connection = if env['hosts']
+        Mongo::ReplSetConnection.new( *env['hosts'].push(options) )
       else
-        MongoMapper.connection = Mongo::Connection.new(env['host'], env['port'], options)        
+        Mongo::Connection.new(env['host'], env['port'], options)
       end
 
       MongoMapper.database = env['database']
