@@ -145,6 +145,9 @@ class XmlSerializationTest < Test::Unit::TestCase
       assert_no_match %r{awesome}, xml
       assert_no_match %r{created-at}, xml
       assert_no_match %r{preferences}, xml
+
+      # Assert only one tag is created
+      xml.scan(/favorite-quote/).size.should == 2
     end
   end
 
