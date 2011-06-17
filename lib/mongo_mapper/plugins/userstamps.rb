@@ -5,11 +5,14 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       module ClassMethods
-        def userstamps!
+        def userstamps!(class_name = 'User')
           key :creator_id, ObjectId
           key :updater_id, ObjectId
-          belongs_to :creator, :class_name => 'User'
-          belongs_to :updater, :class_name => 'User'
+          belongs_to :creator, :class_name => class_name
+          belongs_to :updater, :class_name => class_name
+        end
+        def userstamps_for!(class_name = 'User')
+          userstamps!(class_name)
         end
       end
     end
