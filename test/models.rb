@@ -241,3 +241,7 @@ module News
     include MongoMapper::Document
   end
 end
+
+class AltUser
+  include MongoMapper::Document
+end
