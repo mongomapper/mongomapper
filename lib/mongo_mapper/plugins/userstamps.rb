@@ -1,4 +1,3 @@
-require 'logger'
 # encoding: UTF-8
 module MongoMapper
   module Plugins
