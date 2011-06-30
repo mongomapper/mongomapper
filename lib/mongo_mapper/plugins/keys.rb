@@ -186,7 +186,7 @@ module MongoMapper
 
         def attributes
           HashWithIndifferentAccess.new.tap do |attrs|
-            keys.select { |name,key| !self[key.name].nil? }.each_pair do |name, key|
+            keys.select { |name,key| !self[key.name].nil? || key.type == ObjectId }.each_pair do |name, key|
               value = key.set(self[key.name])
               attrs[name] = value
             end

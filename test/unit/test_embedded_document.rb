@@ -364,14 +364,16 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       context "attributes" do
         should "default to hash with all keys" do
           doc = @document.new
-          doc.attributes.keys.sort.should == ['_id', 'age', 'name']
+          doc.keys.keys.sort.should == ['_id', 'age', 'name']
+          doc.attributes.keys.sort.should == ['_id']
         end
 
         should "return all keys with values" do
           doc = @document.new(:name => 'string', :age => nil)
-          doc.attributes.keys.sort.should == ['_id', 'age', 'name']
+          doc.attributes.keys.sort.should == ['_id', 'name']
+          doc.keys.keys.sort.should == ['_id', 'age', 'name']
           doc.attributes.values.should include('string')
-          doc.attributes.values.should include(nil)
+          #doc.attributes.values.should include(nil)
         end
 
         should "have indifferent access" do
@@ -384,14 +386,16 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       context "to_mongo" do
         should "default to hash with _id key" do
           doc = @document.new
-          doc.to_mongo.keys.sort.should == ['_id', 'age', 'name']
+          doc.to_mongo.keys.sort.should == ['_id']
+          doc.keys.keys.sort.should == ['_id', 'age', 'name']
         end
 
         should "return all keys" do
           doc = @document.new(:name => 'string', :age => nil)
-          doc.to_mongo.keys.sort.should == ['_id', 'age', 'name']
+          doc.keys.keys.sort.should == ['_id', 'age', 'name']
+          doc.to_mongo.keys.sort.should == ['_id','name']
           doc.to_mongo.values.should include('string')
-          doc.to_mongo.values.should include(nil)
+          #doc.to_mongo.values.should include(nil)
         end
       end
 
@@ -675,3 +679,4 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     end # instance of a embedded document
   end
 end
+
