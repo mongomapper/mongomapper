@@ -373,7 +373,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
           doc.attributes.keys.sort.should == ['_id', 'name']
           doc.keys.keys.sort.should == ['_id', 'age', 'name']
           doc.attributes.values.should include('string')
-          #doc.attributes.values.should include(nil)
+          doc.attributes.values.should_not include(nil)
         end
 
         should "have indifferent access" do
@@ -395,7 +395,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
           doc.keys.keys.sort.should == ['_id', 'age', 'name']
           doc.to_mongo.keys.sort.should == ['_id','name']
           doc.to_mongo.values.should include('string')
-          #doc.to_mongo.values.should include(nil)
+          doc.to_mongo.values.should_not include(nil)
         end
       end
 
