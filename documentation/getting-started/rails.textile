@@ -3,14 +3,13 @@ layout: documentation
 title: Getting Started
 ---
 
-Add MongoMapper to your <kbd>Gemfile</kbd> and run @bundle install@:
+Using MongoMapper with Rails 3 is easier than ever. Thanks to new features in ActiveSupport, and the new ActiveModel framework (which MongoMapper 0.9+ uses), your app can be up and running on MongoDB in a matter of seconds.
 
-{% highlight ruby %}
-gem 'mongo_mapper'
-gem 'bson_ext'
-{% endhighlight %}
+First, if you're generating a new Rails 3 application, I strongly encourage you to leave out the ActiveRecord dependencies (unless you need them of course). To do this, just run:
 
-If you're not going to be using ActiveRecord in your app, open <kbd>config/application.rb</kbd> and replace
+@rails new my_add --skip-active-record@
+
+But, not everyone is starting fresh. If you're converting an existing Rails 3 application from ActiveRecord (or another ORM), simply open <kbd>config/application.rb</kbd> and replace
 
 {% highlight ruby %}
 require 'rails/all'
@@ -24,8 +23,30 @@ require "action_mailer/railtie"
 require "active_resource/railtie"
 {% endhighlight %}
 
-Generate @config/mongo.yml@ by running:
+Next, we'll add MongoMapper to your <kbd>Gemfile</kbd>, and run @bundle install@:
+
+{% highlight ruby %}
+gem 'mongo_mapper'
+gem 'bson_ext'
+{% endhighlight %}
+
+Now, you're almost ready to go, but we still need some configuration info! Generate @config/mongo.yml@ by running:
 
 {% highlight bash %}
 script/rails generate mongo_mapper:config
 {% endhighlight %}
+
+(Note: in versions of MongoMapper below 0.9+, you were required to implement any configuration files manually using an initializer. This is now resolved, and requires nothing more on your part.)
+
+Technically, you can initialize MongoMapper and use it to store data now. However, I like to configure Rails' model generator. Inside of the Application class (<kbd>config/application.rb</kbd>) I add:
+
+{% highlight ruby %}
+config.generators do |g|
+  g.orm :mongo_mapper
+end
+{% endhighlight %}
+
+This will allow you to use the @rails generate model@ command with MongoMapper.
+
+You're now finished, go forth and create!
+
