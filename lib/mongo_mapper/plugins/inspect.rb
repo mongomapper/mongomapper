@@ -5,8 +5,9 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       module InstanceMethods
-        def inspect
-          attributes_as_nice_string = key_names.sort.collect do |name|
+        def inspect(include_super=false)
+          key_array = include_super ? key_names : attributes.keys
+          attributes_as_nice_string = key_array.sort.collect do |name|
             "#{name}: #{self[name].inspect}"
           end.join(", ")
           "#<#{self.class} #{attributes_as_nice_string}>"
