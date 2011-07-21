@@ -6,7 +6,7 @@ module MongoMapper
 
       module InstanceMethods
         def inspect
-          attributes_as_nice_string = key_names.sort.collect do |name|
+          attributes_as_nice_string = attributes.keys.sort.collect do |name|
             "#{name}: #{self[name].inspect}"
           end.join(", ")
           "#<#{self.class} #{attributes_as_nice_string}>"
