@@ -1,3 +1,4 @@
+*.project
 _site
 *.sw?
 .DS_Store
