@@ -1,6 +1,10 @@
 require 'test_helper'
 
 class UserstampsTest < Test::Unit::TestCase
+  class AltUser
+    include MongoMapper::Document
+  end
+
   context "userstamping" do
     setup do
       @document = Doc do

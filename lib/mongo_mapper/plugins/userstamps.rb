@@ -6,7 +6,7 @@ module MongoMapper
 
       module ClassMethods
         def userstamps!(options = {})
-          class_name = options.fetch(:class_name) { (options.fetch :class, 'User').to_s }
+          class_name = options[:class_name] || options[:class] ? options[:class].to_s : 'User'
           key :creator_id, ObjectId
           key :updater_id, ObjectId
           belongs_to :creator, :class_name => class_name
