@@ -6,22 +6,29 @@ class UserstampsTest < Test::Unit::TestCase
       @document = Doc do
         userstamps!
       end
+      @document_alt_user = Doc do
+        userstamps! :class_name => 'AltUser'
+      end
+      @document_alt_user_class = Doc do
+        userstamps! :class => AltUser
+      end
+      @docs = [@document, @document_alt_user, @document_alt_user_class]
     end
 
     should "add creator_id key" do
-      @document.keys.keys.should include('creator_id')
+      @docs.each{ |d| d.keys.should include('creator_id') }
     end
 
     should "add updater_id key" do
-      @document.keys.keys.should include('updater_id')
+      @docs.each{ |d| d.keys.should include('updater_id') }
     end
 
     should "add belongs_to creator" do
-      @document.associations.keys.should include(:creator)
+      @docs.each{ |d| d.associations.keys.should include(:creator) }
     end
 
     should "add belongs_to updater" do
-      @document.associations.keys.should include(:updater)
+      @docs.each{ |d| d.associations.keys.should include(:updater) }
     end
   end
 end
