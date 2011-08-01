@@ -14,6 +14,10 @@ module MongoMapper
           options[:extend] = modularized_extensions(extension, options[:extend])
           separate_options_and_conditions
         end
+        
+        def belongs_to?
+          macro == :belongs_to
+        end
 
         def class_name
           @class_name ||= options[:class_name] || name.to_s.camelize
@@ -38,6 +42,7 @@ module MongoMapper
         def embeddable?
           klass.embeddable?
         end
+        alias :embedded? :embeddable?
 
         def type_key_name
           "#{as}_type"
@@ -48,7 +53,7 @@ module MongoMapper
         end
 
         def foreign_key
-          @options[:foreign_key] || "#{name}_id"
+          (@options[:foreign_key] || "#{name}_id").to_s
         end
 
         def ivar
@@ -56,6 +61,10 @@ module MongoMapper
         end
 
         def proxy_class
+          raise NotImplementedError
+        end
+        
+        def macro
           raise NotImplementedError
         end
 
