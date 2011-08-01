@@ -35,24 +35,30 @@ class ReflectionTest < Test::Unit::TestCase
    
     should 'return a metadata object on association' do
       AwesomeUser.reflect_on_association(:posts).should_not == nil
-      assert_kind_of MongoMapper::Plugins::Reflection::Metadata, AwesomeUser.reflect_on_association(:posts)
+
+    end
+    
+    should 'include an options hash' do
+      assert_kind_of Hash, AwesomeUser.reflect_on_association(:posts).options
     end
     
     context 'when missing' do
-      metadata = AwesomeUser.reflect_on_association(:missing)
-      metadata.should_not == nil
-      metadata.class_name.should == nil
-      metadata.respond_to?(:macro).should == true
+      AwesomeUser.reflect_on_association(:missing).should == nil
     end
     
     context 'documents' do
       [AwesomeUser, AwesomeUser.new].each do |object|      
         metadata = object.reflect_on_association(:posts)
         metadata.embedded?.should == false
+        metadata.klass.should == ReflectionTest::AwesomePost
         metadata.class_name.should == 'ReflectionTest::AwesomePost'
         metadata.name.should == :posts
-        metadata.macro.should == :has_many      
+        metadata.macro.should == :has_many
+        metadata.foreign_key.should == "creator_id"              
       end
+      
+      metadata = AwesomePost.reflect_on_association(:creator)
+      metadata.foreign_key.should == 'creator_id'
     end
     
     context 'embedded documents' do      
@@ -60,13 +66,15 @@ class ReflectionTest < Test::Unit::TestCase
       metadata.embedded?.should == false
       metadata.class_name.should == 'ReflectionTest::AwesomePost'
       metadata.name.should == :post
-      metadata.macro.should == :belongs_to      
+      metadata.macro.should == :belongs_to 
+      metadata.foreign_key.should == "post_id"     
       
       metadata = AwesomePost.reflect_on_association(:tags)
       metadata.embedded?.should == true
       metadata.class_name.should == 'ReflectionTest::AwesomeTag'
       metadata.name.should == :tags
       metadata.macro.should == :has_many
+      metadata.foreign_key.should == "post_id"
     end
    
   end
