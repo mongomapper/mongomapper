@@ -13,3 +13,4 @@ doc
 .bundle
 *.rbc
 Gemfile.lock
+.rvmrc

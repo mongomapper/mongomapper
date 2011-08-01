@@ -58,6 +58,10 @@ module MongoMapper
         def proxy_class
           raise NotImplementedError
         end
+        
+        def macro
+          raise NotImplementedError
+        end
 
         def setup(model)
         end

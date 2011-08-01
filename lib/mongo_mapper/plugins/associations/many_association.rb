@@ -11,6 +11,10 @@ module MongoMapper
         def type_key_name
           "_type"
         end
+        
+        def macro
+          as? ? :has_many_as : :has_many
+        end
 
         # hate this, need to revisit
         def proxy_class

@@ -7,6 +7,10 @@ module MongoMapper
           klass.embeddable?
         end
 
+        def macro
+          :belongs_to
+        end
+        
         def proxy_class
           @proxy_class ||= klass.embeddable? ? OneEmbeddedProxy : OneProxy
         end
