@@ -24,7 +24,7 @@ module MongoMapper
                 when :delete  then target.delete
                 when :destroy then target.destroy
                 else
-                  target[foreign_key] = nil
+                  nullify_scope(target)
                   target.save
               end
             end
@@ -33,7 +33,7 @@ module MongoMapper
           unless doc.nil?
             proxy_owner.save unless proxy_owner.persisted?
             doc = klass.new(doc) unless doc.is_a?(klass)
-            doc[foreign_key] = proxy_owner.id
+            apply_scope(doc)
             doc.save unless doc.persisted?
           end
 
@@ -52,17 +52,18 @@ module MongoMapper
         end
         
         def nullify
-          target.update_attributes(foreign_key => nil)
+          nullify_scope(target)
+          target.save
           reset
         end
 
         protected
           def find_target
-            target_class.first(association.query_options.merge(foreign_key => proxy_owner.id))
+            target_class.first(association.query_options.merge(criteria))
           end
 
           def instantiate_target(instantiator, attrs={})
-            @target = target_class.send(instantiator, attrs.update(foreign_key => proxy_owner.id))
+            @target = target_class.send(instantiator, attrs.update(criteria))
             loaded
             @target
           end
@@ -73,6 +74,20 @@ module MongoMapper
 
           def foreign_key
             options[:foreign_key] || proxy_owner.class.name.foreign_key
+          end
+
+          def criteria
+            {self.foreign_key => proxy_owner.id}
+          end
+
+          def nullify_scope(doc)
+            criteria.each { |key, value| doc[key] = nil }
+            doc
+          end
+
+          def apply_scope(doc)
+            criteria.each { |key, value| doc[key] = value }
+            doc
           end
       end
     end

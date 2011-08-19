@@ -72,6 +72,7 @@ module MongoMapper
       autoload :ManyEmbeddedPolymorphicProxy, 'mongo_mapper/plugins/associations/many_embedded_polymorphic_proxy'
       autoload :ManyDocumentsAsProxy,         'mongo_mapper/plugins/associations/many_documents_as_proxy'
       autoload :OneProxy,                     'mongo_mapper/plugins/associations/one_proxy'
+      autoload :OneAsProxy,                   'mongo_mapper/plugins/associations/one_as_proxy'
       autoload :OneEmbeddedProxy,             'mongo_mapper/plugins/associations/one_embedded_proxy'
       autoload :InArrayProxy,                 'mongo_mapper/plugins/associations/in_array_proxy'
     end
