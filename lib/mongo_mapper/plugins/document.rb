@@ -25,6 +25,7 @@ module MongoMapper
               instance.class.associations.each_value do |association|
                 get_proxy(association).reset
               end
+              instance.clear_keys!
               instance.attributes = doc
             end
           else
