@@ -3,11 +3,10 @@ gemspec
 
 group(:development) do
   gem 'bson_ext', '~> 1.3.0'
-  #gem 'SystemTimer',  :platform => :ruby_18
-
-  #gem 'ruby-debug',   :platform => :mri_18
-  gem 'ruby-debug19'#, :platform => :mri_19, :require => 'ruby-debug'
-  gem 'perftools.rb'#, :platform => :mri,    :require => 'perftools'
+  gem 'SystemTimer',  :platform => :mri_18
+  gem 'ruby-debug',   :platform => :mri_18
+  gem 'ruby-debug19', :platform => :mri_19, :require => 'ruby-debug'
+  gem 'perftools.rb', :platform => :mri,    :require => 'perftools'
 
   gem 'rake'
   gem 'tzinfo'
