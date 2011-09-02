@@ -102,6 +102,11 @@ module MongoMapper
       def attributes_hash
         @serializable.serializable_hash(options)
       end
+
+      def serializable_methods
+        # Methods are already included in #serializable_hash
+        []
+      end
     end
   end
 end
