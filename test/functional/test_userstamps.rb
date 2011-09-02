@@ -34,5 +34,11 @@ class UserstampsTest < Test::Unit::TestCase
     should "add belongs_to updater" do
       @docs.each{ |d| d.associations.keys.should include(:updater) }
     end
+
+    should "properly set class names" do
+      @document.associations[:creator].class_name.should == 'User'
+      @document_alt_user.associations[:creator].class_name.should == 'AltUser'
+      @document_alt_user_class.associations[:creator].class_name.should == 'UserstampsTest::AltUser'
+    end
   end
 end
