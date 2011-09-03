@@ -8,7 +8,14 @@ module MongoMapper
         end
 
         def proxy_class
-          @proxy_class ||= klass.embeddable? ? OneEmbeddedProxy : OneProxy
+          @proxy_class ||=
+            if klass.embeddable?
+              OneEmbeddedProxy
+            elsif as?
+              OneAsProxy
+            else
+              OneProxy
+            end
         end
         
         def setup(model)
