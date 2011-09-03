@@ -245,6 +245,11 @@ class DocumentTest < Test::Unit::TestCase
       @instance.destroy
       assert_raises(MongoMapper::DocumentNotFound) { @instance.reload }
     end
+
+    should "clear keys that were removed from the database" do
+      @instance.unset(:age)
+      @instance.reload.age.should be_nil
+    end
   end
 
   context "database has keys not defined in model" do

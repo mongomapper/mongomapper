@@ -172,16 +172,6 @@ module MongoMapper
           !new? && !destroyed?
         end
 
-        def clear_keys!
-          keys.each_key do |key|
-            if respond_to?(:"#{key}=")
-              self.send(:"#{key}=", nil)
-            else
-              self[key] = nil
-            end
-          end
-        end
-
         def attributes=(attrs)
           return if attrs.blank?
 
