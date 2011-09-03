@@ -11,7 +11,7 @@ module MongoMapper
       end
 
       module InstanceMethods
-        def run_callbacks(callback, &block)
+        def run_callbacks(callback, *args, &block)
           embedded_docs = []
 
           embedded_associations.each do |association|
@@ -20,12 +20,12 @@ module MongoMapper
 
           block = embedded_docs.inject(block) do |chain, doc|
             if doc.class.respond_to?("_#{callback}_callbacks")
-              lambda { doc.run_callbacks(callback, &chain) }
+              lambda { doc.run_callbacks(callback, *args, &chain) }
             else
               chain
             end
           end
-          super callback, &block
+          super callback, *args, &block
         end
       end
     end
