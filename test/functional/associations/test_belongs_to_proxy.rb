@@ -102,6 +102,21 @@ class BelongsToProxyTest < Test::Unit::TestCase
     @comment_class.new(:name => 'Foo', :post_id => id).post.nil?.should be_true
   end
 
+  should "define foreign key if it doesn't exist" do
+    @category_class = Doc()
+    @post_class.belongs_to :category, :class => @category_class
+
+    @post_class.key?(:category_id).should be_true
+  end
+
+  should "not define foreign key if it already exists" do
+    @category_class = Doc()
+    @post_class.key :category_id, String
+    @post_class.belongs_to :category, :class => @category_class
+
+    @post_class.keys['category_id'].type.should == String
+  end
+
   context ":dependent" do
     setup do
       # FIXME: make use of already defined models
