@@ -21,6 +21,8 @@ module MongoMapper
               ManyPolymorphicProxy
             elsif as?
               ManyDocumentsAsProxy
+            elsif in_foreign_array?
+              InForeignArrayProxy
             elsif in_array?
               InArrayProxy
             else
