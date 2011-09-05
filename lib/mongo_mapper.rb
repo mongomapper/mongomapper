@@ -75,7 +75,7 @@ module MongoMapper
       autoload :OneAsProxy,                   'mongo_mapper/plugins/associations/one_as_proxy'
       autoload :OneEmbeddedProxy,             'mongo_mapper/plugins/associations/one_embedded_proxy'
       autoload :InArrayProxy,                 'mongo_mapper/plugins/associations/in_array_proxy'
-      autoload :InForeignArrayProxy,          'mongo_mapper/plugins/associations/in_foreign_array_proxy'
+      autoload :FromArrayProxy,               'mongo_mapper/plugins/associations/from_array_proxy'
     end
   end
 

@@ -2,7 +2,7 @@
 module MongoMapper
   module Plugins
     module Associations
-      class InForeignArrayProxy < Collection
+      class FromArrayProxy < Collection
         include DynamicQuerying::ClassMethods
 
         def find(*args)
@@ -90,13 +90,13 @@ module MongoMapper
             doc.id
           end
 
-          replace_selector =  { options[:in_foreign] => proxy_owner.id }
+          replace_selector =  { options[:from] => proxy_owner.id }
           unless doc_ids.empty?
             replace_selector[:_id] = {"$not" => {"$in" => doc_ids}}
           end
 
           klass.collection.update( replace_selector,
-                                   { "$pull" => { options[:in_foreign] => proxy_owner.id}},
+                                   { "$pull" => { options[:from] => proxy_owner.id}},
                                    { :multi => true } )
 
           reset
@@ -111,7 +111,7 @@ module MongoMapper
           end
 
           def criteria
-            {options[:in_foreign] => proxy_owner.id}
+            {options[:from] => proxy_owner.id}
           end
 
           def scoped_ids(args)

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class InArrayProxyTest < Test::Unit::TestCase
+class FromArrayProxyTest < Test::Unit::TestCase
   context "description" do
     setup do
       class ::List
@@ -13,7 +13,7 @@ class InArrayProxyTest < Test::Unit::TestCase
       class ::User
         include MongoMapper::Document
         key :name, String, :required => true
-        many :lists, :in_foreign => :user_ids, :as => :user
+        many :lists, :from => :user_ids, :as => :user
       end
       User.collection.remove
       List.collection.remove
