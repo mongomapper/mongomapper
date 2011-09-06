@@ -24,7 +24,7 @@ module MongoMapper
           association = self
           options = self.options
 
-          model.after_destroy do
+          model.before_destroy do
             if !association.embeddable?
               proxy = self.get_proxy(association)
               
