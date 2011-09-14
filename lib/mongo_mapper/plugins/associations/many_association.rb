@@ -44,7 +44,7 @@ module MongoMapper
           association = self
           options = self.options
 
-          model.after_destroy do
+          model.before_destroy do
             if !association.embeddable?
               case options[:dependent]
                 when :destroy
