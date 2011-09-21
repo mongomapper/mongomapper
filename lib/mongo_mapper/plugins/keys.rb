@@ -188,13 +188,9 @@ module MongoMapper
           return if attrs.blank?
 
           (self.attributes.keys - attrs.keys).each { |k| attrs[k] = nil }
-          attrs.each_pair do |key, value|
-            if respond_to?(:"#{key}=")
-              self.send(:"#{key}=", value)
-            else
-              self[key] = value
-            end
-          end
+
+          self.attributes = attrs
+
         end
 
         def attributes
