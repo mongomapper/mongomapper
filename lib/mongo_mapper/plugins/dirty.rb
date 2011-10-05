@@ -20,10 +20,6 @@ module MongoMapper
           clear_changes { super }
         end
 
-        def save!(*)
-          clear_changes { super }
-        end
-
         def reload(*)
           super.tap { clear_changes }
         end
