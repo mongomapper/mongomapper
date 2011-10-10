@@ -25,7 +25,7 @@ module MongoMapper
               get_proxy(association).reset
             end
             instance_variables.each { |ivar| instance_variable_set(ivar, nil) }
-            self.attributes = doc
+            self.exact_attributes = doc
             self
           else
             raise DocumentNotFound, "Document match #{_id.inspect} does not exist in #{collection.name} collection"
@@ -41,3 +41,4 @@ module MongoMapper
     end
   end
 end
+

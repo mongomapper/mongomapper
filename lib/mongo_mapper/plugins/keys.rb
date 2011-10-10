@@ -184,6 +184,15 @@ module MongoMapper
           end
         end
 
+        def exact_attributes=(attrs)
+          return if attrs.blank?
+
+          (self.attributes.keys - attrs.keys).each { |k| attrs[k] = nil }
+
+          self.attributes = attrs
+
+        end
+
         def attributes
           HashWithIndifferentAccess.new.tap do |attrs|
             keys.select { |name,key| !self[key.name].nil? || key.type == ObjectId }.each do |name, key|
