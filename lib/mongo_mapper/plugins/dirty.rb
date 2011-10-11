@@ -47,19 +47,14 @@ module MongoMapper
 
         def write_key(key, value)
           key = key.to_s
-          old = read_key(key)
-          attribute_will_change!(key) if attribute_should_change?(key, old, value)
-          changed_attributes.delete(key) unless attribute_value_changed?(key, attribute_was(key), value)
-          super(key, value)
+          attribute_will_change!(key) unless attribute_changed?(key)
+          super(key, value).tap do
+            changed_attributes.delete(key) unless attribute_value_changed?(key)
+          end
         end
 
-        def attribute_should_change?(key, old, value)
-          attribute_changed?(key) == false && attribute_value_changed?(key, old, value)
-        end
-
-        def attribute_value_changed?(key_name, old, value)
-          value = nil if keys[key_name.to_s].number? && value.blank?
-          old != value
+        def attribute_value_changed?(key_name)
+          attribute_was(key_name) != read_key(key_name)
         end
       end
     end

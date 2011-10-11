@@ -137,6 +137,10 @@ class SupportTest < Test::Unit::TestCase
     should "leave nil values nil" do
       Float.to_mongo(nil).should == nil
     end
+
+    should "leave blank values nil" do
+      Float.to_mongo('').should == nil
+    end
   end
 
   context "Hash.from_mongo" do

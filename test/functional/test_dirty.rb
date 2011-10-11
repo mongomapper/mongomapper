@@ -106,6 +106,15 @@ class DirtyTest < Test::Unit::TestCase
       doc = @document.new
       doc.value_changed?.should be_false
     end
+
+    should "be false if the same ObjectId was assigned in String format" do
+      @document.key :doc_id, ObjectId
+
+      doc = @document.create!(:doc_id => BSON::ObjectId.new)
+      doc.changed?.should be_false
+      doc.doc_id = doc.doc_id.to_s
+      doc.changed?.should be_false
+    end
   end
 
   context "changes" do
