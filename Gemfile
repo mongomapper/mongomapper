@@ -18,4 +18,5 @@ group(:development) do
   gem 'timecop',           '~> 0.3.1'
   gem 'mocha',             '~> 0.9.8'
   gem 'rack-test'
+  gem 'rails'
 end
