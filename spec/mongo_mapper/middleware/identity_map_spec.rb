@@ -1,7 +1,7 @@
-require 'test_helper'
+require 'spec_helper'
 require 'rack/test'
 
-class IdentityMapMiddlewareTest < Test::Unit::TestCase
+describe MongoMapper::Middleware::IdentityMap do
   include Rack::Test::Methods
 
   def app
@@ -17,18 +17,16 @@ class IdentityMapMiddlewareTest < Test::Unit::TestCase
   end
 
   context "with a successful request" do
-    should "clear the identity map" do
-      MongoMapper::Plugins::IdentityMap.expects(:clear).twice
+    it "should clear the identity map" do
+      MongoMapper::Plugins::IdentityMap.should_receive(:clear).twice
       get '/'
     end
   end
 
   context "when the request raises an error" do
-    should "clear the identity map" do
-      MongoMapper::Plugins::IdentityMap.expects(:clear).twice
+    it "should clear the identity map" do
+      MongoMapper::Plugins::IdentityMap.should_receive(:clear).twice
       get '/fail' rescue nil
     end
   end
-
-
 end
