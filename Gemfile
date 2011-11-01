@@ -1,7 +1,7 @@
 source :rubygems
 gemspec
 
-group(:development) do
+group :development, :test, :rspec do
   gem 'bson_ext', '~> 1.3.0'
 
   gem 'SystemTimer',  :platform => :mri_18
@@ -13,11 +13,18 @@ group(:development) do
   gem 'tzinfo'
   gem 'json'
   gem 'log_buddy'
-  gem 'jnunemaker-matchy', '~> 0.4.0', :require => 'matchy'
-  gem 'shoulda',           '~> 2.11'
   gem 'timecop',           '~> 0.3.1'
   gem 'mocha',             '~> 0.9.8'
   gem 'rack-test'
   gem 'rails'
+end
+
+# FIXME: remove after porting all the specs to rpsec
+group :test do
+  gem 'jnunemaker-matchy', '~> 0.4.0', :require => 'matchy'
+  gem 'shoulda',           '~> 2.11'
+end
+
+group :rspec do
   gem 'rspec',             '~> 2.0'
 end
