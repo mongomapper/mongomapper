@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'active_support/version'
 
 class JsonSerializationTest < Test::Unit::TestCase
 

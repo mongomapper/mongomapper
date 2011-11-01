@@ -6,18 +6,14 @@ module MongoMapper
     module Protected
       extend ActiveSupport::Concern
 
+      included do
+        class_attribute :protected_attributes
+      end
+
       module ClassMethods
         def attr_protected(*attrs)
           raise AccessibleOrProtected.new(name) if try(:accessible_attributes?)
-          self.write_inheritable_attribute(:attr_protected, Set.new(attrs) + (protected_attributes || []))
-        end
-
-        def protected_attributes
-          self.read_inheritable_attribute(:attr_protected)
-        end
-
-        def protected_attributes?
-          !protected_attributes.nil?
+          self.protected_attributes = Set.new(attrs) + (protected_attributes || [])
         end
 
         def key(*args)
@@ -38,10 +34,6 @@ module MongoMapper
 
         def update_attributes!(attrs={})
           super(filter_protected_attrs(attrs))
-        end
-
-        def protected_attributes
-          self.class.protected_attributes
         end
 
         protected

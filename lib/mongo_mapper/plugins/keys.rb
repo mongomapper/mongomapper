@@ -7,7 +7,8 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       included do
-        key :_id, ObjectId
+        extend ActiveSupport::DescendantsTracker
+        key :_id, ObjectId, :default => lambda { BSON::ObjectId.new }
       end
 
       module ClassMethods
@@ -17,7 +18,7 @@ module MongoMapper
         end
 
         def keys
-          @keys ||= HashWithIndifferentAccess.new
+          @keys ||= {}
         end
 
         def key(*args)
@@ -39,16 +40,11 @@ module MongoMapper
         end
 
         def object_id_keys
-          keys.keys.select { |key| keys[key].type == ObjectId }.map(&:to_sym)
+          keys.keys.select { |key| keys[key].type == ObjectId }.map { |k| k.to_sym }
         end
 
         def object_id_key?(name)
           object_id_keys.include?(name.to_sym)
-        end
-
-        # API Private
-        def can_default_id?
-          keys['_id'].can_default_id?
         end
 
         def to_mongo(instance)
@@ -162,7 +158,6 @@ module MongoMapper
 
       module InstanceMethods
         def initialize(attrs={})
-          default_id_value(attrs)
           @_new = true
           assign(attrs)
         end
@@ -191,7 +186,7 @@ module MongoMapper
 
         def attributes
           HashWithIndifferentAccess.new.tap do |attrs|
-            keys.each_pair do |name, key|
+            keys.select { |name,key| !self[key.name].nil? || key.type == ObjectId }.each do |name, key|
               value = key.set(self[key.name])
               attrs[name] = value
             end
@@ -264,13 +259,6 @@ module MongoMapper
           keys.values.select { |key| key.embeddable? }
         end
 
-        def default_id_value(attrs={})
-          id_provided = !attrs.nil? && attrs.keys.map { |k| k.to_s }.detect { |k| k == 'id' || k == '_id' }
-          if !id_provided && self.class.can_default_id?
-            write_key :_id, BSON::ObjectId.new
-          end
-        end
-
         private
           def load_from_database(attrs)
             return if attrs.blank?
@@ -294,7 +282,7 @@ module MongoMapper
           end
 
           def read_key(key_name)
-            if key = keys[key_name]
+            if key = keys[key_name.to_s]
               value = key.get(instance_variable_get(:"@#{key_name}"))
               set_parent_document(key, value)
               instance_variable_set(:"@#{key_name}", value)
@@ -315,3 +303,4 @@ module MongoMapper
     end
   end
 end
+

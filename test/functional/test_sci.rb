@@ -12,6 +12,7 @@ class SciTest < Test::Unit::TestCase
       class ::DocDaughter < ::DocParent; end
       class ::DocSon < ::DocParent; end
       class ::DocGrandSon < ::DocSon; end
+      class ::DocGrandGrandSon < ::DocGrandSon; end
 
       DocSon.many :children, :class_name => 'DocGrandSon'
 
@@ -24,6 +25,7 @@ class SciTest < Test::Unit::TestCase
       Object.send :remove_const, 'DocDaughter' if defined?(::DocDaughter)
       Object.send :remove_const, 'DocSon'      if defined?(::DocSon)
       Object.send :remove_const, 'DocGrandSon' if defined?(::DocGrandSon)
+      Object.send :remove_const, 'DocGrandGrandSon' if defined?(::DocGrandGrandSon)
     end
 
     should "automatically add _type key to store class" do
@@ -86,11 +88,19 @@ class SciTest < Test::Unit::TestCase
         steve = DocSon.create(:name => 'Steve')
         steph = DocDaughter.create(:name => 'Steph')
         carrie = DocDaughter.create(:name => 'Carrie')
+        boris = DocGrandSon.create(:name => 'Boris')
 
-        DocGrandSon.all(:order => 'name').should  == []
-        DocSon.all(:order => 'name').should       == [john, steve]
+        DocGrandGrandSon.all(:order => 'name').should  == []
+        DocGrandSon.all(:order => 'name').should  == [boris]
+        DocSon.all(:order => 'name').should       == [boris, john, steve]
         DocDaughter.all(:order => 'name').should  == [carrie, steph]
-        DocParent.all(:order => 'name').should    == [carrie, john, steph, steve]
+        DocParent.all(:order => 'name').should    == [boris, carrie, john, steph, steve]
+
+        sigmund = DocGrandGrandSon.create(:name => 'Sigmund')
+
+        DocGrandSon.all(:order => 'name').should  == [boris, sigmund]
+        DocSon.all(:order => 'name').should       == [boris, john, sigmund, steve]
+        DocParent.all(:order => 'name').should    == [boris, carrie, john, sigmund, steph, steve]
       end
 
       should "work with nested hash conditions" do

@@ -1,7 +1,6 @@
 # encoding: UTF-8
 module MongoMapper
   module EmbeddedDocument
-    extend Support::DescendantAppends
     extend ActiveSupport::Concern
     extend Plugins
 
@@ -25,6 +24,7 @@ module MongoMapper
 
     included do
       extend Plugins
+      extend Translation
     end
   end
 end

@@ -11,7 +11,7 @@ module MongoMapper
         include PluckyMethods
 
         def find_each(opts={})
-          super(opts).each { |doc| yield load(doc) }
+          super(opts).each { |doc| yield(doc) }
         end
 
         def find_by_id(id)
@@ -52,7 +52,7 @@ module MongoMapper
         end
 
         def destroy(*ids)
-          find_some!(ids.flatten).each(&:destroy)
+          find_some!(ids.flatten).each { |doc| doc.destroy }
         end
 
         def destroy_all(options={})
@@ -61,12 +61,12 @@ module MongoMapper
 
         # @api private for now
         def query(options={})
-          Plucky::Query.new(collection).tap do |query|
-            query.extend(Decorator)
-            query.object_ids(object_id_keys)
-            query.update(options)
-            query.model(self)
-          end
+          query = Plucky::Query.new(collection, :transformer => transformer)
+          query.extend(Decorator)
+          query.object_ids(object_id_keys)
+          query.update(options)
+          query.model(self)
+          query
         end
 
         # @api private for now
@@ -75,6 +75,10 @@ module MongoMapper
         end
 
         private
+          def transformer
+            @transformer ||= lambda { |doc| load(doc) }
+          end
+
           def find_some(ids, options={})
             query = query(options).update(:_id => ids.flatten.compact.uniq)
             find_many(query.to_hash).compact
@@ -136,8 +140,7 @@ module MongoMapper
       module InstanceMethods
         def save(options={})
           options.assert_valid_keys(:validate, :safe)
-          options.reverse_merge!(:validate => true)
-          !options[:validate] || valid? ? create_or_update(options) : false
+          create_or_update(options)
         end
 
         def save!(options={})
@@ -150,13 +153,12 @@ module MongoMapper
         end
 
         def delete
-          @_destroyed = true
-          self.class.delete(id) unless new?
+          self.class.delete(id).tap { @_destroyed = true } if persisted?
         end
 
         private
           def create_or_update(options={})
-            result = new? ? create(options) : update(options)
+            result = persisted? ? update(options) : create(options)
             result != false
           end
 

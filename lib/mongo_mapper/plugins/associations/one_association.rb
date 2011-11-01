@@ -8,27 +8,40 @@ module MongoMapper
         end
 
         def proxy_class
-          @proxy_class ||= klass.embeddable? ? OneEmbeddedProxy : OneProxy
+          @proxy_class ||=
+            if klass.embeddable?
+              OneEmbeddedProxy
+            elsif as?
+              OneAsProxy
+            else
+              OneProxy
+            end
         end
-
+        
         def setup(model)
-          super(model)
+          super
+                    
+          association = self
+          options = self.options
 
-          model.associations_module.module_eval <<-end_eval
-            def build_#{name}(attrs={})
-              get_proxy(associations[#{name.inspect}]).build(attrs)
+          model.before_destroy do
+            if !association.embeddable?
+              proxy = self.get_proxy(association)
+              
+              unless proxy.nil?
+                case options[:dependent]
+                  when :destroy then proxy.destroy
+                  when :delete  then proxy.delete
+                  else proxy.nullify
+                end
+              end
             end
-
-            def create_#{name}(attrs={})
-              get_proxy(associations[#{name.inspect}]).create(attrs)
-            end
-
-            def create_#{name}!(attrs={})
-              get_proxy(associations[#{name.inspect}]).create!(attrs)
-            end
-          end_eval
+          end
         end
 
+        def autosave?
+          options.fetch(:autosave, embeddable?)
+        end
       end
     end
   end

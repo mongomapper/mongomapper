@@ -245,6 +245,11 @@ class DocumentTest < Test::Unit::TestCase
       @instance.destroy
       assert_raises(MongoMapper::DocumentNotFound) { @instance.reload }
     end
+
+    should "clear keys that were removed from the database" do
+      @instance.unset(:age)
+      @instance.reload.age.should be_nil
+    end
   end
 
   context "database has keys not defined in model" do
@@ -268,5 +273,10 @@ class DocumentTest < Test::Unit::TestCase
       doc.favorite_color.should == 'red'
       doc.skills.should == ['ruby', 'rails', 'javascript', 'xhtml', 'css']
     end
+  end
+
+  should "not walk ObjectSpace when creating a model" do
+    ObjectSpace.expects(:each_object).never
+    Doc()
   end
 end

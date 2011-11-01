@@ -5,6 +5,7 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       include ::ActiveModel::Validations
+      include ::ActiveModel::Validations::Callbacks
 
       module ClassMethods
         def validates_uniqueness_of(*attr_names)
@@ -16,7 +17,18 @@ module MongoMapper
         end
       end
 
-      # TODO: Add I18n support
+      module InstanceMethods
+        def save(options = {})
+          options.reverse_merge!(:validate => true)
+          !options[:validate] || valid? ? super : false
+        end
+
+        def valid?(context = nil)
+          context ||= (new_record? ? :create : :update)
+          super(context)
+        end
+      end
+
       class UniquenessValidator < ::ActiveModel::EachValidator
         def initialize(options)
           super(options.reverse_merge(:case_sensitive => true))
@@ -39,7 +51,7 @@ module MongoMapper
           conditions[:_id.ne] = record._id if record._id
 
           if @klass.exists?(conditions)
-            record.errors.add(attribute, :taken, :default => options[:message], :value => value)
+            record.errors.add(attribute, :taken, options.except(:case_sensitive, :scope).merge(:value => value))
           end
         end
 
@@ -57,11 +69,20 @@ module MongoMapper
       class AssociatedValidator < ::ActiveModel::EachValidator
         def validate_each(record, attribute, value)
           if !Array.wrap(value).all? { |c| c.nil? || c.valid? }
-            record.errors.add(attribute, :invalid, :default => options[:message], :value => value)
+            record.errors.add(attribute, :invalid, :message => options[:message], :value => value)
           end
         end
       end
 
     end
+  end
+end
+
+# Need to monkey patch ActiveModel for now since it uses the internal
+# _run_validation_callbacks, which is impossible to override due to the
+# way ActiveSupport::Callbacks is implemented.
+ActiveModel::Validations::Callbacks.class_eval do
+  def run_validations!
+    run_callbacks(:validation) { super }
   end
 end

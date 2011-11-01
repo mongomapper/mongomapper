@@ -14,7 +14,7 @@ module MongoMapper
         end
 
         def embedded_in(owner_name)
-          define_method(owner_name) { _parent_document }
+          alias_method owner_name, :_parent_document
         end
       end
 
@@ -34,6 +34,7 @@ module MongoMapper
         end
 
         def save!(options={})
+          valid? || raise(DocumentNotValid.new(self))
           _root_document.try(:save!, options).tap do |result|
             persist(options) if result
           end

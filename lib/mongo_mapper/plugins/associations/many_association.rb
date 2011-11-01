@@ -41,11 +41,11 @@ module MongoMapper
             end
           end_eval
 
-          if options[:dependent] && !embeddable?
-            association = self
-            options = self.options
+          association = self
+          options = self.options
 
-            model.after_destroy do
+          model.before_destroy do
+            if !association.embeddable?
               case options[:dependent]
                 when :destroy
                   self.get_proxy(association).destroy_all
@@ -58,6 +58,9 @@ module MongoMapper
           end
         end
 
+        def autosave?
+          options.fetch(:autosave, true)
+        end
       end
     end
   end

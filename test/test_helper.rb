@@ -1,30 +1,24 @@
 require 'rubygems'
 require 'bundler/setup'
 
-$:.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
+$:.unshift File.expand_path('../../lib', __FILE__)
 require 'mongo_mapper'
 require 'fileutils'
 require 'ostruct'
 
-require 'json'
-require 'log_buddy'
-require 'matchy'
-require 'shoulda'
-require 'timecop'
-require 'mocha'
-require 'turn'
-require 'ruby-debug'
+Bundler.require(:development)
 
 class Test::Unit::TestCase
   def Doc(name='Class', &block)
     klass = Class.new
     klass.class_eval do
       include MongoMapper::Document
-      set_collection_name :test
 
       if name
         class_eval "def self.name; '#{name}' end"
         class_eval "def self.to_s; '#{name}' end"
+      else
+        set_collection_name :test
       end
     end
 
@@ -96,5 +90,5 @@ logger = Logger.new(log_dir + '/test.log')
 
 LogBuddy.init(:logger => logger)
 MongoMapper.connection = Mongo::Connection.new('127.0.0.1', 27017, :logger => logger)
-MongoMapper.database = "mm-test-#{RUBY_VERSION.gsub('.', '-')}"
+MongoMapper.database = "test"
 MongoMapper.database.collections.each { |c| c.drop_indexes }

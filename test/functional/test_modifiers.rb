@@ -368,6 +368,14 @@ class ModifierTest < Test::Unit::TestCase
       page.reload
       page.tags.should == %w(foo)
     end
+    
+    should "be able to push_all with modifier hashes" do
+      page = @page_class.create
+      page.push_all(:tags => %w(foo bar))
+
+      page.reload
+      page.tags.should == %w(foo bar)
+    end
 
     should "be able to pull with criteria and modifier hashes" do
       page = @page_class.create(:tags => %w(foo bar))
@@ -375,6 +383,14 @@ class ModifierTest < Test::Unit::TestCase
 
       page.reload
       page.tags.should == %w(bar)
+    end
+    
+    should "be able to pull_all with criteria and modifier hashes" do
+      page = @page_class.create(:tags => %w(foo bar baz))
+      page.pull_all(:tags => %w(foo bar))
+
+      page.reload
+      page.tags.should == %w(baz)
     end
 
     should "be able to add_to_set with criteria and modifier hash" do

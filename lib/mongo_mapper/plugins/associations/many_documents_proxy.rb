@@ -8,7 +8,15 @@ module MongoMapper
 
         def replace(docs)
           load_target
-          target.map(&:destroy)
+          
+          (target - docs).each do |t|
+            case options[:dependent]
+              when :destroy    then t.destroy
+              when :delete_all then t.delete
+              else t.update_attributes(self.foreign_key => nil)
+            end
+          end
+          
           docs.each { |doc| prepare(doc).save }
           reset
         end
@@ -44,7 +52,7 @@ module MongoMapper
         end
 
         def destroy_all(options={})
-          all(options).map(&:destroy)
+          all(options).each { |doc| doc.destroy }
           reset
         end
 
@@ -72,7 +80,7 @@ module MongoMapper
           def method_missing(method, *args, &block)
             if klass.respond_to?(method)
               result = klass.send(method, *args, &block)
-              result.is_a?(Plucky::Query) ? 
+              result.is_a?(Plucky::Query) ?
                 query.merge(result) : super
             else
               super
@@ -88,7 +96,7 @@ module MongoMapper
           end
 
           def ensure_owner_saved
-            proxy_owner.save if proxy_owner.new?
+            proxy_owner.save unless proxy_owner.persisted?
           end
 
           def prepare(doc)
@@ -101,7 +109,7 @@ module MongoMapper
           end
 
           def foreign_key
-            options[:foreign_key] || proxy_owner.class.name.to_s.underscore.gsub("/", "_") + "_id"
+            options[:foreign_key] || proxy_owner.class.name.foreign_key
           end
       end
     end

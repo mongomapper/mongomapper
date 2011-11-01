@@ -4,6 +4,10 @@ module MongoMapper
     module Scopes
       extend ActiveSupport::Concern
 
+      included do
+        class_attribute :_scopes
+      end
+
       module ClassMethods
         def scope(name, scope_options={})
           scopes[name] = lambda do |*args|
@@ -15,7 +19,7 @@ module MongoMapper
         end
 
         def scopes
-          read_inheritable_attribute(:scopes) || write_inheritable_attribute(:scopes, {})
+          self._scopes || self._scopes = {}
         end
       end
     end

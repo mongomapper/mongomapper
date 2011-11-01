@@ -5,13 +5,18 @@ module MongoMapper
       class BelongsToPolymorphicProxy < Proxy
         def replace(doc)
           if doc
-            doc.save if doc.new?
+            doc.save unless doc.persisted?
             id, type = doc.id, doc.class.name
           end
 
           proxy_owner[association.foreign_key] = id
           proxy_owner[association.type_key_name] = type
           reset
+          unless doc.nil?
+            loaded
+            @target = doc
+          end
+          @target
         end
 
         protected

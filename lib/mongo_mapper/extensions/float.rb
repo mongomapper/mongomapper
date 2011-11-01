@@ -3,7 +3,7 @@ module MongoMapper
   module Extensions
     module Float
       def to_mongo(value)
-        value.nil? ? nil : value.to_f
+        value.blank? ? nil : value.to_f
       end
     end
   end

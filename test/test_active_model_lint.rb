@@ -10,4 +10,9 @@ class ActiveModelLintTest < ActiveModel::TestCase
   def setup
     @model = Post.new
   end
+
+  def test_naming
+    Post.model_name.plural.should == 'posts'
+    Post.new.respond_to?(:model_name).should be_false
+  end
 end

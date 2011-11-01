@@ -25,7 +25,7 @@ module MongoMapper
       config_file = Rails.root.join('config/mongo.yml')
       if config_file.file?
         config = YAML.load(ERB.new(config_file.read).result)
-        MongoMapper.setup(config, Rails.env)
+        MongoMapper.setup(config, Rails.env, :logger => Rails.logger)
       end
     end
 
@@ -37,13 +37,9 @@ module MongoMapper
     initializer "mongo_mapper.prepare_dispatcher" do |app|
       # See http://groups.google.com/group/mongomapper/browse_thread/thread/68f62e8eda43b43a/4841dba76938290c
       # to_prepare is called before each request in development mode and the first request in production.
+
       ActionDispatch::Callbacks.to_prepare do
         unless app.config.cache_classes
-          # Rails reloading was making descendants fill up and leak memory, these make sure they get cleared
-          MongoMapper::Document.descendants.each {|m| m.descendants.clear if m.respond_to?(:descendants) }
-          MongoMapper::Document.descendants.clear
-          MongoMapper::EmbeddedDocument.descendants.each {|m| m.descendants.clear if m.respond_to?(:descendants) }
-          MongoMapper::EmbeddedDocument.descendants.clear
           MongoMapper::Plugins::IdentityMap.models.clear
         end
       end

@@ -19,38 +19,51 @@ module MongoMapper
           load_target
 
           if !target.nil? && target != doc
-            if options[:dependent] && !target.new?
+            if target.persisted?
               case options[:dependent]
-                when :delete
-                  target.delete
-                when :destroy
-                  target.destroy
-                when :nullify
-                  target[foreign_key] = nil
+                when :delete  then target.delete
+                when :destroy then target.destroy
+                else
+                  nullify_scope(target)
                   target.save
               end
             end
           end
-
-          if doc.nil?
-            target.update_attributes(foreign_key => nil) unless target.nil?
-          else
-            proxy_owner.save if proxy_owner.new?
+          
+          unless doc.nil?
+            proxy_owner.save unless proxy_owner.persisted?
             doc = klass.new(doc) unless doc.is_a?(klass)
-            doc[foreign_key] = proxy_owner.id
-            doc.save if doc.new?
-            loaded
-            @target = doc
+            apply_scope(doc)
+            doc.save unless doc.persisted?
           end
+
+          loaded
+          @target = doc
+        end
+        
+        def destroy
+          target.destroy
+          reset
+        end
+        
+        def delete
+          target.delete
+          reset
+        end
+        
+        def nullify
+          nullify_scope(target)
+          target.save
+          reset
         end
 
         protected
           def find_target
-            target_class.first(association.query_options.merge(foreign_key => proxy_owner.id))
+            target_class.first(association.query_options.merge(criteria))
           end
 
           def instantiate_target(instantiator, attrs={})
-            @target = target_class.send(instantiator, attrs.update(foreign_key => proxy_owner.id))
+            @target = target_class.send(instantiator, attrs.update(criteria))
             loaded
             @target
           end
@@ -61,6 +74,20 @@ module MongoMapper
 
           def foreign_key
             options[:foreign_key] || proxy_owner.class.name.foreign_key
+          end
+
+          def criteria
+            {self.foreign_key => proxy_owner.id}
+          end
+
+          def nullify_scope(doc)
+            criteria.each { |key, value| doc[key] = nil }
+            doc
+          end
+
+          def apply_scope(doc)
+            criteria.each { |key, value| doc[key] = value }
+            doc
           end
       end
     end

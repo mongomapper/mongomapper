@@ -21,12 +21,12 @@ module MongoMapper
 
         def reload
           if doc = collection.find_one(:_id => id)
-            tap do |instance|
-              instance.class.associations.each_value do |association|
-                get_proxy(association).reset
-              end
-              instance.attributes = doc
+            self.class.associations.each_value do |association|
+              get_proxy(association).reset
             end
+            instance_variables.each { |ivar| instance_variable_set(ivar, nil) }
+            self.attributes = doc
+            self
           else
             raise DocumentNotFound, "Document match #{_id.inspect} does not exist in #{collection.name} collection"
           end

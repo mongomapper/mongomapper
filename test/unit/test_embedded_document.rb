@@ -34,13 +34,26 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
 
         key :other_child, String
       end
+
+      class ::EDocWithAValidation
+        include MongoMapper::EmbeddedDocument
+        key :name, String, :required => true
+      end
+
+      class ::DocWithAValidation
+        include MongoMapper::Document
+        key :name, String, :required => true
+        many :e_doc_with_a_validations
+      end
     end
 
     teardown do
-      Object.send :remove_const, 'Grandparent' if defined?(::Grandparent)
-      Object.send :remove_const, 'Parent'      if defined?(::Parent)
-      Object.send :remove_const, 'Child'       if defined?(::Child)
-      Object.send :remove_const, 'OtherChild'  if defined?(::OtherChild)
+      Object.send :remove_const, 'Grandparent'         if defined?(::Grandparent)
+      Object.send :remove_const, 'Parent'              if defined?(::Parent)
+      Object.send :remove_const, 'Child'               if defined?(::Child)
+      Object.send :remove_const, 'OtherChild'          if defined?(::OtherChild)
+      Object.send :remove_const, 'EDocWithAValidation' if defined?(::EDocWithAValidation)
+      Object.send :remove_const, 'DocWithAValidation'  if defined?(::DocWithAValidation)
     end
 
     context "Including MongoMapper::EmbeddedDocument in a class" do
@@ -209,7 +222,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         should "be recorded" do
           Grandparent.direct_descendants.should == [Parent]
           Grandparent.descendants.to_set.should == [Parent, Child, OtherChild].to_set
-          
+
           Parent.descendants.should      == [Child, OtherChild]
         end
       end
@@ -351,14 +364,16 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       context "attributes" do
         should "default to hash with all keys" do
           doc = @document.new
-          doc.attributes.keys.sort.should == ['_id', 'age', 'name']
+          doc.keys.keys.sort.should == ['_id', 'age', 'name']
+          doc.attributes.keys.sort.should == ['_id']
         end
 
         should "return all keys with values" do
           doc = @document.new(:name => 'string', :age => nil)
-          doc.attributes.keys.sort.should == ['_id', 'age', 'name']
+          doc.attributes.keys.sort.should == ['_id', 'name']
+          doc.keys.keys.sort.should == ['_id', 'age', 'name']
           doc.attributes.values.should include('string')
-          doc.attributes.values.should include(nil)
+          doc.attributes.values.should_not include(nil)
         end
 
         should "have indifferent access" do
@@ -371,14 +386,16 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
       context "to_mongo" do
         should "default to hash with _id key" do
           doc = @document.new
-          doc.to_mongo.keys.sort.should == ['_id', 'age', 'name']
+          doc.to_mongo.keys.sort.should == ['_id']
+          doc.keys.keys.sort.should == ['_id', 'age', 'name']
         end
 
         should "return all keys" do
           doc = @document.new(:name => 'string', :age => nil)
-          doc.to_mongo.keys.sort.should == ['_id', 'age', 'name']
+          doc.keys.keys.sort.should == ['_id', 'age', 'name']
+          doc.to_mongo.keys.sort.should == ['_id','name']
           doc.to_mongo.values.should include('string')
-          doc.to_mongo.values.should include(nil)
+          doc.to_mongo.values.should_not include(nil)
         end
       end
 
@@ -636,6 +653,30 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
           @doc.options['baz'].should == 'wick'
         end
       end
+
+      context "#save!" do
+         setup do
+           @root = DocWithAValidation.create(:name => "Root")
+           @doc = @root.e_doc_with_a_validations.build :name => "Embedded"
+         end
+
+         should "should save when valid" do
+           @doc.save!
+           @root.reload.e_doc_with_a_validations.first.should == @doc
+         end
+
+         should "should raise errors when invalid" do
+           @doc.name = ''
+           lambda{ @doc.save! }.should raise_error(MongoMapper::DocumentNotValid, "Validation failed: Name can't be empty")
+         end
+
+         should "should raise errors when root document is invalid" do
+           @root.name = ''
+           @root.save(:validate => false)
+           lambda{ @doc.save! }.should raise_error(MongoMapper::DocumentNotValid, "Foo")
+         end
+       end
     end # instance of a embedded document
   end
 end
+

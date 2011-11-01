@@ -5,26 +5,6 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       module InstanceMethods
-        def initialize(attrs = {})
-          super.tap { run_callbacks(:initialize) }
-        end
-
-        def initialize_from_database(attrs={})
-          super.tap do
-            run_callbacks(:find)
-            run_callbacks(:initialize)
-          end
-        end
-
-        def initialize_copy(other)
-          super.tap { run_callbacks(:initialize) }
-        end
-
-        def valid?(context = nil)
-          context ||= (new_record? ? :create : :update)
-          super(context) && errors.empty?
-        end
-
         def destroy
           run_callbacks(:destroy) { super }
         end

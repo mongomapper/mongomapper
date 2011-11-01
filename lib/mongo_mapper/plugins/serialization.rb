@@ -15,14 +15,14 @@ module MongoMapper
 
       module InstanceMethods
         def serializable_attributes
-          attributes.keys.map(&:to_s) + ['id'] - ['_id']
+          attributes.keys.map { |k| k.to_s } + ['id'] - ['_id']
         end
 
         def serializable_hash(options = nil)
           options ||= {}
 
-          options[:only]   = Array.wrap(options[:only]).map(&:to_s)
-          options[:except] = Array.wrap(options[:except]).map(&:to_s)
+          options[:only]   = Array.wrap(options[:only]).map { |k| k.to_s }
+          options[:except] = Array.wrap(options[:except]).map { |k| k.to_s }
 
           attribute_names = serializable_attributes
 
@@ -32,7 +32,7 @@ module MongoMapper
             attribute_names -= options[:except]
           end
 
-          attribute_names += Array.wrap(options[:methods]).map(&:to_s).select do |method|
+          attribute_names += Array.wrap(options[:methods]).map { |m| m.to_s }.select do |method|
             respond_to?(method)
           end
 
@@ -55,6 +55,10 @@ module MongoMapper
           end
 
           hash
+        end
+
+        def to_xml(options = {}, &block)
+          XmlSerializer.new(self, options).serialize(&block)
         end
 
       private
@@ -91,7 +95,18 @@ module MongoMapper
           self.new.from_xml(xml)
         end
       end
+    end
 
+    # Override default Serializer to use #serializable_hash
+    class XmlSerializer < ::ActiveModel::Serializers::Xml::Serializer
+      def attributes_hash
+        @serializable.serializable_hash(options)
+      end
+
+      def serializable_methods
+        # Methods are already included in #serializable_hash
+        []
+      end
     end
   end
 end

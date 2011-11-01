@@ -13,6 +13,8 @@ module MongoMapper
         end
 
         def setup(model)
+          model.key foreign_key, ObjectId unless model.key?(foreign_key)
+
           model.associations_module.module_eval <<-end_eval
             def #{name}
               proxy = get_proxy(associations[#{name.inspect}])
@@ -34,7 +36,23 @@ module MongoMapper
             def #{name}?
               get_proxy(associations[#{name.inspect}]).present?
             end
+
+            def build_#{name}(attrs={})
+              get_proxy(associations[#{name.inspect}]).build(attrs)
+            end
+
+            def create_#{name}(attrs={})
+              get_proxy(associations[#{name.inspect}]).create(attrs)
+            end
+
+            def create_#{name}!(attrs={})
+              get_proxy(associations[#{name.inspect}]).create!(attrs)
+            end
           end_eval
+        end
+
+        def autosave?
+          options.fetch(:autosave, false)
         end
       end
     end

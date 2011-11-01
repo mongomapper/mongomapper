@@ -1,10 +1,18 @@
-0.8 => ??
+0.9 => 1.0
+  * Using String IDs are no longer supported. If you are declaring your own ID, ensure it is an ObjectId, and set the default
+      key :_id, ObjectId, :default => lambda { BSON::ObjectId.new }
+  * The :dependent association option now applies to both when the parent is destroyed and when the association is reassigned (one and many associations)
+  * The default :dependent option is now :nullify for both when the parent is destroyed and when the association is reassigned
+
+0.8.6 => 0.9
   * [attribute]_before_typecast should become [attribute]_before_type_cast (note the extra _)
   * Change validates_exclusion_of :within option to :in
   * Change validates_inclusion_of :within option to :in
   * descendants now returns all descendants use direct_descendants for just children
   * Switch validate_on_create and validate_on_update use validate :on => :create syntax
   * Added #update_attribute
+  * belongs_to and one associations now return a true nil instead of a proxy to nil, so you must now call .build_thing instead of thing.build.
+  * Plugins should now extend ActiveSupport::Concern
 
 0.7.6 => 0.8
   * Proxy#owner has been removed in favor of Proxy#proxy_owner

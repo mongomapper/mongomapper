@@ -75,10 +75,10 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     should "default associations to inherited class" do
-      Message.associations.keys.should include("room")
-      Enter.associations.keys.should   include("room")
-      Exit.associations.keys.should    include("room")
-      Chat.associations.keys.should    include("room")
+      Message.associations.keys.should include(:room)
+      Enter.associations.keys.should   include(:room)
+      Exit.associations.keys.should    include(:room)
+      Chat.associations.keys.should    include(:room)
     end
   end
 
@@ -152,7 +152,7 @@ class DocumentTest < Test::Unit::TestCase
 
       should "be true if id but using custom id and not saved yet" do
         @document.key :_id, String
-        doc = @document.new
+        doc = silence_stderr { @document.new }
         doc.id = '1234'
         doc.new?.should be_true
       end
@@ -204,5 +204,46 @@ class DocumentTest < Test::Unit::TestCase
         (@document.new('_id' => @oid) == another_document.new('_id' => @oid)).should be(false)
       end
     end
+
+    context "nil attributes" do
+
+      should "list all the keys and default non nil attributes" do
+       doc = @document.new
+       doc.keys.keys.sort.should == ['_id', 'age', 'name']
+       doc.attributes.keys.sort.should == ['_id']
+      end
+
+      should "list all the keys and non nil attributes" do
+       doc = @document.new(:name => "John")
+       doc.keys.keys.sort.should == ['_id', 'age', 'name']
+       doc.attributes.keys.sort.should == ['_id','name']
+      end
+
+      should "list all the keys and pickup changed nil attributes" do
+       doc = @document.new(:name => "John")
+       doc.keys.keys.sort.should == ['_id', 'age', 'name']
+       doc.attributes.keys.sort.should == ['_id','name']
+
+       doc.name = nil
+
+       doc.keys.keys.sort.should == ['_id', 'age', 'name']
+       doc.attributes.keys.sort.should == ['_id']
+      end
+
+      should "list all the keys and pickup changed nil and non-nil attributes" do
+       doc = @document.new(:name => "John")
+       doc.keys.keys.sort.should == ['_id', 'age', 'name']
+       doc.attributes.keys.sort.should == ['_id','name']
+
+       doc.name = nil
+       doc.age = 12
+
+       doc.keys.keys.sort.should == ['_id', 'age', 'name']
+       doc.attributes.keys.sort.should == ['_id','age']
+      end
+
+    end
+
   end # instance of a document
 end # DocumentTest
+

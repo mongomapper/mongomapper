@@ -23,7 +23,7 @@ module MongoMapper
         end
 
         def associations
-          @associations ||= HashWithIndifferentAccess.new
+          @associations ||= {}
         end
 
         def associations=(hash)
@@ -62,7 +62,7 @@ module MongoMapper
         end
 
         def embedded_associations
-          associations.values.select(&:embeddable?)
+          associations.values.select { |assoc| assoc.embeddable? }
         end
 
         def build_proxy(association)
@@ -83,7 +83,7 @@ module MongoMapper
           super if defined?(super)
           associations.each do |association_name, association|
             proxy = get_proxy(association)
-            proxy.save_to_collection(options) if proxy.proxy_respond_to?(:save_to_collection)
+            proxy.save_to_collection(options) if proxy.proxy_respond_to?(:save_to_collection) && association.autosave?
           end
         end
       end

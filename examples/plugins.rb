@@ -4,9 +4,11 @@ require 'pp'
 
 MongoMapper.database = 'testing'
 
-# To create your own plugin, just create a module.
+# To create your own plugin, just create a module that
+# extends ActiveSupport::Concern.
 module FooPlugin
-  
+  extend ActiveSupport::Concern
+
   # ClassMethods module will automatically get extended
   module ClassMethods
     def foo
@@ -21,14 +23,12 @@ module FooPlugin
     end
   end
 
-  # If present, configure method will be called and passed the 
-  # model as an argument. Feel free to class_eval or add keys.
-  # if method is not present, it doesn't call it.
-  def self.configure(model)
-    puts "Configuring #{model}..."
-    model.key :foo, String
+  # Any configuration can be done in the #included block, which gets
+  # class evaled. Feel free to add keys, validations, or anything else.
+  included do
+    puts "Configuring #{self}..."
+    key :foo, String
   end
-
 end
 
 class User

@@ -99,6 +99,22 @@ class DirtyTest < Test::Unit::TestCase
     should "be false if no keys changed" do
       @document.new.changed?.should be_false
     end
+
+    should "not raise when key name is 'value'" do
+      @document.key :value, Integer
+
+      doc = @document.new
+      doc.value_changed?.should be_false
+    end
+
+    should "be false if the same ObjectId was assigned in String format" do
+      @document.key :doc_id, ObjectId
+
+      doc = @document.create!(:doc_id => BSON::ObjectId.new)
+      doc.changed?.should be_false
+      doc.doc_id = doc.doc_id.to_s
+      doc.changed?.should be_false
+    end
   end
 
   context "changes" do
@@ -220,6 +236,11 @@ class DirtyTest < Test::Unit::TestCase
       changes = doc.changes
       doc.save!
       doc.previous_changes.should == changes
+    end
+
+    should "not include attributes loaded from db" do
+      doc = @document.create(:a => "b")
+      @document.find(doc.id).previous_changes.should be_blank
     end
   end
 

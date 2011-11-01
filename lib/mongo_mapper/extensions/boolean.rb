@@ -39,6 +39,6 @@ module MongoMapper
   end
 end
 
-class Boolean
-  extend MongoMapper::Extensions::Boolean
-end
+class Boolean; end unless defined?(Boolean)
+
+Boolean.extend MongoMapper::Extensions::Boolean

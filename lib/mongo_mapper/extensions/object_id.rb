@@ -27,4 +27,6 @@ class BSON::ObjectId
   def to_json(options = nil)
     as_json.to_json
   end
+
+  alias to_str to_s
 end
