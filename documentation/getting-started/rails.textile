@@ -5,11 +5,13 @@ title: Getting Started
 
 Using MongoMapper with Rails 3 is easier than ever. Thanks to new features in ActiveSupport, and the new ActiveModel framework (which MongoMapper 0.9+ uses), your app can be up and running on MongoDB in a matter of seconds.
 
-First, if you're generating a new Rails 3 application, I strongly encourage you to leave out the ActiveRecord dependencies (unless you need them of course). To do this, just run:
+First, if you're generating a new Rails 3 application, it is recommended to leave out the ActiveRecord dependencies (unless you need them of course). From the console, just run:
 
-@rails new my_app --skip-active-record@
+{% highlight bash %}
+$ rails new my_app --skip-active-record
+{% endhighlight %}
 
-But, not everyone is starting fresh. If you're converting an existing Rails 3 application from ActiveRecord (or another ORM), simply open <kbd>config/application.rb</kbd> and replace
+But, not everyone is starting fresh. If you're converting an existing Rails 3 application from ActiveRecord (or another ORM), simply open @config/application.rb@ and replace
 
 {% highlight ruby %}
 require 'rails/all'
@@ -26,14 +28,14 @@ require "rails/test_unit/railtie"
 # require "sprockets/railtie"
 {% endhighlight %}
 
-Next, we'll add MongoMapper to your <kbd>Gemfile</kbd>, and run @bundle install@:
+Next, add MongoMapper to your @Gemfile@, and run @bundle install@:
 
 {% highlight ruby %}
 gem 'mongo_mapper'
 gem 'bson_ext'
 {% endhighlight %}
 
-Now, you're almost ready to go, but we still need some configuration info! Generate @config/mongo.yml@ by running:
+Now, you're almost ready to go, but you still need some configuration info. Generate @config/mongo.yml@ by running:
 
 {% highlight bash %}
 script/rails generate mongo_mapper:config
@@ -41,7 +43,7 @@ script/rails generate mongo_mapper:config
 
 (Note: in versions of MongoMapper below 0.9+, you were required to implement any configuration files manually using an initializer. This is now resolved, and requires nothing more on your part.)
 
-Technically, you can initialize MongoMapper and use it to store data now. However, I like to configure Rails' model generator. Inside of the Application class (<kbd>config/application.rb</kbd>) I add:
+Technically, you can initialize MongoMapper and use it to store data now. However, I like to configure Rails' model generator. Inside of the Application class (@config/application.rb@) I add:
 
 {% highlight ruby %}
 config.generators do |g|
