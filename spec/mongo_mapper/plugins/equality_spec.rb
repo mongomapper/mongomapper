@@ -1,8 +1,8 @@
-require 'test_helper'
+require 'spec_helper'
 
-class EqualityTest < Test::Unit::TestCase
+describe MongoMapper::Plugins::Equality do
   context "Case equality" do
-    setup do
+    before do
       @klass = Class.new do
         include MongoMapper::Plugins::Equality
       end
@@ -19,19 +19,19 @@ class EqualityTest < Test::Unit::TestCase
       end
     end
 
-    should "work with regular instance" do
+    it "should work with regular instance" do
       @klass.should === @klass.new
     end
 
-    should "work with instances of subclasses" do
+    it "should work with instances of subclasses" do
       @klass.should === @subklass.new
     end
 
-    should "work with a faker class" do
+    it "should work with a faker class" do
       @klass.should === @faker.new(@klass.new)
     end
 
-    should "not work with other instances" do
+    it "should not work with other instances" do
       @klass.should_not === 1
     end
   end
