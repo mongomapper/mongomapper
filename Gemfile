@@ -14,7 +14,6 @@ group :development, :test, :rspec do
   gem 'json'
   gem 'log_buddy'
   gem 'timecop',           '~> 0.3.1'
-  gem 'mocha',             '~> 0.9.8'
   gem 'rack-test'
   gem 'rails'
 end
@@ -23,6 +22,7 @@ end
 group :test do
   gem 'jnunemaker-matchy', '~> 0.4.0', :require => 'matchy'
   gem 'shoulda',           '~> 2.11'
+  gem 'mocha',             '~> 0.9.8'
 end
 
 group :rspec do
