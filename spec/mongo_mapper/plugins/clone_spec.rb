@@ -1,8 +1,8 @@
-require 'test_helper'
+require 'spec_helper'
 
-class CloneTest < Test::Unit::TestCase
+describe MongoMapper::Plugins::Clone do
   context "Document" do
-    setup do
+    before do
       @document = Doc()
       @embedded = EDoc()
       @document.many :widgets, :class => @embedded
@@ -16,25 +16,25 @@ class CloneTest < Test::Unit::TestCase
     end
 
     context "#clone" do
-      should "be new" do
+      it "should be new" do
         @doc.clone.should be_new
       end
 
-      should "copy the attributes" do
+      it "should copy the attributes" do
         clone = @doc.clone
         clone.name.should == "foo"
         clone.age.should == 27
       end
 
-      should "clone duplicable attributes" do
+      it "should clone duplicable attributes" do
         @doc.clone.tags.should_not equal(@tags)
       end
 
-      should "clone many embedded documents" do
+      it "should clone many embedded documents" do
         @doc.clone.widgets.object_id.should_not equal(@doc.widgets.object_id)
       end
 
-      should "not be destroyed" do
+      it "should not be destroyed" do
         @doc.destroy
         @doc.clone.should_not be_destroyed
       end
@@ -42,7 +42,7 @@ class CloneTest < Test::Unit::TestCase
   end
 
   context "EmbeddedDocument" do
-    setup do
+    before do
       @document = EDoc do
         key :name, String
         key :age, Integer
@@ -50,7 +50,7 @@ class CloneTest < Test::Unit::TestCase
     end
 
     context "#clone" do
-      should "regenerate the id" do
+      it "should regenerate the id" do
         doc = @document.new(:name => "foo", :age => 27)
         doc_id = doc.id
         clone = doc.clone
@@ -58,7 +58,7 @@ class CloneTest < Test::Unit::TestCase
         clone_id.should_not == doc_id
       end
 
-      should "copy the attributes" do
+      it "should copy the attributes" do
         doc = @document.new(:name => "foo", :age => 27)
         clone = doc.clone
         clone.name.should == "foo"
