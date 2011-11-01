@@ -8,7 +8,7 @@ Using MongoMapper with Rails 3 is easier than ever. Thanks to new features in Ac
 First, if you're generating a new Rails 3 application, it is recommended to leave out the ActiveRecord dependencies (unless you need them of course). From the console, just run:
 
 {% highlight bash %}
-$ rails new my_app --skip-active-record
+rails new my_app --skip-active-record
 {% endhighlight %}
 
 But, not everyone is starting fresh. If you're converting an existing Rails 3 application from ActiveRecord (or another ORM), simply open @config/application.rb@ and replace
