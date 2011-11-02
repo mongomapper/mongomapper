@@ -1,4 +1,4 @@
-0.9 => 1.0
+0.9 => 0.10
   * Using String IDs are no longer supported. If you are declaring your own ID, ensure it is an ObjectId, and set the default
       key :_id, ObjectId, :default => lambda { BSON::ObjectId.new }
   * The :dependent association option now applies to both when the parent is destroyed and when the association is reassigned (one and many associations)
