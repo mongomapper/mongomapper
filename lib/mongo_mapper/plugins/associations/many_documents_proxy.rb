@@ -74,7 +74,7 @@ module MongoMapper
           def query(options={})
             klass.
               query(association.query_options).
-              update(options).update(criteria)
+              amend(options).amend(criteria)
           end
 
           def method_missing(method, *args, &block)

@@ -64,7 +64,7 @@ module MongoMapper
           query = Plucky::Query.new(collection, :transformer => transformer)
           query.extend(Decorator)
           query.object_ids(object_id_keys)
-          query.update(options)
+          query.amend(options)
           query.model(self)
           query
         end
@@ -80,7 +80,7 @@ module MongoMapper
           end
 
           def find_some(ids, options={})
-            query = query(options).update(:_id => ids.flatten.compact.uniq)
+            query = query(options).amend(:_id => ids.flatten.compact.uniq)
             find_many(query.to_hash).compact
           end
 

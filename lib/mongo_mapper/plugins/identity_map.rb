@@ -34,14 +34,14 @@ module MongoMapper
 
         module IdentityMapQueryMethods
           def all(opts={})
-            query = clone.update(opts)
+            query = clone.amend(opts)
             super.tap do |docs|
               model.remove_documents_from_map(docs) if query.fields?
             end
           end
 
           def find_one(opts={})
-            query = clone.update(opts)
+            query = clone.amend(opts)
 
             if model.identity_map_on? && query.simple? && model.identity_map[query[:_id]]
               model.identity_map[query[:_id]]
