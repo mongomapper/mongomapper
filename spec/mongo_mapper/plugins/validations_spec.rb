@@ -1,14 +1,14 @@
-require 'test_helper'
+require 'spec_helper'
 
-class ValidationsTest < Test::Unit::TestCase
+describe MongoMapper::Plugins::Validations do
   context "Validations" do
     context "on a Document" do
-      setup do
+      before do
         @document = Doc('John')
       end
 
       context "Validating acceptance of" do
-        should "work with validates_acceptance_of macro" do
+        it "should work with validates_acceptance_of macro" do
           @document.key :terms, String
           @document.validates_acceptance_of :terms
           doc = @document.new(:terms => '')
@@ -19,7 +19,7 @@ class ValidationsTest < Test::Unit::TestCase
       end
 
       context "validating confirmation of" do
-        should "work with validates_confirmation_of macro" do
+        it "should work with validates_confirmation_of macro" do
           @document.key :password, String
           @document.validates_confirmation_of :password
 
@@ -35,7 +35,7 @@ class ValidationsTest < Test::Unit::TestCase
       end
 
       context "validating format of" do
-        should "work with validates_format_of macro" do
+        it "should work with validates_format_of macro" do
           @document.key :name, String
           @document.validates_format_of :name, :with => /.+/
           doc = @document.new
@@ -44,7 +44,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should_not have_error_on(:name)
         end
 
-        should "work with :format shorcut key" do
+        it "should work with :format shorcut key" do
           @document.key :name, String, :format => /.+/
           doc = @document.new
           doc.should have_error_on(:name)
@@ -54,7 +54,7 @@ class ValidationsTest < Test::Unit::TestCase
       end
 
       context "validating length of" do
-        should "work with validates_length_of macro" do
+        it "should work with validates_length_of macro" do
           @document.key :name, String
           @document.validates_length_of :name, :minimum => 5
           doc = @document.new
@@ -62,7 +62,7 @@ class ValidationsTest < Test::Unit::TestCase
         end
 
         context "with :length => integer shortcut" do
-          should "set maximum of integer provided" do
+          it "should set maximum of integer provided" do
             @document.key :name, String, :length => 5
             doc = @document.new
             doc.name = '123456'
@@ -73,18 +73,18 @@ class ValidationsTest < Test::Unit::TestCase
         end
 
         context "with :length => range shortcut" do
-          setup do
+          before do
             @document.key :name, String, :length => 5..7
           end
 
-          should "set minimum of range min" do
+          it "should set minimum of range min" do
             doc = @document.new
             doc.should have_error_on(:name)
             doc.name = '123456'
             doc.should_not have_error_on(:name)
           end
 
-          should "set maximum of range max" do
+          it "should set maximum of range max" do
             doc = @document.new
             doc.should have_error_on(:name)
             doc.name = '12345678'
@@ -95,7 +95,7 @@ class ValidationsTest < Test::Unit::TestCase
         end
 
         context "with :length => hash shortcut" do
-          should "pass options through" do
+          it "should pass options through" do
             @document.key :name, String, :length => {:minimum => 2}
             doc = @document.new
             doc.should have_error_on(:name)
@@ -106,7 +106,7 @@ class ValidationsTest < Test::Unit::TestCase
       end # validates_length_of
 
       context "Validating numericality of" do
-        should "work with validates_numericality_of macro" do
+        it "should work with validates_numericality_of macro" do
           @document.key :age, Integer
           @document.validates_numericality_of :age
           doc = @document.new
@@ -117,7 +117,7 @@ class ValidationsTest < Test::Unit::TestCase
         end
 
         context "with :numeric shortcut" do
-          should "work with integer or float" do
+          it "should work with integer or float" do
             @document.key :weight, Float, :numeric => true
             doc = @document.new
             doc.weight = 'String'
@@ -130,7 +130,7 @@ class ValidationsTest < Test::Unit::TestCase
         end
 
         context "with :numeric shortcut on Integer key" do
-          should "only work with integers" do
+          it "should only work with integers" do
             @document.key :age, Integer, :numeric => true
             doc = @document.new
             doc.age = 'String'
@@ -144,14 +144,14 @@ class ValidationsTest < Test::Unit::TestCase
       end # numericality of
 
       context "validating presence of" do
-           should "work with validates_presence_of macro" do
+           it "should work with validates_presence_of macro" do
              @document.key :name, String
              @document.validates_presence_of :name
              doc = @document.new
              doc.should have_error_on(:name)
            end
 
-           should "work with :required shortcut on key definition" do
+           it "should work with :required shortcut on key definition" do
              @document.key :name, String, :required => true
              doc = @document.new
              doc.should have_error_on(:name)
@@ -159,14 +159,14 @@ class ValidationsTest < Test::Unit::TestCase
          end
 
       context "validating exclusion of" do
-        should "throw error if enumerator not provided" do
+        it "should throw error if enumerator not provided" do
           @document.key :action, String
           lambda {
             @document.validates_exclusion_of :action
           }.should raise_error(ArgumentError)
         end
 
-        should "work with validates_exclusion_of macro" do
+        it "should work with validates_exclusion_of macro" do
           @document.key :action, String
           @document.validates_exclusion_of :action, :in => %w(kick run)
 
@@ -180,7 +180,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should have_error_on(:action, 'is reserved')
         end
 
-        should "work with :not_in shortcut on key definition" do
+        it "should work with :not_in shortcut on key definition" do
           @document.key :action, String, :not_in => %w(kick run)
 
           doc = @document.new
@@ -193,7 +193,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should have_error_on(:action, 'is reserved')
         end
 
-        should "not have error if allow nil is true and value is nil" do
+        it "should not have error if allow nil is true and value is nil" do
           @document.key :action, String
           @document.validates_exclusion_of :action, :in => %w(kick run), :allow_nil => true
 
@@ -201,7 +201,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should_not have_error_on(:action)
         end
 
-        should "not have error if allow blank is true and value is blank" do
+        it "should not have error if allow blank is true and value is blank" do
           @document.key :action, String
           @document.validates_exclusion_of :action, :in => %w(kick run), :allow_nil => true
 
@@ -211,14 +211,14 @@ class ValidationsTest < Test::Unit::TestCase
       end
 
       context "validating inclusion of" do
-        should "throw error if enumerator not provided" do
+        it "should throw error if enumerator not provided" do
           @document.key :action, String
           lambda {
             @document.validates_inclusion_of :action
           }.should raise_error(ArgumentError)
         end
 
-        should "work with validates_inclusion_of macro" do
+        it "should work with validates_inclusion_of macro" do
           @document.key :action, String
           @document.validates_inclusion_of :action, :in => %w(kick run)
 
@@ -232,7 +232,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should_not have_error_on(:action)
         end
 
-        should "work with :in shortcut on key definition" do
+        it "should work with :in shortcut on key definition" do
           @document.key :action, String, :in => %w(kick run)
 
           doc = @document.new
@@ -245,7 +245,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should_not have_error_on(:action)
         end
 
-        should "not have error if allow nil is true and value is nil" do
+        it "should not have error if allow nil is true and value is nil" do
           @document.key :action, String
           @document.validates_inclusion_of :action, :in => %w(kick run), :allow_nil => true
 
@@ -253,7 +253,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should_not have_error_on(:action)
         end
 
-        should "not have error if allow blank is true and value is blank" do
+        it "should not have error if allow blank is true and value is blank" do
           @document.key :action, String
           @document.validates_inclusion_of :action, :in => %w(kick run), :allow_blank => true
 
@@ -265,12 +265,12 @@ class ValidationsTest < Test::Unit::TestCase
     end # End on a Document
 
     context "On an EmbeddedDocument" do
-      setup do
+      before do
         @embedded_doc = EDoc()
       end
 
       context "Validating acceptance of" do
-        should "work with validates_acceptance_of macro" do
+        it "should work with validates_acceptance_of macro" do
           @embedded_doc.key :terms, String
           @embedded_doc.validates_acceptance_of :terms
           doc = @embedded_doc.new(:terms => '')
@@ -281,7 +281,7 @@ class ValidationsTest < Test::Unit::TestCase
       end
 
       context "validating confirmation of" do
-        should "work with validates_confirmation_of macro" do
+        it "should work with validates_confirmation_of macro" do
           @embedded_doc.key :password, String
           @embedded_doc.validates_confirmation_of :password
           doc = @embedded_doc.new
@@ -294,7 +294,7 @@ class ValidationsTest < Test::Unit::TestCase
       end
 
       context "validating format of" do
-        should "work with validates_format_of macro" do
+        it "should work with validates_format_of macro" do
           @embedded_doc.key :name, String
           @embedded_doc.validates_format_of :name, :with => /.+/
           doc = @embedded_doc.new
@@ -303,7 +303,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should_not have_error_on(:name)
         end
 
-        should "work with :format shorcut key" do
+        it "should work with :format shorcut key" do
           @embedded_doc.key :name, String, :format => /.+/
           doc = @embedded_doc.new
           doc.should have_error_on(:name)
@@ -313,7 +313,7 @@ class ValidationsTest < Test::Unit::TestCase
       end
 
       context "validating length of" do
-        should "work with validates_length_of macro" do
+        it "should work with validates_length_of macro" do
           @embedded_doc.key :name, String
           @embedded_doc.validates_length_of :name, :minimum => 5
           doc = @embedded_doc.new
@@ -321,7 +321,7 @@ class ValidationsTest < Test::Unit::TestCase
         end
 
         context "with :length => integer shortcut" do
-          should "set maximum of integer provided" do
+          it "should set maximum of integer provided" do
             @embedded_doc.key :name, String, :length => 5
             doc = @embedded_doc.new
             doc.name = '123456'
@@ -332,18 +332,18 @@ class ValidationsTest < Test::Unit::TestCase
         end
 
         context "with :length => range shortcut" do
-          setup do
+          before do
             @embedded_doc.key :name, String, :length => 5..7
           end
 
-          should "set minimum of range min" do
+          it "should set minimum of range min" do
             doc = @embedded_doc.new
             doc.should have_error_on(:name)
             doc.name = '123456'
             doc.should_not have_error_on(:name)
           end
 
-          should "set maximum of range max" do
+          it "should set maximum of range max" do
             doc = @embedded_doc.new
             doc.should have_error_on(:name)
             doc.name = '12345678'
@@ -354,7 +354,7 @@ class ValidationsTest < Test::Unit::TestCase
         end
 
         context "with :length => hash shortcut" do
-          should "pass options through" do
+          it "should pass options through" do
             @embedded_doc.key :name, String, :length => {:minimum => 2}
             doc = @embedded_doc.new
             doc.should have_error_on(:name)
@@ -365,7 +365,7 @@ class ValidationsTest < Test::Unit::TestCase
       end # validates_length_of
 
       context "Validating numericality of" do
-        should "work with validates_numericality_of macro" do
+        it "should work with validates_numericality_of macro" do
           @embedded_doc.key :age, Integer
           @embedded_doc.validates_numericality_of :age
           doc = @embedded_doc.new
@@ -376,7 +376,7 @@ class ValidationsTest < Test::Unit::TestCase
         end
 
         context "with :numeric shortcut" do
-          should "work with integer or float" do
+          it "should work with integer or float" do
             @embedded_doc.key :weight, Float, :numeric => true
             doc = @embedded_doc.new
             doc.weight = 'String'
@@ -389,7 +389,7 @@ class ValidationsTest < Test::Unit::TestCase
         end
 
         context "with :numeric shortcut on Integer key" do
-          should "only work with integers" do
+          it "should only work with integers" do
             @embedded_doc.key :age, Integer, :numeric => true
             doc = @embedded_doc.new
             doc.age = 'String'
@@ -403,14 +403,14 @@ class ValidationsTest < Test::Unit::TestCase
       end # numericality of
 
       context "validating presence of" do
-         should "work with validates_presence_of macro" do
+         it "should work with validates_presence_of macro" do
            @embedded_doc.key :name, String
            @embedded_doc.validates_presence_of :name
            doc = @embedded_doc.new
            doc.should have_error_on(:name)
          end
 
-         should "work with :required shortcut on key definition" do
+         it "should work with :required shortcut on key definition" do
            @embedded_doc.key :name, String, :required => true
            doc = @embedded_doc.new
            doc.should have_error_on(:name)
@@ -418,14 +418,14 @@ class ValidationsTest < Test::Unit::TestCase
        end
 
       context "validating exclusion of" do
-        should "throw error if enumerator not provided" do
+        it "should throw error if enumerator not provided" do
           @embedded_doc.key :action, String
           lambda {
             @embedded_doc.validates_exclusion_of :action
           }.should raise_error(ArgumentError)
         end
 
-        should "work with validates_exclusion_of macro" do
+        it "should work with validates_exclusion_of macro" do
           @embedded_doc.key :action, String
           @embedded_doc.validates_exclusion_of :action, :in => %w(kick run)
 
@@ -439,7 +439,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should have_error_on(:action, 'is reserved')
         end
 
-        should "work with :not_in shortcut on key definition" do
+        it "should work with :not_in shortcut on key definition" do
           @embedded_doc.key :action, String, :not_in => %w(kick run)
 
           doc = @embedded_doc.new
@@ -452,7 +452,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should have_error_on(:action, 'is reserved')
         end
 
-        should "not have error if allow nil is true and value is nil" do
+        it "should not have error if allow nil is true and value is nil" do
           @embedded_doc.key :action, String
           @embedded_doc.validates_exclusion_of :action, :in => %w(kick run), :allow_nil => true
 
@@ -460,7 +460,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should_not have_error_on(:action)
         end
 
-        should "not have error if allow blank is true and value is blank" do
+        it "should not have error if allow blank is true and value is blank" do
           @embedded_doc.key :action, String
           @embedded_doc.validates_exclusion_of :action, :in => %w(kick run), :allow_nil => true
 
@@ -470,14 +470,14 @@ class ValidationsTest < Test::Unit::TestCase
       end
 
       context "validating inclusion of" do
-        should "throw error if enumerator not provided" do
+        it "should throw error if enumerator not provided" do
           @embedded_doc.key :action, String
           lambda {
             @embedded_doc.validates_inclusion_of :action
           }.should raise_error(ArgumentError)
         end
 
-        should "work with validates_inclusion_of macro" do
+        it "should work with validates_inclusion_of macro" do
           @embedded_doc.key :action, String
           @embedded_doc.validates_inclusion_of :action, :in => %w(kick run)
 
@@ -491,7 +491,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should_not have_error_on(:action)
         end
 
-        should "work with :in shortcut on key definition" do
+        it "should work with :in shortcut on key definition" do
           @embedded_doc.key :action, String, :in => %w(kick run)
 
           doc = @embedded_doc.new
@@ -504,7 +504,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should_not have_error_on(:action)
         end
 
-        should "not have error if allow nil is true and value is nil" do
+        it "should not have error if allow nil is true and value is nil" do
           @embedded_doc.key :action, String
           @embedded_doc.validates_inclusion_of :action, :in => %w(kick run), :allow_nil => true
 
@@ -512,7 +512,7 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should_not have_error_on(:action)
         end
 
-        should "not have error if allow blank is true and value is blank" do
+        it "should not have error if allow blank is true and value is blank" do
           @embedded_doc.key :action, String
           @embedded_doc.validates_inclusion_of :action, :in => %w(kick run), :allow_blank => true
 
@@ -526,7 +526,7 @@ class ValidationsTest < Test::Unit::TestCase
   end # Validations
 
   context "Adding validation errors" do
-      setup do
+      before do
         @document = Doc do
           key :action, String
           def action_present
@@ -535,7 +535,7 @@ class ValidationsTest < Test::Unit::TestCase
         end
       end
 
-      should "work with validate callback" do
+      it "should work with validate callback" do
         @document.validate :action_present
 
         doc = @document.new
