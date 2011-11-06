@@ -7,7 +7,7 @@ Plugins power MongoMapper from the ground up. Every piece of functionality is a 
 
 h2. The Anatomy of a Plugin
 
-A plugin, in MongoMapper terms, is simple a module that extends @ActiveSupport::Concern@.
+A plugin, in MongoMapper terms, is simply a module that extends @ActiveSupport::Concern@.
 
 {% highlight ruby %}
 module ActsAsListFu
