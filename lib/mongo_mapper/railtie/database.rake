@@ -45,7 +45,7 @@ namespace :db do
     end
   end
 
-  unlessRake::Task.task_defined?("db:test:prepare")
+  unless Rake::Task.task_defined?("db:test:prepare")
     namespace :test do
       task :prepare => :environment do
         MongoMapper.connect('test')
