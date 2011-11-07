@@ -79,6 +79,15 @@ class AccessibleTest < Test::Unit::TestCase
     should "accept nil as constructor's argument without raising exception" do
       lambda { @doc_class.new(nil) }.should_not raise_error
     end
+
+    should "ignore all attributes if called with no args" do
+      @doc_class = Doc do
+        key :name
+        attr_accessible
+      end
+
+      @doc_class.new(:name => 'Steve Sloan').name.should be_nil
+    end
   end
 
   context "Single collection inherited accessible attributes" do
