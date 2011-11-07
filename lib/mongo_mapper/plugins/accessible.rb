@@ -15,7 +15,7 @@ module MongoMapper
       end
 
       module InstanceMethods
-        def assign(attrs={})
+        def attributes=(attrs={})
           super(filter_inaccessible_attrs(attrs))
         end
 

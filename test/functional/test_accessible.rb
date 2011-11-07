@@ -70,6 +70,12 @@ class AccessibleTest < Test::Unit::TestCase
       @doc.admin.should be_false
     end
 
+    should "ignore inaccessible attribute on #attributes=" do
+      @doc.attributes = {:name => 'Ren Hoek', :admin => true}
+      @doc.name.should == 'Ren Hoek'
+      @doc.admin.should be_false
+    end
+
     should "be indifferent to whether the accessible keys are strings or symbols" do
       @doc.update_attributes!("name" => 'Stimpson J. Cat', "admin" => true)
       @doc.name.should == 'Stimpson J. Cat'
