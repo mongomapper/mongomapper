@@ -24,7 +24,7 @@ module MongoMapper
       end
 
       module InstanceMethods
-        def assign(attrs={})
+        def attributes=(attrs={})
           super(filter_protected_attrs(attrs))
         end
 

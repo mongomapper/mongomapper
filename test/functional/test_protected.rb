@@ -76,6 +76,12 @@ class ProtectedTest < Test::Unit::TestCase
       @doc.admin.should be_false
     end
 
+    should "ignore protecteds attribute on #attributes=" do
+      @doc.attributes = {:name => 'Stimpson J. Cat', :admin => true}
+      @doc.name.should == 'Stimpson J. Cat'
+      @doc.admin.should be_false
+    end
+
     should "be indifferent to whether the protected keys are strings or symbols" do
       @doc.update_attributes!("name" => 'Stimpson J. Cat', "admin" => true)
       @doc.name.should == 'Stimpson J. Cat'
