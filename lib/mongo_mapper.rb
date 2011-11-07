@@ -62,6 +62,7 @@ module MongoMapper
       autoload :Collection,                   'mongo_mapper/plugins/associations/collection'
       autoload :EmbeddedCollection,           'mongo_mapper/plugins/associations/embedded_collection'
       autoload :ManyAssociation,              'mongo_mapper/plugins/associations/many_association'
+      autoload :SingleAssociation,            'mongo_mapper/plugins/associations/single_association'
       autoload :BelongsToAssociation,         'mongo_mapper/plugins/associations/belongs_to_association'
       autoload :OneAssociation,               'mongo_mapper/plugins/associations/one_association'
       autoload :ManyDocumentsProxy,           'mongo_mapper/plugins/associations/many_documents_proxy'

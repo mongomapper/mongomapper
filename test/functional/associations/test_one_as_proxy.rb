@@ -17,6 +17,12 @@ class OneAsProxyTest < Test::Unit::TestCase
     nil.should === @post_class.new.author
   end
 
+  should "not define any keys" do
+    count = @post_class.keys.length
+    @post_class.one :author, :class => @author_class
+    @post_class.keys.length.should == count
+  end
+
   should "allow assignment of associated document using a hash" do
     @post_class.one :author, :as => :authorable, :class => @author_class
 
