@@ -5,9 +5,8 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       module ClassMethods
-        def ensure_index(spec, options={})
-          collection.create_index(spec, options)
-        end
+        extend Forwardable
+        def_delegators :collection, :ensure_index, :create_index, :drop_index, :drop_indexes
       end
     end
   end

@@ -12,6 +12,14 @@ class IndexingTest < Test::Unit::TestCase
     end
     teardown { drop_indexes(@document) }
 
+    [:create_index, :ensure_index, :drop_index, :drop_indexes].each do |method|
+      should "delegate #{method} to collection" do
+        @document.stubs(:collection).returns(mock(:name => :foo))
+        @document.collection.expects(method).with(:arg)
+        @document.send(method, :arg)
+      end
+    end
+
     should "allow creating index for a key" do
       @document.ensure_index :first_name
       @document.should have_index('first_name_1')
