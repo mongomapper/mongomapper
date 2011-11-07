@@ -111,7 +111,10 @@ module MongoMapper
           end
 
           def create_indexes_for(key)
-            ensure_index key.name if key.options[:index] && !key.embeddable?
+            if key.options[:index] && !key.embeddable?
+              warn "[DEPRECATION] :index option when defining key #{key.name.inspect} is deprecated. Put indexes in `db/indexes.rb`"
+              ensure_index key.name
+            end
           end
 
           def create_validations_for(key)

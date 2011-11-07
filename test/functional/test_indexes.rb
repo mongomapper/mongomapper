@@ -35,7 +35,7 @@ class IndexingTest < Test::Unit::TestCase
     end
 
     should "work with :index shortcut when defining key" do
-      @document.key :father, String, :index => true
+      silence_stderr { @document.key :father, String, :index => true }
       @document.should have_index('father_1')
     end
   end
