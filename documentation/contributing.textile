@@ -12,9 +12,10 @@ MongoMapper needs your help to make the documentation better. Here's how to cont
 {% highlight sh %}
 $ git checkout -b gh-pages origin/gh-pages
 {% endhighlight %}
-# Install the Jekyll gem
+# Install the Jekyll and RedCloth gems
 {% highlight sh %}
 $ gem install jekyll
+$ gem install RedCloth
 {% endhighlight %}
 # Install "Pygments":http://pygments.org/docs/installation/
 {% highlight sh %}
