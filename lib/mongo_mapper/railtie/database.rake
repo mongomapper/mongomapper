@@ -55,7 +55,7 @@ namespace :db do
     end
   end
 
-  desc 'Load the seed data from db/seeds.rb'
+  desc 'Load indexes from db/indexes.rb'
   task :index => :environment do
     indexes = File.join(Rails.root, 'db', 'indexes.rb')
     load(indexes) if File.exist?(indexes)
