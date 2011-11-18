@@ -70,8 +70,8 @@ module MongoMapper
         'username' => full_config.delete('username'),
         'password' => full_config.delete('password')
       }
-
-      options = full_config.merge(options).symbolize_keys
+      
+      options = (full_config['options'] || {}).merge(options).symbolize_keys
 
       MongoMapper.connection = if env['hosts']
         Mongo::ReplSetConnection.new( *env['hosts'].push(options) )
