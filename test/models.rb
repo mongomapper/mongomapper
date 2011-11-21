@@ -56,7 +56,7 @@ end
 class Address
   include MongoMapper::EmbeddedDocument
 
-  key :address, String
+  key :address, String, :alias => :a
   key :city,    String
   key :state,   String
   key :zip,     Integer

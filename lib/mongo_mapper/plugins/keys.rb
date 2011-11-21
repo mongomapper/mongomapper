@@ -14,16 +14,22 @@ module MongoMapper
       module ClassMethods
         def inherited(descendant)
           descendant.instance_variable_set(:@keys, keys.dup)
+          descendant.instance_variable_set(:@keys_by_alias, keys_by_alias.dup)
           super
         end
 
         def keys
           @keys ||= {}
         end
+        
+        def keys_by_alias
+          @keys_by_alias ||= {}
+        end
 
         def key(*args)
           Key.new(*args).tap do |key|
             keys[key.name] = key
+            keys_by_alias[key.alias.to_s] = key if key.alias
             create_accessors_for(key)
             create_key_in_descendants(*args)
             create_indexes_for(key)
@@ -187,11 +193,11 @@ module MongoMapper
           end
         end
 
-        def attributes
+        def attributes(aliased=true)
           HashWithIndifferentAccess.new.tap do |attrs|
             keys.select { |name,key| !self[key.name].nil? || key.type == ObjectId }.each do |name, key|
               value = key.set(self[key.name])
-              attrs[name] = value
+              attrs[aliased ? alias_for_key_name(name) : name] = value
             end
 
             embedded_associations.each do |association|
@@ -250,6 +256,10 @@ module MongoMapper
         def keys
           self.class.keys
         end
+        
+        def keys_by_alias
+          self.class.keys_by_alias
+        end
 
         def key_names
           keys.keys
@@ -267,6 +277,7 @@ module MongoMapper
           def load_from_database(attrs)
             return if attrs.blank?
             attrs.each do |key, value|
+              key = key_name_for_alias(key)
               if respond_to?(:"#{key}=") && !self.class.key?(key)
                 self.send(:"#{key}=", value)
               else
@@ -302,6 +313,29 @@ module MongoMapper
             set_parent_document(key, value)
             instance_variable_set :"@#{name}_before_type_cast", value
             instance_variable_set :"@#{name}", key.set(value)
+          end
+          
+          
+          # Mongo, being document based, is super-innecifient in that it stores the key name in each document.  This can add up and
+          # degrade performance.  So, we support key-aliasing where a short key is stored in mongo which is mapped to a long,
+          # human-readable key everywhere outside of mongo.  This makes the alisaing transparent to all data consumers.
+          
+          # map back to full key name from alias
+          def key_name_for_alias(key_alias)
+            if key = keys_by_alias[key_alias.to_s]
+              key.name
+            else
+              key_alias
+            end
+          end
+          
+          # map back to alias from full key name
+          def alias_for_key_name(key_name)
+            if key = keys[key_name.to_s]
+              key.alias || key.name
+            else
+              key_name
+            end
           end
       end
     end
