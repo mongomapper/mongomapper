@@ -209,7 +209,7 @@ module MongoMapper
           end
         end
 
-        def attributes(aliased=true)
+        def attributes(aliased=false)
           HashWithIndifferentAccess.new.tap do |attrs|
             keys.select { |name,key| !self[key.name].nil? || key.type == ObjectId }.each do |name, key|
               value = key.set(self[key.name])
@@ -227,8 +227,9 @@ module MongoMapper
             end
           end
         end
-        alias :to_mongo :attributes
-
+        
+        def to_mongo() attributes(true); end
+        
         def assign(attrs={})
           warn "[DEPRECATION] #assign is deprecated, use #attributes="
           self.attributes = attrs
