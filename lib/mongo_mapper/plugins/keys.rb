@@ -72,6 +72,22 @@ module MongoMapper
             self
           end.allocate.initialize_from_database(attrs)
         end
+        
+        def key_name_for_alias(key_alias)
+          if key = keys_by_alias[key_alias.to_s]
+            key.name
+          else
+            key_alias
+          end
+        end
+        
+        def alias_for_key_name(key_name)
+          if key = keys[key_name.to_s]
+            key.alias || key.name
+          else
+            key_name
+          end
+        end
 
         private
           def key_accessors_module_defined?
@@ -260,7 +276,7 @@ module MongoMapper
         def keys_by_alias
           self.class.keys_by_alias
         end
-
+        
         def key_names
           keys.keys
         end
@@ -314,28 +330,13 @@ module MongoMapper
             instance_variable_set :"@#{name}_before_type_cast", value
             instance_variable_set :"@#{name}", key.set(value)
           end
-          
-          
-          # Mongo, being document based, is super-innecifient in that it stores the key name in each document.  This can add up and
-          # degrade performance.  So, we support key-aliasing where a short key is stored in mongo which is mapped to a long,
-          # human-readable key everywhere outside of mongo.  This makes the alisaing transparent to all data consumers.
-          
-          # map back to full key name from alias
-          def key_name_for_alias(key_alias)
-            if key = keys_by_alias[key_alias.to_s]
-              key.name
-            else
-              key_alias
-            end
+      
+          def key_name_for_alias(key)
+            self.class.key_name_for_alias(key)
           end
           
-          # map back to alias from full key name
-          def alias_for_key_name(key_name)
-            if key = keys[key_name.to_s]
-              key.alias || key.name
-            else
-              key_name
-            end
+          def alias_for_key_name(key)
+            self.class.alias_for_key_name(key)
           end
       end
     end
