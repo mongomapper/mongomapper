@@ -43,4 +43,36 @@ class AssociationsTest < Test::Unit::TestCase
     post1 = post1.reload
     post1.tags.should == [tag1]
   end
+  
+  should "interoperate with aliased keys" do
+    class AnotherUser
+      include MongoMapper::Document
+
+      many :goats, :class_name => 'AssociationsTest::AwesomeGoat', :foreign_key => :u_id
+    end
+    AnotherUser.collection.remove
+    
+    class AwesomeGoat
+      include MongoMapper::Document
+      
+      key :name, String, :alias => :n
+      key :user_id, ObjectId, :alias => :u_id
+      
+      belongs_to :user, :class_name => 'AssociationsTest::AnotherUser'
+    end
+    AwesomeGoat.collection.remove
+    
+    user = AnotherUser.create
+    user.goats << goat1 = AwesomeGoat.new(:name => "g6")
+    user.goats << goat2 = AwesomeGoat.new(:name => "g7")
+    
+    user.reload
+    user.goats.should == [goat1, goat2]
+    
+    goat1.reload
+    goat1.user.should == user
+    
+    goat2.reload
+    goat2.user.should == user
+  end
 end
