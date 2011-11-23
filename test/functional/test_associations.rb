@@ -44,7 +44,7 @@ class AssociationsTest < Test::Unit::TestCase
     post1.tags.should == [tag1]
   end
   
-  should "interoperate with aliased keys" do
+  should "interoperate with abbreviated keys" do
     class AnotherUser
       include MongoMapper::Document
 
@@ -55,8 +55,8 @@ class AssociationsTest < Test::Unit::TestCase
     class AwesomeGoat
       include MongoMapper::Document
       
-      key :name, String, :alias => :n
-      key :user_id, ObjectId, :alias => :u_id
+      key :name, String, :abbr => :n
+      key :user_id, ObjectId, :abbr => :u_id
       
       belongs_to :user, :class_name => 'AssociationsTest::AnotherUser'
     end

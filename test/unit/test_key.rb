@@ -27,8 +27,8 @@ class KeyTest < Test::Unit::TestCase
       Key.new(:foo, Integer, :required => true).options[:required].should be(true)
     end
     
-    should "allow setting alias" do
-      Key.new(:foo, Integer, :alias => :f).options[:alias].should be(:f)
+    should "allow setting abbr" do
+      Key.new(:foo, Integer, :abbr => :f).options[:abbr].should be(:f)
     end
 
     should "default options to {}" do
@@ -69,8 +69,8 @@ class KeyTest < Test::Unit::TestCase
       Key.new(:name, String).should == Key.new(:name, String)
     end
     
-    should "be equal to another key with same name, type, and alias" do
-      Key.new(:name, String, :alias => :n).should == Key.new(:name, String, :alias => :n)
+    should "be equal to another key with same name, type, and abbr" do
+      Key.new(:name, String, :abbr => :n).should == Key.new(:name, String, :abbr => :n)
     end
 
     should "not be equal to another key with different name" do
@@ -81,8 +81,8 @@ class KeyTest < Test::Unit::TestCase
       Key.new(:name, String).should_not == Key.new(:name, Integer)
     end
 
-    should "not be equal to another key with different alias" do
-      Key.new(:name, :alias => :n).should_not == Key.new(:name, :alias => :x)
+    should "not be equal to another key with different abbr" do
+      Key.new(:name, :abbr => :n).should_not == Key.new(:name, :abbr => :x)
     end
 
     should "know if it is a embedded_document" do

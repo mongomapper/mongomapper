@@ -14,7 +14,7 @@ module MongoMapper
       module ClassMethods
         def inherited(descendant)
           descendant.instance_variable_set(:@keys, keys.dup)
-          descendant.instance_variable_set(:@keys_by_alias, keys_by_alias.dup)
+          descendant.instance_variable_set(:@keys_by_abbr, keys_by_abbr.dup)
           super
         end
 
@@ -22,14 +22,14 @@ module MongoMapper
           @keys ||= {}
         end
         
-        def keys_by_alias
-          @keys_by_alias ||= {}
+        def keys_by_abbr
+          @keys_by_abbr ||= {}
         end
 
         def key(*args)
           Key.new(*args).tap do |key|
             keys[key.name] = key
-            keys_by_alias[key.alias.to_s] = key if key.alias
+            keys_by_abbr[key.abbr.to_s] = key if key.abbr
             create_accessors_for(key)
             create_key_in_descendants(*args)
             create_indexes_for(key)
@@ -73,17 +73,17 @@ module MongoMapper
           end.allocate.initialize_from_database(attrs)
         end
         
-        def key_name_for_alias(key_alias)
-          if key = keys_by_alias[key_alias.to_s]
+        def key_name_for_abbr(key_abbr)
+          if key = keys_by_abbr[key_abbr.to_s]
             key.name
           else
-            key_alias
+            key_abbr
           end
         end
         
-        def alias_for_key_name(key_name)
+        def abbr_for_key_name(key_name)
           if key = keys[key_name.to_s]
-            key.alias || key.name
+            key.abbr || key.name
           else
             key_name
           end
@@ -232,7 +232,7 @@ module MongoMapper
           HashWithIndifferentAccess.new.tap do |attrs|
             keys.select { |name,key| !self[key.name].nil? || key.type == ObjectId }.each do |name, key|
               value = key.set(self[key.name])
-              attrs[alias_for_key_name(name)] = value
+              attrs[abbr_for_key_name(name)] = value
             end
 
             embedded_associations.each do |association|
@@ -291,8 +291,8 @@ module MongoMapper
           self.class.keys
         end
         
-        def keys_by_alias
-          self.class.keys_by_alias
+        def keys_by_abbr
+          self.class.keys_by_abbr
         end
         
         def key_names
@@ -311,7 +311,7 @@ module MongoMapper
           def load_from_database(attrs)
             return if attrs.blank?
             attrs.each do |key, value|
-              key = key_name_for_alias(key)
+              key = key_name_for_abbr(key)
               if respond_to?(:"#{key}=") && !self.class.key?(key)
                 self.send(:"#{key}=", value)
               else
@@ -349,12 +349,12 @@ module MongoMapper
             instance_variable_set :"@#{name}", key.set(value)
           end
       
-          def key_name_for_alias(key)
-            self.class.key_name_for_alias(key)
+          def key_name_for_abbr(key)
+            self.class.key_name_for_abbr(key)
           end
           
-          def alias_for_key_name(key)
-            self.class.alias_for_key_name(key)
+          def abbr_for_key_name(key)
+            self.class.abbr_for_key_name(key)
           end
       end
     end

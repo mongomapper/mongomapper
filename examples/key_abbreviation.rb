@@ -8,13 +8,13 @@ class Goat
   include MongoMapper::Document
   belongs_to :user
   
-  key :user_id, ObjectId, :alias => :g_id
+  key :user_id, ObjectId, :abbr => :g_id
 end
 
 class User
   include MongoMapper::Document
-  key :email_address, String, :alias => :e
-  key :hate_to_store_this_long_key_for_each_document, String, :alias => :'l'
+  key :email_address, String, :abbr => :e
+  key :hate_to_store_this_long_key_for_each_document, String, :abbr => :'l'
   
   many :goats, :class_name => 'Goat', :foreign_key => :g_id
 end
@@ -37,7 +37,7 @@ puts "raw mongo looks like:   #{MongoMapper.connection['testing']['users'].find(
 u2 = User.find_by_email_address('IHeartSmallDB@gmail.com')
 puts u2.inspect
 
-#alias are useful for associations, just need to set the foreign_key in the parent
+#abbreviations are useful for associations, just need to set the foreign_key in the parent
 u2.goats << Goat.new()
 u2.reload
 puts "the users goats: #{u2.goats.inspect}"
