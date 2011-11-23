@@ -209,11 +209,11 @@ module MongoMapper
           end
         end
 
-        def attributes(aliased=false)
+        def attributes
           HashWithIndifferentAccess.new.tap do |attrs|
             keys.select { |name,key| !self[key.name].nil? || key.type == ObjectId }.each do |name, key|
               value = key.set(self[key.name])
-              attrs[aliased ? alias_for_key_name(name) : name] = value
+              attrs[name] = value
             end
 
             embedded_associations.each do |association|
@@ -228,7 +228,24 @@ module MongoMapper
           end
         end
         
-        def to_mongo() attributes(true); end
+        def to_mongo
+          HashWithIndifferentAccess.new.tap do |attrs|
+            keys.select { |name,key| !self[key.name].nil? || key.type == ObjectId }.each do |name, key|
+              value = key.set(self[key.name])
+              attrs[alias_for_key_name(name)] = value
+            end
+
+            embedded_associations.each do |association|
+              if documents = instance_variable_get(association.ivar)
+                if association.is_a?(Associations::OneAssociation)
+                  attrs[association.name] = documents.to_mongo
+                else
+                  attrs[association.name] = documents.map { |document| document.to_mongo }
+                end
+              end
+            end
+          end
+        end
         
         def assign(attrs={})
           warn "[DEPRECATION] #assign is deprecated, use #attributes="
