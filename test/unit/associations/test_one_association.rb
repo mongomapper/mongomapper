@@ -4,6 +4,12 @@ require 'models'
 class OneAssociationTest < Test::Unit::TestCase
   include MongoMapper::Plugins::Associations
 
+  context "type_key_name" do
+    should "be _type" do
+      OneAssociation.new(:foo).type_key_name.should == '_type'
+    end
+  end
+
   context "embeddable?" do
     should "be true if class is embeddable" do
       base = OneAssociation.new(:media)
