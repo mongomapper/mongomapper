@@ -37,6 +37,11 @@ class OneAssociationTest < Test::Unit::TestCase
       base = OneAssociation.new(:media)
       base.proxy_class.should == OneEmbeddedProxy
     end
+
+    should "be OneEmbeddedPolymorphicProxy for polymorphic one embedded" do
+      base = OneAssociation.new(:media, :polymorphic => true)
+      base.proxy_class.should == OneEmbeddedPolymorphicProxy
+    end
   end
 
 end
