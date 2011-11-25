@@ -3,6 +3,10 @@ module MongoMapper
   module Plugins
     module Associations
       class BelongsToAssociation < SingleAssociation
+        def type_key_name
+          "#{as}_type"
+        end
+
         def embeddable?
           false
         end
