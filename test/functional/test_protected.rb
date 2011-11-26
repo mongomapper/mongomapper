@@ -64,6 +64,16 @@ class ProtectedTest < Test::Unit::TestCase
       doc.name.should == 'John'
     end
 
+    should "not ignore protected attributes on #reload" do
+      doc = @doc_class.new(:name => 'John')
+      doc.admin = true
+      doc.save!
+
+      doc.reload
+      doc.admin.should be_true
+      doc.name.should == 'John'
+    end
+
     should "ignore protected attribute on #update_attributes" do
       @doc.update_attributes(:name => 'Ren Hoek', :admin => true)
       @doc.name.should == 'Ren Hoek'
@@ -72,6 +82,12 @@ class ProtectedTest < Test::Unit::TestCase
 
     should "ignore protected attribute on #update_attributes!" do
       @doc.update_attributes!(:name => 'Stimpson J. Cat', :admin => true)
+      @doc.name.should == 'Stimpson J. Cat'
+      @doc.admin.should be_false
+    end
+
+    should "ignore protecteds attribute on #attributes=" do
+      @doc.attributes = {:name => 'Stimpson J. Cat', :admin => true}
       @doc.name.should == 'Stimpson J. Cat'
       @doc.admin.should be_false
     end

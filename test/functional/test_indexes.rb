@@ -12,6 +12,14 @@ class IndexingTest < Test::Unit::TestCase
     end
     teardown { drop_indexes(@document) }
 
+    [:create_index, :ensure_index, :drop_index, :drop_indexes].each do |method|
+      should "delegate #{method} to collection" do
+        @document.stubs(:collection).returns(mock(:name => :foo))
+        @document.collection.expects(method).with(:arg)
+        @document.send(method, :arg)
+      end
+    end
+
     should "allow creating index for a key" do
       @document.ensure_index :first_name
       @document.should have_index('first_name_1')
@@ -35,7 +43,7 @@ class IndexingTest < Test::Unit::TestCase
     end
 
     should "work with :index shortcut when defining key" do
-      @document.key :father, String, :index => true
+      silence_stderr { @document.key :father, String, :index => true }
       @document.should have_index('father_1')
     end
   end

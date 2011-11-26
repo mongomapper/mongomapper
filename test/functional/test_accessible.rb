@@ -58,6 +58,16 @@ class AccessibleTest < Test::Unit::TestCase
       doc.name.should == 'John'
     end
 
+    should "not ignore inaccessible attributes on #reload" do
+      doc = @doc_class.new(:name => 'John')
+      doc.admin = true
+      doc.save!
+
+      doc.reload
+      doc.admin.should be_true
+      doc.name.should == 'John'
+    end
+
     should "ignore inaccessible attribute on #update_attributes" do
       @doc.update_attributes(:name => 'Ren Hoek', :admin => true)
       @doc.name.should == 'Ren Hoek'
@@ -70,6 +80,12 @@ class AccessibleTest < Test::Unit::TestCase
       @doc.admin.should be_false
     end
 
+    should "ignore inaccessible attribute on #attributes=" do
+      @doc.attributes = {:name => 'Ren Hoek', :admin => true}
+      @doc.name.should == 'Ren Hoek'
+      @doc.admin.should be_false
+    end
+
     should "be indifferent to whether the accessible keys are strings or symbols" do
       @doc.update_attributes!("name" => 'Stimpson J. Cat', "admin" => true)
       @doc.name.should == 'Stimpson J. Cat'
@@ -78,6 +94,15 @@ class AccessibleTest < Test::Unit::TestCase
 
     should "accept nil as constructor's argument without raising exception" do
       lambda { @doc_class.new(nil) }.should_not raise_error
+    end
+
+    should "ignore all attributes if called with no args" do
+      @doc_class = Doc do
+        key :name
+        attr_accessible
+      end
+
+      @doc_class.new(:name => 'Steve Sloan').name.should be_nil
     end
   end
 

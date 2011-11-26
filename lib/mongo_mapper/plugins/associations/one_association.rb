@@ -2,7 +2,7 @@
 module MongoMapper
   module Plugins
     module Associations
-      class OneAssociation < BelongsToAssociation
+      class OneAssociation < SingleAssociation
         def embeddable?
           klass.embeddable?
         end
@@ -17,17 +17,17 @@ module MongoMapper
               OneProxy
             end
         end
-        
+
         def setup(model)
           super
-                    
+
           association = self
           options = self.options
 
           model.before_destroy do
             if !association.embeddable?
               proxy = self.get_proxy(association)
-              
+
               unless proxy.nil?
                 case options[:dependent]
                   when :destroy then proxy.destroy

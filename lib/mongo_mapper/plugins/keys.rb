@@ -111,7 +111,10 @@ module MongoMapper
           end
 
           def create_indexes_for(key)
-            ensure_index key.name if key.options[:index] && !key.embeddable?
+            if key.options[:index] && !key.embeddable?
+              warn "[DEPRECATION] :index option when defining key #{key.name.inspect} is deprecated. Put indexes in `db/indexes.rb`"
+              ensure_index key.name
+            end
           end
 
           def create_validations_for(key)
@@ -159,7 +162,7 @@ module MongoMapper
       module InstanceMethods
         def initialize(attrs={})
           @_new = true
-          assign(attrs)
+          self.attributes = attrs
         end
 
         def initialize_from_database(attrs={})
@@ -205,16 +208,17 @@ module MongoMapper
         alias :to_mongo :attributes
 
         def assign(attrs={})
+          warn "[DEPRECATION] #assign is deprecated, use #attributes="
           self.attributes = attrs
         end
 
         def update_attributes(attrs={})
-          assign(attrs)
+          self.attributes = attrs
           save
         end
 
         def update_attributes!(attrs={})
-          assign(attrs)
+          self.attributes = attrs
           save!
         end
 
