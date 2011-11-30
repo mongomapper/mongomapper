@@ -232,7 +232,7 @@ module MongoMapper
           HashWithIndifferentAccess.new.tap do |attrs|
             keys.select { |name,key| !self[key.name].nil? || key.type == ObjectId }.each do |name, key|
               value = key.set(self[key.name])
-              attrs[abbr_for_key_name(name)] = value
+              attrs[key.abbr || name] = value
             end
 
             embedded_associations.each do |association|
