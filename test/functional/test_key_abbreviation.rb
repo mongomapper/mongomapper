@@ -5,12 +5,13 @@ class KeyAbbreviationTest < Test::Unit::TestCase
   def setup
     @document = Doc do
       key :first_name, String, :abbr => :f
+      key :middle_name, String, :abbr => :F
       key :last_name, String, :abbr => :l
       key :unabbreviated, String
       key :age, Integer, :abbr => :a
     end
 
-    @doc = @document.create(:first_name => 'John',  :last_name => 'Nunemaker', :unabbreviated => "foo", :age => 27)
+    @doc = @document.create(:first_name => 'John', :middle_name => "Harold",  :last_name => 'Nunemaker', :unabbreviated => "foo", :age => 27)
     @abe = @document.create(:first_name => 'Abe',  :last_name => 'Lincoln', :age => 200)
   end
   
@@ -19,6 +20,8 @@ class KeyAbbreviationTest < Test::Unit::TestCase
       raw_object = MongoMapper.connection[@document.database.name][@document.collection.name].find({"_id" => @doc.id}).first
       raw_object.include?("first_name").should == false
       raw_object["f"].should == "John"
+      raw_object.include?("middle_name").should == false
+      raw_object["F"].should == "Harold"
       raw_object.include?("last_name").should == false
       raw_object["l"].should == "Nunemaker"
       raw_object["unabbreviated"].should == "foo"
