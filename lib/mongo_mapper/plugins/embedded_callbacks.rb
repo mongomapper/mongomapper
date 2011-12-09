@@ -5,27 +5,34 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       included do
-        extend  ::ActiveModel::Callbacks
-
+        extend ::ActiveModel::Callbacks
+        
         define_model_callbacks :save, :create, :update, :destroy, :only => [:before, :after]
       end
 
       module InstanceMethods
-        def run_callbacks(callback, *args, &block)
+        
+        def embedded_documents
           embedded_docs = []
 
           embedded_associations.each do |association|
             embedded_docs += Array(get_proxy(association).send(:load_target))
           end
+          embedded_docs
+        end
 
-          block = embedded_docs.inject(block) do |chain, doc|
-            if doc.class.respond_to?("_#{callback}_callbacks")
-              lambda { doc.run_callbacks(callback, *args, &chain) }
-            else
-              chain
-            end
-          end
-          super callback, *args, &block
+        def run_callbacks(callback, *args, &block)
+          callbacks = Fiber.new do
+                        block = embedded_documents.inject(block) do |chain, doc|
+                          if doc.class.respond_to?("_#{callback}_callbacks")
+                            lambda { doc.run_callbacks(callback, *args, &chain) }
+                          else
+                            chain
+                          end
+                        end
+                        Fiber.yield super callback, *args, &block
+                  end
+            callbacks.resume(callback, *args, &block)
         end
       end
     end
