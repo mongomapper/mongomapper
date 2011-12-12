@@ -350,6 +350,39 @@ class ValidationsTest < Test::Unit::TestCase
       doc.children.build
       doc.should have_error_on(:children, 'are invalid')
     end
+
+  end
+
+  context "validating associated docs with custom context" do
+    setup do
+      @child_class = EDoc do
+        key :name
+
+        validates_length_of :name, :minimum => 5, :on => :custom_context
+      end
+
+      @root_class = Doc { }
+      @root_class.many :children, :class => @child_class
+      @root_class.validates_associated :children, :context => :custom_context
+    end
+
+    should "pass if there are no associated docs" do
+      doc = @root_class.new
+      doc.valid?(:custom_context).should be_true
+    end
+
+    should "pass if the associated doc is valid" do
+      doc = @root_class.new
+      doc.children.build(:name => 'George')
+      doc.valid?(:custom_context).should be_true
+    end
+
+    should "fail if the associated doc is invalid" do
+      doc = @root_class.new
+      doc.children.build(:name => 'Bob')
+      doc.valid?(:custom_context).should_not be_true
+    end
+
   end
   # context "validates uniqueness of with :unique shortcut" do
   #   should "work" do
