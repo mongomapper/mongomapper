@@ -14,6 +14,13 @@ class BelongsToAssociationTest < Test::Unit::TestCase
       association.class_name.should == 'Person'
     end
   end
+  
+  context "macro" do
+    should "be :belongs_to" do
+      base = BelongsToAssociation.new(:address)
+      base.macro.should eql(:belongs_to)
+    end
+  end
 
   context "embeddable?" do
     should "be false even if class is embeddable" do
