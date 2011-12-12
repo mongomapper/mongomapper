@@ -68,7 +68,7 @@ module MongoMapper
 
       class AssociatedValidator < ::ActiveModel::EachValidator
         def validate_each(record, attribute, value)
-          if !Array.wrap(value).all? { |c| c.nil? || c.valid? }
+          if !Array.wrap(value).all? { |c| c.nil? || c.valid?(options[:context]) }
             record.errors.add(attribute, :invalid, :message => options[:message], :value => value)
           end
         end
