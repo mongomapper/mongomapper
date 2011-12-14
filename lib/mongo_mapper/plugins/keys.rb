@@ -223,7 +223,9 @@ module MongoMapper
         end
 
         def update_attribute(name, value)
-          update_attributes(name.to_sym => value)
+          name = name.to_s
+          self.send(:"#{name}=", value)
+          save(:validate => false)
         end
 
         def id
