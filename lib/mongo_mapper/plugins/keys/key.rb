@@ -3,17 +3,18 @@ module MongoMapper
   module Plugins
     module Keys
       class Key
-        attr_accessor :name, :type, :options, :default_value
+        attr_accessor :name, :type, :options, :default_value, :abbr
 
         def initialize(*args)
           options = args.extract_options!
           @name, @type = args.shift.to_s, args.shift
           self.options = (options || {}).symbolize_keys
           self.default_value = self.options[:default]
+          self.abbr = self.options[:abbr]
         end
 
         def ==(other)
-          @name == other.name && @type == other.type
+          @name == other.name && @type == other.type && @abbr == other.abbr
         end
 
         def embeddable?
