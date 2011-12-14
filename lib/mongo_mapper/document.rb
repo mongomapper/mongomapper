@@ -23,7 +23,6 @@ module MongoMapper
     include Plugins::Accessible
     include Plugins::Protected
     include Plugins::Rails
-    include Plugins::ReflectOnAssociation
     include Plugins::Safe # needs to be after querying (save_to_collection)
     include Plugins::Sci
     include Plugins::Scopes

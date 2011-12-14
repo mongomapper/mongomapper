@@ -1,7 +1,7 @@
 # encoding: UTF-8
 module MongoMapper
   module Plugins
-    module ReflectOnAssociation
+    module Rails
       class ActiveRecordAssociationAdapter
         attr_reader :klass, :macro, :name, :options
 
