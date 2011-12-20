@@ -5,7 +5,7 @@ title: Identity Map
 
 The identity map plugin in MongoMapper caches the result of each object being loaded from the database on a per-model basis. If there is an attempt to load that object again from the database, it is loaded from the identity map. The identity map is cleared between requests by @MongoMapper::Middleware::IdentityMap@, which is installed by default in Rails apps.
 
-Identity map is not enabled by default in MongoMapper. Turning on the identity map has two effects. First, for the duration of a request you never have two instances of the same object in memory. Second, when possible, MongoMapper attempts to reduce the number of queries executed by checking the map before querying the database. Whenever you do simple finds by id, the map is checked first which reduces the n + 1 query problem.
+Identity map is not enabled by default in MongoMapper. Turning on the identity map has two effects. First, you never have two instances of the same object in memory. Second, when possible, MongoMapper attempts to reduce the number of queries executed by checking the map before querying the database. Whenever you do simple finds by id, the map is checked first which reduces the n + 1 query problem.
 
 h2. Examples
 
