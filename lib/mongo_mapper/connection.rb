@@ -62,8 +62,8 @@ module MongoMapper
       raise 'Set config before connecting. MongoMapper.config = {...}' if config.blank?
       env = config_for_environment(environment)
 
-      if env['connection_options'].is_a? Hash
-        options = env['connection_options'].symbolize_keys.merge(options)
+      if env['options'].is_a? Hash
+        options = env['options'].symbolize_keys.merge(options)
       end
 
       MongoMapper.connection = if env['hosts']
