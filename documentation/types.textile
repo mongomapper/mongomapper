@@ -7,7 +7,7 @@ Because of MongoDB's ability to store rich documents, MongoMapper supports most 
 
 h2. Custom Types
 
-The great thing about MongoMapper is that you can create you own types to make your models more pimp. All that is required to make your own type is to define the class and add the to_mongo and from_mongo class methods. For example, here is a type that always downcases strings when saving to the database:
+The great thing about MongoMapper is that you can create your own types to make your models more pimp. All that is required to make your own type is to define the class and add the to_mongo and from_mongo class methods. For example, here is a type that always downcases strings when saving to the database:
 
 {% highlight ruby %}
 class DowncasedString
