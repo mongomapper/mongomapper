@@ -14,25 +14,23 @@ module MongoMapper
         end
       end
 
-      module InstanceMethods
-        def attributes=(attrs={})
-          super(filter_inaccessible_attrs(attrs))
-        end
-
-        def update_attributes(attrs={})
-          super(filter_inaccessible_attrs(attrs))
-        end
-
-        def update_attributes!(attrs={})
-          super(filter_inaccessible_attrs(attrs))
-        end
-
-        protected
-          def filter_inaccessible_attrs(attrs)
-            return attrs if !accessible_attributes? || attrs.blank?
-            attrs.dup.delete_if { |key, val| !accessible_attributes.include?(key.to_sym) }
-          end
+      def attributes=(attrs={})
+        super(filter_inaccessible_attrs(attrs))
       end
+
+      def update_attributes(attrs={})
+        super(filter_inaccessible_attrs(attrs))
+      end
+
+      def update_attributes!(attrs={})
+        super(filter_inaccessible_attrs(attrs))
+      end
+
+      protected
+        def filter_inaccessible_attrs(attrs)
+          return attrs if !accessible_attributes? || attrs.blank?
+          attrs.dup.delete_if { |key, val| !accessible_attributes.include?(key.to_sym) }
+        end
     end
   end
 end

@@ -10,23 +10,21 @@ module MongoMapper
         define_model_callbacks :save, :create, :update, :destroy, :only => [:before, :after]
       end
 
-      module InstanceMethods
-        def run_callbacks(callback, *args, &block)
-          embedded_docs = []
+      def run_callbacks(callback, *args, &block)
+        embedded_docs = []
 
-          embedded_associations.each do |association|
-            embedded_docs += Array(get_proxy(association).send(:load_target))
-          end
-
-          block = embedded_docs.inject(block) do |chain, doc|
-            if doc.class.respond_to?("_#{callback}_callbacks")
-              lambda { doc.run_callbacks(callback, *args, &chain) }
-            else
-              chain
-            end
-          end
-          super callback, *args, &block
+        embedded_associations.each do |association|
+          embedded_docs += Array(get_proxy(association).send(:load_target))
         end
+
+        block = embedded_docs.inject(block) do |chain, doc|
+          if doc.class.respond_to?("_#{callback}_callbacks")
+            lambda { doc.run_callbacks(callback, *args, &chain) }
+          else
+            chain
+          end
+        end
+        super callback, *args, &block
       end
     end
   end

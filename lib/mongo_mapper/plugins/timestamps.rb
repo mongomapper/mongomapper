@@ -12,12 +12,10 @@ module MongoMapper
         end
       end
 
-      module InstanceMethods
-        def update_timestamps
-          now = Time.now.utc
-          self[:created_at] = now if !persisted? && !created_at?
-          self[:updated_at] = now
-        end
+      def update_timestamps
+        now = Time.now.utc
+        self[:created_at] = now if !persisted? && !created_at?
+        self[:updated_at] = now
       end
     end
   end

@@ -137,44 +137,42 @@ module MongoMapper
           end
       end
 
-      module InstanceMethods
-        def save(options={})
-          options.assert_valid_keys(:validate, :safe)
-          create_or_update(options)
-        end
-
-        def save!(options={})
-          options.assert_valid_keys(:safe)
-          save(options) || raise(DocumentNotValid.new(self))
-        end
-
-        def destroy
-          delete
-        end
-
-        def delete
-          self.class.delete(id).tap { @_destroyed = true } if persisted?
-        end
-
-        private
-          def create_or_update(options={})
-            result = persisted? ? update(options) : create(options)
-            result != false
-          end
-
-          def create(options={})
-            save_to_collection(options)
-          end
-
-          def update(options={})
-            save_to_collection(options)
-          end
-
-          def save_to_collection(options={})
-            @_new = false
-            collection.save(to_mongo, :safe => options[:safe])
-          end
+      def save(options={})
+        options.assert_valid_keys(:validate, :safe)
+        create_or_update(options)
       end
+
+      def save!(options={})
+        options.assert_valid_keys(:safe)
+        save(options) || raise(DocumentNotValid.new(self))
+      end
+
+      def destroy
+        delete
+      end
+
+      def delete
+        self.class.delete(id).tap { @_destroyed = true } if persisted?
+      end
+
+      private
+        def create_or_update(options={})
+          result = persisted? ? update(options) : create(options)
+          result != false
+        end
+
+        def create(options={})
+          save_to_collection(options)
+        end
+
+        def update(options={})
+          save_to_collection(options)
+        end
+
+        def save_to_collection(options={})
+          @_new = false
+          collection.save(to_mongo, :safe => options[:safe])
+        end
     end
   end
 end

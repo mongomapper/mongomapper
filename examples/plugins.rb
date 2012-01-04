@@ -16,11 +16,8 @@ module FooPlugin
     end
   end
 
-  # InstanceMethods module will automatically get included
-  module InstanceMethods
-    def foo
-      'Foo instance method!'
-    end
+  def foo
+    'Foo instance method!'
   end
 
   # Any configuration can be done in the #included block, which gets
