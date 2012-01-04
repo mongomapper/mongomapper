@@ -27,11 +27,9 @@ module MongoMapper
         end
       end
 
-      module InstanceMethods
-        def initialize(*args)
-          super
-          write_key :_type, self.class.name if self.class.key?(:_type)
-        end
+      def initialize(*args)
+        super
+        write_key :_type, self.class.name if self.class.key?(:_type)
       end
     end
   end

@@ -17,16 +17,14 @@ module MongoMapper
         end
       end
 
-      module InstanceMethods
-        def save(options = {})
-          options.reverse_merge!(:validate => true)
-          !options[:validate] || valid? ? super : false
-        end
+      def save(options = {})
+        options.reverse_merge!(:validate => true)
+        !options[:validate] || valid? ? super : false
+      end
 
-        def valid?(context = nil)
-          context ||= (new_record? ? :create : :update)
-          super(context)
-        end
+      def valid?(context = nil)
+        context ||= (new_record? ? :create : :update)
+        super(context)
       end
 
       class UniquenessValidator < ::ActiveModel::EachValidator
