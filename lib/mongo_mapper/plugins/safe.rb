@@ -19,11 +19,9 @@ module MongoMapper
         end
       end
 
-      module InstanceMethods
-        def save_to_collection(options={})
-          options[:safe] = self.class.safe? unless options.key?(:safe)
-          super
-        end
+      def save_to_collection(options={})
+        options[:safe] = self.class.safe? unless options.key?(:safe)
+        super
       end
     end
   end

@@ -75,47 +75,45 @@ module MongoMapper
           end
       end
 
-      module InstanceMethods
-        def unset(*keys)
-          self.class.unset(id, *keys)
-        end
+      def unset(*keys)
+        self.class.unset(id, *keys)
+      end
 
-        def increment(hash)
-          self.class.increment(id, hash)
-        end
+      def increment(hash)
+        self.class.increment(id, hash)
+      end
 
-        def decrement(hash)
-          self.class.decrement(id, hash)
-        end
+      def decrement(hash)
+        self.class.decrement(id, hash)
+      end
 
-        def set(hash)
-          self.class.set(id, hash)
-        end
+      def set(hash)
+        self.class.set(id, hash)
+      end
 
-        def push(hash)
-          self.class.push(id, hash)
-        end
-        
-        def push_all(hash)
-          self.class.push_all(id, hash)
-        end
+      def push(hash)
+        self.class.push(id, hash)
+      end
 
-        def pull(hash)
-          self.class.pull(id, hash)
-        end
-        
-        def pull_all(hash)
-          self.class.pull_all(id, hash)
-        end
+      def push_all(hash)
+        self.class.push_all(id, hash)
+      end
 
-        def add_to_set(hash)
-          self.class.push_uniq(id, hash)
-        end
-        alias push_uniq add_to_set
+      def pull(hash)
+        self.class.pull(id, hash)
+      end
 
-        def pop(hash)
-          self.class.pop(id, hash)
-        end
+      def pull_all(hash)
+        self.class.pull_all(id, hash)
+      end
+
+      def add_to_set(hash)
+        self.class.push_uniq(id, hash)
+      end
+      alias push_uniq add_to_set
+
+      def pop(hash)
+        self.class.pop(id, hash)
       end
     end
   end
