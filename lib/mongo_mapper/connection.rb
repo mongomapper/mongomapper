@@ -60,7 +60,18 @@ module MongoMapper
 
     def connect(environment, options={})
       raise 'Set config before connecting. MongoMapper.config = {...}' if config.blank?
-      env = config_for_environment(environment)
+      full_config = config_for_environment(environment)
+
+      env = {
+        'hosts'    => full_config.delete('hosts'),
+        'host'     => full_config.delete('host'),
+        'port'     => full_config.delete('port'),
+        'database' => full_config.delete('database'),
+        'username' => full_config.delete('username'),
+        'password' => full_config.delete('password')
+      }
+      
+      options = (full_config['options'] || {}).merge(options).symbolize_keys
 
       MongoMapper.connection = if env['hosts']
         Mongo::ReplSetConnection.new( *env['hosts'].push(options) )

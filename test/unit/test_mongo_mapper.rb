@@ -65,6 +65,14 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.connect('development', :logger => logger)
     end
 
+    should "work with options from environment" do
+      MongoMapper.config = {
+        'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'options' => {'pool_size' => 10} }
+      }
+      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :pool_size => 10)
+      MongoMapper.connect('development')
+    end
+    
     should "work with options using uri" do
       MongoMapper.config = {
         'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
@@ -105,7 +113,7 @@ class MongoMapperTest < Test::Unit::TestCase
         }
       }
 
-      Mongo::ReplSetConnection.expects(:new).with( ['127.0.0.1', 27017], ['localhost', 27017], {'read_secondary' => true} )
+      Mongo::ReplSetConnection.expects(:new).with( ['127.0.0.1', 27017], ['localhost', 27017], {:read_secondary => true} )
       MongoMapper.expects(:database=).with('test')
       Mongo::DB.any_instance.expects(:authenticate).never
       MongoMapper.connect('development', 'read_secondary' => true)
