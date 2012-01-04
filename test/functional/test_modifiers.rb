@@ -398,7 +398,7 @@ class ModifierTest < Test::Unit::TestCase
       page2 = @page_class.create
 
       page.add_to_set(:tags => 'foo')
-      page.add_to_set(:tags => 'foo')
+      page2.add_to_set(:tags => 'foo')
 
       page.reload
       page.tags.should == %w(foo)
@@ -412,7 +412,7 @@ class ModifierTest < Test::Unit::TestCase
       page2 = @page_class.create
 
       page.push_uniq(:tags => 'foo')
-      page.push_uniq(:tags => 'foo')
+      page2.push_uniq(:tags => 'foo')
 
       page.reload
       page.tags.should == %w(foo)
