@@ -65,6 +65,15 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.connect('development', :logger => logger)
     end
 
+    should "work with options from config" do
+      MongoMapper.config = {
+        'development' => {'host' => '192.168.1.1', 'port' => 2222, 'database' => 'test', 'options' => {'safe' => true}}
+      }
+      connection, logger = mock('connection'), mock('logger')
+      Mongo::Connection.expects(:new).with('192.168.1.1', 2222, :logger => logger, :safe => true)
+      MongoMapper.connect('development', :logger => logger)
+    end
+
     should "work with options using uri" do
       MongoMapper.config = {
         'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
