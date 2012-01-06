@@ -3,7 +3,7 @@ layout: documentation
 title: Keys
 ---
 
-Since MongoDB is schema-less, models specify the schema for a document. Each document is made up of keys. Keys are named and type-casted so you know your data is stored in the correct format.
+Since MongoDB is schema-less, models specify the schema for a document. Each document is made up of keys. Keys are named and type-cast so you know your data is stored in the correct format.
 
 {% highlight ruby %}
 class Person
