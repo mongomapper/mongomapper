@@ -241,6 +241,18 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
     person.pets.first.crazy_key.should == 'crazy'
   end
 
+  should "be able to update_attribute" do
+    pet = @pet_klass.new(:name => 'sparky')
+    person = @klass.create(:pets => [pet])
+    person.reload
+    pet = person.pets.first
+
+    pet.update_attribute('name', 'koda').should be_true
+    person.reload
+    person.pets.first._id.should == pet._id
+    person.pets.first.name.should == 'koda'
+  end
+
   should "be able to update_attributes" do
     pet = @pet_klass.new(:name => 'sparky')
     person = @klass.create(:pets => [pet])
