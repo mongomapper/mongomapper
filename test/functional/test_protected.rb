@@ -76,7 +76,7 @@ class ProtectedTest < Test::Unit::TestCase
 
     should "ignore protected attribute on #update_attribute" do
       @doc.update_attribute('admin', true)
-      @doc.admin.should be_false
+      @doc.admin.should be_true
     end
 
     should "ignore protected attribute on #update_attributes" do
@@ -181,9 +181,9 @@ class ProtectedTest < Test::Unit::TestCase
       @edoc.admin.should be_true
     end
 
-    should "ignore protected attribute on #update_attribute" do
+    should "not ignore protected attribute on #update_attribute" do
       @edoc.update_attribute('admin', true)
-      @edoc.admin.should be_false
+      @edoc.admin.should be_true
     end
 
     should "ignore protected attribute on #update_attributes" do

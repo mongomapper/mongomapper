@@ -693,16 +693,11 @@ class QueryingTesting < Test::Unit::TestCase
     end
 
     should "update the attribute without invoking validations" do
-      setup do
-        @document = Doc do
-          key :name, String, :required => true
-        end
-      end
+      @document.key :name, String, :required => true
 
-      doc = @document.new
-      doc.expects(:valid?).never
-      doc.update_attribute('name', '').should be_true
-      doc.reload.name.should == ''
+      @doc.expects(:valid?).never
+      @doc.update_attribute('name', '').should be_true
+      @doc.reload.name.should == ''
       @document.count.should == 1
     end
   end

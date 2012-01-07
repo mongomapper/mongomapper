@@ -68,9 +68,9 @@ class AccessibleTest < Test::Unit::TestCase
       doc.name.should == 'John'
     end
 
-    should "ignore inaccessible attribute on #update_attribute" do
+    should "not ignore inaccessible attribute on #update_attribute" do
       @doc.update_attribute('admin', true)
-      @doc.admin.should be_false
+      @doc.admin.should be_true
     end
 
     should "ignore inaccessible attribute on #update_attributes" do
