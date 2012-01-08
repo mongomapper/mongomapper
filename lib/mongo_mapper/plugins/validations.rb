@@ -17,16 +17,14 @@ module MongoMapper
         end
       end
 
-      module InstanceMethods
-        def save(options = {})
-          options.reverse_merge!(:validate => true)
-          !options[:validate] || valid? ? super : false
-        end
+      def save(options = {})
+        options.reverse_merge!(:validate => true)
+        !options[:validate] || valid? ? super : false
+      end
 
-        def valid?(context = nil)
-          context ||= (new_record? ? :create : :update)
-          super(context)
-        end
+      def valid?(context = nil)
+        context ||= (new_record? ? :create : :update)
+        super(context)
       end
 
       class UniquenessValidator < ::ActiveModel::EachValidator
@@ -68,7 +66,7 @@ module MongoMapper
 
       class AssociatedValidator < ::ActiveModel::EachValidator
         def validate_each(record, attribute, value)
-          if !Array.wrap(value).all? { |c| c.nil? || c.valid? }
+          if !Array.wrap(value).all? { |c| c.nil? || c.valid?(options[:context]) }
             record.errors.add(attribute, :invalid, :message => options[:message], :value => value)
           end
         end

@@ -40,7 +40,7 @@ module MongoMapper
         end
 
         def type_key_name
-          "#{as}_type"
+          "_type"
         end
 
         def as

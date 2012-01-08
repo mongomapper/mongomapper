@@ -2,7 +2,7 @@ source :rubygems
 gemspec
 
 group :development, :test, :rspec do
-  gem 'bson_ext', '~> 1.3.0'
+  gem 'bson_ext', '~> 1.5'
 
   gem 'SystemTimer',  :platform => :mri_18
   gem 'ruby-debug',   :platform => :mri_18
@@ -10,12 +10,12 @@ group :development, :test, :rspec do
   gem 'perftools.rb', :platform => :mri,    :require => 'perftools'
 
   gem 'rake'
-  gem 'tzinfo'
-  gem 'json'
-  gem 'log_buddy'
-  gem 'timecop',           '~> 0.3.1'
-  gem 'rack-test'
-  gem 'rails'
+  gem 'tzinfo',            '~> 0.3'
+  gem 'json',              '~> 1.6'
+  gem 'log_buddy',         '~> 0.6'
+  gem 'timecop',           '~> 0.3'
+  gem 'rack-test',         '~> 0.6'
+  gem 'rails',             '~> 3.0'
 end
 
 # FIXME: remove after porting all the specs to rpsec

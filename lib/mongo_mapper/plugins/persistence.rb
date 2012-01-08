@@ -57,14 +57,12 @@ module MongoMapper
           end
       end
 
-      module InstanceMethods
-        def collection
-          _root_document.class.collection
-        end
+      def collection
+        _root_document.class.collection
+      end
 
-        def database
-          _root_document.class.database
-        end
+      def database
+        _root_document.class.database
       end
     end
   end

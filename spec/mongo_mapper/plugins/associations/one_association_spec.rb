@@ -3,6 +3,12 @@ require 'spec_helper'
 describe MongoMapper::Plugins::Associations::OneAssociation do
   Associations = MongoMapper::Plugins::Associations
 
+  describe "type_key_name" do
+    it "should be _type" do
+      Associations::OneAssociation.new(:foo).type_key_name.should == '_type'
+    end
+  end
+
   context "embeddable?" do
     it "should be true if class is embeddable" do
       base = Associations::OneAssociation.new(:media)
@@ -29,6 +35,11 @@ describe MongoMapper::Plugins::Associations::OneAssociation do
     it "should be OneEmbeddedProxy for one embedded" do
       base = Associations::OneAssociation.new(:media)
       base.proxy_class.should == Associations::OneEmbeddedProxy
+    end
+
+    it "should be OneEmbeddedPolymorphicProxy for polymorphic one embedded" do
+      base = Associations::OneAssociation.new(:media, :polymorphic => true)
+      base.proxy_class.should == Associations::OneEmbeddedPolymorphicProxy
     end
   end
 

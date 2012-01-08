@@ -19,10 +19,8 @@ describe MongoMapper::Plugins do
         end
       end
 
-      module InstanceMethods
-        def instance_foo
-          'instance_foo'
-        end
+      def instance_foo
+        'instance_foo'
       end
     end
 

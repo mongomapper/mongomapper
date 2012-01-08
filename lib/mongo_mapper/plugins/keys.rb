@@ -159,27 +159,115 @@ module MongoMapper
           end
       end
 
-      module InstanceMethods
-        def initialize(attrs={})
-          @_new = true
-          self.attributes = attrs
+      def initialize(attrs={})
+        @_new = true
+        self.attributes = attrs
+      end
+
+      def initialize_from_database(attrs={})
+        @_new = false
+        load_from_database(attrs)
+        self
+      end
+
+      def persisted?
+        !new? && !destroyed?
+      end
+
+      def attributes=(attrs)
+        return if attrs.blank?
+
+        attrs.each_pair do |key, value|
+          if respond_to?(:"#{key}=")
+            self.send(:"#{key}=", value)
+          else
+            self[key] = value
+          end
+        end
+      end
+
+      def attributes
+        HashWithIndifferentAccess.new.tap do |attrs|
+          keys.select { |name,key| !self[key.name].nil? || key.type == ObjectId }.each do |name, key|
+            value = key.set(self[key.name])
+            attrs[name] = value
+          end
+
+          embedded_associations.each do |association|
+            if documents = instance_variable_get(association.ivar)
+              if association.is_a?(Associations::OneAssociation)
+                attrs[association.name] = documents.to_mongo
+              else
+                attrs[association.name] = documents.map { |document| document.to_mongo }
+              end
+            end
+          end
+        end
+      end
+      alias :to_mongo :attributes
+
+      def assign(attrs={})
+        warn "[DEPRECATION] #assign is deprecated, use #attributes="
+        self.attributes = attrs
+      end
+
+      def update_attributes(attrs={})
+        self.attributes = attrs
+        save
+      end
+
+      def update_attributes!(attrs={})
+        self.attributes = attrs
+        save!
+      end
+
+      def update_attribute(name, value)
+        self.send(:"#{name}=", value)
+        save(:validate => false)
+      end
+
+      def id
+        _id
+      end
+
+      def id=(value)
+        if self.class.using_object_id?
+          value = ObjectId.to_mongo(value)
         end
 
-        def initialize_from_database(attrs={})
-          @_new = false
-          load_from_database(attrs)
-          self
-        end
+        self[:_id] = value
+      end
 
-        def persisted?
-          !new? && !destroyed?
-        end
+      def [](name)
+        read_key(name)
+      end
 
-        def attributes=(attrs)
+      def []=(name, value)
+        ensure_key_exists(name)
+        write_key(name, value)
+      end
+
+      def keys
+        self.class.keys
+      end
+
+      def key_names
+        keys.keys
+      end
+
+      def non_embedded_keys
+        keys.values.select { |key| !key.embeddable? }
+      end
+
+      def embedded_keys
+        keys.values.select { |key| key.embeddable? }
+      end
+
+      private
+        def load_from_database(attrs)
           return if attrs.blank?
-
-          attrs.each_pair do |key, value|
-            if respond_to?(:"#{key}=")
+          attrs.each do |key, value|
+            if respond_to?(:"#{key}=") && !self.class.key?(key)
               self.send(:"#{key}=", value)
             else
               self[key] = value
@@ -187,123 +275,34 @@ module MongoMapper
           end
         end
 
-        def attributes
-          HashWithIndifferentAccess.new.tap do |attrs|
-            keys.select { |name,key| !self[key.name].nil? || key.type == ObjectId }.each do |name, key|
-              value = key.set(self[key.name])
-              attrs[name] = value
-            end
+        def ensure_key_exists(name)
+          self.class.key(name) unless respond_to?("#{name}=")
+        end
 
-            embedded_associations.each do |association|
-              if documents = instance_variable_get(association.ivar)
-                if association.is_a?(Associations::OneAssociation)
-                  attrs[association.name] = documents.to_mongo
-                else
-                  attrs[association.name] = documents.map { |document| document.to_mongo }
-                end
-              end
-            end
+        def set_parent_document(key, value)
+          if key.embeddable? && value.is_a?(key.type)
+            value._parent_document = self
           end
         end
-        alias :to_mongo :attributes
 
-        def assign(attrs={})
-          warn "[DEPRECATION] #assign is deprecated, use #attributes="
-          self.attributes = attrs
-        end
-
-        def update_attributes(attrs={})
-          self.attributes = attrs
-          save
-        end
-
-        def update_attributes!(attrs={})
-          self.attributes = attrs
-          save!
-        end
-
-        def update_attribute(name, value)
-          update_attributes(name.to_sym => value)
-        end
-
-        def id
-          _id
-        end
-
-        def id=(value)
-          if self.class.using_object_id?
-            value = ObjectId.to_mongo(value)
-          end
-
-          self[:_id] = value
-        end
-
-        def [](name)
-          read_key(name)
-        end
-
-        def []=(name, value)
-          ensure_key_exists(name)
-          write_key(name, value)
-        end
-
-        def keys
-          self.class.keys
-        end
-
-        def key_names
-          keys.keys
-        end
-
-        def non_embedded_keys
-          keys.values.select { |key| !key.embeddable? }
-        end
-
-        def embedded_keys
-          keys.values.select { |key| key.embeddable? }
-        end
-
-        private
-          def load_from_database(attrs)
-            return if attrs.blank?
-            attrs.each do |key, value|
-              if respond_to?(:"#{key}=") && !self.class.key?(key)
-                self.send(:"#{key}=", value)
-              else
-                self[key] = value
-              end
-            end
-          end
-
-          def ensure_key_exists(name)
-            self.class.key(name) unless respond_to?("#{name}=")
-          end
-
-          def set_parent_document(key, value)
-            if key.embeddable? && value.is_a?(key.type)
-              value._parent_document = self
-            end
-          end
-
-          def read_key(key_name)
-            if key = keys[key_name.to_s]
-              value = key.get(instance_variable_get(:"@#{key_name}"))
-              set_parent_document(key, value)
-              instance_variable_set(:"@#{key_name}", value)
-            end
-          end
-
-          def read_key_before_type_cast(name)
-            instance_variable_get(:"@#{name}_before_type_cast")
-          end
-
-          def write_key(name, value)
-            key = keys[name.to_s]
+        def read_key(key_name)
+          if key = keys[key_name.to_s]
+            value = key.get(instance_variable_get(:"@#{key_name}"))
             set_parent_document(key, value)
-            instance_variable_set :"@#{name}_before_type_cast", value
-            instance_variable_set :"@#{name}", key.set(value)
+            instance_variable_set(:"@#{key_name}", value)
           end
-      end
+        end
+
+        def read_key_before_type_cast(name)
+          instance_variable_get(:"@#{name}_before_type_cast")
+        end
+
+        def write_key(name, value)
+          key = keys[name.to_s]
+          set_parent_document(key, value)
+          instance_variable_set :"@#{name}_before_type_cast", value
+          instance_variable_set :"@#{name}", key.set(value)
+        end
     end
   end
 end

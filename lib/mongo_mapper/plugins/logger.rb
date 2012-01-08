@@ -10,10 +10,8 @@ module MongoMapper
         end
       end
 
-      module InstanceMethods
-        def logger
-          self.class.logger
-        end
+      def logger
+        self.class.logger
       end
     end
   end

@@ -30,6 +30,69 @@ class ManyEmbeddedPolymorphicProxyTest < Test::Unit::TestCase
     catalog.medias[0].new?.should == false
   end
 
+  context "associating objects of non-SCI class" do
+    should "work on replacement" do
+      catalog = Catalog.new
+      catalog.medias = [Human.new(:name => 'Frank'), Robot.new(:serial_number => '1B')]
+
+      catalog.medias.size.should == 2
+      catalog.medias[0].name.should == 'Frank'
+      catalog.medias[0].class.should == Human
+      catalog.medias[1].serial_number.should == '1B'
+      catalog.medias[1].class.should == Robot
+
+      catalog.save.should be_true
+      catalog.reload
+
+      catalog.medias.size.should == 2
+      catalog.medias[0].name.should == 'Frank'
+      catalog.medias[0].class.should == Human
+      catalog.medias[1].serial_number.should == '1B'
+      catalog.medias[1].class.should == Robot
+    end
+
+    should "work on replacement with hashes" do
+      catalog = Catalog.new
+      catalog.medias = [{:name => 'Frank', '_type' => 'Human'}, {:serial_number => '1B', '_type' => 'Robot'}]
+
+      catalog.medias.size.should == 2
+      catalog.medias[0].name.should == 'Frank'
+      catalog.medias[0].class.should == Human
+      catalog.medias[1].serial_number.should == '1B'
+      catalog.medias[1].class.should == Robot
+
+      catalog.save.should be_true
+      catalog.reload
+
+      catalog.medias.size.should == 2
+      catalog.medias[0].name.should == 'Frank'
+      catalog.medias[0].class.should == Human
+      catalog.medias[1].serial_number.should == '1B'
+      catalog.medias[1].class.should == Robot
+    end
+
+    should "work with concatination" do
+      catalog = Catalog.new
+      catalog.medias << Human.new(:name => 'Frank')
+      catalog.medias << Robot.new(:serial_number => '1B')
+
+      catalog.medias.size.should == 2
+      catalog.medias[0].name.should == 'Frank'
+      catalog.medias[0].class.should == Human
+      catalog.medias[1].serial_number.should == '1B'
+      catalog.medias[1].class.should == Robot
+
+      catalog.save.should be_true
+      catalog.reload
+
+      catalog.medias.size.should == 2
+      catalog.medias[0].name.should == 'Frank'
+      catalog.medias[0].class.should == Human
+      catalog.medias[1].serial_number.should == '1B'
+      catalog.medias[1].class.should == Robot
+    end
+  end
+
   context "count" do
     should "default to 0" do
       Catalog.new.medias.count.should == 0
