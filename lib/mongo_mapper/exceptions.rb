@@ -14,7 +14,10 @@ module MongoMapper
 
   # raised when document not valid and using !
   class DocumentNotValid < Error
+    attr_reader :document
+  
     def initialize(document)
+      @document = document
       super("Validation failed: #{document.errors.full_messages.join(", ")}")
     end
   end
