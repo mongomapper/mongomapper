@@ -7,7 +7,7 @@ In MongoDB, database writes/updates follow the "fire and forget" pattern. This m
 
 The down side of this strategy is if something goes wrong–such as a unique index constraint failing or an internal MongoDB error–an error won't be raised. You may never know that your data isn't being saved, until you try to read it and it's not there.
 
-Instead of just using the default "fire and forget" behavior on our save operation, passing the @:safe@ option to @save@ will for the driver to make sure the save succeeds and raise an error if it doesn't.
+Instead of just using the default "fire and forget" behavior on our save operation, passing the @:safe@ option to @save@ will force the driver to make sure the save succeeds and raise an error if it doesn't.
 
 {% highlight ruby %}
 user = User.new("duplicate@example.com")
