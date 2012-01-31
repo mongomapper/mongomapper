@@ -1,7 +1,7 @@
 ---
 title: MongoMapper 0.11.0 Release
 layout: post
-author: Jon Kern (_stenographer_)
+author: Jon Kern (__stenographer__)
 ---
 
 MongoMapper 0.11.0 has been released, with some bug fixes and minor enhancements firm the following contributors:
