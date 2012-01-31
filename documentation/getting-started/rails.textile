@@ -28,6 +28,29 @@ require "rails/test_unit/railtie"
 # require "sprockets/railtie"
 {% endhighlight %}
 
+For Rails 3.2 you also need to disable next code in files:
+
+* @config/environments/development.rb@
+
+{% highlight ruby %}
+config.active_record.mass_assignment_sanitizer = :strict
+config.active_record.auto_explain_threshold_in_seconds = 0.5
+{% endhighlight %}
+
+* @config/environments/test.rb@
+
+{% highlight ruby %}
+config.active_record.mass_assignment_sanitizer = :strict
+{% endhighlight %}
+
+* @config/initializers/wrap_parameters.rb@
+
+{% highlight ruby %}
+ActiveSupport.on_load(:active_record) do
+  self.include_root_in_json = false
+end
+{% endhighlight %}
+
 Next, add MongoMapper to your @Gemfile@, and run @bundle install@:
 
 {% highlight ruby %}
