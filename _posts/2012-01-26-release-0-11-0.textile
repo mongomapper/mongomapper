@@ -1,10 +1,21 @@
 ---
 title: MongoMapper 0.11.0 Release
 layout: post
-author: Brandon Keepers
+author: Jon Kern (_stenographer_)
 ---
 
-MongoMapper 0.11.0 has been released, with some bug fixes and minor enhancements.
+MongoMapper 0.11.0 has been released, with some bug fixes and minor enhancements firm the following contributors:
+
+* "balexand":http://github.com/balexand
+* "bearded":http://github.com/bearded
+* "bhbryant":http://github.com/bhbryant
+* "bkeepers":http://github.com/bkeepers
+* "brianhempel":http://github.com/brianhempel
+* "kevinrood":http://github.com/kevinrood
+* "laserlemon":http://github.com/laserlemon
+* "matthiassiegel":http://github.com/matthiassiegel
+* "scohen":http://github.com/scohen
+* "statianzo":http://github.com/statianzo
 
 h2. Enhancements
 
@@ -35,6 +46,5 @@ h2. Bug Fixes
 * Fix deprecation warnings in Rails 3.2
 
 h2. Changelog
-
 
 See the individual commits via the full "change log":https://github.com/jnunemaker/mongomapper/compare/v0.10.1...v0.11.0 for v0.11.0
