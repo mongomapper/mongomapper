@@ -4,7 +4,7 @@ layout: post
 author: Jon Kern (stenographer)
 ---
 
-MongoMapper 0.11.0 has been released, with some bug fixes and minor enhancements firm the following contributors:
+MongoMapper 0.11.0 has been released, with some bug fixes and enhancements from the following contributors:
 
 * "balexand":http://github.com/balexand
 * "bearded":http://github.com/bearded
