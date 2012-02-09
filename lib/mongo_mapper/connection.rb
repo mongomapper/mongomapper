@@ -3,6 +3,11 @@ require 'uri'
 
 module MongoMapper
   module Connection
+    @@connection    = nil
+    @@database      = nil
+    @@database_name = nil
+    @@config        = nil
+
     # @api public
     def connection
       @@connection ||= Mongo::Connection.new
@@ -26,9 +31,7 @@ module MongoMapper
 
     # @api public
     def database
-      if @@database_name.blank?
-        raise 'You forgot to set the default database name: MongoMapper.database = "foobar"'
-      end
+      return nil if @@database_name.blank?
 
       @@database ||= MongoMapper.connection.db(@@database_name)
     end
