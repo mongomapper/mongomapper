@@ -393,6 +393,40 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
 
       project.statuses.count(:name => 'Foo').should == 1
     end
+
+    should "ignore unpersisted documents" do
+      project = Project.create
+      project.statuses.build(:name => 'Foo')
+      project.statuses.count.should == 0
+    end
+  end
+
+  context "size" do
+    should "reflect both persisted and new documents" do
+      project = Project.create
+      3.times { project.statuses.create(:name => 'Foo!') }
+      2.times { project.statuses.build(:name => 'Foo!') }
+      project.statuses.size.should == 5
+    end
+  end
+
+  context "empty?" do
+    should "be true with no associated docs" do
+      project = Project.create
+      project.statuses.empty?.should be_true
+    end
+
+    should "be false if a document is built" do
+      project = Project.create
+      project.statuses.build(:name => 'Foo!')
+      project.statuses.empty?.should be_false
+    end
+
+    should "be false if a document is created" do
+      project = Project.create
+      project.statuses.create(:name => 'Foo!')
+      project.statuses.empty?.should be_false
+    end
   end
 
   context "to_json" do

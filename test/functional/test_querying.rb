@@ -482,6 +482,30 @@ class QueryingTesting < Test::Unit::TestCase
     end
   end
 
+  context ".size" do
+    should "return 0 if no documents" do
+      @document.count.should == 0
+    end
+
+    should "return the number of documents" do
+      @doc1 = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
+      @doc2 = @document.create({:first_name => 'Steve', :last_name => 'Smith', :age => '28'})
+      @doc3 = @document.create({:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26'})
+      @document.count.should == 3
+    end
+  end
+
+  context ".empty?" do
+    should "be true if no documents" do
+      @document.empty?.should be_true
+    end
+
+    should "be false if documents present" do
+      @doc = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
+      @document.empty?.should be_false
+    end
+  end
+
   context ".exists?" do
     setup do
       @doc = @document.create(:first_name => "James", :age => 27)
