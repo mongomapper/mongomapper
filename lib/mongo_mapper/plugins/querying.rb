@@ -11,7 +11,7 @@ module MongoMapper
         extend Forwardable
         include PluckyMethods
 
-        def_delegators :query,  :size, :empty?
+        def_delegators :query,  :to_a, :size, :empty?
 
         def find_each(opts={})
           super(opts).each { |doc| yield(doc) }

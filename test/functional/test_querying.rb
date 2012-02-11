@@ -529,6 +529,19 @@ class QueryingTesting < Test::Unit::TestCase
     end
   end
 
+  context "to_a" do
+    should "return an array" do
+      @document.to_a.class.should == Array
+    end
+
+    should "return everything" do
+      @doc1 = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
+      @doc2 = @document.create({:first_name => 'Steve', :last_name => 'Smith', :age => '28'})
+      @doc3 = @document.create({:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26'})
+      @document.to_a.size.should == 3
+    end
+  end
+
   context ".where" do
     setup do
       @doc1 = @document.create(:first_name => 'John',  :last_name => 'Nunemaker', :age => '27')

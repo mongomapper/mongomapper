@@ -429,6 +429,15 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
     end
   end
 
+  context "to_a" do
+    should "include persisted and new documents" do
+      project = Project.create
+      3.times { project.statuses.create(:name => 'Foo!') }
+      2.times { project.statuses.build(:name => 'Foo!') }
+      project.statuses.to_a.size.should == 5
+    end
+  end
+
   context "to_json" do
     should "work on association" do
       project = Project.create
