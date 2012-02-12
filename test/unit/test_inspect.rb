@@ -23,5 +23,25 @@ class InspectTest < Test::Unit::TestCase
     should "include class name" do
       @doc.inspect.should =~ /^#<User/
     end
+    
+    should "include embedded documents" do
+      klass = Doc()
+      pets = EDoc()
+
+      klass.many :pets, :class => pets
+
+      doc = klass.new(:pets => [{:name => "Kitten"}])
+      doc.inspect.should =~ /_id:.*, pets: \[.*_id.*, name: "Kitten".*\]/
+    end
+    
+    should "include embedded document" do
+      klass = Doc()
+      pet = EDoc()
+
+      klass.one :pet, :class => pet
+
+      doc = klass.new(:pet => {:name => "Kitten"})
+      doc.inspect.should =~ /_id:.*, pet: .*_id.*, name: "Kitten".*/
+    end
   end
 end
