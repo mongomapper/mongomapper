@@ -56,6 +56,16 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.connect('development')
     end
 
+    should "work with sinatra environment symbol" do
+      MongoMapper.config = {
+        'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'}
+      }
+      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, {})
+      MongoMapper.expects(:database=).with('test')
+      Mongo::DB.any_instance.expects(:authenticate).never
+      MongoMapper.connect(:development)
+    end
+
     should "work with options" do
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'}
