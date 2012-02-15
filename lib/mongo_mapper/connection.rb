@@ -44,7 +44,7 @@ module MongoMapper
 
     # @api private
     def config_for_environment(environment)
-      env = config[environment] || {}
+      env = config[environment.to_s] || {}
       return env if env['uri'].blank?
 
       uri = URI.parse(env['uri'])
