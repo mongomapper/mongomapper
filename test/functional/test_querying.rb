@@ -682,9 +682,23 @@ class QueryingTesting < Test::Unit::TestCase
       @doc = @document.create(:first_name => 'John', :age => '27')
     end
 
-    should "update the attribute" do
+    should "accept symbols as keys" do
       @doc.update_attribute(:first_name, 'Chris').should be_true
       @doc.reload.first_name.should == 'Chris'
+    end
+
+    should "update the attribute" do
+      @doc.update_attribute('first_name', 'Chris').should be_true
+      @doc.reload.first_name.should == 'Chris'
+    end
+
+    should "update the attribute without invoking validations" do
+      @document.key :name, String, :required => true
+
+      @doc.expects(:valid?).never
+      @doc.update_attribute('name', '').should be_true
+      @doc.reload.name.should == ''
+      @document.count.should == 1
     end
   end
 

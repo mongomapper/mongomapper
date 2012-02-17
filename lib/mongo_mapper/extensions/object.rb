@@ -2,6 +2,8 @@
 module MongoMapper
   module Extensions
     module Object
+      extend ActiveSupport::Concern
+
       module ClassMethods
         def to_mongo(value)
           value
@@ -12,16 +14,13 @@ module MongoMapper
         end
       end
 
-      module InstanceMethods
-        def to_mongo
-          self.class.to_mongo(self)
-        end
+      def to_mongo
+        self.class.to_mongo(self)
       end
     end
   end
 end
 
 class Object
-  extend MongoMapper::Extensions::Object::ClassMethods
-  include MongoMapper::Extensions::Object::InstanceMethods
+  include MongoMapper::Extensions::Object
 end

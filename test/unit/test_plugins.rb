@@ -19,10 +19,8 @@ class PluginsTest < Test::Unit::TestCase
         end
       end
 
-      module InstanceMethods
-        def instance_foo
-          'instance_foo'
-        end
+      def instance_foo
+        'instance_foo'
       end
     end
 

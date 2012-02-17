@@ -74,6 +74,11 @@ class ProtectedTest < Test::Unit::TestCase
       doc.name.should == 'John'
     end
 
+    should "ignore protected attribute on #update_attribute" do
+      @doc.update_attribute('admin', true)
+      @doc.admin.should be_true
+    end
+
     should "ignore protected attribute on #update_attributes" do
       @doc.update_attributes(:name => 'Ren Hoek', :admin => true)
       @doc.name.should == 'Ren Hoek'
@@ -173,6 +178,11 @@ class ProtectedTest < Test::Unit::TestCase
 
     should "assign protected attribute through accessor" do
       @edoc.admin = true
+      @edoc.admin.should be_true
+    end
+
+    should "not ignore protected attribute on #update_attribute" do
+      @edoc.update_attribute('admin', true)
       @edoc.admin.should be_true
     end
 

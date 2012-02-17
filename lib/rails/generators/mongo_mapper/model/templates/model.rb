@@ -1,3 +1,4 @@
+<% module_namespacing do -%>
 class <%= class_name %>
   include MongoMapper::Document
 
@@ -9,3 +10,4 @@ class <%= class_name %>
 <% end -%>
 
 end
+<% end -%>

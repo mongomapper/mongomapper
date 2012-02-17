@@ -245,3 +245,17 @@ end
 class AltUser
   include MongoMapper::Document
 end
+
+class Human
+  include MongoMapper::EmbeddedDocument
+
+  key :name, String
+  embedded_in :post
+end
+
+class Robot
+  include MongoMapper::EmbeddedDocument
+
+  key :serial_number, String
+  embedded_in :post
+end

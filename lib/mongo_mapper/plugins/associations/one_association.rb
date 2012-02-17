@@ -10,7 +10,7 @@ module MongoMapper
         def proxy_class
           @proxy_class ||=
             if klass.embeddable?
-              OneEmbeddedProxy
+              polymorphic? ? OneEmbeddedPolymorphicProxy : OneEmbeddedProxy
             elsif as?
               OneAsProxy
             else

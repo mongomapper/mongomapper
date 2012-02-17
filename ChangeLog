@@ -1,0 +1,27 @@
+0.11.0 - 2012-01-26
+
+  Enhancements:
+
+    * Adds support for has_one polymorphic embedded associations
+    * Adds namespacing to model generator
+    * Adds :context option to validates_associated
+
+        many :things
+        validates_associated :things, :context => :custom_context
+
+    * Adds ActiveRecord-compatible association reflection
+    * Adds support for setting mongo connection options in mongo.yml
+
+        production:
+          uri: <%= ENV['MONGOHQ_URL'] %>
+          options:
+            safe: true
+
+    * Adds #timestamps! to embedded documents
+
+  Bug Fixes
+
+    * #update_attribute now ignores attr_accessible and attr_protected
+    * Fix deprecation warnings in Rails 3.2
+
+  https://github.com/jnunemaker/mongomapper/compare/v0.10.1...v0.11.0

@@ -44,7 +44,7 @@ module MongoMapper
 
     # @api private
     def config_for_environment(environment)
-      env = config[environment] || {}
+      env = config[environment.to_s] || {}
       return env if env['uri'].blank?
 
       uri = URI.parse(env['uri'])
@@ -61,6 +61,10 @@ module MongoMapper
     def connect(environment, options={})
       raise 'Set config before connecting. MongoMapper.config = {...}' if config.blank?
       env = config_for_environment(environment)
+
+      if env['options'].is_a? Hash
+        options = env['options'].symbolize_keys.merge(options)
+      end
 
       MongoMapper.connection = if env['hosts']
         Mongo::ReplSetConnection.new( *env['hosts'].push(options) )

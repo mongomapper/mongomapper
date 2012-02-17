@@ -8,10 +8,6 @@ module MongoMapper
           @class_name ||= options[:class_name] || name.to_s.singularize.camelize
         end
 
-        def type_key_name
-          "_type"
-        end
-
         # hate this, need to revisit
         def proxy_class
           @proxy_class ||= if klass.embeddable?
