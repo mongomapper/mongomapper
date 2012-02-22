@@ -21,13 +21,6 @@ class OneAssociationTest < Test::Unit::TestCase
       base.embeddable?.should be_false
     end
   end
-  
-  context "macro" do
-    should "be :has_one" do
-      base = OneAssociation.new(:media)
-      base.macro.should eql(:has_one)
-    end
-  end
 
   context "proxy_class" do
     should "be OneProxy for one" do

@@ -20,13 +20,6 @@ class ManyAssociationTest < Test::Unit::TestCase
       ManyAssociation.new(:foos).type_key_name.should == '_type'
     end
   end
-  
-  context "macro" do
-    should "be :has_many" do
-      base = ManyAssociation.new(:medias)
-      base.macro.should eql(:has_many)
-    end
-  end
 
   context "embeddable?" do
     should "be true if class is embeddable" do

@@ -17,10 +17,6 @@ module MongoMapper
               OneProxy
             end
         end
-        
-        def macro
-          :has_one
-        end
 
         def setup(model)
           super

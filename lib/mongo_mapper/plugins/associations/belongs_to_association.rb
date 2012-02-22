@@ -10,10 +10,6 @@ module MongoMapper
         def embeddable?
           false
         end
-        
-        def macro
-          :belongs_to
-        end
 
         def proxy_class
           @proxy_class ||= polymorphic? ? BelongsToPolymorphicProxy : BelongsToProxy

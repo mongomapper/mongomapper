@@ -24,10 +24,6 @@ module MongoMapper
             end
           end
         end
-        
-        def macro
-          :has_many
-        end
 
         def setup(model)
           model.associations_module.module_eval <<-end_eval
