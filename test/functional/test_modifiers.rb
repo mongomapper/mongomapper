@@ -325,7 +325,7 @@ class ModifierTest < Test::Unit::TestCase
     end
   end
 
-  context "InstanceMethods" do
+  context "instance methods" do
     should "be able to unset with keys" do
       page = @page_class.create(:title => 'Foo', :tags => %w(foo))
       page.unset(:title, :tags)
@@ -368,7 +368,7 @@ class ModifierTest < Test::Unit::TestCase
       page.reload
       page.tags.should == %w(foo)
     end
-    
+
     should "be able to push_all with modifier hashes" do
       page = @page_class.create
       page.push_all(:tags => %w(foo bar))
@@ -384,7 +384,7 @@ class ModifierTest < Test::Unit::TestCase
       page.reload
       page.tags.should == %w(bar)
     end
-    
+
     should "be able to pull_all with criteria and modifier hashes" do
       page = @page_class.create(:tags => %w(foo bar baz))
       page.pull_all(:tags => %w(foo bar))
@@ -398,7 +398,7 @@ class ModifierTest < Test::Unit::TestCase
       page2 = @page_class.create
 
       page.add_to_set(:tags => 'foo')
-      page.add_to_set(:tags => 'foo')
+      page2.add_to_set(:tags => 'foo')
 
       page.reload
       page.tags.should == %w(foo)
@@ -412,7 +412,7 @@ class ModifierTest < Test::Unit::TestCase
       page2 = @page_class.create
 
       page.push_uniq(:tags => 'foo')
-      page.push_uniq(:tags => 'foo')
+      page2.push_uniq(:tags => 'foo')
 
       page.reload
       page.tags.should == %w(foo)

@@ -56,35 +56,33 @@ module MongoMapper
           end
       end
 
-      module InstanceMethods
-        def associations
-          self.class.associations
+      def associations
+        self.class.associations
+      end
+
+      def embedded_associations
+        associations.values.select { |assoc| assoc.embeddable? }
+      end
+
+      def build_proxy(association)
+        proxy = association.proxy_class.new(self, association)
+        self.instance_variable_set(association.ivar, proxy)
+
+        proxy
+      end
+
+      def get_proxy(association)
+        unless proxy = self.instance_variable_get(association.ivar)
+          proxy = build_proxy(association)
         end
+        proxy
+      end
 
-        def embedded_associations
-          associations.values.select { |assoc| assoc.embeddable? }
-        end
-
-        def build_proxy(association)
-          proxy = association.proxy_class.new(self, association)
-          self.instance_variable_set(association.ivar, proxy)
-
-          proxy
-        end
-
-        def get_proxy(association)
-          unless proxy = self.instance_variable_get(association.ivar)
-            proxy = build_proxy(association)
-          end
-          proxy
-        end
-
-        def save_to_collection(options={})
-          super if defined?(super)
-          associations.each do |association_name, association|
-            proxy = get_proxy(association)
-            proxy.save_to_collection(options) if proxy.proxy_respond_to?(:save_to_collection) && association.autosave?
-          end
+      def save_to_collection(options={})
+        super if defined?(super)
+        associations.each do |association_name, association|
+          proxy = get_proxy(association)
+          proxy.save_to_collection(options) if proxy.proxy_respond_to?(:save_to_collection) && association.autosave?
         end
       end
     end

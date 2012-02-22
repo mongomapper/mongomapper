@@ -19,6 +19,7 @@ module MongoMapper
     include Plugins::Rails
     include Plugins::Sci
     include Plugins::Serialization
+    include Plugins::Timestamps
     include Plugins::Validations
     include Plugins::EmbeddedCallbacks
 

@@ -108,22 +108,20 @@ module MongoMapper
           end
       end
 
-      module InstanceMethods
-        def identity_map
-          self.class.identity_map
-        end
+      def identity_map
+        self.class.identity_map
+      end
 
-        def save(*args)
-          if result = super
-            identity_map[_id] = self if self.class.identity_map_on?
-          end
-          result
+      def save(*args)
+        if result = super
+          identity_map[_id] = self if self.class.identity_map_on?
         end
+        result
+      end
 
-        def delete
-          identity_map.delete(_id) if self.class.identity_map_on?
-          super
-        end
+      def delete
+        identity_map.delete(_id) if self.class.identity_map_on?
+        super
       end
     end
   end
