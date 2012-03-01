@@ -33,6 +33,10 @@ module MongoMapper
         def save_to_collection(options={})
           @target.save(options) if @target
         end
+        
+        def touch
+          @target.touch
+        end
 
         protected
           def find_target

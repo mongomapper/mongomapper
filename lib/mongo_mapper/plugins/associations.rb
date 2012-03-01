@@ -83,6 +83,7 @@ module MongoMapper
         associations.each do |association_name, association|
           proxy = get_proxy(association)
           proxy.save_to_collection(options) if proxy.proxy_respond_to?(:save_to_collection) && association.autosave?
+          proxy.touch if proxy.present? && proxy.proxy_respond_to?(:touch) && association.touch?
         end
       end
     end
