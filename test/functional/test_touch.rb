@@ -30,16 +30,16 @@ class TouchTest < Test::Unit::TestCase
         end
 
         @post_class.many :comments, :class => @comment_class
-        @comment_class.belongs_to :post, :class => @post_class
       end
 
       should 'not be true by default' do
+        @comment_class.belongs_to :post, :class => @post_class
         @comment_class.associations[:post].touch?.should_not be_true
       end
 
       context 'touch the parent when true' do
         setup do
-          @comment_class.associations[:post].options[:touch] = true
+          @comment_class.belongs_to :post, :class => @post_class, :touch => true
           @post = @post_class.create(:title => 'Hello, world!')
           @comment = @post.comments.build
         end
