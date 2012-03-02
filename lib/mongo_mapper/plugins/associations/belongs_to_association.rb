@@ -34,7 +34,11 @@ module MongoMapper
             record = send(name)
 
             unless record.nil?
+              if touch == true
                 record.touch
+              else
+                record.touch(touch)
+              end
             end
           end
 

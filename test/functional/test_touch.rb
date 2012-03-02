@@ -22,7 +22,10 @@ class TouchTest < Test::Unit::TestCase
 
     context "association" do
       setup do
-        @post_class = Doc("Post") { timestamps! }
+        @post_class = Doc("Post") do
+          key :touched_at, DateTime
+          timestamps!
+        end
         @comment_class = Doc("Comment") do
           key :post_id, ObjectId
           key :text, String
@@ -69,6 +72,18 @@ class TouchTest < Test::Unit::TestCase
             @comment.touch
           end
           @post.reload.updated_at.should_not == old_updated_at
+        end
+      end
+
+      context "when set to a symbol that is a key of parent" do
+        should "set that key on touch events" do
+          @comment_class.belongs_to :post, :class => @post_class, :touch => :touched_at
+          post = @post_class.create(:title => 'Hello, world!')
+          post.touched_at.should be_nil
+
+          comment = post.comments.build
+          comment.save
+          post.reload.touched_at.should_not be_nil
         end
       end
 
