@@ -64,14 +64,20 @@ module MongoMapper
 
         private
           def modifier_update(modifier, args)
-            criteria, updates = criteria_and_keys_from_args(args)
-            collection.update(criteria, {modifier => updates}, :multi => true)
+            criteria, updates, options = criteria_and_keys_from_args(args)
+            if options[:upsert].nil? && options[:safe].nil?
+              collection.update(criteria, {modifier => updates}, :multi => true)
+            else
+              collection.update(criteria, {modifier => updates}, options.merge(:multi => true))
+            end    
           end
 
           def criteria_and_keys_from_args(args)
-            keys     = args.pop
+            popped_args = args.pop
+            options  = { :upsert => popped_args[:upsert], :safe => popped_args[:safe] }.reject{|k,v| v.nil?}
+            keys     = popped_args.reject{|k,v| [:upsert, :safe, :multi].include?(k)}
             criteria = args[0].is_a?(Hash) ? args[0] : {:id => args}
-            [criteria_hash(criteria).to_hash, keys]
+            [criteria_hash(criteria).to_hash, keys, options]
           end
       end
 

@@ -323,6 +323,31 @@ class ModifierTest < Test::Unit::TestCase
         @page.tags.should == %w(bar)
       end
     end
+    
+    context "additional options (upsert & safe)" do
+      should "be able to pass upsert option" do
+        new_key_value = DateTime.now.to_s
+        @page_class.increment({:title => new_key_value}, :day_count => 1, :upsert => true)
+        @page_class.count(:title => new_key_value).should == 1
+        @page_class.first(:title => new_key_value).day_count.should == 1
+      end
+      
+      should "be able to pass safe option" do
+        @page_class.create(:title => "Better Be Safe than Sorry")
+        
+        # We are trying to increment a key of type string here which should fail
+        assert_raises(Mongo::OperationFailure) do
+          @page_class.increment({:title => "Better Be Safe than Sorry"}, :title => 1, :safe => true)
+        end
+      end
+      
+      should "be able to pass both safe and upsert options" do
+        new_key_value = DateTime.now.to_s
+        @page_class.increment({:title => new_key_value}, :day_count => 1, :upsert => true, :safe => true)
+        @page_class.count(:title => new_key_value).should == 1
+        @page_class.first(:title => new_key_value).day_count.should == 1
+      end
+    end
   end
 
   context "instance methods" do
@@ -428,5 +453,31 @@ class ModifierTest < Test::Unit::TestCase
       page.reload
       page.tags.should == %w(foo)
     end
+    
+    should "be able to pass upsert option" do
+      page = @page_class.create(:title => "Upsert Page")
+      page.increment(:new_count => 1, :upsert => true)
+      
+      page.reload
+      page.new_count.should == 1
+    end
+    
+    should "be able to pass safe option" do
+      page = @page_class.create(:title => "Safe Page")
+      
+      # We are trying to increment a key of type string here which should fail
+      assert_raises(Mongo::OperationFailure) do
+        page.increment(:title => 1, :safe => true)
+      end
+    end
+    
+    should "be able to pass upsert and safe options" do
+      page = @page_class.create(:title => "Upsert and Safe Page")
+      page.increment(:another_count => 1, :upsert => true, :safe => true)
+      
+      page.reload
+      page.another_count.should == 1
+    end
+    
   end
 end
