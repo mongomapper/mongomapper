@@ -22,6 +22,7 @@ module MongoMapper
     include Plugins::Timestamps
     include Plugins::Validations
     include Plugins::EmbeddedCallbacks
+    include Plugins::Touch
 
     included do
       extend Plugins

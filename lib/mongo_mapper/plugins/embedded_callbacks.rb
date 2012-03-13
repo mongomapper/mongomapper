@@ -8,6 +8,7 @@ module MongoMapper
         extend  ::ActiveModel::Callbacks
 
         define_model_callbacks :save, :create, :update, :destroy, :only => [:before, :after]
+        define_model_callbacks :touch, :only => [:after]
       end
 
       def run_callbacks(callback, *args, &block)
