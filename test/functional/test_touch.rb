@@ -20,6 +20,21 @@ class TouchTest < Test::Unit::TestCase
       end
     end
 
+    context "embedded document" do
+      should "update the updated_at timestamp" do
+        emdoc = Doc { timestamps! }.create
+
+        old_updated_at = emdoc.updated_at
+
+        Timecop.freeze(Time.now + 1.day) do
+          emdoc.touch
+        end
+
+        emdoc.reload
+        emdoc.updated_at.should_not == old_updated_at
+      end
+    end
+
     context "association" do
       setup do
         @post_class = Doc("Post") do
