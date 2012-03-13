@@ -22,16 +22,25 @@ class TouchTest < Test::Unit::TestCase
 
     context "embedded document" do
       should "update the updated_at timestamp" do
-        emdoc = Doc { timestamps! }.create
+        Doc = Doc("Document") { timestamps!}
+        Emdoc = EDoc("EmbeddedDocument") { timestamps! }
+        Doc.has_many :emdocs, :class => Emdoc
+
+        doc = Doc.create
+        emdoc = Emdoc.new
+        doc.emdocs << emdoc
+        doc.save
 
         old_updated_at = emdoc.updated_at
+        document_old_updated_at = doc.updated_at
 
         Timecop.freeze(Time.now + 1.day) do
           emdoc.touch
         end
 
-        emdoc.reload
+        doc.reload
         emdoc.updated_at.should_not == old_updated_at
+        doc.updated_at.should_not == document_old_updated_at
       end
     end
 
