@@ -91,40 +91,40 @@ module MongoMapper
         self.class.unset(id, *keys)
       end
 
-      def increment(hash,options=nil)
+      def increment(hash, options=nil)
         self.class.increment(id, hash, options)
       end
 
-      def decrement(hash,options=nil)
+      def decrement(hash, options=nil)
         self.class.decrement(id, hash, options)
       end
 
-      def set(hash,options=nil)
+      def set(hash, options=nil)
         self.class.set(id, hash, options)
       end
 
-      def push(hash,options=nil)
+      def push(hash, options=nil)
         self.class.push(id, hash, options)
       end
 
-      def push_all(hash,options=nil)
+      def push_all(hash, options=nil)
         self.class.push_all(id, hash, options)
       end
 
-      def pull(hash,options=nil)
+      def pull(hash, options=nil)
         self.class.pull(id, hash, options)
       end
 
-      def pull_all(hash,options=nil)
+      def pull_all(hash, options=nil)
         self.class.pull_all(id, hash, options)
       end
 
-      def add_to_set(hash,options=nil)
+      def add_to_set(hash, options=nil)
         self.class.push_uniq(id, hash, options)
       end
       alias push_uniq add_to_set
 
-      def pop(hash,options=nil)
+      def pop(hash, options=nil)
         self.class.pop(id, hash, options)
       end
     end
