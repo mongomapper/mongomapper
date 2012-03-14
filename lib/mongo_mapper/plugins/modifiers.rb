@@ -10,14 +10,14 @@ module MongoMapper
         end
 
         def decrement(*args)
-          criteria, keys = criteria_and_keys_from_args(args)
+          criteria, keys, options = criteria_and_keys_from_args(args)
           values, to_decrement = keys.values, {}
           keys.keys.each_with_index { |k, i| to_decrement[k] = -values[i].abs }
           collection.update(criteria, {'$inc' => to_decrement}, :multi => true)
         end
 
         def set(*args)
-          criteria, updates = criteria_and_keys_from_args(args)
+          criteria, updates, options = criteria_and_keys_from_args(args)
           updates.each do |key, value|
             updates[key] = keys[key.to_s].set(value) if key?(key)
           end
@@ -73,17 +73,23 @@ module MongoMapper
           end
 
           def criteria_and_keys_from_args(args)
-            popped_args = args.pop
-            if popped_args.nil? || (popped_args[:upsert].nil? && popped_args[:safe].nil?)
-              options = nil
-              keys = popped_args.nil? ? args.pop : popped_args
+            if args.length < 3
+              options = args[2].nil? ? nil : args[2]
+              updates = args[1].nil? ? nil : args[1]
+              criteria = args[0].is_a?(Hash) ? args[0] : {:id => args}
             else
-              options = { :upsert => popped_args[:upsert], :safe => popped_args[:safe] }.reject{|k,v| v.nil?}
-              keys = args.pop
-            end
-            
-            criteria = args[0].is_a?(Hash) ? args[0] : {:id => args}
-            [criteria_hash(criteria).to_hash, keys, options]
+              if args[0].is_a?(Hash)
+                criteria = args[0].nil? ? nil : args[0]
+                updates = args[1].nil? ? nil : args[1]
+                options = args[2].nil? ? nil : args[2]
+              else
+                split_args = args.partition{|a| a.is_a?(BSON::ObjectId)}
+                criteria = {:id => split_args[0]}
+                updates = split_args[1].first
+                options = split_args[1].last
+              end    
+            end    
+            [criteria_hash(criteria).to_hash, updates, options]
           end
       end
 
