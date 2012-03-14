@@ -1,5 +1,5 @@
-# require 'test_helper'
-require File.expand_path("../../test_helper", __FILE__)
+require 'test_helper'
+
 class ModifierTest < Test::Unit::TestCase
   def setup
     @page_class = Doc do
@@ -329,7 +329,7 @@ class ModifierTest < Test::Unit::TestCase
         new_key_value = DateTime.now.to_s
         @page_class.increment({:title => new_key_value}, {:day_count => 1}, {:upsert => true})
         @page_class.count(:title => new_key_value).should == 1
-        # @page_class.first(:title => new_key_value).day_count.should == 1
+        @page_class.first(:title => new_key_value).day_count.should == 1
       end
       
       should "be able to pass safe option" do
