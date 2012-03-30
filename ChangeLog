@@ -16,6 +16,8 @@
     * Ensure milliseconds are preserved with time values [#308]
     * Allow MongoMapper.setup to accept a symbol for the environment name
 
+  https://github.com/jnunemaker/mongomapper/compare/v0.11.0...v0.11.1
+
 0.11.0 - 2012-01-26
 
   Enhancements:
