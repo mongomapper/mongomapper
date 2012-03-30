@@ -8,8 +8,7 @@ module MongoMapper
         else
           time_class = ::Time.try(:zone).present? ? ::Time.zone : ::Time
           time = value.is_a?(::Time) ? value : time_class.parse(value.to_s)
-          # strip milliseconds as Ruby does micro and bson does milli and rounding rounded wrong
-          at(time.to_i).utc if time
+          at(time.to_f).utc if time # ensure milliseconds are preserved with to_f (issue #308)
         end
       end
 

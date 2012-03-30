@@ -47,16 +47,16 @@ class TimestampsTest < Test::Unit::TestCase
 
     should "set updated_at on document update but leave created_at alone" do
       doc = @klass.create(:first_name => 'John', :age => 27)
-      old_created_at = doc.created_at
-      old_updated_at = doc.updated_at
+      old_created_at = doc.created_at.to_f
 
-      Timecop.freeze(Time.now + 5.seconds) do
+      new_updated_at = Time.now + 5.seconds
+      Timecop.freeze(new_updated_at) do
         @klass.update(doc._id, { :first_name => 'Johnny' })
       end
 
       doc = doc.reload
-      doc.created_at.should == old_created_at
-      doc.updated_at.should_not == old_updated_at
+      doc.created_at.to_f.should be_close(old_created_at, 0.001)
+      doc.updated_at.to_f.should be_close(new_updated_at.to_f, 0.001)
     end
   end
 end

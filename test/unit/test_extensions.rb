@@ -282,7 +282,7 @@ class SupportTest < Test::Unit::TestCase
     end
 
     should "be time to milliseconds if string" do
-      Time.to_mongo('2000-01-01 01:01:01.123456').to_f.should == Time.local(2000, 1, 1, 1, 1, 1, 0).utc.to_f
+      Time.to_mongo('2000-01-01 01:01:01.123456').to_f.should be_close(Time.local(2000, 1, 1, 1, 1, 1, 123456).utc.to_f, 0.0000001)
     end
 
     should "be time in utc if time" do
@@ -301,18 +301,18 @@ class SupportTest < Test::Unit::TestCase
   context "Time.to_mongo with Time.zone" do
     should "be time to milliseconds if time" do
       Time.zone = 'Hawaii'
-      Time.to_mongo(Time.zone.local(2009, 8, 15, 14, 0, 0, 123456)).to_f.should == Time.utc(2009, 8, 16, 0, 0, 0, 0).to_f
+      Time.to_mongo(Time.zone.local(2009, 8, 15, 14, 0, 0, 123456)).to_f.should be_close(Time.utc(2009, 8, 16, 0, 0, 0, 123456).to_f, 0.0000001)
       Time.zone = nil
     end
 
     should "be time to milliseconds if string" do
       Time.zone = 'Hawaii'
-      Time.to_mongo('2009-08-15 14:00:00.123456').to_f.should == Time.utc(2009, 8, 16, 0, 0, 0, 0).to_f
+      Time.to_mongo('2009-08-15 14:00:00.123456').to_f.should be_close(Time.utc(2009, 8, 16, 0, 0, 0, 123456).to_f, 0.0000001)
       Time.zone = nil
     end
 
     should "not round up times at the end of the month" do
-      Time.to_mongo(Time.now.end_of_month).to_i.should == Time.now.end_of_month.utc.to_i
+      Time.to_mongo(Time.now.end_of_month).to_f.should be_close(Time.now.end_of_month.utc.to_f, 0.0000001)
     end
 
     should "be nil if blank string" do
