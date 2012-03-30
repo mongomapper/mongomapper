@@ -19,6 +19,7 @@ class DocumentTest < Test::Unit::TestCase
     should "give correct default" do
       doc = @document.new
       doc.tags.should == []
+      doc.tags_before_type_cast.should == []
     end
 
     should "work with assignment" do
@@ -66,6 +67,7 @@ class DocumentTest < Test::Unit::TestCase
     should "give correct default" do
       doc = @document.new
       doc.foo.should == {}
+      doc.foo_before_type_cast.should == {}
     end
 
     should "work with []=" do
@@ -101,7 +103,7 @@ class DocumentTest < Test::Unit::TestCase
     should "default to default" do
       doc = @document.new
       doc.window.should == WindowSize.new(600, 480)
-
+      doc.window_before_type_cast.should == WindowSize.new(600, 480)
     end
 
     should "save and load from mongo" do
@@ -121,6 +123,7 @@ class DocumentTest < Test::Unit::TestCase
     should "detect and run proc default" do
       doc = @document.new
       doc.proc_default.should == 'string'
+      doc.proc_default_before_type_cast.should == 'string'
     end
 
     should "save and load from mongo" do
