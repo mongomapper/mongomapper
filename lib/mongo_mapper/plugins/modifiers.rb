@@ -10,14 +10,14 @@ module MongoMapper
         end
 
         def decrement(*args)
-          criteria, keys = criteria_and_keys_from_args(args)
+          criteria, keys, options = criteria_and_keys_from_args(args)
           values, to_decrement = keys.values, {}
           keys.keys.each_with_index { |k, i| to_decrement[k] = -values[i].abs }
           collection.update(criteria, {'$inc' => to_decrement}, :multi => true)
         end
 
         def set(*args)
-          criteria, updates = criteria_and_keys_from_args(args)
+          criteria, updates, options = criteria_and_keys_from_args(args)
           updates.each do |key, value|
             updates[key] = keys[key.to_s].set(value) if key?(key)
           end
@@ -64,14 +64,26 @@ module MongoMapper
 
         private
           def modifier_update(modifier, args)
-            criteria, updates = criteria_and_keys_from_args(args)
-            collection.update(criteria, {modifier => updates}, :multi => true)
+            criteria, updates, options = criteria_and_keys_from_args(args)
+            if options
+              collection.update(criteria, {modifier => updates}, options.merge(:multi => true))
+            else
+              collection.update(criteria, {modifier => updates}, :multi => true)
+            end    
           end
 
           def criteria_and_keys_from_args(args)
-            keys     = args.pop
-            criteria = args[0].is_a?(Hash) ? args[0] : {:id => args}
-            [criteria_hash(criteria).to_hash, keys]
+            if args[0].is_a?(Hash)
+              criteria = args[0]
+              updates = args[1]
+              options = args[2]
+            else
+              split_args = args.partition{|a| a.is_a?(BSON::ObjectId)}
+              criteria = {:id => split_args[0]}
+              updates = split_args[1].first
+              options = split_args[1].last
+            end    
+            [criteria_hash(criteria).to_hash, updates, options]
           end
       end
 
@@ -79,41 +91,41 @@ module MongoMapper
         self.class.unset(id, *keys)
       end
 
-      def increment(hash)
-        self.class.increment(id, hash)
+      def increment(hash, options=nil)
+        self.class.increment(id, hash, options)
       end
 
-      def decrement(hash)
-        self.class.decrement(id, hash)
+      def decrement(hash, options=nil)
+        self.class.decrement(id, hash, options)
       end
 
-      def set(hash)
-        self.class.set(id, hash)
+      def set(hash, options=nil)
+        self.class.set(id, hash, options)
       end
 
-      def push(hash)
-        self.class.push(id, hash)
+      def push(hash, options=nil)
+        self.class.push(id, hash, options)
       end
 
-      def push_all(hash)
-        self.class.push_all(id, hash)
+      def push_all(hash, options=nil)
+        self.class.push_all(id, hash, options)
       end
 
-      def pull(hash)
-        self.class.pull(id, hash)
+      def pull(hash, options=nil)
+        self.class.pull(id, hash, options)
       end
 
-      def pull_all(hash)
-        self.class.pull_all(id, hash)
+      def pull_all(hash, options=nil)
+        self.class.pull_all(id, hash, options)
       end
 
-      def add_to_set(hash)
-        self.class.push_uniq(id, hash)
+      def add_to_set(hash, options=nil)
+        self.class.push_uniq(id, hash, options)
       end
       alias push_uniq add_to_set
 
-      def pop(hash)
-        self.class.pop(id, hash)
+      def pop(hash, options=nil)
+        self.class.pop(id, hash, options)
       end
     end
   end
