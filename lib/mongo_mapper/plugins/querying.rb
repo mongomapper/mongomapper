@@ -8,7 +8,10 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       module ClassMethods
+        extend Forwardable
         include PluckyMethods
+
+        def_delegators :query,  :to_a, :size, :empty?
 
         def find_each(opts={})
           super(opts).each { |doc| yield(doc) }
@@ -81,7 +84,7 @@ module MongoMapper
 
           def find_some(ids, options={})
             query = query(options).amend(:_id => ids.flatten.compact.uniq)
-            find_many(query.to_hash).compact
+            query.all
           end
 
           def find_some!(ids, options={})
@@ -93,16 +96,6 @@ module MongoMapper
             end
 
             docs
-          end
-
-          # All query methods that load documents pass through find_one or find_many
-          def find_one(options={})
-            query(options).first
-          end
-
-          # All query methods that load documents pass through find_one or find_many
-          def find_many(options)
-            query(options).all
           end
 
           def initialize_each(*docs)
