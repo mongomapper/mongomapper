@@ -103,7 +103,7 @@ class DocumentTest < Test::Unit::TestCase
     should "default to default" do
       doc = @document.new
       doc.window.should == WindowSize.new(600, 480)
-      doc.window_before_type_cast.should == WindowSize.new(600, 480)
+      doc.window_before_type_cast.should == [600,480]
     end
 
     should "save and load from mongo" do
@@ -112,6 +112,7 @@ class DocumentTest < Test::Unit::TestCase
 
       doc = doc.reload
       doc.window.should == WindowSize.new(600, 480)
+      doc.window_before_type_cast.should == [600,480]
     end
   end
 
@@ -130,6 +131,15 @@ class DocumentTest < Test::Unit::TestCase
       doc = @document.create
       doc = doc.reload
       doc.proc_default.should == 'string'
+      doc.proc_default_before_type_cast.should == 'string'
+    end
+    
+    should "run default proc on init" do
+      @document.key :time_default, String, :default => lambda { Time.now }
+      doc = @document.new
+      Timecop.freeze(Time.now + 60.seconds) do
+        doc.time_default.to_s.should_not == Time.now.to_s
+      end
     end
   end
 
