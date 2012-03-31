@@ -393,6 +393,49 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
 
       project.statuses.count(:name => 'Foo').should == 1
     end
+
+    should "ignore unpersisted documents" do
+      project = Project.create
+      project.statuses.build(:name => 'Foo')
+      project.statuses.count.should == 0
+    end
+  end
+
+  context "size" do
+    should "reflect both persisted and new documents" do
+      project = Project.create
+      3.times { project.statuses.create(:name => 'Foo!') }
+      2.times { project.statuses.build(:name => 'Foo!') }
+      project.statuses.size.should == 5
+    end
+  end
+
+  context "empty?" do
+    should "be true with no associated docs" do
+      project = Project.create
+      project.statuses.empty?.should be_true
+    end
+
+    should "be false if a document is built" do
+      project = Project.create
+      project.statuses.build(:name => 'Foo!')
+      project.statuses.empty?.should be_false
+    end
+
+    should "be false if a document is created" do
+      project = Project.create
+      project.statuses.create(:name => 'Foo!')
+      project.statuses.empty?.should be_false
+    end
+  end
+
+  context "to_a" do
+    should "include persisted and new documents" do
+      project = Project.create
+      3.times { project.statuses.create(:name => 'Foo!') }
+      2.times { project.statuses.build(:name => 'Foo!') }
+      project.statuses.to_a.size.should == 5
+    end
   end
 
   context "to_json" do
@@ -799,6 +842,25 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
       article = @paper.articles.create
       article.should respond_to(:paper_id)
       article.paper_id.should == @paper.id
+    end
+  end
+
+  context "criteria" do
+    setup do
+      News::Paper.many :articles, :class_name => 'News::Article'
+      News::Article.belongs_to :paper, :class_name => 'News::Paper'
+
+      @paper = News::Paper.create
+    end
+
+    should "should find associated instances by an object ID" do
+      article = News::Article.create(:paper_id => @paper.id)
+      @paper.articles.should include(article)
+    end
+
+    should "should find associated instances by a string" do
+      article = News::Article.create(:paper_id => @paper.id.to_s)
+      @paper.articles.should include(article)
     end
   end
 end

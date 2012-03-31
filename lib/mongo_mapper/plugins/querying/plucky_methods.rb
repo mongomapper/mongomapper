@@ -6,9 +6,15 @@ module MongoMapper
     module Querying
       module PluckyMethods
         extend Forwardable
-        def_delegators :query,  :where, :fields, :limit, :skip, :sort,
-                                :count, :last, :first, :all, :paginate,
-                                :find, :find!, :exists?, :exist?, :find_each
+        def_delegators :query,  :where, :filter,
+                                :fields, :ignore, :only,
+                                :limit, :paginate, :per_page, :skip, :offset,
+                                :sort, :order, :reverse,
+                                :count,
+                                :distinct,
+                                :last, :first, :find_one, :all, :find_each,
+                                :find, :find!,
+                                :exists?, :exist?
       end
     end
   end
