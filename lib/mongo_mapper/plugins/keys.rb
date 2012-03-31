@@ -294,7 +294,7 @@ module MongoMapper
         end
 
         def read_key_before_type_cast(name)
-          instance_variable_get(:"@#{name}_before_type_cast") || keys[name.to_s].get(nil)
+          instance_variable_get(:"@#{name}_before_type_cast")
         end
 
         def write_key(name, value)
