@@ -245,6 +245,19 @@ class ValidationsTest < Test::Unit::TestCase
           doc.should_not have_error_on(:action)
         end
 
+        should "work with :required shortcut on Boolean type" do
+          @document.key :flag, Boolean, :required => true
+
+          doc = @document.new
+          doc.should have_error_on(:flag, 'is not included in the list')
+
+          doc.flag = true
+          doc.should_not have_error_on(:action)
+
+          doc.flag = false
+          doc.should_not have_error_on(:action)
+        end
+
         should "not have error if allow nil is true and value is nil" do
           @document.key :action, String
           @document.validates_inclusion_of :action, :in => %w(kick run), :allow_nil => true

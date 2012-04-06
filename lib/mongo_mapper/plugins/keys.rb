@@ -121,7 +121,11 @@ module MongoMapper
             attribute = key.name.to_sym
 
             if key.options[:required]
-              validates_presence_of(attribute)
+              if key.type == Boolean
+                validates_inclusion_of attribute, :in => [true, false]
+              else
+                validates_presence_of(attribute)
+              end
             end
 
             if key.options[:unique]
