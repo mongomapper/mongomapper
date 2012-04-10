@@ -18,6 +18,13 @@ module MongoMapper
       end
 
       hook_for :test_framework
+
+      # Rails 3.0.X compatibility
+      unless methods.include?(:module_namespacing)
+        def module_namespacing(&block)
+          yield if block
+        end
+      end
     end
   end
 end
