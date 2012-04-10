@@ -5,7 +5,7 @@ class <%= class_name %>
 <% attributes.each do |attribute| -%>
   key :<%= attribute.name %>, <%= attribute.type.to_s.camelcase %>
 <% end -%>
-<% if options[:timestamps] %>
+<% if options[:timestamps] -%>
   timestamps!
 <% end -%>
 
