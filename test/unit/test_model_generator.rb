@@ -1,13 +1,5 @@
-require 'rails/generators'
-require 'rails/generators/mongo_mapper/model/model_generator'
-
 class ModelGeneratorTest < Rails::Generators::TestCase
-  tests MongoMapper::Generators::ModelGenerator
-
-  destination File.expand_path('../tmp', File.dirname(__FILE__))
-
-  setup :prepare_destination
-  teardown :cleanup_destination_root
+  include TestGeneratorsHelper
 
   test 'help shows MongoMapper options' do
     content = run_generator ['--help']
@@ -35,10 +27,9 @@ class ModelGeneratorTest < Rails::Generators::TestCase
     assert_file 'app/models/color.rb', /timestamps/
   end
 
-  protected
-
-    def cleanup_destination_root
-      rm_rf(destination_root)
-    end
+  test 'model are properly created with parent option' do
+    run_generator ['Green', '--parent', 'Color']
+    assert_file 'app/models/green.rb', /class Green < Color/
+  end
 
 end
