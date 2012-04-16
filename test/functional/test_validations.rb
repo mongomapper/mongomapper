@@ -33,6 +33,15 @@ class ValidationsTest < Test::Unit::TestCase
       doc = @document.new
       lambda { doc.save! }.should raise_error(MongoMapper::DocumentNotValid)
     end
+
+    should "set document on exception" do
+      doc = @document.new
+      begin
+        doc.save!
+      rescue MongoMapper::DocumentNotValid => e
+        e.document.should == doc
+      end
+    end
   end
 
   context "Creating a document that is invalid (destructive)" do
