@@ -6,7 +6,7 @@ require 'mongo_mapper'
 require 'fileutils'
 require 'ostruct'
 
-Bundler.require(:development)
+Bundler.require(:default, :test)
 
 class Test::Unit::TestCase
   def Doc(name='Class', &block)
