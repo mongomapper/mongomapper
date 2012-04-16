@@ -2,6 +2,7 @@ source :rubygems
 gemspec
 
 gem 'rake'
+gem 'bson', '~> 1.5'
 gem 'bson_ext', '~> 1.5'
 gem 'SystemTimer',  :platform => :mri_18
 
