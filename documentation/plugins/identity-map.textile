@@ -47,7 +47,7 @@ end
 To turn on the plugin for all your models, declare the plugin on Document.
 
 {% highlight ruby %}
-MongoMapper::Document.plugin(MongoMaper::Plugins::IdentityMap)
+MongoMapper::Document.plugin(MongoMapper::Plugins::IdentityMap)
 {% endhighlight %}
 
 h2. References
