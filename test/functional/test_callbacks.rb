@@ -106,7 +106,7 @@ class CallbacksTest < Test::Unit::TestCase
       @child_class       = EDoc { include CallbacksSupport }
       @grand_child_class = EDoc { include CallbacksSupport }
 
-      @root_class.many :children, :class => @child_class
+      @root_class.many  :children, :class => @child_class
       @child_class.many :children, :class => @grand_child_class
     end
 
@@ -156,6 +156,52 @@ class CallbacksTest < Test::Unit::TestCase
     end
   end
 
+  context "Turning embedded callbacks off" do
+    setup do
+      @root_class        = Doc  { include CallbacksSupport; embedded_callbacks_off }
+      @child_class       = EDoc { include CallbacksSupport; embedded_callbacks_off }
+      @grand_child_class = EDoc { include CallbacksSupport; embedded_callbacks_off }
+
+      @root_class.many  :children, :class => @child_class
+      @child_class.many :children, :class => @grand_child_class
+
+      @root_class.many  :children, :class => @child_class
+      @child_class.many :children, :class => @grand_child_class
+    end
+
+    should "not run create callbacks" do
+      grand = @grand_child_class.new(:name => 'Grand Child')
+      child = @child_class.new(:name => 'Child', :children => [grand])
+      root  = @root_class.create(:name => 'Parent', :children => [child])
+
+      root.children.first.history.should == []
+      root.children.first.children.first.history.should == []
+    end
+
+    should "not run update callbacks" do
+      grand = @grand_child_class.new(:name => 'Grand Child')
+      child = @child_class.new(:name => 'Child', :children => [grand])
+      root  = @root_class.create(:name => 'Parent', :children => [child])
+      root.clear_history
+      root.update_attributes(:name => 'Updated Parent')
+
+      root.children.first.history.should == []
+      root.children.first.children.first.history.should == []
+    end
+
+    should "not run destroy callbacks" do
+      grand = @grand_child_class.new(:name => 'Grand Child')
+      child = @child_class.new(:name => 'Child', :children => [grand])
+      root  = @root_class.create(:name => 'Parent', :children => [child])
+      root.destroy
+      child = root.children.first
+      child.history.should == []
+
+      grand = root.children.first.children.first
+      grand.history.should == []
+    end
+  end
+
   context "Running validation callbacks with conditional execution" do
     setup do
       @document = Doc do
@@ -163,6 +209,7 @@ class CallbacksTest < Test::Unit::TestCase
         key :message, String
 
         before_validation :set_message, :on => 'create'
+
         def set_message
           self['message'] = 'Hi!'
         end
