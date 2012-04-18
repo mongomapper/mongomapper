@@ -49,6 +49,46 @@ class IdentityMapTest < Test::Unit::TestCase
       MongoMapper::Plugins::IdentityMap.clear
     end
 
+    context "Threads" do
+      setup do
+        @john    = @person_class.create(:name => 'John')
+        @post    = @post_class.create(:title => 'IM 4eva')
+        @pradish = @person_class.new(:name => 'Pradish')
+      end
+
+      should "have separate identity map for each thread" do
+        assert_in_map(@john, @post)
+
+        Thread.new do
+          assert_not_in_map(@john, @post)
+          @pradish.save
+          assert_in_map(@pradish)
+        end.join
+
+        assert_not_in_map(@pradish)
+      end
+
+      should "only clear maps for current thread" do
+        Thread.new do
+          @john.save
+          @post.save
+          assert_in_map(@john, @post)
+          MongoMapper::Plugins::IdentityMap.clear
+          assert_not_in_map(@john, @post)
+        end.join
+
+        assert_in_map(@john, @post)
+      end
+
+      should "fire queries when expected to" do
+        Thread.new do
+          @person_class.find(@john.id)
+          expect_no_queries
+          @person_class.find(@john.id)
+        end.join
+      end
+    end
+
     should "track identity mapped models" do
       MongoMapper::Plugins::IdentityMap.models.should == [@person_class, @post_class].to_set
     end
@@ -427,6 +467,21 @@ class IdentityMapTest < Test::Unit::TestCase
         root = Item.create(:title => 'Root')
         blog = root.create_blog(:title => 'Blog')
         blog.parent.should equal(root)
+      end
+
+      should "work with threads" do
+        blog = Blog.create(:title => 'Jill')
+        assert_in_map(blog)
+        Item.identity_map.should equal(Blog.identity_map)
+
+        Thread.new do
+          Item.identity_map.should equal(Blog.identity_map)
+          assert_not_in_map(blog)
+          blog.save
+          assert_in_map(blog)
+          blog = Blog.create(:title => 'Jill')
+          Item.find(blog.id).should equal(blog)
+        end.join
       end
     end
 

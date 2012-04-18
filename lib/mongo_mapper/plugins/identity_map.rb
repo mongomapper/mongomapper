@@ -20,16 +20,20 @@ module MongoMapper
 
       module ClassMethods
         def inherited(descendant)
-          descendant.identity_map = identity_map
+          descendant.identity_map_scope_key = identity_map_scope_key
           super
         end
 
         def identity_map
-          @identity_map ||= {}
+          Thread.current[identity_map_scope_key] ||= {}
         end
 
-        def identity_map=(v)
-          @identity_map = v
+        def identity_map_scope_key
+          @identity_map_scope_key || "mongo_mapper_#{name}#{object_id}_identity_map"
+        end
+
+        def identity_map_scope_key=(v)
+          @identity_map_scope_key = v
         end
 
         module IdentityMapQueryMethods
