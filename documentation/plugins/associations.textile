@@ -136,7 +136,7 @@ Polymorphism can also be provided by "Single Collection Inheritance":/documentat
 {% highlight ruby %}
 class Commentable
   include MongoMapper::Document
-  many :comments
+  many :comments, :as => :commentable
 end
 
 class Article < Commentable
