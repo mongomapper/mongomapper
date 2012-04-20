@@ -24,12 +24,16 @@ module MongoMapper
           super
         end
 
+        def repository
+          Thread.current[:mongo_mapper_identity_maps] ||= {}
+        end
+
         def identity_map
-          Thread.current[identity_map_scope_key] ||= {}
+          repository[identity_map_scope_key] ||= {}
         end
 
         def identity_map_scope_key
-          @identity_map_scope_key || "mongo_mapper_#{name}#{object_id}_identity_map"
+          @identity_map_scope_key ||= "#{name}-#{object_id}"
         end
 
         def identity_map_scope_key=(v)
