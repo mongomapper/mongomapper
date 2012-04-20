@@ -90,7 +90,7 @@ Page.push(@page.id, @page2.id, :tags => 'foo')
 
 h3(#push_all). push_all
 
-Append *several* values the array key.
+Append *several* values to the array key.
 
 {% highlight ruby %}
 @page.push_all(:tags => ['foo','bar'])
@@ -101,7 +101,7 @@ Page.push_all(@page.id, @page2.id, :tags => ['foo','bar'])
 
 h3(#add_to_set). add_to_set, push_uniq
 
-Append *one unique value* value to the array key.
+Append *one unique* value to the array key.
 
 {% highlight ruby %}
 @page.add_to_set(:tags => 'foo')
@@ -115,13 +115,13 @@ Remove *one* value from the array key.
 
 {% highlight ruby %}
 @page.pull(:tags => 'foo')
-Page.push_all({:title => 'Home'}, :tags => 'foo')
-Page.push_all(@page.id, @page2.id, :tags => 'foo')
+Page.pull({:title => 'Home'}, :tags => 'foo')
+Page.pull(@page.id, @page2.id, :tags => 'foo')
 {% endhighlight %}
 
 h3(#pull_all). pull_all
 
-Remove *several* values from array the key.
+Remove *several* values from the array key.
 
 {% highlight ruby %}
 @page.pull_all(:tags => ['foo','bar'])
@@ -139,7 +139,7 @@ Page.pop({:title => 'Home'}, :tags => 1)
 Page.pop(@page.id, @page2.id, :tags => 1)
 {% endhighlight %}
 
-Note that if you pass *-1*, it will remove the *first element* from array.
+Note that if you pass *-1*, it will remove the *first element* from the array.
 
 h2(#notes). Notes
 
