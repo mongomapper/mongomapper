@@ -5,6 +5,7 @@ gem 'rake'
 gem 'bson', '~> 1.5'
 gem 'bson_ext', '~> 1.5'
 gem 'SystemTimer',  :platform => :mri_18
+gem 'multi_json', '~> 1.2.0'
 
 group(:development) do
   gem 'ruby-debug',   :platform => :mri_18
