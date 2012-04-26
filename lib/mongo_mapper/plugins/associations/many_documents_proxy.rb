@@ -4,7 +4,8 @@ module MongoMapper
     module Associations
       class ManyDocumentsProxy < Collection
         include DynamicQuerying::ClassMethods
-        include Querying::PluckyMethods
+
+        def_delegators :query, *(Querying::Methods - [:to_a, :size, :empty?])
 
         def replace(docs)
           load_target

@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Querying
+      Methods = Plucky::Methods + [:find!]
+
       module Decorator
         include DynamicQuerying::ClassMethods
 

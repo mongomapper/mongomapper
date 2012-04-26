@@ -1,6 +1,5 @@
 # encoding: UTF-8
 require 'mongo_mapper/plugins/querying/decorator'
-require 'mongo_mapper/plugins/querying/plucky_methods'
 
 module MongoMapper
   module Plugins
@@ -9,13 +8,8 @@ module MongoMapper
 
       module ClassMethods
         extend Forwardable
-        include PluckyMethods
 
-        def_delegators :query,  :to_a, :size, :empty?
-
-        def find_each(opts={})
-          super(opts).each { |doc| yield(doc) }
-        end
+        def_delegators :query, *Querying::Methods
 
         def find_by_id(id)
           find_one(:_id => id)
