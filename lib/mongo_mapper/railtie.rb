@@ -25,7 +25,7 @@ module MongoMapper
       config_file = Rails.root.join('config/mongo.yml')
       if config_file.file?
         config = YAML.load(ERB.new(config_file.read).result)
-        MongoMapper.setup(config, Rails.env, :logger => Rails.logger)
+        MongoMapper.setup(config, Rails.env, :logger => eval(config[Rails.env]['logger']))
       end
     end
 
