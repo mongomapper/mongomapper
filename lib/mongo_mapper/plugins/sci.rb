@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Sci
+      extend ActiveSupport::Concern
+
       module ClassMethods
         def inherited(subclass)
           key :_type, String unless key?(:_type)

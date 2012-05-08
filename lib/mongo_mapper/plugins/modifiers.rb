@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Modifiers
+      extend ActiveSupport::Concern
+
       module ClassMethods
         def increment(*args)
           modifier_update('$inc', args)

@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Safe
+      extend ActiveSupport::Concern
+
       module ClassMethods
         def inherited(subclass)
           super

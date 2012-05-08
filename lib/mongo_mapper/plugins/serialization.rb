@@ -5,12 +5,12 @@ require 'active_model/serializers/xml'
 module MongoMapper
   module Plugins
     module Serialization
-      def self.configure(model)
-        model.class_eval do
-          include ::ActiveModel::Serializers::JSON
-          include ::ActiveModel::Serializers::Xml
-          self.include_root_in_json = false
-        end
+      extend ActiveSupport::Concern
+
+      included do
+        include ::ActiveModel::Serializers::JSON
+        include ::ActiveModel::Serializers::Xml
+        self.include_root_in_json = false
       end
 
       module InstanceMethods

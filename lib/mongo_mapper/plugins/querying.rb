@@ -5,6 +5,8 @@ require 'mongo_mapper/plugins/querying/plucky_methods'
 module MongoMapper
   module Plugins
     module Querying
+      extend ActiveSupport::Concern
+
       module ClassMethods
         include PluckyMethods
 

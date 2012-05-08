@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Document
+      extend ActiveSupport::Concern
+
       module ClassMethods
         def embeddable?
           false

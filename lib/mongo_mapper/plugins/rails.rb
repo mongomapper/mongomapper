@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Rails
+      extend ActiveSupport::Concern
+
       module InstanceMethods
         def to_param
           id.to_s if persisted?

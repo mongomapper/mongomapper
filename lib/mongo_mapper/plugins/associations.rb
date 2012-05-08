@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Associations
+      extend ActiveSupport::Concern
+
       module ClassMethods
         def inherited(subclass)
           subclass.associations = associations.dup

@@ -4,6 +4,8 @@ require 'mongo_mapper/plugins/dynamic_querying/dynamic_finder'
 module MongoMapper
   module Plugins
     module DynamicQuerying
+      extend ActiveSupport::Concern
+
       module ClassMethods
         def dynamic_find(finder, args)
           attributes = {}

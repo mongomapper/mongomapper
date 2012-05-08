@@ -2,11 +2,9 @@
 module MongoMapper
   module Plugins
     module Dirty
-      def self.configure(model)
-        model.class_eval do
-          include ::ActiveModel::Dirty
-        end
-      end
+      extend ActiveSupport::Concern
+
+      include ::ActiveModel::Dirty
 
       module InstanceMethods
         def initialize(*)

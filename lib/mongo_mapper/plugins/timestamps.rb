@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Timestamps
+      extend ActiveSupport::Concern
+
       module ClassMethods
         def timestamps!
           key :created_at, Time

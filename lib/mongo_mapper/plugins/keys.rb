@@ -4,8 +4,10 @@ require 'mongo_mapper/plugins/keys/key'
 module MongoMapper
   module Plugins
     module Keys
-      def self.configure(model)
-        model.key :_id, ObjectId
+      extend ActiveSupport::Concern
+
+      included do
+        key :_id, ObjectId
       end
 
       module ClassMethods

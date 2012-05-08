@@ -2,6 +2,8 @@
 module MongoMapper
   module Plugins
     module Userstamps
+      extend ActiveSupport::Concern
+
       module ClassMethods
         def userstamps!
           key :creator_id, ObjectId
