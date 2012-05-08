@@ -17,7 +17,7 @@ module MongoMapper
 
         def setup(model)
           model.key foreign_key, ObjectId unless model.key?(foreign_key)
-          model.key type_key_name, ObjectId unless model.key?(type_key_name) if polymorphic?
+          model.key type_key_name, String unless model.key?(type_key_name) if polymorphic?
           super
           add_touch_callbacks if touch?
         end
