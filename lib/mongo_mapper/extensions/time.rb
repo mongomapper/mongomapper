@@ -3,13 +3,11 @@ module MongoMapper
   module Extensions
     module Time
       def to_mongo(value)
-        if value.nil? || value == ''
-          nil
-        else
-          time_class = ::Time.try(:zone).present? ? ::Time.zone : ::Time
-          time = value.is_a?(::Time) ? value : time_class.parse(value.to_s)
-          at(time.to_f).utc if time # ensure milliseconds are preserved with to_f (issue #308)
-        end
+        time_class = ::Time.try(:zone).present? ? ::Time.zone : ::Time
+        time = value.is_a?(::Time) ? value : time_class.parse(value.to_s)
+        at(time.to_f).utc if time # ensure milliseconds are preserved with to_f (issue #308)
+      rescue
+        nil # let validation deal with anthing we couldn't parse
       end
 
       def from_mongo(value)
