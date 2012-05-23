@@ -141,6 +141,16 @@ Page.pop(@page.id, @page2.id, :tags => 1)
 
 Note that if you pass *-1*, it will remove the *first element* from the array.
 
+h2(#options). Options
+
+An options hash can be passed as the final argument. These options will be passed to the Ruby driver's "update method":http://api.mongodb.org/ruby/current/Mongo/Collection.html#update-instance_method. For example, to do an upsert:
+
+{% highlight ruby %}
+HitCount.increment({:path => "/about"}, {:count => 1}, :upsert => true)
+{% endhighlight %}
+
+Please note that MongoMapper always sets the @:multi@ option to @true@. This cannot be overridden.
+
 h2(#notes). Notes
 
 When applying a modifier operation on a variable (local or instance), make sure to reload the variable. MongoMapper does not update the state of the variable unless you explicitly tell it to like so:
