@@ -13,7 +13,9 @@ class ManyDocumentsAsProxyTest < Test::Unit::TestCase
 
   should "add type and id key to polymorphic class base" do
     PostComment.keys.keys.should include('commentable_type')
+    PostComment.keys['commentable_type'].type.should == String
     PostComment.keys.keys.should include('commentable_id')
+    PostComment.keys['commentable_id'].type.should == ObjectId
   end
 
   should "allow adding to association like it was an array" do
