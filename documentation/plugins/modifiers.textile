@@ -149,9 +149,9 @@ An options hash can be passed as the final argument. These options will be passe
 For example, even though a model's "safe":/documentation/plugins/safe.html setting will not apply to modifier operations, atomic updates can still be safe:
 
 {% highlight ruby %}
-@page.increment(:day_count => 1, :safe => true)
-Page.increment({:title => 'Home'}, :day_count => 1, :safe => true)
-Page.increment(@page.id, @page2.id, :day_count => 1, :safe => true)
+@page.increment({:day_count => 1}, :safe => true)
+Page.increment({:title => 'Home'}, {:day_count => 1}, :safe => true)
+Page.increment(@page.id, @page2.id, {:day_count => 1}, :safe => true)
 {% endhighlight %}
 
 Or, to do an upsert:
