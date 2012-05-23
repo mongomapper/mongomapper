@@ -31,6 +31,7 @@ end
 ** "pull":#pull
 ** "pull_all":#pull_all
 ** "pop":#pop
+* "Options":#options
 * "Notes":#notes
 * "Related Resources":#related_resources
 
@@ -143,13 +144,23 @@ Note that if you pass *-1*, it will remove the *first element* from the array.
 
 h2(#options). Options
 
-An options hash can be passed as the final argument. These options will be passed to the Ruby driver's "update method":http://api.mongodb.org/ruby/current/Mongo/Collection.html#update-instance_method. For example, to do an upsert:
+An options hash can be passed as the final argument. These options will be passed to the Ruby driver's "update method":http://api.mongodb.org/ruby/current/Mongo/Collection.html#update-instance_method.
+
+For example, even though a model's "safe":/documentation/plugins/safe.html setting will not apply to modifier operations, atomic updates can still be safe:
 
 {% highlight ruby %}
-HitCount.increment({:path => "/about"}, {:count => 1}, :upsert => true)
+@page.increment(:day_count => 1, :safe => true)
+Page.increment({:title => 'Home'}, :day_count => 1, :safe => true)
+Page.increment(@page.id, @page2.id, :day_count => 1, :safe => true)
 {% endhighlight %}
 
-Please note that MongoMapper always sets the @:multi@ option to @true@. This cannot be overridden.
+Or, to do an upsert:
+
+{% highlight ruby %}
+Page.increment({:title => 'Home'}, {:day_count => 1}, :upsert => true)
+{% endhighlight %}
+
+Please note that MongoMapper always sets the "@:multi@":http://www.mongodb.org/display/DOCS/Updating#Updating-update%28%29 option to @true@. This cannot be overridden.
 
 h2(#notes). Notes
 
