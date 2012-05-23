@@ -43,6 +43,33 @@ class ModifierTest < Test::Unit::TestCase
         assert_keys_removed @page, :title, :tags
         assert_keys_removed @page2, :title, :tags
       end
+
+      context "additional options (upsert & safe)" do
+        should "be able to pass upsert option" do
+          new_key_value = DateTime.now.to_s
+          @page_class.unset({:title => new_key_value, :tags => %w(foo bar)}, :tags, {:upsert => true})
+          @page_class.count(:title => new_key_value).should == 1
+          @page_class.first(:title => new_key_value).tags.should == []
+        end
+
+        should "be able to pass safe option" do
+          @page_class.create(:title => "Better Be Safe than Sorry")
+
+          Mongo::Collection.any_instance.expects(:update).with(
+            {:title => "Better Be Safe than Sorry"},
+            {'$unset' => {:tags => 1}},
+            {:safe => true, :multi => true}
+          )
+          @page_class.unset({:title => "Better Be Safe than Sorry"}, :tags, {:safe => true})
+        end
+
+        should "be able to pass both safe and upsert options" do
+          new_key_value = DateTime.now.to_s
+          @page_class.unset({:title => new_key_value, :tags => %w(foo bar)}, :tags, {:upsert => true, :safe => true})
+          @page_class.count(:title => new_key_value).should == 1
+          @page_class.first(:title => new_key_value).tags.should == []
+        end
+      end
     end
     
     context "increment" do
@@ -140,6 +167,33 @@ class ModifierTest < Test::Unit::TestCase
         @page_class.set(@page.id, :colors => %w[red green])
         @page.reload
         @page[:colors].should == %w[red green]
+      end
+
+      context "additional options (upsert & safe)" do
+        should "be able to pass upsert option" do
+          new_key_value = DateTime.now.to_s
+          @page_class.set({:title => new_key_value}, {:day_count => 1}, {:upsert => true})
+          @page_class.count(:title => new_key_value).should == 1
+          @page_class.first(:title => new_key_value).day_count.should == 1
+        end
+
+        should "be able to pass safe option" do
+          @page_class.create(:title => "Better Be Safe than Sorry")
+
+          Mongo::Collection.any_instance.expects(:update).with(
+            {:title => "Better Be Safe than Sorry"},
+            {'$set' => {:title => "I like safety."}},
+            {:safe => true, :multi => true}
+          )
+          @page_class.set({:title => "Better Be Safe than Sorry"}, {:title => "I like safety."}, {:safe => true})
+        end
+
+        should "be able to pass both safe and upsert options" do
+          new_key_value = DateTime.now.to_s
+          @page_class.set({:title => new_key_value}, {:day_count => 1}, {:upsert => true, :safe => true})
+          @page_class.count(:title => new_key_value).should == 1
+          @page_class.first(:title => new_key_value).day_count.should == 1
+        end
       end
     end
     

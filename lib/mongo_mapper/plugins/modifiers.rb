@@ -21,20 +21,22 @@ module MongoMapper
           updates.each do |key, value|
             updates[key] = keys[key.to_s].set(value) if key?(key)
           end
-          collection.update(criteria, {'$set' => updates}, :multi => true)
+          modifier_update('$set', [criteria, updates, options])
         end
 
         def unset(*args)
           if args[0].is_a?(Hash)
             criteria, keys = args.shift, args
+            options = keys.last.is_a?(Hash) ? keys.pop : {}
           else
             keys, ids = args.partition { |arg| arg.is_a?(Symbol) }
+            options = ids.last.is_a?(Hash) ? ids.pop : {}
             criteria = {:id => ids}
           end
 
-          criteria  = criteria_hash(criteria).to_hash
-          modifiers = keys.inject({}) { |hash, key| hash[key] = 1; hash }
-          collection.update(criteria, {'$unset' => modifiers}, :multi => true)
+          criteria = criteria_hash(criteria).to_hash
+          updates = keys.inject({}) { |hash, key| hash[key] = 1; hash }
+          modifier_update('$unset', [criteria, updates, options])
         end
 
         def push(*args)
@@ -87,8 +89,8 @@ module MongoMapper
           end
       end
 
-      def unset(*keys)
-        self.class.unset(id, *keys)
+      def unset(*args)
+        self.class.unset(id, *args)
       end
 
       def increment(hash, options=nil)
