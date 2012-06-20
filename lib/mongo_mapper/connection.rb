@@ -68,7 +68,13 @@ module MongoMapper
       if env['options'].is_a? Hash
         options = env['options'].symbolize_keys.merge(options)
       end
-
+      
+      if env['ssl'].blank? || env['ssl'] == false
+        options[:ssl] = false
+      else
+        options[:ssl] = true
+      end
+      
       MongoMapper.connection = if env['hosts']
         Mongo::ReplSetConnection.new( *env['hosts'].push(options) )
       else
