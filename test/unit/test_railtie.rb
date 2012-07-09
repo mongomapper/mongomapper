@@ -13,6 +13,11 @@ class TestRailtie < Test::Unit::TestCase
     initializer = mod.initializers.detect do |i|
       i.name == name
     end
+
+    if initializer.nil?
+      raise 'Initializer not found'
+    end
+
     initializer.block.arity == -1 ? initializer.run : initializer.run(FakeRails)
     # mongo_mapper.prepare_dispatcher takes a Rails app as its one arg,
     # set_clear_dependencies_hook takes no args
