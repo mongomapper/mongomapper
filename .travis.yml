@@ -1,3 +1,7 @@
+gemfile:
+  - Gemfile
+  - gemfiles/rails3_1.gemfile
+  - gemfiles/rails3_2.gemfile
 language: ruby
 rvm:
   - 1.8.7
