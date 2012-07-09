@@ -36,6 +36,22 @@ class SciTest < Test::Unit::TestCase
       DocDaughter.collection.name.should == DocParent.collection.name
     end
 
+    should "know single_collection_parent" do
+      DocParent.single_collection_parent.should be_nil
+      DocDaughter.single_collection_parent.should      == DocParent
+      DocSon.single_collection_parent.should           == DocParent
+      DocGrandSon.single_collection_parent.should      == DocSon
+      DocGrandGrandSon.single_collection_parent.should == DocGrandSon
+    end
+
+    should "know single_collection_root" do
+      DocParent.single_collection_root.should        == DocParent
+      DocDaughter.single_collection_root.should      == DocParent
+      DocSon.single_collection_root.should           == DocParent
+      DocGrandSon.single_collection_root.should      == DocParent
+      DocGrandGrandSon.single_collection_root.should == DocParent
+    end
+
     context ".single_collection_inherited?" do
       should "be false if has not inherited" do
         DocParent.should_not be_single_collection_inherited
