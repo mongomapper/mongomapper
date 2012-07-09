@@ -26,19 +26,20 @@ class IdentityMapTest < Test::Unit::TestCase
     MongoMapper::Plugins::IdentityMap.clear
   end
 
+  should "default identity map to off" do
+    MongoMapper::Plugins::IdentityMap.enabled?.should be_false
+  end
+
   context "Document" do
     setup do
+      @original_identity_map_enabled = MongoMapper::Plugins::IdentityMap.enabled
       MongoMapper::Plugins::IdentityMap.enabled = true
 
       @person_class = Doc('Person') do
-        plugin MongoMapper::Plugins::IdentityMap
-
         key :name, String
       end
 
       @post_class = Doc('Post') do
-        plugin MongoMapper::Plugins::IdentityMap
-
         key :title, String
         key :person_id, ObjectId
       end
@@ -47,6 +48,10 @@ class IdentityMapTest < Test::Unit::TestCase
       @person_class.many :posts, :class => @post_class
 
       clear_identity_map
+    end
+
+    teardown do
+      MongoMapper::Plugins::IdentityMap.enabled = @original_identity_map_enabled
     end
 
     should "be able to clear the map of all models" do
@@ -376,7 +381,6 @@ class IdentityMapTest < Test::Unit::TestCase
       setup do
         class ::Item
           include MongoMapper::Document
-          plugin MongoMapper::Plugins::IdentityMap
 
           key :title, String
           key :parent_id, ObjectId
