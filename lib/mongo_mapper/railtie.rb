@@ -33,16 +33,5 @@ module MongoMapper
     initializer "mongo_mapper.clear_identity_map" do |app|
       app.config.middleware.use 'MongoMapper::Middleware::IdentityMap'
     end
-
-    initializer "mongo_mapper.prepare_dispatcher" do |app|
-      # See http://groups.google.com/group/mongomapper/browse_thread/thread/68f62e8eda43b43a/4841dba76938290c
-      # to_prepare is called before each request in development mode and the first request in production.
-
-      ActionDispatch::Callbacks.to_prepare do
-        unless app.config.cache_classes
-          MongoMapper::Plugins::IdentityMap.models.clear
-        end
-      end
-    end
   end
 end
