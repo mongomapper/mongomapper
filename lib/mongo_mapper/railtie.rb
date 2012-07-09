@@ -28,10 +28,5 @@ module MongoMapper
         MongoMapper.setup(config, Rails.env, :logger => Rails.logger)
       end
     end
-
-    # Clear the identity map after each request
-    initializer "mongo_mapper.clear_identity_map" do |app|
-      app.config.middleware.use 'MongoMapper::Middleware::IdentityMap'
-    end
   end
 end
