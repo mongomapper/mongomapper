@@ -24,3 +24,21 @@ class User
   key :email, String
 end
 {% endhighlight %}
+
+The @safe@ option can be either a boolean or a Hash of options. For example, if you want to ensure that a highly critical write is committed to the journal on the majority of replica set members before @save@ returns, you would use:
+
+{% highlight ruby %}
+invoice = Invoice.new(:status => :paid)
+invoice.save(:safe => {:j => true, :w => 'majority'})
+{% endhighlight %}
+
+You can also set these options when you declare your model:
+
+{% highlight ruby %}
+class Invoice
+  include MongoMapper::Document
+  safe(:j => true, :w => 'majority')
+end
+{% endhighlight %}
+
+For more information about the available options, see the documentation for the "getLastError command":http://www.mongodb.org/display/DOCS/getLastError+Command.
