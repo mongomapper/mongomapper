@@ -508,6 +508,15 @@ class ModifierTest < Test::Unit::TestCase
       page.tags.should == %w(foo)
     end
     
+    
+    should "be able to use an id that isn't a BSON::ObjectID" do
+      page  = @page_class.create(:id => 'foo', :title => 'Home')
+      page.set(:title => 'Home Revised')
+    
+      page.reload
+      page.title.should == 'Home Revised'
+    end
+    
     should "be able to pass upsert option" do
       page = @page_class.create(:title => "Upsert Page")
       page.increment({:new_count => 1}, {:upsert => true})
