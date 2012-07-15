@@ -80,10 +80,9 @@ module MongoMapper
               updates = args[1]
               options = args[2]
             else
-              split_args = args.partition{|a| a.is_a?(BSON::ObjectId)}
-              criteria = {:id => split_args[0]}
-              updates = split_args[1].first
-              options = split_args[1].last
+              ids = args.take_while{ |a| !a.is_a?(Hash) }
+              criteria = {:id => ids}
+              updates, options = args.slice(ids.length, 2)
             end    
             [criteria_hash(criteria).to_hash, updates, options]
           end
