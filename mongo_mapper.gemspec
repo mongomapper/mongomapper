@@ -3,7 +3,7 @@ require File.expand_path('../lib/mongo_mapper/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name               = 'mongo_mapper'
-  s.homepage           = 'http://github.com/jnunemaker/mongomapper'
+  s.homepage           = 'http://mongomapper.com'
   s.summary            = 'A Ruby Object Mapper for Mongo'
   s.require_path       = 'lib'
   s.authors            = ['John Nunemaker']
