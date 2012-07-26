@@ -1,3 +1,6 @@
+0.11 => ?
+  * IdentityMap is now thread-safe, objects are cached per-thread
+
 0.10 => 0.11
   * #update_attribute now ignores attr_accessible and attr_protected
 
