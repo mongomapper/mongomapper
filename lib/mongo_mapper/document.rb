@@ -33,6 +33,7 @@ module MongoMapper
     include Plugins::Validations
     include Plugins::EmbeddedCallbacks
     include Plugins::Callbacks # for now callbacks needs to be after validations
+    include Plugins::IdentityMap
 
     included do
       extend Plugins

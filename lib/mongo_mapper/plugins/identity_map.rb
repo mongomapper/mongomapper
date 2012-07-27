@@ -6,30 +6,55 @@ module MongoMapper
     module IdentityMap
       extend ActiveSupport::Concern
 
-      def self.models
-        @models ||= Set.new
+      def self.enabled=(flag)
+        Thread.current[:mongo_mapper_identity_map_enabled] = flag
+      end
+
+      def self.enabled
+        Thread.current[:mongo_mapper_identity_map_enabled]
+      end
+
+      def self.enabled?
+        enabled == true
+      end
+
+      def self.repository
+        Thread.current[:mongo_mapper_identity_map] ||= {}
       end
 
       def self.clear
-        models.each { |m| m.identity_map.clear }
+        repository.clear
       end
 
-      included do
-        IdentityMap.models << self
+      def self.include?(document)
+        repository.key?(IdentityMap.key(document.class, document._id))
+      end
+
+      def self.key(model, id)
+        "#{model.single_collection_root.name}:#{id}"
+      end
+
+      def self.use
+        old, self.enabled = enabled, true
+
+        yield if block_given?
+      ensure
+        self.enabled = old
+        clear
+      end
+
+      def self.without
+        old, self.enabled = enabled, false
+
+        yield if block_given?
+      ensure
+        self.enabled = old
       end
 
       module ClassMethods
-        def inherited(descendant)
-          descendant.identity_map = identity_map
-          super
-        end
-
-        def identity_map
-          @identity_map ||= {}
-        end
-
-        def identity_map=(v)
-          @identity_map = v
+        # Private - Looks for a document in the identity map
+        def get_from_identity_map(id)
+          IdentityMap.repository[IdentityMap.key(self, id)]
         end
 
         module IdentityMapQueryMethods
@@ -43,8 +68,8 @@ module MongoMapper
           def find_one(opts={})
             query = clone.amend(opts)
 
-            if model.identity_map_on? && query.simple? && model.identity_map[query[:_id]]
-              model.identity_map[query[:_id]]
+            if IdentityMap.enabled? && query.simple? && (document = model.get_from_identity_map(query[:_id]))
+              document
             else
               super.tap do |doc|
                 model.remove_documents_from_map(doc) if query.fields?
@@ -59,69 +84,43 @@ module MongoMapper
 
         def remove_documents_from_map(*documents)
           documents.flatten.compact.each do |document|
-            identity_map.delete(document['_id'])
+            document.remove_from_identity_map
           end
         end
 
         def load(attrs)
           return nil if attrs.nil?
-          document = identity_map[attrs['_id']]
+          document = get_from_identity_map(attrs['_id'])
 
-          if document.nil? || identity_map_off?
+          if document.nil?
             document = super
-            identity_map[document._id] = document if identity_map_on?
+            document.add_to_identity_map
           end
 
           document
         end
-
-        def identity_map_status
-          defined?(@identity_map_status) ? @identity_map_status : true
-        end
-
-        def identity_map_on
-          @identity_map_status = true
-        end
-
-        def identity_map_off
-          @identity_map_status = false
-        end
-
-        def identity_map_on?
-          identity_map_status
-        end
-
-        def identity_map_off?
-          !identity_map_on?
-        end
-
-        def without_identity_map(&block)
-          identity_map_off
-          yield
-        ensure
-          identity_map_on
-        end
-
-        private
-          def selecting_fields?(options)
-            !options[:fields].nil?
-          end
-      end
-
-      def identity_map
-        self.class.identity_map
       end
 
       def save(*args)
-        if result = super
-          identity_map[_id] = self if self.class.identity_map_on?
-        end
-        result
+        super.tap { |result| add_to_identity_map if result }
       end
 
       def delete
-        identity_map.delete(_id) if self.class.identity_map_on?
-        super
+        super.tap { remove_from_identity_map }
+      end
+
+      def add_to_identity_map
+        if IdentityMap.enabled?
+          key = IdentityMap.key(self.class, _id)
+          IdentityMap.repository[key] = self
+        end
+      end
+
+      def remove_from_identity_map
+        if IdentityMap.enabled?
+          key = IdentityMap.key(self.class, _id)
+          IdentityMap.repository.delete(key)
+        end
       end
     end
   end
