@@ -116,7 +116,7 @@ class MongoMapperTest < Test::Unit::TestCase
       assert_raises(MongoMapper::InvalidScheme) { MongoMapper.connect('development') }
     end
 
-    should "create a replica set connection if config contains multiple hosts" do
+    should "create a replica set connection if config contains multiple hosts in the old format" do
       MongoMapper.config = {
         'development' => {
           'hosts' => [ ['127.0.0.1', 27017], ['localhost', 27017] ],
@@ -125,6 +125,20 @@ class MongoMapperTest < Test::Unit::TestCase
       }
 
       Mongo::ReplSetConnection.expects(:new).with( ['127.0.0.1', 27017], ['localhost', 27017], {'read_secondary' => true} )
+      MongoMapper.expects(:database=).with('test')
+      Mongo::DB.any_instance.expects(:authenticate).never
+      MongoMapper.connect('development', 'read_secondary' => true)
+    end
+
+    should "create a replica set connection if config contains multiple hosts in the new format" do
+      MongoMapper.config = {
+        'development' => {
+          'hosts' => ['127.0.0.1:27017', 'localhost:27017'],
+          'database' => 'test'
+        }
+      }
+
+      Mongo::ReplSetConnection.expects(:new).with( ['127.0.0.1:27017', 'localhost:27017'], {'read_secondary' => true} )
       MongoMapper.expects(:database=).with('test')
       Mongo::DB.any_instance.expects(:authenticate).never
       MongoMapper.connect('development', 'read_secondary' => true)
