@@ -70,7 +70,11 @@ module MongoMapper
       end
 
       MongoMapper.connection = if env['hosts']
-        Mongo::ReplSetConnection.new( *env['hosts'].push(options) )
+        if env['hosts'].first.is_a?(String)
+          Mongo::ReplSetConnection.new( env['hosts'], options )
+        else
+          Mongo::ReplSetConnection.new( *env['hosts'].push(options) )
+        end
       else
         Mongo::Connection.new(env['host'], env['port'], options)
       end
