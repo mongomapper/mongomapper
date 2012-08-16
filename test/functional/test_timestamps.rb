@@ -49,14 +49,31 @@ class TimestampsTest < Test::Unit::TestCase
       doc = @klass.create(:first_name => 'John', :age => 27)
       old_created_at = doc.created_at.to_f
 
-      new_updated_at = Time.now + 5.seconds
+      new_updated_at = Time.at(Time.now + 5.seconds).round(3)
       Timecop.freeze(new_updated_at) do
         @klass.update(doc._id, { :first_name => 'Johnny' })
       end
 
       doc = doc.reload
-      doc.created_at.to_f.should be_close(old_created_at, 0.001)
-      doc.updated_at.to_f.should be_close(new_updated_at.to_f, 0.001)
+      doc.created_at.to_f.should eql(old_created_at)
+      doc.updated_at.to_f.should eql(new_updated_at.to_f)
+    end
+
+    should "not change update_at when callbacks are disabled" do
+      doc = @klass.create(:first_name => 'John', :age => 27)
+      old_created_at = doc.created_at
+      old_updated_at = doc.updated_at
+
+      @klass.skip_callback(:save, :before, :update_timestamps )
+      new_updated_at = Time.now + 1.seconds
+      Timecop.freeze(new_updated_at) do
+        @klass.update(doc._id, { :first_name => 'Bear' })
+      end
+      @klass.set_callback(:save, :before, :update_timestamps )
+
+      doc = doc.reload
+      doc.created_at.to_f.should eql(old_created_at.to_f)
+      doc.updated_at.to_f.should eql(old_updated_at.to_f) 
     end
   end
 end

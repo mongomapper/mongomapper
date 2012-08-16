@@ -8,7 +8,7 @@ module MongoMapper
         else
           time_class = ::Time.try(:zone).present? ? ::Time.zone : ::Time
           time = value.is_a?(::Time) ? value : time_class.parse(value.to_s)
-          at(time.to_f).utc if time # ensure milliseconds are preserved with to_f (issue #308)
+          at(time.to_f).utc.round(3) if time # ensure milliseconds are preserved with to_f (issue #308)
         end
       end
 
