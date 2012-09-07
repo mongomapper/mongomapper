@@ -76,6 +76,14 @@ module MongoMapper
               end
             end
           end
+
+          def find_each(opts={}, &block)
+            query = clone.amend(opts)
+            super(opts) do |doc|
+              model.remove_documents_from_map(doc) if query.fields?
+              block.call(doc) unless block.nil?
+            end
+          end
         end
 
         def query(opts={})
