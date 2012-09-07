@@ -372,6 +372,13 @@ class IdentityMapTest < Test::Unit::TestCase
         assert_not_in_map(@person)
       end
 
+      should "not add to map using where and each" do
+        @person_class.where(:id => @person.id).each{|_|}
+        assert_in_map(@person)
+        @person_class.where(:id => @person.id).only(:id).each{|_|}
+        assert_not_in_map(@person)
+      end
+
       should "return nil if not found" do
         @person_class.fields(:name).find(BSON::ObjectId.new).should be_nil
       end
