@@ -1,16 +1,3 @@
-def growl(title, msg, img)
-  %x{growlnotify -m #{ msg.inspect} -t #{title.inspect} --image ~/.watchr/#{img}.png}
-end
-
-def form_growl_message(str)
-  results = str.split("\n").last
-  if results =~ /[1-9]\s(failure|error)s?/
-    growl "Test Results", "#{results}", "fail"
-  elsif results != ""
-    growl "Test Results", "#{results}", "pass"
-  end
-end
-
 def run(cmd)
   puts(cmd)
   output = ""
@@ -21,7 +8,6 @@ def run(cmd)
       $stdout.flush
     end
   end
-  form_growl_message output
 end
 
 def run_test_file(file)
