@@ -1,8 +1,10 @@
-unreleased
+0.12.0 - 2012-09-12
 
-  Bug Fixes
-
-    * Fix behavior  of :required => true for boolean types
+  * Identity map is now more opt-in. Middleware turns it on, but it stays off for background jobs and such without explicit intervention.
+  * Update to latest version of plucky
+  * Rails 3.2 support
+  * Support new mongo hosts option format
+  * A few bug fixes
 
 0.11.1 - 2012-03-30
 
