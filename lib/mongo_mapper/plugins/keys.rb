@@ -165,6 +165,7 @@ module MongoMapper
 
       def initialize(attrs={})
         @_new = true
+        default_attributes.each_pair {|name, value| write_key(name, value) }
         self.attributes = attrs
       end
 
@@ -231,7 +232,7 @@ module MongoMapper
       end
 
       def id
-        _id
+        _id || keys['_id'].get_default_value
       end
 
       def id=(value)
@@ -306,6 +307,14 @@ module MongoMapper
           set_parent_document(key, value)
           instance_variable_set :"@#{name}_before_type_cast", value
           instance_variable_set :"@#{name}", key.set(value)
+        end
+
+        def default_attributes
+          keys.keys.inject(HashWithIndifferentAccess.new) do |hash, key_name|
+            key_def = keys[key_name]
+            hash[key_name] = key_def.get_default_value if key_def.has_default
+            hash
+          end
         end
     end
   end
