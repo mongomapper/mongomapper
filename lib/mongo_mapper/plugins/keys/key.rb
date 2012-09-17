@@ -29,6 +29,9 @@ module MongoMapper
         end
 
         def get(value)
+          # Special Case: Generate default _id on access
+          value = get_default_value if name=='_id' && value.nil?
+
           if options[:typecast].present?
             type.from_mongo(value).map! { |v| typecast_class.from_mongo(v) }
           else

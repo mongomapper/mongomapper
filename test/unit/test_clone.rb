@@ -38,6 +38,11 @@ class CloneTest < Test::Unit::TestCase
         @doc.destroy
         @doc.clone.should_not be_destroyed
       end
+
+      should "generate a new id" do
+        @doc.clone.id.should_not be_nil
+        @doc.clone.id.should_not equal(@doc.id)
+      end
     end
   end
 
