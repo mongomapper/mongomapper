@@ -3,7 +3,16 @@ module MongoMapper
   module Plugins
     module Associations
       class ManyEmbeddedPolymorphicProxy < EmbeddedCollection
+        def load_from_database(values)
+          @_from_db = true
+          @_values = values.map do |v|
+            v.respond_to?(:attributes) ? v.attributes.merge(association.type_key_name => v.class.name) : v
+          end
+          reset
+        end
+
         def replace(values)
+          @_from_db = false
           @_values = values.map do |v|
             v.respond_to?(:attributes) ? v.attributes.merge(association.type_key_name => v.class.name) : v
           end
@@ -12,10 +21,19 @@ module MongoMapper
 
         protected
           def find_target
-            (@_values || []).map do |hash|
-              child = polymorphic_class(hash).load(hash)
-              assign_references(child)
-              child
+            if !@_from_db
+              (@_values || []).map do |hash|
+                child = polymorphic_class(hash).new(hash)
+                assign_references(child)
+                child
+              end
+            else
+              @_from_db = false
+              (@_values || []).map do |hash|
+                child = polymorphic_class(hash).load(hash)
+                assign_references(child)
+                child
+              end
             end
           end
 

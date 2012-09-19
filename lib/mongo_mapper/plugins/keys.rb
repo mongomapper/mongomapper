@@ -13,12 +13,27 @@ module MongoMapper
 
       module ClassMethods
         def inherited(descendant)
+          descendant.instance_variable_set(:"@key_names", key_names.dup)
+          descendant.instance_variable_set(:"@object_id_keys", object_id_keys.dup)
+          descendant.instance_variable_set(:"@date_keys", date_keys.dup)
           descendant.instance_variable_set(:@keys, keys.dup)
           super
         end
 
         def keys
           @keys ||= {}
+        end
+
+        def key_names
+          @key_names ||= []
+        end
+
+        def object_id_keys
+          @object_id_keys ||= []
+        end
+
+        def date_keys
+          @date_keys ||= []
         end
 
         def key(*args)
@@ -28,11 +43,14 @@ module MongoMapper
             create_key_in_descendants(*args)
             create_indexes_for(key)
             create_validations_for(key)
+            key_names << key.name
+            object_id_keys << key.name.to_sym if key.type == ObjectId
+            date_keys << key.name if key.type == Date
           end
         end
 
         def key?(key)
-          keys.keys.include?(key.to_s)
+          keys.has_key?(key.to_s)
         end
 
         def using_object_id?
@@ -198,7 +216,7 @@ module MongoMapper
           end
 
           embedded_associations.each do |association|
-            if documents = instance_variable_get(association.ivar)
+            if documents = get_proxy(association)
               if association.is_a?(Associations::OneAssociation)
                 attrs[association.name] = documents.to_mongo
               else
@@ -231,7 +249,7 @@ module MongoMapper
       end
 
       def id
-        _id
+        self[:_id]
       end
 
       def id=(value)
@@ -256,7 +274,22 @@ module MongoMapper
       end
 
       def key_names
-        keys.keys
+        self.class.key_names
+      end
+
+      def date_keys
+        self.class.date_keys
+      end
+
+      def has_attribute?(name)
+        attr_name = name.chomp('=');
+        return true if keys.has_key? attr_name
+        associations.each_value do |assoc|
+          if assoc.embeddable?
+            return true if assoc.name == attr_name
+          end
+        end
+        false
       end
 
       def non_embedded_keys
@@ -270,11 +303,30 @@ module MongoMapper
       private
         def load_from_database(attrs)
           return if attrs.blank?
-          attrs.each do |key, value|
-            if respond_to?(:"#{key}=") && !self.class.key?(key)
-              self.send(:"#{key}=", value)
+          attr_keys = attrs.keys
+          model_keys = attr_keys & key_names
+          convert_to_date_keys = model_keys & date_keys
+          model_keys -= convert_to_date_keys
+          other_keys = attr_keys - key_names
+
+          model_keys.each do |key|
+            write_key_from_database(key, attrs[key])
+          end
+
+          convert_to_date_keys.each do |key|
+            write_key_from_database(key, Date.from_mongo(attrs[key]))
+          end
+
+          other_keys.each do |key, value|
+            if associations.has_key?(key.to_sym)
+              write_association_key_from_database(key, attrs[key])
             else
-              self[key] = value
+              if respond_to?(:"#{key}=")
+                self.send(:"#{key}=", attrs[key]) if respond_to?(:"#{key}=")
+              else
+                # so, add the attribute to the model anyway.
+                self[key] = attrs[key]
+              end
             end
           end
         end
@@ -290,10 +342,13 @@ module MongoMapper
         end
 
         def read_key(key_name)
+          read_value = instance_variable_get(:"@_read_#{key_name}")
+          return read_value if read_value
           if key = keys[key_name.to_s]
             value = key.get(instance_variable_get(:"@#{key_name}"))
             set_parent_document(key, value)
             instance_variable_set(:"@#{key_name}", value)
+            instance_variable_set(:"@_read_#{key_name}", value)
           end
         end
 
@@ -305,7 +360,24 @@ module MongoMapper
           key = keys[name.to_s]
           set_parent_document(key, value)
           instance_variable_set :"@#{name}_before_type_cast", value
-          instance_variable_set :"@#{name}", key.set(value)
+
+          # instance_variable_set :"@#{name}", key.set(value)
+          read_value = key.set(value)
+          instance_variable_set :"@#{name}", read_value
+          if key.type == Date
+            instance_variable_set(:"@_read_#{name}", Date.from_mongo(read_value))
+          else
+            instance_variable_set(:"@_read_#{name}", key.get(read_value))
+          end
+        end
+
+        def write_key_from_database(key, value)
+          instance_variable_set :"@#{key}", value
+          instance_variable_set :"@#{key}_before_type_cast", value
+        end
+
+        def write_association_key_from_database(key, value)
+          instance_variable_set :"@_association_#{key}", value
         end
     end
   end

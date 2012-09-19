@@ -12,6 +12,19 @@ module MongoMapper
 
         def replace(doc)
           if doc.respond_to?(:attributes)
+            @target = klass.new(doc.attributes)
+          elsif doc.nil?
+            @target = nil
+          else
+            @target = klass.new(doc)
+          end
+          assign_references(@target)
+          loaded
+          @target
+        end
+
+        def load_from_database(doc)
+          if doc.respond_to?(:attributes)
             @target = klass.load(doc.attributes)
           else
             @target = klass.load(doc)

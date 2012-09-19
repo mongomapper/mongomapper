@@ -65,6 +65,7 @@ module MongoMapper
       end
 
       def build_proxy(association)
+        instance_variable_set :"@_association_#{association.name}", nil
         proxy = association.proxy_class.new(self, association)
         self.instance_variable_set(association.ivar, proxy)
 
@@ -72,10 +73,20 @@ module MongoMapper
       end
 
       def get_proxy(association)
-        unless proxy = self.instance_variable_get(association.ivar)
-          proxy = build_proxy(association)
+        value_from_db = instance_variable_get(:"@_association_#{association.name}")
+        if value_from_db
+          instance_variable_set :"@_association_#{association.name}", nil
+          unless proxy = self.instance_variable_get(association.ivar)
+            proxy = build_proxy(association)
+          end
+          association.embeddable? ? proxy.load_from_database(value_from_db) : proxy.replace(value_from_db)
+          proxy
+        else
+          unless proxy = self.instance_variable_get(association.ivar)
+            proxy = build_proxy(association)
+          end
+          proxy
         end
-        proxy
       end
 
       def save_to_collection(options={})
