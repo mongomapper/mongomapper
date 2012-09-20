@@ -10,3 +10,4 @@ rvm:
 notifications:
   email: false
 bundler_args: --without development
+services: mongodb
