@@ -2,8 +2,9 @@ require 'test_helper'
 
 class ModifierTest < Test::Unit::TestCase
   def setup
+    compound_key = BSON::OrderedHash['n', 42, 'i', BSON::ObjectId.new]
     @page_class_with_compound_key = Doc do
-      key :_id,                  :default => lambda { {:n => 42, :i => BSON::ObjectId.new} }
+      key :_id,                  :default => lambda { compound_key }
       key :title,       String
       key :day_count,   Integer, :default => 0
       key :week_count,  Integer, :default => 0
