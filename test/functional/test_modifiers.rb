@@ -25,6 +25,7 @@ class ModifierTest < Test::Unit::TestCase
 
   def assert_page_counts(page, day_count, week_count, month_count)
     doc = page.collection.find_one({:_id => page.id})
+    assert doc, "Could not find document with _id => #{page.id.inspect}"
     doc.fetch('day_count').should == day_count
     doc.fetch('week_count').should == week_count
     doc.fetch('month_count').should == month_count
@@ -33,6 +34,7 @@ class ModifierTest < Test::Unit::TestCase
   def assert_keys_removed(page, *keys)
     keys.each do |key|
       doc = page.class.collection.find_one({:_id => page.id})
+      assert doc, "Could not find document with _id => #{page.id.inspect}"
       doc.keys.should_not include(key)
     end
   end
