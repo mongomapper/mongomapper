@@ -20,7 +20,7 @@ You'll also need to set up your MongoDB connection in your @configure@ method ca
 
 {% highlight ruby %}
 configure do
-  MongoMapper.database = ENV['MONGODB_URI']
+  MongoMapper.setup({'production' => {'uri' => ENV['MONGODB_URI']}}, 'production')
 end
 {% endhighlight %}
 
