@@ -32,6 +32,32 @@ class SciTest < Test::Unit::TestCase
       DocParent.key?(:_type).should be_true
     end
 
+    should "use the same connection in the subclass" do
+      parent_class = Class.new do
+        include MongoMapper::Document
+        connection Mongo::Connection.new
+      end
+
+      child_class = Class.new(parent_class) do
+        include MongoMapper::Document
+      end
+
+      child_class.connection.should == child_class.connection
+    end
+
+    should "use the same database in the subclass" do
+      parent_class = Class.new do
+        include MongoMapper::Document
+        set_database_name 'something'
+      end
+
+      child_class = Class.new(parent_class) do
+        include MongoMapper::Document
+      end
+
+      child_class.database.name.should == 'something'
+    end
+
     should "use the same collection in the subclass" do
       DocDaughter.collection.name.should == DocParent.collection.name
     end

@@ -5,6 +5,15 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       module ClassMethods
+        def inherited(subclass)
+          unless subclass.embeddable?
+            subclass.connection(connection)
+            subclass.set_database_name(database_name)
+            subclass.set_collection_name(collection_name)
+          end
+          super
+        end
+
         def connection(mongo_connection=nil)
           assert_supported
           if mongo_connection.nil?
