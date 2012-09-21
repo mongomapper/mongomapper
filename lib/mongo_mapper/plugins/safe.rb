@@ -5,22 +5,24 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       module ClassMethods
+        attr_reader :safe_options
+
         def inherited(subclass)
           super
-          subclass.safe if safe?
+          subclass.safe(safe_options) if safe?
         end
 
-        def safe
-          @safe = true
+        def safe(options = true)
+          @safe_options = options
         end
 
         def safe?
-          @safe == true
+          !!@safe_options
         end
       end
 
       def save_to_collection(options={})
-        options[:safe] = self.class.safe? unless options.key?(:safe)
+        options[:safe] = self.class.safe_options if !options.key?(:safe) && self.class.safe?
         super
       end
     end
