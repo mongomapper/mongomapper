@@ -456,14 +456,6 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
           doc.name_and_age.should == 'John (27)'
         end
 
-        should "set instance variable" do
-          @document.key :foo, Array
-          doc = @document.new
-          doc.instance_variable_get("@foo").should be_nil
-          doc.foo
-          doc.instance_variable_get("@foo").should == []
-        end
-
         should "be overrideable by modules" do
           @document = Doc do
             key :other_child, String

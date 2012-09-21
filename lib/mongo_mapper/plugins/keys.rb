@@ -167,12 +167,14 @@ module MongoMapper
         @_new = true
         initialize_default_values
         self.attributes = attrs
+        initialize_defaults
       end
 
       def initialize_from_database(attrs={})
         @_new = false
         initialize_default_values
         load_from_database(attrs)
+        initialize_defaults
         self
       end
 
@@ -270,6 +272,15 @@ module MongoMapper
       end
 
       private
+        def initialize_defaults
+          keys.each do |key_name,key|  
+            value = instance_variable_get(:"@#{key_name}")
+            if value.nil? && (key.default_value || key.type == Array || key.type == Hash || key.type == Set)
+              instance_variable_set :"@#{key_name}_before_type_cast", key.type.to_mongo(read_key(key_name))
+            end
+          end
+        end
+      
         def load_from_database(attrs)
           return if attrs.blank?
           attrs.each do |key, value|
