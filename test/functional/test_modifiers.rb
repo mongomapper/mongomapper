@@ -3,7 +3,7 @@ require 'test_helper'
 class ModifierTest < Test::Unit::TestCase
   def setup
     @page_class_with_compound_key = Doc do
-      key :_id,                  :default => -> { {n: 42, i: BSON::ObjectId.new} }
+      key :_id,                  :default => lambda { {:n => 42, :i => BSON::ObjectId.new} }
       key :title,       String
       key :day_count,   Integer, :default => 0
       key :week_count,  Integer, :default => 0
