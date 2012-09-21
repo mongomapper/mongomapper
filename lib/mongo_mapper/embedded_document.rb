@@ -12,6 +12,7 @@ module MongoMapper
     include Plugins::Equality
     include Plugins::Inspect
     include Plugins::Keys
+    include Plugins::Dirty # for now dirty needs to be after keys
     include Plugins::Logger
     include Plugins::Persistence
     include Plugins::Accessible

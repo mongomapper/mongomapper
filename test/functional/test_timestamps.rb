@@ -58,5 +58,17 @@ class TimestampsTest < Test::Unit::TestCase
       doc.created_at.to_f.should be_close(old_created_at, 0.001)
       doc.updated_at.to_f.should be_close(new_updated_at.to_f, 0.001)
     end
+
+    should "leave updated_at alone if nothing changed" do
+      doc = @klass.create(:first_name => 'John', :age => 27)
+      old_updated_at = doc.updated_at
+
+      Timecop.freeze(Time.now + 5.seconds) do
+        doc.save
+      end
+
+      doc.updated_at.should == old_updated_at
+    end
+
   end
 end
