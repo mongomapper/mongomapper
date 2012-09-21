@@ -1,8 +1,13 @@
 require 'test_helper'
-require 'support/generators_helper'
+require 'rails/generators'
+require 'rails/generators/test_case'
+require 'rails/generators/mongo_mapper/model/model_generator'
 
 class ModelGeneratorTest < Rails::Generators::TestCase
-  include TestGeneratorsHelper
+
+  destination File.expand_path('../../tmp', File.dirname(__FILE__))
+  setup :prepare_destination
+  tests MongoMapper::Generators::ModelGenerator
 
   test 'help shows MongoMapper options' do
     content = run_generator ['--help']
