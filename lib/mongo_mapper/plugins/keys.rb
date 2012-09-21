@@ -165,11 +165,13 @@ module MongoMapper
 
       def initialize(attrs={})
         @_new = true
+        initialize_default_values
         self.attributes = attrs
       end
 
       def initialize_from_database(attrs={})
         @_new = false
+        initialize_default_values
         load_from_database(attrs)
         self
       end
@@ -306,6 +308,18 @@ module MongoMapper
           set_parent_document(key, value)
           instance_variable_set :"@#{name}_before_type_cast", value
           instance_variable_set :"@#{name}", key.set(value)
+        end
+
+        def default_attributes
+          keys.keys.inject(HashWithIndifferentAccess.new) do |hash, key_name|
+            key_def = keys[key_name]
+            hash[key_name] = key_def.get_default_value if key_def.has_default
+            hash
+          end
+        end
+
+        def initialize_default_values
+          default_attributes.each_pair {|name, value| write_key(name, value) }
         end
     end
   end

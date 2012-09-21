@@ -62,4 +62,28 @@ class KeyTest < Test::Unit::TestCase
       Doc().load(nil).should be_nil
     end
   end
+
+  context "default values" do
+    setup do
+      @klass = Doc do
+        key :value, Integer, :default => 1
+      end
+    end
+
+    should "initialize default value" do
+      @klass.new.value.should == 1
+    end
+
+    should "allow overriding default value" do
+      @klass.new(:value => 2).value.should == 2
+    end
+
+    should "allow re-setting a value that is defaulted" do
+      instance = @klass.new
+      instance.value = 2
+      instance.value.should == 2
+      instance.value = nil
+      instance.value.should == nil
+    end
+  end
 end # KeyTest
