@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class ModifierTest < Test::Unit::TestCase
+  attr_reader :page_class_with_compound_key, :page_class_with_standard_key
+
   def setup
     compound_key = BSON::OrderedHash['n', 42, 'i', BSON::ObjectId.new]
     @page_class_with_compound_key = Doc do
@@ -22,10 +24,10 @@ class ModifierTest < Test::Unit::TestCase
   end
 
   def assert_page_counts(page, day_count, week_count, month_count)
-    page.reload
-    page.day_count.should == day_count
-    page.week_count.should == week_count
-    page.month_count.should == month_count
+    doc = page.collection.find_one({:_id => page.id})
+    doc.fetch('day_count').should == day_count
+    doc.fetch('week_count').should == week_count
+    doc.fetch('month_count').should == month_count
   end
 
   def assert_keys_removed(page_class, page, *keys)
@@ -37,7 +39,7 @@ class ModifierTest < Test::Unit::TestCase
 
   context "ClassMethods" do
     setup do
-      @page_class = @page_class_with_standard_key
+      @page_class = page_class_with_standard_key
     end
 
     context "unset" do
@@ -419,11 +421,13 @@ class ModifierTest < Test::Unit::TestCase
   end
 
   context "instance methods" do
-    {:page_class_with_standard_key => "with standard key",
-      :page_class_with_compound_key => "with compound key"}.each do |page_class, description|
+    {
+      :page_class_with_standard_key => "with standard key",
+      :page_class_with_compound_key => "with compound key",
+    }.each do |page_class, description|
       context description do
         setup do
-          @page_class = instance_variable_get("@#{page_class}")
+          @page_class = send(page_class)
         end
 
         should "be able to unset with keys" do
