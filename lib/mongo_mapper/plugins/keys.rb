@@ -310,16 +310,10 @@ module MongoMapper
           instance_variable_set :"@#{name}", key.set(value)
         end
 
-        def default_attributes
-          keys.keys.inject(HashWithIndifferentAccess.new) do |hash, key_name|
-            key_def = keys[key_name]
-            hash[key_name] = key_def.get_default_value if key_def.has_default
-            hash
-          end
-        end
-
         def initialize_default_values
-          default_attributes.each_pair {|name, value| write_key(name, value) }
+          keys.values.select { |key| key.default? }.each do |key|
+            write_key key.name, key.default_value
+          end
         end
     end
   end

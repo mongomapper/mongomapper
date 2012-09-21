@@ -3,15 +3,15 @@ module MongoMapper
   module Plugins
     module Keys
       class Key
-        attr_accessor :name, :type, :options, :has_default, :default_value
+        attr_accessor :name, :type, :options, :default
 
         def initialize(*args)
-          options = args.extract_options!
+          options_from_args = args.extract_options!
           @name, @type = args.shift.to_s, args.shift
-          self.options = (options || {}).symbolize_keys
-          if self.options.key?(:default)
-            @has_default = true
-            self.default_value = self.options[:default]
+          self.options = (options_from_args || {}).symbolize_keys
+
+          if options.key?(:default)
+            self.default = self.options[:default]
           end
         end
 
@@ -28,9 +28,13 @@ module MongoMapper
           type == Integer || type == Float
         end
 
+        def default?
+          options.key?(:default)
+        end
+
         def get(value)
           # Special Case: Generate default _id on access
-          value = get_default_value if name=='_id' && value.nil?
+          value = default_value if name == '_id' && value.nil?
 
           if options[:typecast].present?
             type.from_mongo(value).map! { |v| typecast_class.from_mongo(v) }
@@ -47,15 +51,15 @@ module MongoMapper
           end
         end
 
-        def get_default_value
-          return nil unless has_default
+        def default_value
+          return unless default?
 
-          if default_value.respond_to?(:call)
-            return default_value.call
+          if default.respond_to?(:call)
+            default.call
           else
             # Using Marshal is easiest way to get a copy of mutable objects
             # without getting an error on immutable objects
-            return Marshal.load(Marshal.dump(default_value))
+            Marshal.load(Marshal.dump(default))
           end
         end
 

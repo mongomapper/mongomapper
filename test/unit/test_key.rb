@@ -185,28 +185,34 @@ class KeyTest < Test::Unit::TestCase
       should "return value if not blank" do
         @key.get('foobar').should == 'foobar'
       end
+
+      should "return default value if name is _id and value nil" do
+        id = BSON::ObjectId.new
+        key = Key.new(:_id, ObjectId, :default => lambda { id })
+        key.get(nil).should == id
+      end
     end
 
-    context "#get_default_value" do
+    context "#default_value" do
       should "return default value" do
-        @key.get_default_value.should == 'baz'
+        @key.default_value.should == 'baz'
       end
 
       should "return a dup of the default value" do
-        @key.get_default_value.replace('bar')
-        @key.get_default_value.should == 'baz'
+        @key.default_value.replace('bar')
+        @key.default_value.should == 'baz'
       end
 
       should "work with Boolean type and false value" do
-        Key.new(:active, Boolean, :default => false).get_default_value.should be_false
+        Key.new(:active, Boolean, :default => false).default_value.should be_false
       end
 
       should "work with Boolean type and true value" do
-        Key.new(:active, Boolean, :default => true).get_default_value.should be_true
+        Key.new(:active, Boolean, :default => true).default_value.should be_true
       end
 
       should "work with procs" do
-         Key.new(:foo, String, :default => lambda { return 'hello world' }).get_default_value.should == "hello world"
+         Key.new(:foo, String, :default => lambda { return 'hello world' }).default_value.should == "hello world"
       end
     end
   end
