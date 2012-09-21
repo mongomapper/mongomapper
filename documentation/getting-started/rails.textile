@@ -1,6 +1,6 @@
 ---
 layout: documentation
-title: Getting Started
+title: Installation in Rails 3
 ---
 
 Using MongoMapper with Rails 3 is easier than ever. Thanks to new features in ActiveSupport, and the new ActiveModel framework (which MongoMapper 0.9+ uses), your app can be up and running on MongoDB in a matter of seconds.
@@ -41,7 +41,14 @@ Now, you're almost ready to go, but you still need some configuration info. Gene
 script/rails generate mongo_mapper:config
 {% endhighlight %}
 
-(Note: in versions of MongoMapper below 0.9+, you were required to implement any configuration files manually using an initializer. This is now resolved, and requires nothing more on your part.)
+(Note: in versions of MongoMapper below 0.9+, you were required to implement any configuration files manually using an initializer. This is now resolved, and requires nothing more on your part.
+
+If you want to configure your application with a MongoDB URI (i.e. on "Heroku":http://heroku.com), then you can use the following settings for your production environment:
+
+{% highlight yaml %}
+production:
+ uri: <%= ENV['MONGODB_URI'] %>
+{% endhighlight %}
 
 Technically, you can initialize MongoMapper and use it to store data now. However, I like to configure Rails' model generator. Inside of the Application class (@config/application.rb@) I add:
 
