@@ -71,7 +71,7 @@ module MongoMapper
               collection.update(criteria, {modifier => updates}, options.merge(:multi => true))
             else
               collection.update(criteria, {modifier => updates}, :multi => true)
-            end    
+            end
           end
 
           def criteria_and_keys_from_args(args)
@@ -84,50 +84,50 @@ module MongoMapper
               criteria = {:id => split_args[0]}
               updates = split_args[1].first
               options = split_args[1].last
-            end    
+            end
             [criteria_hash(criteria).to_hash, updates, options]
           end
       end
 
       def unset(*args)
-        self.class.unset(id, *args)
+        self.class.unset({:_id => id}, *args)
       end
 
       def increment(hash, options=nil)
-        self.class.increment(id, hash, options)
+        self.class.increment({:_id => id}, hash, options)
       end
 
       def decrement(hash, options=nil)
-        self.class.decrement(id, hash, options)
+        self.class.decrement({:_id => id}, hash, options)
       end
 
       def set(hash, options=nil)
-        self.class.set(id, hash, options)
+        self.class.set({:_id => id}, hash, options)
       end
 
       def push(hash, options=nil)
-        self.class.push(id, hash, options)
+        self.class.push({:_id => id}, hash, options)
       end
 
       def push_all(hash, options=nil)
-        self.class.push_all(id, hash, options)
+        self.class.push_all({:_id => id}, hash, options)
       end
 
       def pull(hash, options=nil)
-        self.class.pull(id, hash, options)
+        self.class.pull({:_id => id}, hash, options)
       end
 
       def pull_all(hash, options=nil)
-        self.class.pull_all(id, hash, options)
+        self.class.pull_all({:_id => id}, hash, options)
       end
 
       def add_to_set(hash, options=nil)
-        self.class.push_uniq(id, hash, options)
+        self.class.push_uniq({:_id => id}, hash, options)
       end
       alias push_uniq add_to_set
 
       def pop(hash, options=nil)
-        self.class.pop(id, hash, options)
+        self.class.pop({:_id => id}, hash, options)
       end
     end
   end
