@@ -1,9 +1,9 @@
 require 'test_helper'
 require 'rails/generators'
 require 'rails/generators/test_case'
-require 'rails/generators/mongo_mapper/model/model_generator'
+require 'rails/generators/mongo_mapper/config/config_generator'
 
-class ConfigGeneratorTest < Rails::Generators::TestCase
+class ConfigGeneratorTest < ::Rails::Generators::TestCase
 
   destination File.expand_path('../../tmp', File.dirname(__FILE__))
   setup :prepare_destination

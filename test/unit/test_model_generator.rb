@@ -3,7 +3,7 @@ require 'rails/generators'
 require 'rails/generators/test_case'
 require 'rails/generators/mongo_mapper/model/model_generator'
 
-class ModelGeneratorTest < Rails::Generators::TestCase
+class ModelGeneratorTest < ::Rails::Generators::TestCase
 
   destination File.expand_path('../../tmp', File.dirname(__FILE__))
   setup :prepare_destination
