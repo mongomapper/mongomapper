@@ -30,9 +30,9 @@ class ModifierTest < Test::Unit::TestCase
     doc.fetch('month_count').should == month_count
   end
 
-  def assert_keys_removed(page_class, page, *keys)
+  def assert_keys_removed(page, *keys)
     keys.each do |key|
-      doc = page_class.collection.find_one({:_id => page.id})
+      doc = page.class.collection.find_one({:_id => page.id})
       doc.keys.should_not include(key)
     end
   end
@@ -50,14 +50,14 @@ class ModifierTest < Test::Unit::TestCase
 
       should "work with criteria and keys" do
         @page_class.unset({:title => 'Home'}, :title, :tags)
-        assert_keys_removed @page_class, @page, :title, :tags
-        assert_keys_removed @page_class, @page2, :title, :tags
+        assert_keys_removed @page, :title, :tags
+        assert_keys_removed @page2, :title, :tags
       end
 
       should "work with ids and keys" do
         @page_class.unset(@page.id, @page2.id, :title, :tags)
-        assert_keys_removed @page_class, @page, :title, :tags
-        assert_keys_removed @page_class, @page2, :title, :tags
+        assert_keys_removed @page, :title, :tags
+        assert_keys_removed @page2, :title, :tags
       end
 
       context "additional options (upsert & safe)" do
@@ -433,7 +433,7 @@ class ModifierTest < Test::Unit::TestCase
         should "be able to unset with keys" do
           page = @page_class.create(:title => 'Foo', :tags => %w(foo))
           page.unset(:title, :tags)
-          assert_keys_removed @page_class, page, :title, :tags
+          assert_keys_removed page, :title, :tags
         end
 
         should "be able to increment with modifier hashes" do
