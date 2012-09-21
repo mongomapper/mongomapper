@@ -233,7 +233,7 @@ module MongoMapper
       end
 
       def id
-        _id
+        self[:_id]
       end
 
       def id=(value)
