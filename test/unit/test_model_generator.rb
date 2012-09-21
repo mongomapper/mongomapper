@@ -1,3 +1,6 @@
+require 'test_helper'
+require 'support/generators_helper'
+
 class ModelGeneratorTest < Rails::Generators::TestCase
   include TestGeneratorsHelper
 
