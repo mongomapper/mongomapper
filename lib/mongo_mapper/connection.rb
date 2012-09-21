@@ -68,13 +68,11 @@ module MongoMapper
       if env['options'].is_a?(Hash)
         options = env['options'].symbolize_keys.merge(options)
       end
-      
-      if env['ssl'].blank? || env['ssl'] == false
-        options[:ssl] = false
-      else
-        options[:ssl] = true
+
+      if env.key?('ssl')
+        options[:ssl] = env['ssl']
       end
-      
+
       MongoMapper.connection = if env['hosts']
         if env['hosts'].first.is_a?(String)
           Mongo::ReplSetConnection.new( env['hosts'], options )

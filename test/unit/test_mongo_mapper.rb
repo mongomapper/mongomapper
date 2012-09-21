@@ -40,7 +40,7 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'}
       }
-      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :ssl => false)
+      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, {})
       MongoMapper.expects(:database=).with('test')
       Mongo::DB.any_instance.expects(:authenticate).never
       MongoMapper.connect('development')
@@ -50,7 +50,7 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
       }
-      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :ssl => false)
+      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, {})
       MongoMapper.expects(:database=).with('test')
       Mongo::DB.any_instance.expects(:authenticate).never
       MongoMapper.connect('development')
@@ -60,7 +60,7 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'}
       }
-      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :ssl => false)
+      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, {})
       MongoMapper.expects(:database=).with('test')
       Mongo::DB.any_instance.expects(:authenticate).never
       MongoMapper.connect(:development)
@@ -71,11 +71,11 @@ class MongoMapperTest < Test::Unit::TestCase
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'}
       }
       connection, logger = mock('connection'), mock('logger')
-      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :logger => logger, :ssl => false)
+      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :logger => logger)
       MongoMapper.connect('development', :logger => logger)
     end
-    
-    should "work with options" do
+
+    should "pass along ssl when true" do
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'ssl' => true}
       }
@@ -84,12 +84,21 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.connect('development', :logger => logger)
     end
 
+    should "pass along ssl when false" do
+      MongoMapper.config = {
+        'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'ssl' => false}
+      }
+      connection, logger = mock('connection'), mock('logger')
+      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :logger => logger, :ssl => false)
+      MongoMapper.connect('development', :logger => logger)
+    end
+
     should "work with options from config" do
       MongoMapper.config = {
         'development' => {'host' => '192.168.1.1', 'port' => 2222, 'database' => 'test', 'options' => {'safe' => true}}
       }
       connection, logger = mock('connection'), mock('logger')
-      Mongo::Connection.expects(:new).with('192.168.1.1', 2222, :logger => logger, :safe => true, :ssl => false)
+      Mongo::Connection.expects(:new).with('192.168.1.1', 2222, :logger => logger, :safe => true)
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -98,7 +107,7 @@ class MongoMapperTest < Test::Unit::TestCase
         'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
       }
       connection, logger = mock('connection'), mock('logger')
-      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :logger => logger, :ssl => false)
+      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :logger => logger)
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -133,7 +142,7 @@ class MongoMapperTest < Test::Unit::TestCase
         }
       }
 
-      Mongo::ReplSetConnection.expects(:new).with( ['127.0.0.1', 27017], ['localhost', 27017], {'read_secondary' => true, :ssl => false} )
+      Mongo::ReplSetConnection.expects(:new).with( ['127.0.0.1', 27017], ['localhost', 27017], {'read_secondary' => true} )
       MongoMapper.expects(:database=).with('test')
       Mongo::DB.any_instance.expects(:authenticate).never
       MongoMapper.connect('development', 'read_secondary' => true)
