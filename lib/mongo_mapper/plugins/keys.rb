@@ -32,7 +32,7 @@ module MongoMapper
         end
 
         def key?(key)
-          keys.keys.include?(key.to_s)
+          keys.key?(key.to_s)
         end
 
         def using_object_id?
