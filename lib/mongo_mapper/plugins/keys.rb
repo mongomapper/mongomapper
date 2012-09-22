@@ -15,7 +15,6 @@ module MongoMapper
         def inherited(descendant)
           descendant.instance_variable_set(:"@key_names", key_names.dup)
           descendant.instance_variable_set(:"@object_id_keys", object_id_keys.dup)
-          descendant.instance_variable_set(:"@date_keys", date_keys.dup)
           descendant.instance_variable_set(:@keys, keys.dup)
           super
         end
@@ -32,10 +31,6 @@ module MongoMapper
           @object_id_keys ||= []
         end
 
-        def date_keys
-          @date_keys ||= []
-        end
-
         def key(*args)
           Key.new(*args).tap do |key|
             keys[key.name] = key
@@ -45,7 +40,6 @@ module MongoMapper
             create_validations_for(key)
             key_names << key.name
             object_id_keys << key.name.to_sym if key.type == ObjectId
-            date_keys << key.name if key.type == Date
           end
         end
 
@@ -277,10 +271,6 @@ module MongoMapper
         self.class.key_names
       end
 
-      def date_keys
-        self.class.date_keys
-      end
-
       def has_attribute?(name)
         attr_name = name.chomp('=');
         return true if keys.has_key? attr_name
@@ -305,16 +295,10 @@ module MongoMapper
           return if attrs.blank?
           attr_keys = attrs.keys
           model_keys = attr_keys & key_names
-          convert_to_date_keys = model_keys & date_keys
-          model_keys -= convert_to_date_keys
           other_keys = attr_keys - key_names
 
           model_keys.each do |key|
             write_key_from_database(key, attrs[key])
-          end
-
-          convert_to_date_keys.each do |key|
-            write_key_from_database(key, Date.from_mongo(attrs[key]))
           end
 
           other_keys.each do |key, value|
@@ -361,14 +345,9 @@ module MongoMapper
           set_parent_document(key, value)
           instance_variable_set :"@#{name}_before_type_cast", value
 
-          # instance_variable_set :"@#{name}", key.set(value)
           read_value = key.set(value)
           instance_variable_set :"@#{name}", read_value
-          if key.type == Date
-            instance_variable_set(:"@_read_#{name}", Date.from_mongo(read_value))
-          else
-            instance_variable_set(:"@_read_#{name}", key.get(read_value))
-          end
+          instance_variable_set(:"@_read_#{name}", key.get(read_value))
         end
 
         def write_key_from_database(key, value)
