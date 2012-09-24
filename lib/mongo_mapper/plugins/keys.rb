@@ -32,7 +32,7 @@ module MongoMapper
         end
 
         def key?(key)
-          keys.keys.include?(key.to_s)
+          keys.key?(key.to_s)
         end
 
         def using_object_id?
@@ -165,11 +165,13 @@ module MongoMapper
 
       def initialize(attrs={})
         @_new = true
+        initialize_default_values
         self.attributes = attrs
       end
 
       def initialize_from_database(attrs={})
         @_new = false
+        initialize_default_values
         load_from_database(attrs)
         self
       end
@@ -231,7 +233,7 @@ module MongoMapper
       end
 
       def id
-        _id
+        self[:_id]
       end
 
       def id=(value)
@@ -306,6 +308,12 @@ module MongoMapper
           set_parent_document(key, value)
           instance_variable_set :"@#{name}_before_type_cast", value
           instance_variable_set :"@#{name}", key.set(value)
+        end
+
+        def initialize_default_values
+          keys.values.select { |key| key.default? }.each do |key|
+            write_key key.name, key.default_value
+          end
         end
     end
   end

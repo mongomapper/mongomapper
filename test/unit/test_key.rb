@@ -172,34 +172,48 @@ class KeyTest < Test::Unit::TestCase
     end
   end
 
-  context "getting a value with a default set" do
+  context "with a default set" do
     setup do
       @key = Key.new(:foo, String, :default => 'baz')
     end
 
-    should "return default value if value nil" do
-      @key.get(nil).should == 'baz'
+    context "#get" do
+      should "return nil" do
+        @key.get(nil).should == nil
+      end
+
+      should "return value if not blank" do
+        @key.get('foobar').should == 'foobar'
+      end
+
+      should "return default value if name is _id and value nil" do
+        id = BSON::ObjectId.new
+        key = Key.new(:_id, ObjectId, :default => lambda { id })
+        key.get(nil).should == id
+      end
     end
 
-    should "return a dup of the default value" do
-      @key.get(nil).replace('bar')
-      @key.get(nil).should == 'baz'
-    end
+    context "#default_value" do
+      should "return default value" do
+        @key.default_value.should == 'baz'
+      end
 
-    should "return value if not blank" do
-      @key.get('foobar').should == 'foobar'
-    end
+      should "return a dup of the default value" do
+        @key.default_value.replace('bar')
+        @key.default_value.should == 'baz'
+      end
 
-    should "work with Boolean type and false value" do
-      Key.new(:active, Boolean, :default => false).get(nil).should be_false
-    end
+      should "work with Boolean type and false value" do
+        Key.new(:active, Boolean, :default => false).default_value.should be_false
+      end
 
-    should "work with Boolean type and true value" do
-      Key.new(:active, Boolean, :default => true).get(nil).should be_true
-    end
+      should "work with Boolean type and true value" do
+        Key.new(:active, Boolean, :default => true).default_value.should be_true
+      end
 
-    should "work with procs" do
-       Key.new(:foo, String, :default => lambda { return 'hello world' }).get(nil).should == "hello world"
+      should "work with procs" do
+         Key.new(:foo, String, :default => lambda { return 'hello world' }).default_value.should == "hello world"
+      end
     end
   end
 end # KeyTest

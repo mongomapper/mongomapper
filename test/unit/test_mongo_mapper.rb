@@ -75,6 +75,24 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.connect('development', :logger => logger)
     end
 
+    should "pass along ssl when true" do
+      MongoMapper.config = {
+        'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'ssl' => true}
+      }
+      connection, logger = mock('connection'), mock('logger')
+      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :logger => logger, :ssl => true)
+      MongoMapper.connect('development', :logger => logger)
+    end
+
+    should "pass along ssl when false" do
+      MongoMapper.config = {
+        'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'ssl' => false}
+      }
+      connection, logger = mock('connection'), mock('logger')
+      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :logger => logger, :ssl => false)
+      MongoMapper.connect('development', :logger => logger)
+    end
+
     should "work with options from config" do
       MongoMapper.config = {
         'development' => {'host' => '192.168.1.1', 'port' => 2222, 'database' => 'test', 'options' => {'safe' => true}}

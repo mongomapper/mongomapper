@@ -65,8 +65,12 @@ module MongoMapper
       raise 'Set config before connecting. MongoMapper.config = {...}' if config.blank?
       env = config_for_environment(environment)
 
-      if env['options'].is_a? Hash
+      if env['options'].is_a?(Hash)
         options = env['options'].symbolize_keys.merge(options)
+      end
+
+      if env.key?('ssl')
+        options[:ssl] = env['ssl']
       end
 
       MongoMapper.connection = if env['hosts']

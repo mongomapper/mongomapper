@@ -1,5 +1,12 @@
 module MongoMapper
   module Middleware
+    # Usage:
+    #
+    #   config.middleware.insert_after \
+    #     ActionDispatch::Callbacks,
+    #     MongoMapper::Middleware::IdentityMap
+    #
+    # You have to insert after callbacks so the entire request is wrapped.
     class IdentityMap
       class Body
         def initialize(target, original)
