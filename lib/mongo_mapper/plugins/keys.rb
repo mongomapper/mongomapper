@@ -181,7 +181,7 @@ module MongoMapper
       end
 
       def attributes=(attrs)
-        return if attrs.blank?
+        return if attrs == nil or attrs.blank?
 
         attrs.each_pair do |key, value|
           if respond_to?(:"#{key}=")
@@ -244,9 +244,15 @@ module MongoMapper
         self[:_id] = value
       end
 
-      def [](name)
-        read_key(name)
+      def read_key(key_name)
+        if key = keys[key_name.to_s]
+          value = key.get(instance_variable_get(:"@#{key_name}"))
+          set_parent_document(key, value) if key.embeddable?
+          instance_variable_set(:"@#{key_name}", value)
+        end
       end
+
+      alias_method :[], :read_key
 
       def []=(name, value)
         ensure_key_exists(name)
@@ -271,7 +277,7 @@ module MongoMapper
 
       private
         def load_from_database(attrs)
-          return if attrs.blank?
+          return if attrs == nil or attrs.blank?
           attrs.each do |key, value|
             if respond_to?(:"#{key}=") && !self.class.key?(key)
               self.send(:"#{key}=", value)
@@ -282,20 +288,12 @@ module MongoMapper
         end
 
         def ensure_key_exists(name)
-          self.class.key(name) unless respond_to?("#{name}=")
+          self.class.key(name) unless respond_to?(:"#{name}=")
         end
 
         def set_parent_document(key, value)
           if key.embeddable? && value.is_a?(key.type)
             value._parent_document = self
-          end
-        end
-
-        def read_key(key_name)
-          if key = keys[key_name.to_s]
-            value = key.get(instance_variable_get(:"@#{key_name}"))
-            set_parent_document(key, value)
-            instance_variable_set(:"@#{key_name}", value)
           end
         end
 
@@ -305,7 +303,7 @@ module MongoMapper
 
         def write_key(name, value)
           key = keys[name.to_s]
-          set_parent_document(key, value)
+          set_parent_document(key, value) if key.embeddable?
           instance_variable_set :"@#{name}_before_type_cast", value
           instance_variable_set :"@#{name}", key.set(value)
         end
