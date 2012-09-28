@@ -13,8 +13,8 @@ module MongoMapper
       end
 
       def from_mongo(value)
-        if ::Time.try(:zone).present? && value.present?
-          value.in_time_zone(::Time.zone)
+        if value and zone = ::Time.try(:zone)
+          value.in_time_zone(zone)
         else
           value
         end
