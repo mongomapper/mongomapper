@@ -5,6 +5,8 @@ module MongoMapper
       class Key
         attr_accessor :name, :type, :options, :default
 
+        ID_STR = '_id'
+
         def initialize(*args)
           options_from_args = args.extract_options!
           @name, @type = args.shift.to_s, args.shift
@@ -20,8 +22,14 @@ module MongoMapper
         end
 
         def embeddable?
-          return false unless type.respond_to?(:embeddable?)
-          type.embeddable?
+          # This is ugly, but it's fast. We can't use ||= because false is an expected and common value.
+          @embeddable = @embeddable != nil ? @embeddable : begin
+            if type.respond_to?(:embeddable?)
+              type.embeddable?
+            else
+              false
+            end
+          end
         end
 
         def number?
@@ -34,9 +42,9 @@ module MongoMapper
 
         def get(value)
           # Special Case: Generate default _id on access
-          value = default_value if name == '_id' && value.nil?
+          value = default_value if value.nil? and name == ID_STR
 
-          if options[:typecast].present?
+          if options[:typecast]
             type.from_mongo(value).map! { |v| typecast_class.from_mongo(v) }
           else
             type.from_mongo(value)
@@ -45,7 +53,7 @@ module MongoMapper
 
         def set(value)
           type.to_mongo(value).tap do |values|
-            if options[:typecast].present?
+            if options[:typecast]
               values.map! { |v| typecast_class.to_mongo(v) }
             end
           end
