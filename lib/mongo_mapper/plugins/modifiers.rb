@@ -77,14 +77,13 @@ module MongoMapper
           def criteria_and_keys_from_args(args)
             if args[0].is_a?(Hash)
               criteria = args[0]
-              updates = args[1]
-              options = args[2]
+              updates  = args[1]
+              options  = args[2]
             else
-              split_args = args.partition{|a| a.is_a?(BSON::ObjectId)}
-              criteria = {:id => split_args[0]}
-              updates = split_args[1].first
-              options = split_args[1].last
+              criteria, (updates, options) = args.partition { |a| !a.is_a?(Hash) }
+              criteria = { :id => criteria }
             end
+
             [criteria_hash(criteria).to_hash, updates, options]
           end
       end
