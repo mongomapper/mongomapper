@@ -109,6 +109,13 @@ class ModifierTest < Test::Unit::TestCase
         assert_page_counts @page, 1, 2, 3
         assert_page_counts @page2, 1, 2, 3
       end
+
+      should "work with ids given as strings" do
+        @page_class.increment(@page.id.to_s, @page2.id.to_s, :day_count => 1, :week_count => 2, :month_count => 3)
+
+        assert_page_counts @page, 1, 2, 3
+        assert_page_counts @page2, 1, 2, 3
+      end
     end
 
     context "decrement" do
@@ -133,6 +140,13 @@ class ModifierTest < Test::Unit::TestCase
 
       should "decrement with positive or negative numbers" do
         @page_class.decrement(@page.id, @page2.id, :day_count => -1, :week_count => 2, :month_count => -3)
+
+        assert_page_counts @page, 0, 0, 0
+        assert_page_counts @page2, 0, 0, 0
+      end
+
+      should "work with ids given as strings" do
+        @page_class.decrement(@page.id.to_s, @page2.id.to_s, :day_count => -1, :week_count => 2, :month_count => -3)
 
         assert_page_counts @page, 0, 0, 0
         assert_page_counts @page2, 0, 0, 0
