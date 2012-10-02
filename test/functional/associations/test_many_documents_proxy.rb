@@ -35,6 +35,35 @@ class ManyDocumentsProxyTest < Test::Unit::TestCase
     instance.pets.should_not be_empty
   end
 
+  should "be able to iterate associated documents in a callback" do
+    @owner_class.class_eval do
+      before_save :search_pets
+
+      def search_pets
+        pets.each { |p| p.name = "Animal" }
+      end
+    end
+
+    owner  = @owner_class.new
+    sophie = owner.pets.build(:name => "Sophie")
+    pippa  = owner.pets.build(:name => "Pippa")
+
+    owner.save
+    owner.reload
+    owner.pets.reload
+
+    pets = []
+    owner.pets.each { |p| pets << p }
+
+    assert_equal(2, pets.size)
+    assert(pets.include?(sophie))
+    assert(pets.include?(pippa))
+
+    # Weird way of testing that the callback actually interated
+    assert_equal("Animal", sophie.reload.name)
+    assert_equal("Animal", pippa.reload.name)
+  end
+
   should "allow assignment of many associated documents using a hash" do
     person_attributes = {
       'name' => 'Mr. Pet Lover',
