@@ -57,7 +57,30 @@ class SciTest < Test::Unit::TestCase
 
       child_class.database.name.should == 'something'
     end
+		
+		should "use the same database in 2 objects" do
+			a1 = DocParent.new({:name => "a1"})
+			a2 = DocParent.new({:name => "a2"})
+			a1.database.name.should == a2.database.name
+      a1.database.name.should == DocParent.database.name
+		end
 
+		should "use seperate databases in 2 objects" do
+			a1 = DocParent.new({:name => "a1"})
+			a2 = DocParent.new({:name => "a2"})
+			a1.database_name = "newdb"
+			a1.database.name.should == "newdb"	
+      a2.database.name.should == DocParent.database.name
+		end
+
+		should "use seperate collections in 2 objects" do
+			a1 = DocParent.new({:name => "a1"})
+			a2 = DocParent.new({:name => "a2"})
+			a1.collection_name = "newcol"
+			a1.collection.name.should == "newcol"		
+      a2.collection.name.should == DocParent.collection.name
+		end
+		
     should "use the same collection in the subclass" do
       DocDaughter.collection.name.should == DocParent.collection.name
     end
