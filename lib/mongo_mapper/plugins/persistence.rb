@@ -65,14 +65,38 @@ module MongoMapper
             end
           end
       end
-
+      
       def collection
-        _root_document.class.collection
+        if collection_name.nil?
+          database.collection(_root_document.class.collection.name)
+        else
+          database.collection(collection_name)
+        end
+      end
+  
+      def database
+        if database_name.nil?
+          _root_document.class.database          
+        else
+          _root_document.class.connection.db(database_name)
+        end
       end
 
-      def database
-        _root_document.class.database
+      def database_name=(name)
+        @database_name = name
       end
+
+      def database_name
+        @database_name
+      end
+
+      def collection_name=(name)
+        @collection_name = name
+      end
+
+      def collection_name
+        @collection_name
+      end    
     end
   end
 end
