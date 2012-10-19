@@ -11,7 +11,6 @@ group :test do
   gem 'timecop',           '~> 0.3'
   gem 'mocha',             '~> 0.10'
   gem 'rack-test',         '~> 0.6'
-  gem 'plucky', :path => "/var/www/repos/plucky"
 end
 
 gemspec
