@@ -9,13 +9,12 @@ module MongoMapper
     # You have to insert after callbacks so the entire request is wrapped.
     class IdentityMap
       class Body
+        extend Forwardable
+        def_delegator :@target, :each
+
         def initialize(target, original)
           @target   = target
           @original = original
-        end
-
-        def each(&block)
-          @target.each(&block)
         end
 
         def close
