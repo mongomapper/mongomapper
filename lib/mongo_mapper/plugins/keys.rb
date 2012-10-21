@@ -61,7 +61,7 @@ module MongoMapper
         def load(attrs)
           return nil if attrs.nil?
           begin
-            attrs['_type'].present? ? attrs['_type'].constantize : self
+            attrs['_type'] ? attrs['_type'].constantize : self
           rescue NameError
             self
           end.allocate.initialize_from_database(attrs)
@@ -86,12 +86,10 @@ module MongoMapper
 
           def create_accessors_for(key)
             accessors_module.module_eval <<-end_eval
+              attr_accessor :#{key.name}_before_type_cast
+
               def #{key.name}
                 read_key(:#{key.name})
-              end
-
-              def #{key.name}_before_type_cast
-                read_key_before_type_cast(:#{key.name})
               end
 
               def #{key.name}=(value)
@@ -245,10 +243,19 @@ module MongoMapper
       end
 
       def read_key(key_name)
+        instance_key = :"@#{key_name}"
+        precast_key  = :"@#{key_name}_before_type_cast"
         if key = keys[key_name.to_s]
-          value = key.get(instance_variable_get(:"@#{key_name}"))
-          set_parent_document(key, value) if key.embeddable?
-          instance_variable_set(:"@#{key_name}", value)
+          if instance_variable_defined? instance_key
+            value = instance_variable_get instance_key
+            set_parent_document(key, value) if key.embeddable?
+            value
+          else
+            value = key.get instance_variable_get(precast_key)
+            set_parent_document(key, value) if key.embeddable?
+            instance_variable_set instance_key, value
+            value
+          end
         end
       end
 
@@ -297,15 +304,13 @@ module MongoMapper
           end
         end
 
-        def read_key_before_type_cast(name)
-          instance_variable_get(:"@#{name}_before_type_cast")
-        end
-
         def write_key(name, value)
-          key = keys[name.to_s]
+          key         = keys[name.to_s]
+          as_mongo    = key.set(value)
+          as_typecast = key.get(as_mongo)
           set_parent_document(key, value) if key.embeddable?
-          instance_variable_set :"@#{name}_before_type_cast", value
-          instance_variable_set :"@#{name}", key.set(value)
+          instance_variable_set :"@#{key.name}", as_typecast
+          instance_variable_set :"@#{key.name}_before_type_cast", value
         end
 
         def initialize_default_values
@@ -313,6 +318,7 @@ module MongoMapper
             write_key key.name, key.default_value
           end
         end
+      #end private
     end
   end
 end

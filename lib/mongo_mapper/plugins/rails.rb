@@ -26,7 +26,7 @@ module MongoMapper
       end
 
       def read_attribute_before_type_cast(name)
-        read_key_before_type_cast(name)
+        send "#{name}_before_type_cast"
       end
 
       def write_attribute(name, value)
