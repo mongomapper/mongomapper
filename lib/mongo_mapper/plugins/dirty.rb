@@ -29,7 +29,7 @@ module MongoMapper
         # This overrides ::ActiveSupport::Dirty#attribute_method? to allow attributes to be any key
         # in the attributes hash ( default ) or any key defined on the model that may not yet have
         # had a value stored in the attributes collection.
-        super || key_names.include?(attr)
+        super || keys.key?(attr)
       end
 
       def clear_changes
