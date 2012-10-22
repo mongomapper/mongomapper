@@ -216,6 +216,12 @@ class QueryingTesting < Test::Unit::TestCase
         end
       end
 
+      should "raise error if not all found when using find! with an array" do
+        assert_raises(MongoMapper::DocumentNotFound) do
+          @document.find!([@doc1._id, BSON::ObjectId.new.to_s])
+        end
+      end
+
       should "return array if array with one element" do
         @document.find([@doc1._id]).should == [@doc1]
       end

@@ -14,11 +14,11 @@ module MongoMapper
         end
 
         def find!(*ids)
-          raise DocumentNotFound, "Couldn't find without an ID" if ids.size == 0
-
+          norm_ids = ids.flatten.compact.uniq
+          raise DocumentNotFound, "Couldn't find without an ID" if norm_ids.size == 0
           find(*ids).tap do |result|
-            if result.nil? || ids.size != Array(result).size
-              raise DocumentNotFound, "Couldn't find all of the ids (#{ids.join(',')}). Found #{Array(result).size}, but was expecting #{ids.size}"
+            if result.nil? || norm_ids.size != Array(result).size
+              raise DocumentNotFound, "Couldn't find all of the ids (#{norm_ids.join(',')}). Found #{Array(result).size}, but was expecting #{norm_ids.size}"
             end
           end
         end
