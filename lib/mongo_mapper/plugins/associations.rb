@@ -27,7 +27,12 @@ module MongoMapper
         end
 
         def associations=(hash)
+          @embedded_associations = nil
           @associations = hash
+        end
+
+        def embedded_associations
+          @embedded_associations ||= associations.values.select { |assoc| assoc.embeddable? }
         end
 
         def associations_module_defined?
@@ -51,6 +56,7 @@ module MongoMapper
 
         private
           def create_association(association)
+            @embedded_associations = nil
             associations[association.name] = association
             association.setup(self)
           end
@@ -61,7 +67,7 @@ module MongoMapper
       end
 
       def embedded_associations
-        associations.values.select { |assoc| assoc.embeddable? }
+        self.class.embedded_associations
       end
 
       def build_proxy(association)

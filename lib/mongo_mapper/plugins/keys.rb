@@ -192,9 +192,11 @@ module MongoMapper
 
       def attributes
         HashWithIndifferentAccess.new.tap do |attrs|
-          keys.select { |name,key| !self[key.name].nil? || key.type == ObjectId }.each do |name, key|
-            value = key.set(self[key.name])
-            attrs[name] = value
+          keys.each do |name, key|
+            key_ivar = :"@#{key.name}"
+            if key.type == ObjectId || instance_variable_get(key_ivar) != nil
+              attrs[name] = key.set instance_variable_get(key_ivar)
+            end
           end
 
           embedded_associations.each do |association|
@@ -244,18 +246,11 @@ module MongoMapper
 
       def read_key(key_name)
         instance_key = :"@#{key_name}"
-        precast_key  = :"@#{key_name}_before_type_cast"
-        if key = keys[key_name.to_s]
-          if instance_variable_defined? instance_key
-            value = instance_variable_get instance_key
-            set_parent_document(key, value) if key.embeddable?
-            value
-          else
-            value = key.get instance_variable_get(precast_key)
-            set_parent_document(key, value) if key.embeddable?
-            instance_variable_set instance_key, value
-            value
-          end
+        if instance_variable_defined? instance_key
+          instance_variable_get instance_key
+        elsif key = keys[key_name.to_s]
+          value = key.get instance_variable_get(:"@#{key_name}_before_type_cast")
+          instance_variable_set instance_key, value
         end
       end
 
@@ -294,12 +289,13 @@ module MongoMapper
           end
         end
 
+
         def ensure_key_exists(name)
           self.class.key(name) unless respond_to?(:"#{name}=")
         end
 
         def set_parent_document(key, value)
-          if key.embeddable? && value.is_a?(key.type)
+          if value.respond_to?(:_parent_document) && value.is_a?(key.type) && key.embeddable?
             value._parent_document = self
           end
         end
@@ -308,9 +304,11 @@ module MongoMapper
           key         = keys[name.to_s]
           as_mongo    = key.set(value)
           as_typecast = key.get(as_mongo)
-          set_parent_document(key, value) if key.embeddable?
+          set_parent_document(key, value)
+          set_parent_document(key, as_typecast)
           instance_variable_set :"@#{key.name}", as_typecast
           instance_variable_set :"@#{key.name}_before_type_cast", value
+          @attributes = nil
         end
 
         def initialize_default_values
