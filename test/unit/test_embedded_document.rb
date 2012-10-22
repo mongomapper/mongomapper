@@ -493,7 +493,7 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         should "be accessible for use in a document" do
           @document.class_eval do
             def untypcasted_name
-              read_key_before_type_cast(:name)
+              @name_before_type_cast
             end
           end
 

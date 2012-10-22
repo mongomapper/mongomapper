@@ -59,9 +59,10 @@ module MongoMapper
 
         module IdentityMapQueryMethods
           def all(opts={})
-            query = clone.amend(opts)
-            super.tap do |docs|
-              model.remove_documents_from_map(docs) if query.fields?
+            [].tap do |docs|
+              find_each(opts) do |doc|
+                docs.push doc
+              end
             end
           end
 
@@ -72,16 +73,16 @@ module MongoMapper
               document
             else
               super.tap do |doc|
-                model.remove_documents_from_map(doc) if query.fields?
+                doc.remove_from_identity_map if doc and query.fields?
               end
             end
           end
 
-          def find_each(opts={}, &block)
+          def find_each(opts={})
             query = clone.amend(opts)
             super(opts) do |doc|
-              model.remove_documents_from_map(doc) if query.fields?
-              block.call(doc) unless block.nil?
+              doc.remove_from_identity_map if doc and query.fields?
+              yield doc if block_given?
             end
           end
         end
