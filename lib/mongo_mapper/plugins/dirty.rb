@@ -25,11 +25,9 @@ module MongoMapper
 
       protected
 
-      def attribute_method?(attr)
-        # This overrides ::ActiveSupport::Dirty#attribute_method? to allow attributes to be any key
-        # in the attributes hash ( default ) or any key defined on the model that may not yet have
-        # had a value stored in the attributes collection.
-        super || key_names.include?(attr)
+      # We don't call super here to avoid invoking #attributes, which builds a whole new hash per call.
+      def attribute_method?(attr_name)
+        keys.key?(attr_name) || !embedded_associations.detect {|a| a.name == attr_name }.nil?
       end
 
       def clear_changes
@@ -53,7 +51,7 @@ module MongoMapper
       end
 
       def attribute_value_changed?(key_name)
-        attribute_was(key_name) != read_key(key_name)
+        changed_attributes[key_name] != instance_variable_get(:"@#{key_name}")
       end
     end
   end
