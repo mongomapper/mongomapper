@@ -193,9 +193,9 @@ module MongoMapper
       def attributes
         HashWithIndifferentAccess.new.tap do |attrs|
           keys.each do |name, key|
-            key_ivar = :"@#{key.name}"
-            if key.type == ObjectId || instance_variable_get(key_ivar) != nil
-              attrs[name] = key.set instance_variable_get(key_ivar)
+            if key.type == ObjectId || !self[key.name].nil?
+              value = key.set(self[key.name])
+              attrs[name] = value
             end
           end
 
