@@ -86,7 +86,7 @@ module MongoMapper
 
           def create_accessors_for(key)
             accessors_module.module_eval <<-end_eval
-              attr_accessor :#{key.name}_before_type_cast
+              attr_reader :#{key.name}_before_type_cast
 
               def #{key.name}
                 read_key(:#{key.name})
