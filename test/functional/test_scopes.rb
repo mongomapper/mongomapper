@@ -130,7 +130,7 @@ class ScopesTest < Test::Unit::TestCase
 
         should "not work if method does not return a query" do
           @document.class_eval { def self.age; 20 end }
-          lambda { @document.by_name('John').age }.should raise_error(NoMethodError)
+          @document.by_name('John').age.should == 20
         end
       end
     end
