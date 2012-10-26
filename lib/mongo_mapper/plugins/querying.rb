@@ -40,22 +40,6 @@ module MongoMapper
           end
         end
 
-        def delete(*ids)
-          query(:_id => ids.flatten).remove
-        end
-
-        def delete_all(options={})
-          query(options).remove
-        end
-
-        def destroy(*ids)
-          find_some!(ids.flatten).each { |doc| doc.destroy }
-        end
-
-        def destroy_all(options={})
-          find_each(options) { |document| document.destroy }
-        end
-
         # @api private for now
         def query(options={})
           query = Plucky::Query.new(collection, :transformer => transformer)
