@@ -2,10 +2,26 @@
 module MongoMapper
   module Plugins
     module Querying
-      Methods = Plucky::Methods + [:find!]
+      Methods = Plucky::Methods + [:delete, :delete_all, :destroy, :destroy_all, :find!]
 
       module Decorator
         include DynamicQuerying::ClassMethods
+
+        def delete(*ids)
+          where(:_id => ids.flatten).remove
+        end
+
+        def delete_all(options = {})
+          where(options).remove
+        end
+
+        def destroy(*ids)
+          [find!(*ids.flatten.compact.uniq)].flatten.each { |doc| doc.destroy }
+        end
+
+        def destroy_all(options={})
+          find_each(options) { |document| document.destroy }
+        end
 
         def model(model=nil)
           return @model if model.nil?
