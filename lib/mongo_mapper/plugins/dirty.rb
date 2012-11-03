@@ -23,13 +23,6 @@ module MongoMapper
         super.tap { clear_changes }
       end
 
-      protected
-
-      # We don't call super here to avoid invoking #attributes, which builds a whole new hash per call.
-      def attribute_method?(attr_name)
-        keys.key?(attr_name) || !embedded_associations.detect {|a| a.name == attr_name }.nil?
-      end
-
       def clear_changes
         previous = changes
         (block_given? ? yield : true).tap do |result|
@@ -38,6 +31,13 @@ module MongoMapper
             changed_attributes.clear
           end
         end
+      end
+
+      protected
+
+      # We don't call super here to avoid invoking #attributes, which builds a whole new hash per call.
+      def attribute_method?(attr_name)
+        keys.key?(attr_name) || !embedded_associations.detect {|a| a.name == attr_name }.nil?
       end
 
       private
