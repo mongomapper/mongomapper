@@ -67,6 +67,22 @@ module MongoMapper
           end.allocate.initialize_from_database(attrs)
         end
 
+        def forbid_dynamic_fields
+          self.allow_dynamic_fields = false
+        end
+
+        def allow_dynamic_fields
+          self.allow_dynamic_fields = true
+        end
+
+        def allow_dynamic_fields=(value)
+          @allow_dynamic_fields = value
+        end
+
+        def allow_dynamic_fields?
+          @allow_dynamic_fields.nil? || @allow_dynamic_fields
+        end
+
         private
           def key_accessors_module_defined?
             if method(:const_defined?).arity == 1 # Ruby 1.9 compat check
@@ -182,10 +198,10 @@ module MongoMapper
         return if attrs == nil or attrs.blank?
 
         attrs.each_pair do |key, value|
-          if respond_to?(:"#{key}=")
-            self.send(:"#{key}=", value)
-          else
+          if !respond_to?(:"#{key}=") and self.class.allow_dynamic_fields?
             self[key] = value
+          else
+            self.send(:"#{key}=", value)
           end
         end
       end

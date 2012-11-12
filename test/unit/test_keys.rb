@@ -86,4 +86,36 @@ class KeyTest < Test::Unit::TestCase
       instance.value.should == nil
     end
   end
+
+  context "forbid dynamic elements" do
+    setup do
+      options = ["self.forbid_dynamic_fields", "self.allow_dynamic_fields = false"]
+      @documents = []
+      options.each do |option|
+        @documents << Class.new do
+          include MongoMapper::Document
+          class_eval option
+          key :valid, String
+        end
+      end
+    end
+
+    should "throw NoMethodError when it wants to initialize non-existent key" do
+      @documents.each do |doc|
+        lambda{ doc.new(:age => 21) }.should raise_error(NoMethodError)
+      end
+    end
+
+    should "throw NoMethodError when it wants to assign value to non-existent key" do
+      @documents.each do |doc|
+        lambda{ doc.new.age = "21" }.should raise_error(NoMethodError)
+      end
+    end
+
+    should "not throw exception when key exists" do
+      @documents.each do |doc|
+        lambda{ doc.new.valid = "Valid" }.should_not raise_error
+      end
+    end
+  end
 end # KeyTest
