@@ -18,6 +18,11 @@ title: Querying
 ** "limit":#limit
 ** "skip, offset":#skip
 * "Operators":#operators
+* "Destroying documents":#destroy_documents
+** "destroy":#destroy
+** "destroy_all":#destroy_all
+** "delete":#delete
+** "delete_all":#delete_all
 
 h2(#finders). Finders
 
@@ -153,6 +158,53 @@ User.where(:age.gt => 21)
 {% endhighlight %}
 
 See MongoDB's "documentation on conditional operators":http://www.mongodb.org/display/DOCS/Advanced+Queries#AdvancedQueries-ConditionalOperators.
+
+h2(#destroy_documents). Destroying documents
+
+MongoMapper provides 2 methods for destroying/deleting documents and 2 methods for removing/destroying all documents.
+
+h3(#destroy). destroy
+
+Destroy a single or multiple document(s) by providing ID(s) or tne instance of a document
+
+{% highlight ruby %}
+# Destroy a single user with the given ID
+User.destroy("50a210d2f7aa6006d2000001") 
+
+# Destroys two user with given ids
+User.destroy("50a210d2f7aa6006d2000001", "50a21153f7aa6006d2000002") 
+
+# Delete an instance
+u = User.create(:name => cow)
+u.destroy 
+{% endhighlight %}
+
+h3(#destroy_all). destroy_all
+
+Destroy all or multiple documents from given matching criteria
+Warning: You can loose all your data if you call this at the wrong time.
+
+{% highlight ruby %}
+# Destroy every user in the collection
+User.destroy_all
+
+# Destroys user with a given name
+User.destroy_all(:name => "George")
+{% endhighlight %}
+
+h3(#delete). delete
+
+Delete document(s) from given ID(s) or the delete an instance of a document. 
+Callbacks are NOT triggered.
+
+Usage is identical to destroy
+
+h3(#delete_all). delete_all
+
+Delete multiple or all documents.
+Callbacks are NOT triggered.
+
+Usage is identical to destroy_all
 
 h2. Related Resources
 
