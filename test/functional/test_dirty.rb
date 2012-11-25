@@ -45,6 +45,14 @@ class DirtyTest < Test::Unit::TestCase
 
     should "not happen when loading from database" do
       doc = @document.create(:phrase => 'Foo')
+      @document.any_instance.expects(:attribute_will_change!).never
+      @document.any_instance.expects(:attribute_changed?).never
+      doc = @document.find(doc.id)
+      doc.changed?.should be_false
+    end
+
+    should "not happen when reloading from database" do
+      doc = @document.create(:phrase => 'Foo')
       doc = @document.find(doc.id)
 
       doc.changed?.should be_false
