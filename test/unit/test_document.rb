@@ -21,11 +21,11 @@ class DocumentTest < Test::Unit::TestCase
     end
 
     should "have a connection" do
-      @document.connection.should be_instance_of(Mongo::Connection)
+      @document.connection.should be_instance_of(Mongo::MongoClient)
     end
 
     should "allow setting different connection without affecting the default" do
-      conn = Mongo::Connection.new
+      conn = Mongo::MongoClient.new
       @document.connection conn
       @document.connection.should == conn
       @document.connection.should_not == MongoMapper.connection
