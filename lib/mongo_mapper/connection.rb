@@ -10,7 +10,7 @@ module MongoMapper
 
     # @api public
     def connection
-      @@connection ||= Mongo::Connection.new
+      @@connection ||= Mongo::MongoClient.new
     end
 
     # @api public
@@ -75,12 +75,12 @@ module MongoMapper
 
       MongoMapper.connection = if env['hosts']
         if env['hosts'].first.is_a?(String)
-          Mongo::ReplSetConnection.new( env['hosts'], options )
+          Mongo::MongoReplicaSetClient.new( env['hosts'], options )
         else
-          Mongo::ReplSetConnection.new( *env['hosts'].push(options) )
+          Mongo::MongoReplicaSetClient.new( *env['hosts'].push(options) )
         end
       else
-        Mongo::Connection.new(env['host'], env['port'], options)
+        Mongo::MongoClient.new(env['host'], env['port'], options)
       end
 
       MongoMapper.database = env['database']
