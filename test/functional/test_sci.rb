@@ -35,7 +35,7 @@ class SciTest < Test::Unit::TestCase
     should "use the same connection in the subclass" do
       parent_class = Class.new do
         include MongoMapper::Document
-        connection Mongo::Connection.new
+        connection Mongo::MongoClient.new
       end
 
       child_class = Class.new(parent_class) do
