@@ -79,19 +79,19 @@ module MongoMapper
               criteria = args[0]
               updates  = args[1]
               options  = args[2]
-              upgrade_legacy_safe_usage(options)
             else
               criteria, (updates, options) = args.partition { |a| !a.is_a?(Hash) }
               criteria = { :id => criteria }
             end
+            upgrade_legacy_safe_usage!(options)
 
             [criteria_hash(criteria).to_hash, updates, options]
           end
 
-          def upgrade_legacy_safe_usage(options)
+          def upgrade_legacy_safe_usage!(options)
             if options and options.key?(:safe)
-              options.delete :safe
               options.merge! Utils.get_safe_options(options)
+              options.delete :safe
             end
           end
       end

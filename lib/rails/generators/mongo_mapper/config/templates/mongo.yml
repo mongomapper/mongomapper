@@ -1,6 +1,10 @@
 defaults: &defaults
   host: 127.0.0.1
   port: 27017
+  w: 1
+  pool_size: 1
+  slave_ok: false
+  ssl: false
 
 development:
   <<: *defaults
@@ -9,6 +13,7 @@ development:
 test:
   <<: *defaults
   database: <%= database_name || app_name %>_test
+  w: 0
 
 # set these environment variables on your prod server
 production:
