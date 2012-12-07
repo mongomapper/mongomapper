@@ -244,6 +244,7 @@ class DirtyTest < Test::Unit::TestCase
       changes = doc.changes
       doc.save!
       doc.previous_changes.should == changes
+      doc.previous_changes["a"].should == ["b", "c"]
     end
 
     should "not include attributes loaded from db" do
