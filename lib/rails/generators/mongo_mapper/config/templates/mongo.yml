@@ -1,10 +1,11 @@
 defaults: &defaults
   host: 127.0.0.1
   port: 27017
-  w: 1
-  pool_size: 1
-  slave_ok: false
-  ssl: false
+  options:
+    w: 1
+    pool_size: 1
+    slave_ok: false
+    ssl: false
 
 development:
   <<: *defaults
