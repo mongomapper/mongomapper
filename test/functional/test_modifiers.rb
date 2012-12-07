@@ -76,9 +76,9 @@ class ModifierTest < Test::Unit::TestCase
           Mongo::Collection.any_instance.expects(:update).with(
             {:title => "Better Be Safe than Sorry"},
             {'$unset' => {:tags => 1}},
-            {:safe => true, :multi => true}
+            {:w => 1, :multi => true}
           )
-          @page_class.unset({:title => "Better Be Safe than Sorry"}, :tags, {:safe => true})
+          @page_class.unset({:title => "Better Be Safe than Sorry"}, :tags, {:w => 1})
         end
 
         should "be able to pass both safe and upsert options" do
@@ -215,7 +215,7 @@ class ModifierTest < Test::Unit::TestCase
           Mongo::Collection.any_instance.expects(:update).with(
             {:title => "Better Be Safe than Sorry"},
             {'$set' => {:title => "I like safety."}},
-            {:safe => true, :multi => true}
+            {:w => 1, :multi => true}
           )
           @page_class.set({:title => "Better Be Safe than Sorry"}, {:title => "I like safety."}, {:safe => true})
         end

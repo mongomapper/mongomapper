@@ -46,9 +46,9 @@ class SafeTest < Test::Unit::TestCase
       end
 
       context "using safe setting from class" do
-        should "pass :safe => true option to save" do
+        should "pass :w => 1 option to save" do
           instance = @klass.new(:email => 'john@doe.com')
-          Mongo::Collection.any_instance.expects(:save).once.with({'_id' => instance.id, 'email' => 'john@doe.com'}, {:safe => true})
+          Mongo::Collection.any_instance.expects(:save).once.with({'_id' => instance.id, 'email' => 'john@doe.com'}, {:w => 1})
           instance.save!
         end
 
@@ -103,7 +103,7 @@ class SafeTest < Test::Unit::TestCase
       context "using safe setting from class" do
         should "pass :safe => options_hash to save" do
           instance = @klass.new(:email => 'john@doe.com')
-          Mongo::Collection.any_instance.expects(:save).once.with({'_id' => instance.id, 'email' => 'john@doe.com'}, {:safe => {:j => true}})
+          Mongo::Collection.any_instance.expects(:save).once.with({'_id' => instance.id, 'email' => 'john@doe.com'}, {:j => true})
           instance.save!
         end
 

@@ -20,6 +20,7 @@ module MongoMapper
   autoload :Plugins,                'mongo_mapper/plugins'
   autoload :Translation,            'mongo_mapper/translation'
   autoload :Version,                'mongo_mapper/version'
+  autoload :Utils,                  'mongo_mapper/utils'
 
   module Middleware
     autoload :IdentityMap, 'mongo_mapper/middleware/identity_map'
