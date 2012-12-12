@@ -31,8 +31,6 @@ module MongoMapper
 
     # @api public
     def database
-      return nil if @@database_name.blank?
-
       @@database ||= MongoMapper.connection.db(@@database_name)
     end
 
@@ -45,25 +43,9 @@ module MongoMapper
       @@config
     end
 
-    # @api private
-    def config_for_environment(environment)
-      env = config[environment.to_s] || {}
-      return env if env['uri'].blank?
-
-      uri = URI.parse(env['uri'])
-      raise InvalidScheme.new('must be mongodb') unless uri.scheme == 'mongodb'
-      {
-        'host'     => uri.host,
-        'port'     => uri.port,
-        'database' => uri.path.gsub(/^\//, ''),
-        'username' => uri.user,
-        'password' => uri.password,
-      }
-    end
-
     def connect(environment, options={})
       raise 'Set config before connecting. MongoMapper.config = {...}' if config.blank?
-      env = config_for_environment(environment)
+      env = config[environment.to_s] || {}
 
       if env['options'].is_a?(Hash)
         options = env['options'].symbolize_keys.merge(options)
@@ -72,21 +54,35 @@ module MongoMapper
       if env.key?('ssl')
         options[:ssl] = env['ssl']
       end
-
-      MongoMapper.connection = if env['hosts']
-        if env['hosts'].first.is_a?(String)
-          Mongo::MongoReplicaSetClient.new( env['hosts'], options )
-        else
-          Mongo::MongoReplicaSetClient.new( *env['hosts'].push(options) )
-        end
-      else
-        Mongo::MongoClient.new(env['host'], env['port'], options)
-      end
-
-      MongoMapper.database = env['database']
-      MongoMapper.database.authenticate(env['username'], env['password']) if env['username'] && env['password']
+      
+      conn = Mongo::MongoClient.from_uri(uri(env), options)
+      conn.apply_saved_authentication if conn.present?
+      MongoMapper.connection = conn
     end
 
+    # @api public
+    def uri(env)
+      return env['uri'] unless env['uri'].blank?
+      'mongodb://'.tap do |uri|
+        uri << "#{env['username']}:#{env['password']}@" if auth?(env)
+        uri << "#{host(env)}"
+        uri << "/#{env['database']}" if env['database']
+      end
+    end
+
+
+    # @api public
+    def auth?(env)
+      env['username'] || env['password']
+    end
+    # @api public
+    def host(env)
+      return "#{env['host'] || 'localhost'}:#{env['port'] || 27017}" unless env['hosts']
+      return env['hosts'] if env['hosts'].is_a?(String)
+      return env['hosts'].join(',') if env['hosts'].first.is_a?(String)
+      env['hosts'].collect{ |k| "#{k.first}:#{k.last}"}.join(',')
+    end
+    
     def setup(config, environment, options={})
       handle_passenger_forking
       self.config = config
