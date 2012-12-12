@@ -59,8 +59,9 @@ end
 {% endhighlight %}
 
 And also I commented this line out:
+
 {% highlight ruby %}
-#    config.active_record.whitelist_attributes = true 
+# config.active_record.whitelist_attributes = true 
 {% endhighlight %}
 
 
