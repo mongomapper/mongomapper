@@ -1,10 +1,10 @@
 PATH
-  remote: /Users/jnunemaker/projects/mongomapper
+  remote: /Users/arthurnn/dev/mongomapper
   specs:
-    mongo_mapper (0.11.1)
+    mongo_mapper (0.12.0)
       activemodel (~> 3.0)
       activesupport (~> 3.0)
-      plucky (~> 0.5.1)
+      plucky (~> 0.5.2)
 
 GEM
   remote: http://rubygems.org/
@@ -38,9 +38,10 @@ GEM
     activesupport (3.1.6)
       multi_json (>= 1.0, < 1.3)
     arel (2.2.3)
-    bson (1.6.4)
-    bson_ext (1.6.4)
-      bson (~> 1.6.4)
+    bson (1.8.0)
+      activesupport
+    bson_ext (1.8.0)
+      bson (~> 1.8.0)
     builder (3.0.0)
     erubis (2.7.0)
     hike (1.2.1)
@@ -55,10 +56,10 @@ GEM
     mime-types (1.19)
     mocha (0.12.0)
       metaclass (~> 0.0.1)
-    mongo (1.6.4)
-      bson (~> 1.6.4)
+    mongo (1.8.0)
+      bson (~> 1.8.0)
     multi_json (1.2.0)
-    plucky (0.5.1)
+    plucky (0.5.2)
       mongo (~> 1.5)
     polyglot (0.3.3)
     rack (1.3.6)
