@@ -4,14 +4,14 @@ class Address; end
 
 class MongoMapperTest < Test::Unit::TestCase
   should "be able to write and read connection" do
-    conn = Mongo::Connection.new
+    conn = Mongo::MongoClient.new
     MongoMapper.connection = conn
     MongoMapper.connection.should == conn
   end
 
   should "default connection to new mongo ruby driver" do
     MongoMapper.connection = nil
-    MongoMapper.connection.should be_instance_of(Mongo::Connection)
+    MongoMapper.connection.should be_instance_of(Mongo::MongoClient)
   end
 
   should "be able to write and read default database" do
@@ -40,9 +40,9 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'}
       }
-      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, {})
-      MongoMapper.expects(:database=).with('test')
-      Mongo::DB.any_instance.expects(:authenticate).never
+      defaults = {:wtimeout => nil, :j => nil, :fsync => nil, :connect => true, :auths => []}
+      Mongo::MongoClient.expects(:new).with('127.0.0.1', 27017, defaults)
+      Mongo::DB.any_instance.expects(:issue_authentication).never
       MongoMapper.connect('development')
     end
 
@@ -50,9 +50,9 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
       }
-      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, {})
-      MongoMapper.expects(:database=).with('test')
-      Mongo::DB.any_instance.expects(:authenticate).never
+      defaults = {:wtimeout => nil, :j => nil, :fsync => nil, :connect => true, :auths => []}
+      Mongo::MongoClient.expects(:new).with('127.0.0.1', 27017, defaults)
+      Mongo::DB.any_instance.expects(:issue_authentication).never
       MongoMapper.connect('development')
     end
 
@@ -60,9 +60,9 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'}
       }
-      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, {})
-      MongoMapper.expects(:database=).with('test')
-      Mongo::DB.any_instance.expects(:authenticate).never
+      defaults = {:wtimeout => nil, :j => nil, :fsync => nil, :connect => true, :auths => []}
+      Mongo::MongoClient.expects(:new).with('127.0.0.1', 27017, defaults)
+      Mongo::DB.any_instance.expects(:issue_authentication).never
       MongoMapper.connect(:development)
     end
 
@@ -70,8 +70,9 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'}
       }
+      defaults = {:wtimeout => nil, :j => nil, :fsync => nil, :connect => true, :auths => []}            
       connection, logger = mock('connection'), mock('logger')
-      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :logger => logger)
+      Mongo::MongoClient.expects(:new).with('127.0.0.1', 27017, defaults.merge(:logger => logger))
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -79,8 +80,9 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'ssl' => true}
       }
+      defaults = {:wtimeout => nil, :j => nil, :fsync => nil, :connect => true, :auths => []}
       connection, logger = mock('connection'), mock('logger')
-      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :logger => logger, :ssl => true)
+      Mongo::MongoClient.expects(:new).with('127.0.0.1', 27017, defaults.merge(:logger => logger, :ssl => true))
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -88,8 +90,9 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'ssl' => false}
       }
+      defaults = {:wtimeout => nil, :j => nil, :fsync => nil, :connect => true, :auths => []}
       connection, logger = mock('connection'), mock('logger')
-      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :logger => logger, :ssl => false)
+      Mongo::MongoClient.expects(:new).with('127.0.0.1', 27017, defaults.merge(:logger => logger, :ssl => false))
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -97,8 +100,9 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'host' => '192.168.1.1', 'port' => 2222, 'database' => 'test', 'options' => {'safe' => true}}
       }
+      defaults = {:wtimeout => nil, :j => nil, :fsync => nil, :connect => true, :auths => []}
       connection, logger = mock('connection'), mock('logger')
-      Mongo::Connection.expects(:new).with('192.168.1.1', 2222, :logger => logger, :safe => true)
+      Mongo::MongoClient.expects(:new).with('192.168.1.1', 2222, defaults.merge(:logger => logger, :safe => true))
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -106,8 +110,9 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
       }
+      defaults = {:wtimeout => nil, :j => nil, :fsync => nil, :connect => true, :auths => []}
       connection, logger = mock('connection'), mock('logger')
-      Mongo::Connection.expects(:new).with('127.0.0.1', 27017, :logger => logger)
+      Mongo::MongoClient.expects(:new).with('127.0.0.1', 27017, defaults.merge(:logger => logger))
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -115,7 +120,7 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'username' => 'john', 'password' => 'secret'}
       }
-      Mongo::DB.any_instance.expects(:authenticate).with('john', 'secret')
+      Mongo::DB.any_instance.expects(:issue_authentication).with('john', 'secret', false, {:socket => nil})
       MongoMapper.connect('development')
     end
 
@@ -123,7 +128,7 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'uri' => 'mongodb://john:secret@127.0.0.1:27017/test'}
       }
-      Mongo::DB.any_instance.expects(:authenticate).with('john', 'secret')
+      Mongo::DB.any_instance.expects(:issue_authentication).with('john', 'secret', false, {:socket => nil})
       MongoMapper.connect('development')
     end
 
@@ -131,7 +136,7 @@ class MongoMapperTest < Test::Unit::TestCase
       MongoMapper.config = {
         'development' => {'uri' => 'mysql://127.0.0.1:5336/foo'}
       }
-      assert_raises(MongoMapper::InvalidScheme) { MongoMapper.connect('development') }
+      assert_raises(Mongo::MongoArgumentError) { MongoMapper.connect('development') }
     end
 
     should "create a replica set connection if config contains multiple hosts in the old format" do
@@ -141,10 +146,9 @@ class MongoMapperTest < Test::Unit::TestCase
           'database' => 'test'
         }
       }
-
-      Mongo::ReplSetConnection.expects(:new).with( ['127.0.0.1', 27017], ['localhost', 27017], {'read_secondary' => true} )
-      MongoMapper.expects(:database=).with('test')
-      Mongo::DB.any_instance.expects(:authenticate).never
+      defaults = {:wtimeout => nil, :j => nil, :fsync => nil, :connect => true}
+      Mongo::MongoReplicaSetClient.expects(:new).with( ['127.0.0.1:27017', 'localhost:27017'], defaults.merge('read_secondary' => true) )
+      Mongo::DB.any_instance.expects(:issue_authentication).never
       MongoMapper.connect('development', 'read_secondary' => true)
     end
 
@@ -155,10 +159,9 @@ class MongoMapperTest < Test::Unit::TestCase
           'database' => 'test'
         }
       }
-
-      Mongo::ReplSetConnection.expects(:new).with( ['127.0.0.1:27017', 'localhost:27017'], {'read_secondary' => true} )
-      MongoMapper.expects(:database=).with('test')
-      Mongo::DB.any_instance.expects(:authenticate).never
+      defaults = {:wtimeout => nil, :j => nil, :fsync => nil, :connect => true}
+      Mongo::MongoReplicaSetClient.expects(:new).with( ['127.0.0.1:27017', 'localhost:27017'], defaults.merge('read_secondary' => true) )
+      Mongo::DB.any_instance.expects(:issue_authentication).never
       MongoMapper.connect('development', 'read_secondary' => true)
     end
   end
