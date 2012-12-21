@@ -212,7 +212,7 @@ h3(#embedded-polymorphism). Embedded Polymorphism
 "Embedded documents":/documentation/embedded-document.html may also be polymorphic.  Both "basic polymorphism":#basic-polymorphism and "SCI polymorphism":#polymorphism-with-sci work fine for all embedded associations.  Here's one example:
 
 {% highlight ruby %}
-class User
+class Human
   include MongoMapper::Document
   key :name
   many :contact_methods, :polymorphic => true
