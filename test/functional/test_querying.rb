@@ -560,6 +560,41 @@ class QueryingTesting < Test::Unit::TestCase
     should "be chainable" do
       @query.sort(:age).first.should == @doc3
     end
+
+    context "with methods from MongoMapper::Plugins::Querying" do
+      should "delete" do
+        lambda do
+          @document.where(:first_name => 'Steve').delete(@doc1.id, @doc2.id)
+        end.should change { @document.count }.by(-1)
+        @document.all.should == [@doc1, @doc3]
+      end
+
+      should "delete_all" do
+        lambda do
+          @document.where(:first_name => 'Steph').delete_all(:last_name => "Nunemaker")
+        end.should change { @document.count }.by(-1)
+        @document.all.should == [@doc1, @doc2]
+      end
+
+      should "destroy" do
+        lambda do
+          @document.where(:first_name => 'Steve').destroy(@doc1.id, @doc2.id)
+        end.should raise_error(MongoMapper::DocumentNotFound)
+        @document.count.should == 3
+
+        lambda do
+          @document.where(:last_name => 'Nunemaker').destroy(@doc1.id, @doc3.id)
+        end.should change { @document.count }.by(-2)
+        @document.all.should == [@doc2]
+      end
+
+      should "destroy_all" do
+        lambda do
+          @document.where(:first_name => 'Steph').destroy_all(:last_name => "Nunemaker")
+        end.should change { @document.count }.by(-1)
+        @document.all.should == [@doc1, @doc2]
+      end
+    end
   end
 
   context ".fields" do
