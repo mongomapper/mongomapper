@@ -58,6 +58,13 @@ config.generators do |g|
 end
 {% endhighlight %}
 
+And also I commented this line out:
+
+{% highlight ruby %}
+# config.active_record.whitelist_attributes = true 
+{% endhighlight %}
+
+
 This will allow you to use the @rails generate model@ command with MongoMapper.
 
 You're now finished, go forth and create!
