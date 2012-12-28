@@ -566,14 +566,14 @@ class QueryingTesting < Test::Unit::TestCase
         lambda do
           @document.where(:first_name => 'Steve').delete(@doc1.id, @doc2.id)
         end.should change { @document.count }.by(-1)
-        @document.all.should == [@doc1, @doc3]
+        @document.all(:order => 'first_name').should == [@doc1, @doc3]
       end
 
       should "delete_all" do
         lambda do
           @document.where(:first_name => 'Steph').delete_all(:last_name => "Nunemaker")
         end.should change { @document.count }.by(-1)
-        @document.all.should == [@doc1, @doc2]
+        @document.all(:order => 'first_name').should == [@doc1, @doc2]
       end
 
       should "destroy" do
@@ -592,7 +592,7 @@ class QueryingTesting < Test::Unit::TestCase
         lambda do
           @document.where(:first_name => 'Steph').destroy_all(:last_name => "Nunemaker")
         end.should change { @document.count }.by(-1)
-        @document.all.should == [@doc1, @doc2]
+        @document.all(:order => 'first_name').should == [@doc1, @doc2]
       end
     end
   end
