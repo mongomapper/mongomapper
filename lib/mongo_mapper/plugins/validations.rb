@@ -18,7 +18,7 @@ module MongoMapper
       end
 
       def save(options = {})
-        options.reverse_merge!(:validate => true)
+        options = options.reverse_merge(:validate => true)
         !options[:validate] || valid? ? super : false
       end
 
