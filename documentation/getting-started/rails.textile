@@ -58,7 +58,7 @@ config.generators do |g|
 end
 {% endhighlight %}
 
-And also I commented this line out:
+One other small note, make sure any ActiveRecord related configuration items are commented out or removed like below:
 
 {% highlight ruby %}
 # config.active_record.whitelist_attributes = true 
