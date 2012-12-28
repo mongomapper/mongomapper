@@ -1,7 +1,8 @@
 source :rubygems
 
 gem 'rake'
-gem 'bson_ext', '~> 1.5'
+gem 'mongo',    '~> 1.8'
+gem 'bson_ext', '~> 1.8'
 gem 'multi_json', '~> 1.2.0'
 
 group :test do

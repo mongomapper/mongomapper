@@ -6,6 +6,8 @@ module MongoMapper
     module Keys
       extend ActiveSupport::Concern
 
+      IS_RUBY_1_9 = method(:const_defined?).arity == 1
+
       included do
         extend ActiveSupport::DescendantsTracker
         key :_id, ObjectId, :default => lambda { BSON::ObjectId.new }
@@ -40,7 +42,7 @@ module MongoMapper
         end
 
         def object_id_keys
-          keys.keys.select { |key| keys[key].type == ObjectId }.map { |k| k.to_sym }
+          @object_id_keys ||= keys.keys.select { |key| keys[key].type == ObjectId }.map(&:to_sym)
         end
 
         def object_id_key?(name)
@@ -48,13 +50,11 @@ module MongoMapper
         end
 
         def to_mongo(instance)
-          return nil if instance.nil?
-          instance.to_mongo
+          instance && instance.to_mongo
         end
 
         def from_mongo(value)
-          return nil if value.nil?
-          value.is_a?(self) ? value : load(value)
+          value && (value.is_a?(self) ? value : load(value))
         end
 
         # load is overridden in identity map to ensure same objects are loaded
@@ -69,7 +69,7 @@ module MongoMapper
 
         private
           def key_accessors_module_defined?
-            if method(:const_defined?).arity == 1 # Ruby 1.9 compat check
+            if IS_RUBY_1_9
               const_defined?('MongoMapperKeys')
             else
               const_defined?('MongoMapperKeys', false)
@@ -204,7 +204,7 @@ module MongoMapper
               if association.is_a?(Associations::OneAssociation)
                 attrs[association.name] = documents.to_mongo
               else
-                attrs[association.name] = documents.map { |document| document.to_mongo }
+                attrs[association.name] = documents.map &:to_mongo
               end
             end
           end
@@ -266,15 +266,15 @@ module MongoMapper
       end
 
       def key_names
-        keys.keys
+        @key_names ||= keys.keys
       end
 
       def non_embedded_keys
-        keys.values.select { |key| !key.embeddable? }
+        @non_embedded_keys ||= keys.values.select { |key| !key.embeddable? }
       end
 
       def embedded_keys
-        keys.values.select { |key| key.embeddable? }
+        @embedded_keys ||= keys.values.select &:embeddable?
       end
 
       private
@@ -312,8 +312,8 @@ module MongoMapper
         end
 
         def initialize_default_values
-          keys.values.select { |key| key.default? }.each do |key|
-            write_key key.name, key.default_value
+          keys.values.each do |key|
+            write_key key.name, key.default_value if key.default?
           end
         end
       #end private

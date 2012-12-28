@@ -5,7 +5,7 @@ class LoggerTest < Test::Unit::TestCase
     setup do
       @output = StringIO.new
       @logger = Logger.new(@output)
-      MongoMapper.connection = Mongo::Connection.new('127.0.0.1', 27017, :logger => @logger)
+      MongoMapper.connection = Mongo::MongoClient.new('127.0.0.1', 27017, :logger => @logger)
     end
 
     should "be able to get access to that logger" do

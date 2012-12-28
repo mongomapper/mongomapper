@@ -158,7 +158,7 @@ module MongoMapper
 
         def save_to_collection(options={})
           @_new = false
-          collection.save(to_mongo, :safe => options[:safe])
+          collection.save(to_mongo, Utils.get_safe_options(options))
         end
     end
   end
