@@ -58,14 +58,6 @@ module MongoMapper
         end
 
         module IdentityMapQueryMethods
-          def all(opts={})
-            [].tap do |docs|
-              find_each(opts) do |doc|
-                docs.push doc
-              end
-            end
-          end
-
           def find_one(opts={})
             query = clone.amend(opts)
 
@@ -85,6 +77,10 @@ module MongoMapper
               yield doc if block_given?
             end
           end
+
+          # Ensure that these aliased methods in plucky also get overridden.
+          alias_method :first, :find_one
+          alias_method :each, :find_each
         end
 
         def query(opts={})

@@ -1,4 +1,5 @@
 source :rubygems
+gemspec
 
 gem 'rake'
 gem 'mongo',    '~> 1.8'
@@ -13,5 +14,3 @@ group :test do
   gem 'mocha',             '~> 0.10'
   gem 'rack-test',         '~> 0.6'
 end
-
-gemspec
