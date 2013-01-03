@@ -22,6 +22,10 @@ module MongoMapper
         end
       end
 
+      def assign_attributes(attrs={})
+        update_attributes(filter_inaccessible_attrs(attrs))
+      end
+
       def attributes=(attrs={})
         super(filter_inaccessible_attrs(attrs))
       end
