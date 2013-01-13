@@ -26,7 +26,7 @@ title: Querying
 
 h2(#finders). Finders
 
-h3. find
+h3(#find). find
 
 Find one or more documents by their _id.
 
@@ -67,7 +67,7 @@ Get the last document in a query. Naturally, this makes the most sense when you 
 Patient.last(:order => :created_at.asc)
 {% endhighlight %}
 
-h3. paginate
+h3(#paginate). paginate
 
 Paginate the query.
 
