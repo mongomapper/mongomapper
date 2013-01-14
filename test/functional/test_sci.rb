@@ -32,8 +32,50 @@ class SciTest < Test::Unit::TestCase
       DocParent.key?(:_type).should be_true
     end
 
+    should "use the same connection in the subclass" do
+      parent_class = Class.new do
+        include MongoMapper::Document
+        connection Mongo::MongoClient.new
+      end
+
+      child_class = Class.new(parent_class) do
+        include MongoMapper::Document
+      end
+
+      child_class.connection.should == child_class.connection
+    end
+
+    should "use the same database in the subclass" do
+      parent_class = Class.new do
+        include MongoMapper::Document
+        set_database_name 'something'
+      end
+
+      child_class = Class.new(parent_class) do
+        include MongoMapper::Document
+      end
+
+      child_class.database.name.should == 'something'
+    end
+
     should "use the same collection in the subclass" do
       DocDaughter.collection.name.should == DocParent.collection.name
+    end
+
+    should "know single_collection_parent" do
+      DocParent.single_collection_parent.should be_nil
+      DocDaughter.single_collection_parent.should      == DocParent
+      DocSon.single_collection_parent.should           == DocParent
+      DocGrandSon.single_collection_parent.should      == DocSon
+      DocGrandGrandSon.single_collection_parent.should == DocGrandSon
+    end
+
+    should "know single_collection_root" do
+      DocParent.single_collection_root.should        == DocParent
+      DocDaughter.single_collection_root.should      == DocParent
+      DocSon.single_collection_root.should           == DocParent
+      DocGrandSon.single_collection_root.should      == DocParent
+      DocGrandGrandSon.single_collection_root.should == DocParent
     end
 
     context ".single_collection_inherited?" do

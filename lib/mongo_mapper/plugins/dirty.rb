@@ -12,7 +12,11 @@ module MongoMapper
       end
 
       def initialize_from_database(*)
-        super.tap { changed_attributes.clear }
+        @initializing_from_database = true
+        super.tap {
+          changed_attributes.clear
+          @initializing_from_database = false
+        }
       end
 
       def save(*)
@@ -21,15 +25,6 @@ module MongoMapper
 
       def reload(*)
         super.tap { clear_changes }
-      end
-
-      protected
-
-      def attribute_method?(attr)
-        # This overrides ::ActiveSupport::Dirty#attribute_method? to allow attributes to be any key
-        # in the attributes hash ( default ) or any key defined on the model that may not yet have
-        # had a value stored in the attributes collection.
-        super || key_names.include?(attr)
       end
 
       def clear_changes
@@ -42,18 +37,29 @@ module MongoMapper
         end
       end
 
+      protected
+
+      # We don't call super here to avoid invoking #attributes, which builds a whole new hash per call.
+      def attribute_method?(attr_name)
+        keys.key?(attr_name) || !embedded_associations.detect {|a| a.name == attr_name }.nil?
+      end
+
       private
 
       def write_key(key, value)
-        key = key.to_s
-        attribute_will_change!(key) unless attribute_changed?(key)
-        super(key, value).tap do
-          changed_attributes.delete(key) unless attribute_value_changed?(key)
+        if @initializing_from_database
+          super
+        else
+          key = key.to_s
+          attribute_will_change!(key) unless attribute_changed?(key)
+          super.tap do
+            changed_attributes.delete(key) unless attribute_value_changed?(key)
+          end
         end
       end
 
       def attribute_value_changed?(key_name)
-        attribute_was(key_name) != read_key(key_name)
+        changed_attributes[key_name] != instance_variable_get(:"@#{key_name}")
       end
     end
   end

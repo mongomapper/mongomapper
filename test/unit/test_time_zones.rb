@@ -9,6 +9,11 @@ class TimeZonesTest < Test::Unit::TestCase
       end
     end
 
+    should "preserve milliseconds" do
+      doc = @document.new(:created_at => '2011-02-12 16:01:02.543Z')
+      doc.created_at.should be_close(Time.parse('2011-02-12 16:01:02.543Z'), 0.0000001)
+    end
+
     should "work without Time.zone" do
       Time.zone = nil
 

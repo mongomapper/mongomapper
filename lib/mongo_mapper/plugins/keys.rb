@@ -6,6 +6,8 @@ module MongoMapper
     module Keys
       extend ActiveSupport::Concern
 
+      IS_RUBY_1_9 = method(:const_defined?).arity == 1
+
       included do
         extend ActiveSupport::DescendantsTracker
         key :_id, ObjectId, :default => lambda { BSON::ObjectId.new }
@@ -22,10 +24,13 @@ module MongoMapper
           @keys ||= {}
         end
         
+        # Added To Master by DS.
         def keys_by_abbr
           @keys_by_abbr ||= {}
         end
 
+        # Altered From Master by DS. 
+        # Need to store abbreviation map
         def key(*args)
           Key.new(*args).tap do |key|
             keys[key.name] = key
@@ -38,7 +43,7 @@ module MongoMapper
         end
 
         def key?(key)
-          keys.keys.include?(key.to_s)
+          keys.key?(key.to_s)
         end
 
         def using_object_id?
@@ -46,7 +51,7 @@ module MongoMapper
         end
 
         def object_id_keys
-          keys.keys.select { |key| keys[key].type == ObjectId }.map { |k| k.to_sym }
+          @object_id_keys ||= keys.keys.select { |key| keys[key].type == ObjectId }.map(&:to_sym)
         end
 
         def object_id_key?(name)
@@ -54,20 +59,18 @@ module MongoMapper
         end
 
         def to_mongo(instance)
-          return nil if instance.nil?
-          instance.to_mongo
+          instance && instance.to_mongo
         end
 
         def from_mongo(value)
-          return nil if value.nil?
-          value.is_a?(self) ? value : load(value)
+          value && (value.is_a?(self) ? value : load(value))
         end
 
         # load is overridden in identity map to ensure same objects are loaded
         def load(attrs)
           return nil if attrs.nil?
           begin
-            attrs['_type'].present? ? attrs['_type'].constantize : self
+            attrs['_type'] ? attrs['_type'].constantize : self
           rescue NameError
             self
           end.allocate.initialize_from_database(attrs)
@@ -91,7 +94,7 @@ module MongoMapper
 
         private
           def key_accessors_module_defined?
-            if method(:const_defined?).arity == 1 # Ruby 1.9 compat check
+            if IS_RUBY_1_9
               const_defined?('MongoMapperKeys')
             else
               const_defined?('MongoMapperKeys', false)
@@ -108,12 +111,10 @@ module MongoMapper
 
           def create_accessors_for(key)
             accessors_module.module_eval <<-end_eval
+              attr_reader :#{key.name}_before_type_cast
+
               def #{key.name}
                 read_key(:#{key.name})
-              end
-
-              def #{key.name}_before_type_cast
-                read_key_before_type_cast(:#{key.name})
               end
 
               def #{key.name}=(value)
@@ -143,7 +144,11 @@ module MongoMapper
             attribute = key.name.to_sym
 
             if key.options[:required]
-              validates_presence_of(attribute)
+              if key.type == Boolean
+                validates_inclusion_of attribute, :in => [true, false]
+              else
+                validates_presence_of(attribute)
+              end
             end
 
             if key.options[:unique]
@@ -183,11 +188,13 @@ module MongoMapper
 
       def initialize(attrs={})
         @_new = true
+        initialize_default_values
         self.attributes = attrs
       end
 
       def initialize_from_database(attrs={})
         @_new = false
+        initialize_default_values
         load_from_database(attrs)
         self
       end
@@ -197,7 +204,7 @@ module MongoMapper
       end
 
       def attributes=(attrs)
-        return if attrs.blank?
+        return if attrs == nil or attrs.blank?
 
         attrs.each_pair do |key, value|
           if respond_to?(:"#{key}=")
@@ -210,9 +217,11 @@ module MongoMapper
 
       def attributes
         HashWithIndifferentAccess.new.tap do |attrs|
-          keys.select { |name,key| !self[key.name].nil? || key.type == ObjectId }.each do |name, key|
-            value = key.set(self[key.name])
-            attrs[name] = value
+          keys.each do |name, key|
+            if key.type == ObjectId || !self[key.name].nil?
+              value = key.set(self[key.name])
+              attrs[name] = value
+            end
           end
 
           embedded_associations.each do |association|
@@ -220,18 +229,23 @@ module MongoMapper
               if association.is_a?(Associations::OneAssociation)
                 attrs[association.name] = documents.to_mongo
               else
-                attrs[association.name] = documents.map { |document| document.to_mongo }
+                attrs[association.name] = documents.map &:to_mongo
               end
             end
           end
         end
       end
-        
+      
+      # Altered From Master by DS.
+      # MongoMapper aliases this to attributes.  But when storing, we need to store using abbreviation.
+      # So there is a small tweak when creating the Hash for simple keys.
       def to_mongo
         HashWithIndifferentAccess.new.tap do |attrs|
-          keys.select { |name,key| !self[key.name].nil? || key.type == ObjectId }.each do |name, key|
-            value = key.set(self[key.name])
-            attrs[key.abbr || name] = value
+          keys.each do |name, key|
+            if key.type == ObjectId || !self[key.name].nil?
+              value = key.set(self[key.name])
+              attrs[key.abbr || name] = value
+            end
           end
 
           embedded_associations.each do |association|
@@ -239,7 +253,7 @@ module MongoMapper
               if association.is_a?(Associations::OneAssociation)
                 attrs[association.name] = documents.to_mongo
               else
-                attrs[association.name] = documents.map { |document| document.to_mongo }
+                attrs[association.name] = documents.map &:to_mongo
               end
             end
           end
@@ -267,7 +281,7 @@ module MongoMapper
       end
 
       def id
-        _id
+        self[:_id]
       end
 
       def id=(value)
@@ -277,10 +291,18 @@ module MongoMapper
 
         self[:_id] = value
       end
-
-      def [](name)
-        read_key(name)
+      
+      def read_key(key_name)
+        instance_key = :"@#{key_name}"
+        if instance_variable_defined? instance_key
+          instance_variable_get instance_key
+        elsif key = keys[key_name.to_s]
+          value = key.get instance_variable_get(:"@#{key_name}_before_type_cast")
+          instance_variable_set instance_key, value
+        end
       end
+
+      alias_method :[], :read_key
 
       def []=(name, value)
         ensure_key_exists(name)
@@ -291,25 +313,28 @@ module MongoMapper
         self.class.keys
       end
       
+      # Added To Master by DS.
       def keys_by_abbr
         self.class.keys_by_abbr
       end
 
       def key_names
-        keys.keys
+        @key_names ||= keys.keys
       end
 
       def non_embedded_keys
-        keys.values.select { |key| !key.embeddable? }
+        @non_embedded_keys ||= keys.values.select { |key| !key.embeddable? }
       end
 
       def embedded_keys
-        keys.values.select { |key| key.embeddable? }
+        @embedded_keys ||= keys.values.select &:embeddable?
       end
 
       private
+        # Altered From Master by DS.
+        # The key read from the DB is the abbreviation.  Need to store it as the full key in the model.
         def load_from_database(attrs)
-          return if attrs.blank?
+          return if attrs == nil or attrs.blank?
           attrs.each do |key, value|
             key = key_name_for_abbr(key)
             if respond_to?(:"#{key}=") && !self.class.key?(key)
@@ -320,42 +345,44 @@ module MongoMapper
           end
         end
 
+
         def ensure_key_exists(name)
-          self.class.key(name) unless respond_to?("#{name}=")
+          self.class.key(name) unless respond_to?(:"#{name}=")
         end
 
         def set_parent_document(key, value)
-          if key.embeddable? && value.is_a?(key.type)
+          if value.respond_to?(:_parent_document) && value.is_a?(key.type) && key.embeddable?
             value._parent_document = self
           end
         end
-
-        def read_key(key_name)
-          if key = keys[key_name.to_s]
-            value = key.get(instance_variable_get(:"@#{key_name}"))
-            set_parent_document(key, value)
-            instance_variable_set(:"@#{key_name}", value)
-          end
-        end
         
+        # Added To Master by DS.
         def key_name_for_abbr(key)
           self.class.key_name_for_abbr(key)
         end
         
+        # Added To Master by DS.
         def abbr_for_key_name(key)
           self.class.abbr_for_key_name(key)
         end
 
-        def read_key_before_type_cast(name)
-          instance_variable_get(:"@#{name}_before_type_cast")
+        def write_key(name, value)
+          key         = keys[name.to_s]
+          as_mongo    = key.set(value)
+          as_typecast = key.get(as_mongo)
+          set_parent_document(key, value)
+          set_parent_document(key, as_typecast)
+          instance_variable_set :"@#{key.name}", as_typecast
+          instance_variable_set :"@#{key.name}_before_type_cast", value
+          @attributes = nil
         end
 
-        def write_key(name, value)
-          key = keys[name.to_s]
-          set_parent_document(key, value)
-          instance_variable_set :"@#{name}_before_type_cast", value
-          instance_variable_set :"@#{name}", key.set(value)
+        def initialize_default_values
+          keys.values.each do |key|
+            write_key key.name, key.default_value if key.default?
+          end
         end
+      #end private
     end
   end
 end

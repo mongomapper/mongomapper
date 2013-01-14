@@ -6,7 +6,7 @@ A Ruby Object Mapper for Mongo.
 
     $ gem install mongo_mapper
 
-== Note on Patches/Pull Requests
+== Contributing
 
 * Fork the project.
 * Make your feature addition or bug fix.

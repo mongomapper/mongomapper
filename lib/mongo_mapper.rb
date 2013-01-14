@@ -20,6 +20,7 @@ module MongoMapper
   autoload :Plugins,                'mongo_mapper/plugins'
   autoload :Translation,            'mongo_mapper/translation'
   autoload :Version,                'mongo_mapper/version'
+  autoload :Utils,                  'mongo_mapper/utils'
 
   module Middleware
     autoload :IdentityMap, 'mongo_mapper/middleware/identity_map'
@@ -56,6 +57,7 @@ module MongoMapper
     autoload :Timestamps,         'mongo_mapper/plugins/timestamps'
     autoload :Userstamps,         'mongo_mapper/plugins/userstamps'
     autoload :Validations,        'mongo_mapper/plugins/validations'
+    autoload :Touch,              'mongo_mapper/plugins/touch'
 
     module Associations
       autoload :Base,                         'mongo_mapper/plugins/associations/base'

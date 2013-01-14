@@ -482,6 +482,30 @@ class QueryingTesting < Test::Unit::TestCase
     end
   end
 
+  context ".size" do
+    should "return 0 if no documents" do
+      @document.count.should == 0
+    end
+
+    should "return the number of documents" do
+      @doc1 = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
+      @doc2 = @document.create({:first_name => 'Steve', :last_name => 'Smith', :age => '28'})
+      @doc3 = @document.create({:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26'})
+      @document.count.should == 3
+    end
+  end
+
+  context ".empty?" do
+    should "be true if no documents" do
+      @document.empty?.should be_true
+    end
+
+    should "be false if documents present" do
+      @doc = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
+      @document.empty?.should be_false
+    end
+  end
+
   context ".exists?" do
     setup do
       @doc = @document.create(:first_name => "James", :age => 27)
@@ -505,6 +529,19 @@ class QueryingTesting < Test::Unit::TestCase
     end
   end
 
+  context "to_a" do
+    should "return an array" do
+      @document.to_a.class.should == Array
+    end
+
+    should "return everything" do
+      @doc1 = @document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
+      @doc2 = @document.create({:first_name => 'Steve', :last_name => 'Smith', :age => '28'})
+      @doc3 = @document.create({:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26'})
+      @document.to_a.size.should == 3
+    end
+  end
+
   context ".where" do
     setup do
       @doc1 = @document.create(:first_name => 'John',  :last_name => 'Nunemaker', :age => '27')
@@ -522,6 +559,41 @@ class QueryingTesting < Test::Unit::TestCase
 
     should "be chainable" do
       @query.sort(:age).first.should == @doc3
+    end
+
+    context "with methods from MongoMapper::Plugins::Querying" do
+      should "delete" do
+        lambda do
+          @document.where(:first_name => 'Steve').delete(@doc1.id, @doc2.id)
+        end.should change { @document.count }.by(-1)
+        @document.all(:order => 'first_name').should == [@doc1, @doc3]
+      end
+
+      should "delete_all" do
+        lambda do
+          @document.where(:first_name => 'Steph').delete_all(:last_name => "Nunemaker")
+        end.should change { @document.count }.by(-1)
+        @document.all(:order => 'first_name').should == [@doc1, @doc2]
+      end
+
+      should "destroy" do
+        lambda do
+          @document.where(:first_name => 'Steve').destroy(@doc1.id, @doc2.id)
+        end.should raise_error(MongoMapper::DocumentNotFound)
+        @document.count.should == 3
+
+        lambda do
+          @document.where(:last_name => 'Nunemaker').destroy(@doc1.id, @doc3.id)
+        end.should change { @document.count }.by(-2)
+        @document.all.should == [@doc2]
+      end
+
+      should "destroy_all" do
+        lambda do
+          @document.where(:first_name => 'Steph').destroy_all(:last_name => "Nunemaker")
+        end.should change { @document.count }.by(-1)
+        @document.all(:order => 'first_name').should == [@doc1, @doc2]
+      end
     end
   end
 

@@ -14,3 +14,6 @@ doc
 *.rbc
 Gemfile.lock
 .project
+bin
+vendor/gems
+!bin/mmconsole

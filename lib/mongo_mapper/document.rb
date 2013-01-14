@@ -29,9 +29,11 @@ module MongoMapper
     include Plugins::Serialization
     include Plugins::Timestamps
     include Plugins::Userstamps
+    include Plugins::Touch
     include Plugins::Validations
     include Plugins::EmbeddedCallbacks
     include Plugins::Callbacks # for now callbacks needs to be after validations
+    include Plugins::IdentityMap
 
     included do
       extend Plugins

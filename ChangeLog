@@ -1,3 +1,31 @@
+0.12.0 - 2012-09-12
+
+  * Identity map is now more opt-in. Middleware turns it on, but it stays off for background jobs and such without explicit intervention.
+  * Update to latest version of plucky
+  * Rails 3.2 support
+  * Support new mongo hosts option format
+  * A few bug fixes
+
+0.11.1 - 2012-03-30
+
+  Enhancements:
+
+    * Add ActiveRecord-style #touch to documents and associations
+    * Add options to atomic modifiers that are passed to the driver
+
+        Page.increment({:title => "Hello World"}, {:comment_count => 1}, {:upsert => true})
+
+  Bug Fixes:
+
+    * Stop raising error if MongoMapper.database is nil
+    * Delegate :distinct, :size, :reverse, :offset, :order, :empty?, :filter,
+      :find_one, :per_page, :ignore, :only, and :to_a on Document to query
+    * Fix for EmbeddedDocument#inspect [#373]
+    * Ensure milliseconds are preserved with time values [#308]
+    * Allow MongoMapper.setup to accept a symbol for the environment name
+
+  https://github.com/jnunemaker/mongomapper/compare/v0.11.0...v0.11.1
+
 0.11.0 - 2012-01-26
 
   Enhancements:

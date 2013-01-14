@@ -13,7 +13,7 @@ module MongoMapper
           finder.attributes.each_with_index do |attr, index|
             attributes[attr] = args[index]
           end
-
+          
           options = args.extract_options!.merge(attributes)
 
           if result = send(finder.finder, options)

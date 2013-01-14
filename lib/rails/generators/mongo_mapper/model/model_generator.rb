@@ -4,10 +4,14 @@ module MongoMapper
   module Generators
     class ModelGenerator < Rails::Generators::NamedBase
       desc 'Creates a mongomapper model'
+
       argument :name, :type => :string
       argument :attributes, :type => :array, :default => [], :banner => "field:type field:type"
-      class_option :timestamps, :type => :boolean
+
       check_class_collision
+
+      class_option :timestamps, :type => :boolean
+      class_option :parent,     :type => :string, :desc => "The parent class for the generated model"
 
       def self.source_root
         @source_root ||= File.expand_path("../templates", __FILE__)
@@ -18,6 +22,19 @@ module MongoMapper
       end
 
       hook_for :test_framework
+
+      protected
+
+        def parent_class_name
+          options[:parent]
+        end
+
+        # Rails 3.0.X compatibility
+        unless methods.include?(:module_namespacing)
+          def module_namespacing(&block)
+            yield if block
+          end
+        end
     end
   end
 end

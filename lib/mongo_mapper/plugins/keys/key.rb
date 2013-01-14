@@ -3,14 +3,27 @@ module MongoMapper
   module Plugins
     module Keys
       class Key
-        attr_accessor :name, :type, :options, :default_value, :abbr
 
+        # Altered From Master by DS.
+        # Storing :abbr, the key's abbreviation when stored in the DB
+        attr_accessor :name, :type, :options, :default, :abbr
+
+        ID_STR = '_id'
+
+        # Altered From Master by DS.
+        # Need to set self.abbr if included in key's optoins.
         def initialize(*args)
-          options = args.extract_options!
+          options_from_args = args.extract_options!
           @name, @type = args.shift.to_s, args.shift
-          self.options = (options || {}).symbolize_keys
-          self.default_value = self.options[:default]
-          self.abbr = self.options[:abbr]
+          self.options = (options_from_args || {}).symbolize_keys
+
+          if options.key?(:default)
+            self.default = self.options[:default]
+          end
+          
+          if options.key?(:abbr)
+            self.abbr = self.options[:abbr]
+          end
         end
 
         def ==(other)
@@ -18,26 +31,29 @@ module MongoMapper
         end
 
         def embeddable?
-          return false unless type.respond_to?(:embeddable?)
-          type.embeddable?
+          # This is ugly, but it's fast. We can't use ||= because false is an expected and common value.
+          @embeddable = @embeddable != nil ? @embeddable : begin
+            if type.respond_to?(:embeddable?)
+              type.embeddable?
+            else
+              false
+            end
+          end
         end
 
         def number?
           type == Integer || type == Float
         end
 
-        def get(value)
-          if value.nil? && !default_value.nil?
-            if default_value.respond_to?(:call)
-              return default_value.call
-            else
-              # Using Marshal is easiest way to get a copy of mutable objects
-              # without getting an error on immutable objects
-              return Marshal.load(Marshal.dump(default_value))
-            end
-          end
+        def default?
+          options.key?(:default)
+        end
 
-          if options[:typecast].present?
+        def get(value)
+          # Special Case: Generate default _id on access
+          value = default_value if value.nil? and name == ID_STR
+
+          if options[:typecast]
             type.from_mongo(value).map! { |v| typecast_class.from_mongo(v) }
           else
             type.from_mongo(value)
@@ -46,9 +62,21 @@ module MongoMapper
 
         def set(value)
           type.to_mongo(value).tap do |values|
-            if options[:typecast].present?
+            if options[:typecast]
               values.map! { |v| typecast_class.to_mongo(v) }
             end
+          end
+        end
+
+        def default_value
+          return unless default?
+
+          if default.respond_to?(:call)
+            default.call
+          else
+            # Using Marshal is easiest way to get a copy of mutable objects
+            # without getting an error on immutable objects
+            Marshal.load(Marshal.dump(default))
           end
         end
 

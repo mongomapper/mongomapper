@@ -3,9 +3,14 @@ require 'uri'
 
 module MongoMapper
   module Connection
+    @@connection    = nil
+    @@database      = nil
+    @@database_name = nil
+    @@config        = nil
+
     # @api public
     def connection
-      @@connection ||= Mongo::Connection.new
+      @@connection ||= Mongo::MongoClient.new
     end
 
     # @api public
@@ -26,9 +31,7 @@ module MongoMapper
 
     # @api public
     def database
-      if @@database_name.blank?
-        raise 'You forgot to set the default database name: MongoMapper.database = "foobar"'
-      end
+      return nil if @@database_name.blank?
 
       @@database ||= MongoMapper.connection.db(@@database_name)
     end
@@ -62,14 +65,22 @@ module MongoMapper
       raise 'Set config before connecting. MongoMapper.config = {...}' if config.blank?
       env = config_for_environment(environment)
 
-      if env['options'].is_a? Hash
+      if env['options'].is_a?(Hash)
         options = env['options'].symbolize_keys.merge(options)
       end
 
+      if env.key?('ssl')
+        options[:ssl] = env['ssl']
+      end
+
       MongoMapper.connection = if env['hosts']
-        Mongo::ReplSetConnection.new( *env['hosts'].push(options) )
+        if env['hosts'].first.is_a?(String)
+          Mongo::MongoReplicaSetClient.new( env['hosts'], options )
+        else
+          Mongo::MongoReplicaSetClient.new( *env['hosts'].push(options) )
+        end
       else
-        Mongo::Connection.new(env['host'], env['port'], options)
+        Mongo::MongoClient.new(env['host'], env['port'], options)
       end
 
       MongoMapper.database = env['database']

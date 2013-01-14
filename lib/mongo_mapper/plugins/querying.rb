@@ -1,6 +1,5 @@
 # encoding: UTF-8
 require 'mongo_mapper/plugins/querying/decorator'
-require 'mongo_mapper/plugins/querying/plucky_methods'
 
 module MongoMapper
   module Plugins
@@ -8,11 +7,9 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       module ClassMethods
-        include PluckyMethods
+        extend Forwardable
 
-        def find_each(opts={})
-          super(opts).each { |doc| yield(doc) }
-        end
+        def_delegators :query, *Querying::Methods
 
         def find_by_id(id)
           find_one(:_id => id)
@@ -43,22 +40,6 @@ module MongoMapper
           end
         end
 
-        def delete(*ids)
-          query(:_id => ids.flatten).remove
-        end
-
-        def delete_all(options={})
-          query(options).remove
-        end
-
-        def destroy(*ids)
-          find_some!(ids.flatten).each { |doc| doc.destroy }
-        end
-
-        def destroy_all(options={})
-          find_each(options) { |document| document.destroy }
-        end
-
         # @api private for now
         def query(options={})
           query = Plucky::Query.new(collection, :transformer => transformer)
@@ -81,7 +62,7 @@ module MongoMapper
 
           def find_some(ids, options={})
             query = query(options).amend(:_id => ids.flatten.compact.uniq)
-            find_many(query.to_hash).compact
+            query.all
           end
 
           def find_some!(ids, options={})
@@ -93,16 +74,6 @@ module MongoMapper
             end
 
             docs
-          end
-
-          # All query methods that load documents pass through find_one or find_many
-          def find_one(options={})
-            query(options).first
-          end
-
-          # All query methods that load documents pass through find_one or find_many
-          def find_many(options)
-            query(options).all
           end
 
           def initialize_each(*docs)
@@ -171,7 +142,7 @@ module MongoMapper
 
         def save_to_collection(options={})
           @_new = false
-          collection.save(to_mongo, :safe => options[:safe])
+          collection.save(to_mongo, Utils.get_safe_options(options))
         end
     end
   end

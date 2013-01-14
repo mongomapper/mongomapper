@@ -14,7 +14,7 @@ module MongoMapper
       plugins << mod
     end
 
-    def included(base = nil, &block)
+    def included(base = nil)
       direct_descendants << base if base
       super
     end

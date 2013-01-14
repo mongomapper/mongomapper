@@ -4,7 +4,8 @@ module MongoMapper
     module Associations
       class ManyDocumentsProxy < Collection
         include DynamicQuerying::ClassMethods
-        include Querying::PluckyMethods
+
+        def_delegators :query, *(Querying::Methods - [:each, :to_a, :size, :empty?])
 
         def replace(docs)
           load_target
@@ -68,6 +69,10 @@ module MongoMapper
 
         def save_to_collection(options={})
           @target.each { |doc| doc.save(options) } if @target
+        end
+
+        def each(&block)
+          load_target.each(&block)
         end
 
         protected

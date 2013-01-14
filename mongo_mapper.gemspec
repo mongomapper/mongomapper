@@ -3,7 +3,7 @@ require File.expand_path('../lib/mongo_mapper/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name               = 'mongo_mapper'
-  s.homepage           = 'http://github.com/jnunemaker/mongomapper'
+  s.homepage           = 'http://mongomapper.com'
   s.summary            = 'A Ruby Object Mapper for Mongo'
   s.require_path       = 'lib'
   s.authors            = ['John Nunemaker']
@@ -13,7 +13,8 @@ Gem::Specification.new do |s|
   s.platform           = Gem::Platform::RUBY
   s.files              = Dir.glob("{bin,examples,lib,rails,test}/**/*") + %w[LICENSE UPGRADES README.rdoc]
 
-  s.add_dependency 'activemodel',             '~> 3.0'
-  s.add_dependency 'activesupport',           '~> 3.0'
-  s.add_dependency 'plucky',                  '~> 0.4.0'
+  s.add_dependency 'activemodel',   '~> 3.0'
+  s.add_dependency 'activesupport', '~> 3.0'
+  s.add_dependency 'plucky',        '~> 0.6.2'
+  s.add_dependency 'mongo',         '~> 1.8.0'
 end

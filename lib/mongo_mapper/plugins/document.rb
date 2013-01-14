@@ -23,7 +23,7 @@ module MongoMapper
           self.class.associations.each_value do |association|
             get_proxy(association).reset
           end
-          instance_variables.each { |ivar| instance_variable_set(ivar, nil) }
+          instance_variables.each { |ivar| remove_instance_variable(ivar) }
           load_from_database(doc)
           self
         else

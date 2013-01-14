@@ -133,4 +133,14 @@ class AssociationBaseTest < Test::Unit::TestCase
     end
   end
 
+  context "touch?" do
+    should "be true if touch" do
+      BelongsToAssociation.new(:car, :touch => true).touch?.should be_true
+    end
+
+    should "be false if not touch" do
+      BelongsToAssociation.new(:car).touch?.should be_false
+    end
+  end
+
 end
