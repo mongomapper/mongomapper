@@ -4,6 +4,11 @@ module MongoMapper
     module Timestamps
       extend ActiveSupport::Concern
 
+      included do
+        class_attribute :record_timestamps
+        self.record_timestamps = true
+      end
+
       module ClassMethods
         def timestamps!
           key :created_at, Time
@@ -13,9 +18,11 @@ module MongoMapper
       end
 
       def update_timestamps
-        now = Time.now.utc
-        self[:created_at] = now if !persisted? && !created_at?
-        self[:updated_at] = now
+        if self.record_timestamps then
+          now = Time.now.utc
+          self[:created_at] = now if !persisted? && !created_at?
+          self[:updated_at] = now
+        end
       end
     end
   end
