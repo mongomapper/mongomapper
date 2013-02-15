@@ -3,10 +3,15 @@ module MongoMapper
   module Plugins
     module Keys
       class Key
-        attr_accessor :name, :type, :options, :default
+
+        # Altered From Master by DS.
+        # Storing :abbr, the key's abbreviation when stored in the DB
+        attr_accessor :name, :type, :options, :default, :abbr
 
         ID_STR = '_id'
 
+        # Altered From Master by DS.
+        # Need to set self.abbr if included in key's optoins.
         def initialize(*args)
           options_from_args = args.extract_options!
           @name, @type = args.shift.to_s, args.shift
@@ -15,10 +20,14 @@ module MongoMapper
           if options.key?(:default)
             self.default = self.options[:default]
           end
+          
+          if options.key?(:abbr)
+            self.abbr = self.options[:abbr]
+          end
         end
 
         def ==(other)
-          @name == other.name && @type == other.type
+          @name == other.name && @type == other.type && @abbr == other.abbr
         end
 
         def embeddable?

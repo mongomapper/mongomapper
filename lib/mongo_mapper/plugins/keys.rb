@@ -16,16 +16,25 @@ module MongoMapper
       module ClassMethods
         def inherited(descendant)
           descendant.instance_variable_set(:@keys, keys.dup)
+          descendant.instance_variable_set(:@keys_by_abbr, keys_by_abbr.dup)
           super
         end
 
         def keys
           @keys ||= {}
         end
+        
+        # Added To Master by DS.
+        def keys_by_abbr
+          @keys_by_abbr ||= {}
+        end
 
+        # Altered From Master by DS. 
+        # Need to store abbreviation map
         def key(*args)
           Key.new(*args).tap do |key|
             keys[key.name] = key
+            keys_by_abbr[key.abbr.to_s] = key if key.abbr
             create_accessors_for(key)
             create_key_in_descendants(*args)
             create_indexes_for(key)
@@ -65,6 +74,22 @@ module MongoMapper
           rescue NameError
             self
           end.allocate.initialize_from_database(attrs)
+        end
+        
+        def key_name_for_abbr(key_abbr)
+          if key = keys_by_abbr[key_abbr.to_s]
+            key.name
+          else
+            key_abbr
+          end
+        end
+        
+        def abbr_for_key_name(key_name)
+          if key = keys[key_name.to_s]
+            key.abbr || key.name
+          else
+            key_name
+          end
         end
 
         private
@@ -210,7 +235,30 @@ module MongoMapper
           end
         end
       end
-      alias :to_mongo :attributes
+      
+      # Altered From Master by DS.
+      # MongoMapper aliases this to attributes.  But when storing, we need to store using abbreviation.
+      # So there is a small tweak when creating the Hash for simple keys.
+      def to_mongo
+        HashWithIndifferentAccess.new.tap do |attrs|
+          keys.each do |name, key|
+            if key.type == ObjectId || !self[key.name].nil?
+              value = key.set(self[key.name])
+              attrs[key.abbr || name] = value
+            end
+          end
+
+          embedded_associations.each do |association|
+            if documents = instance_variable_get(association.ivar)
+              if association.is_a?(Associations::OneAssociation)
+                attrs[association.name] = documents.to_mongo
+              else
+                attrs[association.name] = documents.map &:to_mongo
+              end
+            end
+          end
+        end
+      end
 
       def assign(attrs={})
         warn "[DEPRECATION] #assign is deprecated, use #attributes="
@@ -243,7 +291,7 @@ module MongoMapper
 
         self[:_id] = value
       end
-
+      
       def read_key(key_name)
         instance_key = :"@#{key_name}"
         if instance_variable_defined? instance_key
@@ -264,6 +312,11 @@ module MongoMapper
       def keys
         self.class.keys
       end
+      
+      # Added To Master by DS.
+      def keys_by_abbr
+        self.class.keys_by_abbr
+      end
 
       def key_names
         @key_names ||= keys.keys
@@ -278,9 +331,12 @@ module MongoMapper
       end
 
       private
+        # Altered From Master by DS.
+        # The key read from the DB is the abbreviation.  Need to store it as the full key in the model.
         def load_from_database(attrs)
           return if attrs == nil or attrs.blank?
           attrs.each do |key, value|
+            key = key_name_for_abbr(key)
             if respond_to?(:"#{key}=") && !self.class.key?(key)
               self.send(:"#{key}=", value)
             else
@@ -298,6 +354,16 @@ module MongoMapper
           if value.respond_to?(:_parent_document) && value.is_a?(key.type) && key.embeddable?
             value._parent_document = self
           end
+        end
+        
+        # Added To Master by DS.
+        def key_name_for_abbr(key)
+          self.class.key_name_for_abbr(key)
+        end
+        
+        # Added To Master by DS.
+        def abbr_for_key_name(key)
+          self.class.abbr_for_key_name(key)
         end
 
         def write_key(name, value)
