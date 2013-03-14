@@ -1,11 +1,11 @@
-require 'rubygems'
-require 'bundler/setup'
+$:.unshift(File.expand_path('../../lib', __FILE__))
 
-require 'mongo_mapper'
 require 'fileutils'
-require 'ostruct'
+require 'rubygems'
 
 Bundler.require(:default, :test)
+
+require 'mongo_mapper'
 
 class Test::Unit::TestCase
   def Doc(name='Class', &block)
