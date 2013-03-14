@@ -179,7 +179,7 @@ module MongoMapper
       end
 
       def attributes=(attrs)
-        return if attrs == nil or attrs.blank?
+        return if attrs == nil || attrs.blank?
 
         attrs.each_pair do |key, value|
           if respond_to?(:"#{key}=")
@@ -204,7 +204,7 @@ module MongoMapper
               if association.is_a?(Associations::OneAssociation)
                 attrs[association.name] = documents.to_mongo
               else
-                attrs[association.name] = documents.map &:to_mongo
+                attrs[association.name] = documents.map(&:to_mongo)
               end
             end
           end
@@ -274,12 +274,12 @@ module MongoMapper
       end
 
       def embedded_keys
-        @embedded_keys ||= keys.values.select &:embeddable?
+        @embedded_keys ||= keys.values.select(&:embeddable?)
       end
 
       private
         def load_from_database(attrs)
-          return if attrs == nil or attrs.blank?
+          return if attrs == nil || attrs.blank?
           attrs.each do |key, value|
             if respond_to?(:"#{key}=") && !self.class.key?(key)
               self.send(:"#{key}=", value)
@@ -320,4 +320,3 @@ module MongoMapper
     end
   end
 end
-
