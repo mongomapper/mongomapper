@@ -1,4 +1,4 @@
-source :rubygems
+source 'https://rubygems.org'
 gemspec
 
 gem 'rake'
@@ -11,6 +11,6 @@ group :test do
   gem 'jnunemaker-matchy', '~> 0.4', :require => 'matchy'
   gem 'shoulda',           '~> 2.11'
   gem 'timecop',           '~> 0.3'
-  gem 'mocha',             '~> 0.10'
+  gem 'mocha',             '~> 0.10.0'
   gem 'rack-test',         '~> 0.6'
 end
