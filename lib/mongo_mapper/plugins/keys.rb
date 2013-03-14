@@ -289,7 +289,6 @@ module MongoMapper
           end
         end
 
-
         def ensure_key_exists(name)
           self.class.key(name) unless respond_to?(:"#{name}=")
         end
