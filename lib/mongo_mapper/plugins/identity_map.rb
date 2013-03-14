@@ -65,7 +65,7 @@ module MongoMapper
               document
             else
               super.tap do |doc|
-                doc.remove_from_identity_map if doc and query.fields?
+                doc.remove_from_identity_map if doc && query.fields?
               end
             end
           end
@@ -73,7 +73,7 @@ module MongoMapper
           def find_each(opts={})
             query = clone.amend(opts)
             super(opts) do |doc|
-              doc.remove_from_identity_map if doc and query.fields?
+              doc.remove_from_identity_map if doc && query.fields?
               yield doc if block_given?
             end
           end
