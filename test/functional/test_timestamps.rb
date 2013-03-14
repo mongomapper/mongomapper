@@ -83,12 +83,12 @@ class TimestampsTest < Test::Unit::TestCase
         @klass.record_timestamps = true
       end
 
-      should "doesn't set updated_at on document create" do
+      should "not set created_at on document create" do
         doc = @klass.create(:first_name => "John")
         doc.created_at.should be_nil
       end
 
-      should "doesn't set updated_at on document create" do
+      should "not set updated_at on document create" do
         doc = @klass.create(:first_name => "John")
         doc.updated_at.should be_nil
       end
