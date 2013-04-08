@@ -68,6 +68,7 @@ module MongoMapper
       if env['options'].is_a?(Hash)
         options = env['options'].symbolize_keys.merge(options)
       end
+      options[:read] = options[:read].to_sym if options[:read].is_a? String
 
       if env.key?('ssl')
         options[:ssl] = env['ssl']
