@@ -148,7 +148,10 @@ class ScopesTest < Test::Unit::TestCase
         Item.collection.remove
 
         class ::Page < ::Item; end
-        class ::Blog < ::Item; end
+        class ::Blog < ::Item
+          key :slug, String
+          scope :by_slug, lambda { |slug| {:slug => slug} }
+        end
       end
 
       teardown do
@@ -165,6 +168,11 @@ class ScopesTest < Test::Unit::TestCase
         item = Item.create(:title => 'Home')
         page = Page.create(:title => 'Home')
         Page.by_title('Home').first.should == page
+      end
+
+      should "limit subclass scopes to subclasses" do
+        Item.scopes.keys.map(&:to_s).sort.should == %w(by_title published)
+        Blog.scopes.keys.map(&:to_s).sort.should == %w(by_slug by_title published)
       end
     end
   end
