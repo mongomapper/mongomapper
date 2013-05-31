@@ -19,7 +19,7 @@ module MongoMapper
         end
 
         def scopes
-          self._scopes || self._scopes = {}
+          self._scopes ||= {}
         end
       end
     end
