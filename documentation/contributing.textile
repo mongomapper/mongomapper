@@ -22,7 +22,7 @@ $ sudo easy_install Pygments
 {% endhighlight %}
 # Run the Jekyll server
 {% highlight sh %}
-jekyll --auto --server
+jekyll serve --watch
 {% endhighlight %}
 # Open up http://localhost:4000/ in your web browser
 # Make your documentation changes
