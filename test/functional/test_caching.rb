@@ -4,8 +4,7 @@ class CachingTest < Test::Unit::TestCase
   context "Caching" do
     setup do
       @klass = Class.new do
-        extend MongoMapper::Plugins
-        plugin MongoMapper::Plugins::Caching
+        include MongoMapper::Document
       end
       @klass.stubs(:name).returns('Post')
       @klass.any_instance.stubs(:persisted?).returns(true)
