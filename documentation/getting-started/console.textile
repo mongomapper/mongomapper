@@ -14,7 +14,7 @@ Example 1:
   things.insert("name" => "Another Thing", "date" => Time.now)
 
   cursor = things.find("name" => "Raw Thing")
-  puts cursor.next_object.inspect
+  puts cursor.next.inspect
 
 Example 2:
   class Thing
