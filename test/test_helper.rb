@@ -4,7 +4,7 @@ require 'fileutils'
 require 'rubygems'
 
 Bundler.require(:default, :test)
-
+require 'mocha/setup'
 require 'mongo_mapper'
 
 class Test::Unit::TestCase
