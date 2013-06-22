@@ -171,13 +171,13 @@ module MongoMapper
 
       def initialize(attrs={})
         @_new = true
-        initialize_default_values
+        initialize_default_values(attrs)
         self.attributes = attrs
       end
 
       def initialize_from_database(attrs={})
         @_new = false
-        initialize_default_values
+        initialize_default_values(attrs)
         load_from_database(attrs)
         self
       end
@@ -325,11 +325,12 @@ module MongoMapper
           @attributes = nil
         end
 
-        def initialize_default_values
+        def initialize_default_values(except = {})
           # Init the keys ivar. Due to the volume of times this method is called, we don't want it in a method.
           @keys = self.class.keys
 
           self.class.default_keys.each do |key|
+            next if except && except.key?(key.name)
             internal_write_key key.name, key.default_value, false
           end
         end
