@@ -11,11 +11,11 @@ module MongoMapper
       end
 
       def new?
-        @_new
+        !!(@_new ||= false)
       end
 
       def destroyed?
-        @_destroyed == true
+        !!(@_destroyed ||= false)
       end
 
       def reload

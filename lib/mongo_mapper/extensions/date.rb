@@ -3,10 +3,10 @@ module MongoMapper
   module Extensions
     module Date
       def to_mongo(value)
-        if value.nil? || value == ''
+        if value.nil? || (value.instance_of?(String) && '' === value)
           nil
         else
-          date = value.is_a?(::Date) || value.is_a?(::Time) ? value : ::Date.parse(value.to_s)
+          date = value.instance_of?(::Date) || value.instance_of?(::Time) ? value : ::Date.parse(value.to_s)
           ::Time.utc(date.year, date.month, date.day)
         end
       rescue
@@ -14,7 +14,7 @@ module MongoMapper
       end
 
       def from_mongo(value)
-        value.to_date if value.present?
+        value.to_date if value
       end
     end
   end

@@ -11,14 +11,6 @@ module MongoMapper
         super.tap { changed_attributes.delete('_id') }
       end
 
-      def initialize_from_database(*)
-        @initializing_from_database = true
-        super.tap {
-          changed_attributes.clear
-          @initializing_from_database = false
-        }
-      end
-
       def save(*)
         clear_changes { super }
       end
@@ -47,10 +39,10 @@ module MongoMapper
       private
 
       def write_key(key, value)
-        if @initializing_from_database
+        key = key.to_s
+        if !keys.key?(key)
           super
         else
-          key = key.to_s
           attribute_will_change!(key) unless attribute_changed?(key)
           super.tap do
             changed_attributes.delete(key) unless attribute_value_changed?(key)

@@ -78,10 +78,8 @@ module MongoMapper
       end
 
       def get_proxy(association)
-        unless proxy = self.instance_variable_get(association.ivar)
-          proxy = build_proxy(association)
-        end
-        proxy
+        proxy = self.instance_variable_get(association.ivar) if instance_variable_defined?(association.ivar)
+        proxy ||= build_proxy(association)
       end
 
       def save_to_collection(options={})

@@ -24,7 +24,7 @@ class ScopesTest < Test::Unit::TestCase
       end
 
       should "return a plucky query" do
-        @document.old.should be_instance_of(Plucky::Query)
+        @document.old.should be_kind_of(Plucky::Query)
       end
 
       should "work" do
