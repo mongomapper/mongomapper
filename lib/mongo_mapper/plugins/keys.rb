@@ -287,7 +287,10 @@ module MongoMapper
       private
         def load_from_database(attrs)
           return if attrs == nil || attrs.blank?
+
+          # Init the keys ivar. Due to the volume of times this method is called, we don't want it in a method.
           @keys = self.class.keys
+
           attrs.each do |key, value|
             if !@keys.key?(key) && respond_to?(:"#{key}=")
               self.send(:"#{key}=", value)
@@ -323,7 +326,9 @@ module MongoMapper
         end
 
         def initialize_default_values
+          # Init the keys ivar. Due to the volume of times this method is called, we don't want it in a method.
           @keys = self.class.keys
+
           self.class.default_keys.each do |key|
             internal_write_key key.name, key.default_value, false
           end
