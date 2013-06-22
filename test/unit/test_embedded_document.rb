@@ -491,15 +491,9 @@ class EmbeddedDocumentTest < Test::Unit::TestCase
         end
 
         should "be accessible for use in a document" do
-          @document.class_eval do
-            def untypcasted_name
-              @name_before_type_cast
-            end
-          end
-
           doc = @document.new(:name => 12)
           doc.name.should == '12'
-          doc.untypcasted_name.should == 12
+          doc.name_before_type_cast.should == 12
         end
       end
 

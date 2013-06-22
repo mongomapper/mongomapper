@@ -3,7 +3,7 @@ module MongoMapper
   module Plugins
     module Keys
       class Key
-        attr_accessor :name, :type, :options, :default
+        attr_accessor :name, :type, :options, :default, :ivar
 
         ID_STR = '_id'
 
@@ -11,6 +11,7 @@ module MongoMapper
           options_from_args = args.extract_options!
           @name, @type = args.shift.to_s, args.shift
           self.options = (options_from_args || {}).symbolize_keys
+          @ivar = :"@#{name}"  # Optimization - used to avoid spamming #intern from internal_write_keys
 
           if options.key?(:default)
             self.default = self.options[:default]
@@ -23,7 +24,8 @@ module MongoMapper
 
         def embeddable?
           # This is ugly, but it's fast. We can't use ||= because false is an expected and common value.
-          @embeddable = @embeddable != nil ? @embeddable : begin
+          return @embeddable if @embeddable != nil
+          @embeddable = begin
             if type.respond_to?(:embeddable?)
               type.embeddable?
             else
@@ -42,7 +44,7 @@ module MongoMapper
 
         def get(value)
           # Special Case: Generate default _id on access
-          value = default_value if value.nil? and name == ID_STR
+          value = default_value if !value and name === ID_STR
 
           if options[:typecast]
             type.from_mongo(value).map! { |v| typecast_class.from_mongo(v) }
@@ -52,22 +54,20 @@ module MongoMapper
         end
 
         def set(value)
-          type.to_mongo(value).tap do |values|
-            if options[:typecast]
-              values.map! { |v| typecast_class.to_mongo(v) }
-            end
-          end
+          # Avoid tap here so we don't have to create a block binding.
+          values = type.to_mongo(value)
+          values.map! { |v| typecast_class.to_mongo(v) } if options[:typecast]
+          values
         end
 
         def default_value
           return unless default?
-
-          if default.respond_to?(:call)
-            default.call
+          if default.instance_of? Proc
+            type.to_mongo default.call
           else
             # Using Marshal is easiest way to get a copy of mutable objects
             # without getting an error on immutable objects
-            Marshal.load(Marshal.dump(default))
+            type.to_mongo Marshal.load(Marshal.dump(default))
           end
         end
 
