@@ -41,16 +41,16 @@ module MongoMapper
 
       # We don't call super here to avoid invoking #attributes, which builds a whole new hash per call.
       def attribute_method?(attr_name)
-        keys.key?(attr_name) || !embedded_associations.detect {|a| a.name == attr_name }.nil?
+        @keys.key?(attr_name) || !embedded_associations.detect {|a| a.name == attr_name }.nil?
       end
 
       private
 
       def write_key(key, value)
-        if @initializing_from_database
+        key = key.to_s
+        if @initializing_from_database or !@keys.key?(key)
           super
         else
-          key = key.to_s
           attribute_will_change!(key) unless attribute_changed?(key)
           super.tap do
             changed_attributes.delete(key) unless attribute_value_changed?(key)
