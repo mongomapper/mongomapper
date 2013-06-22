@@ -57,34 +57,10 @@ module MongoMapper
           IdentityMap.repository[IdentityMap.key(self, id)]
         end
 
-        module IdentityMapQueryMethods
-          def find_one(opts={})
-            query = clone.amend(opts)
-
-            if IdentityMap.enabled? && query.simple? && (document = model.get_from_identity_map(query[:_id]))
-              document
-            else
-              super.tap do |doc|
-                doc.remove_from_identity_map if doc && query.fields?
-              end
-            end
-          end
-
-          def find_each(opts={})
-            query = clone.amend(opts)
-            super(opts) do |doc|
-              doc.remove_from_identity_map if doc && query.fields?
-              yield doc if block_given?
-            end
-          end
-
-          # Ensure that these aliased methods in plucky also get overridden.
-          alias_method :first, :find_one
-          alias_method :each, :find_each
-        end
-
         def query(opts={})
-          super.extend(IdentityMapQueryMethods)
+          super.tap do |query|
+            query.identity_map = self if Thread.current[:mongo_mapper_identity_map_enabled]
+          end
         end
 
         def remove_documents_from_map(*documents)
@@ -94,10 +70,11 @@ module MongoMapper
         end
 
         def load(attrs)
-          return nil if attrs.nil?
+          return super unless Thread.current[:mongo_mapper_identity_map_enabled]
+          return nil unless attrs
           document = get_from_identity_map(attrs['_id'])
 
-          if document.nil?
+          if !document
             document = super
             document.add_to_identity_map
           end
@@ -127,6 +104,43 @@ module MongoMapper
           IdentityMap.repository.delete(key)
         end
       end
+
+      module PluckyMethods
+        module ClassMethods
+          extend ActiveSupport::Concern
+
+          included do
+            attr_accessor :identity_map
+          end
+
+          def find_one(opts={})
+            query = clone.amend(opts)
+
+            if identity_map && query.simple? && (document = identity_map.get_from_identity_map(query[:_id]))
+              document
+            else
+              super.tap do |doc|
+                doc.remove_from_identity_map if doc && query.fields?
+              end
+            end
+          end
+
+          def find_each(opts={})
+            query = clone.amend(opts)
+            super(opts) do |doc|
+              doc.remove_from_identity_map if doc && query.fields?
+              yield doc if block_given?
+            end
+          end
+
+          # Ensure that these aliased methods in plucky also get overridden.
+          alias_method :first, :find_one
+          alias_method :each, :find_each
+        end
+
+      end
     end
   end
 end
+
+::MongoMapper::Plugins::Querying::DecoratedPluckyQuery.send :include, MongoMapper::Plugins::IdentityMap::PluckyMethods::ClassMethods
