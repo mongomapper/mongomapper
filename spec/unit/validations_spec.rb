@@ -177,7 +177,7 @@ describe "Validations" do
           doc.should_not have_error_on(:action)
 
           doc.action = 'kick'
-          doc.should have_error_on(:action, 'is reserved')
+          doc.should have_error_on(:action).with_message('is reserved')
         end
 
         it "should work with :not_in shortcut on key definition" do
@@ -190,7 +190,7 @@ describe "Validations" do
           doc.should_not have_error_on(:action)
 
           doc.action = 'kick'
-          doc.should have_error_on(:action, 'is reserved')
+          doc.should have_error_on(:action).with_message('is reserved')
         end
 
         it "should not have error if allow nil is true and value is nil" do
@@ -223,10 +223,10 @@ describe "Validations" do
           @document.validates_inclusion_of :action, :in => %w(kick run)
 
           doc = @document.new
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action).with_message('is not included in the list')
 
           doc.action = 'fart'
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action).with_message('is not included in the list')
 
           doc.action = 'kick'
           doc.should_not have_error_on(:action)
@@ -236,10 +236,10 @@ describe "Validations" do
           @document.key :action, String, :in => %w(kick run)
 
           doc = @document.new
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action).with_message('is not included in the list')
 
           doc.action = 'fart'
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action).with_message('is not included in the list')
 
           doc.action = 'kick'
           doc.should_not have_error_on(:action)
@@ -249,7 +249,7 @@ describe "Validations" do
           @document.key :flag, Boolean, :required => true
 
           doc = @document.new
-          doc.should have_error_on(:flag, 'is not included in the list')
+          doc.should have_error_on(:flag).with_message('is not included in the list')
 
           doc.flag = true
           doc.should_not have_error_on(:action)
@@ -449,7 +449,7 @@ describe "Validations" do
           doc.should_not have_error_on(:action)
 
           doc.action = 'kick'
-          doc.should have_error_on(:action, 'is reserved')
+          doc.should have_error_on(:action).with_message('is reserved')
         end
 
         it "should work with :not_in shortcut on key definition" do
@@ -462,7 +462,7 @@ describe "Validations" do
           doc.should_not have_error_on(:action)
 
           doc.action = 'kick'
-          doc.should have_error_on(:action, 'is reserved')
+          doc.should have_error_on(:action).with_message('is reserved')
         end
 
         it "should not have error if allow nil is true and value is nil" do
@@ -495,10 +495,10 @@ describe "Validations" do
           @embedded_doc.validates_inclusion_of :action, :in => %w(kick run)
 
           doc = @embedded_doc.new
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action).with_message('is not included in the list')
 
           doc.action = 'fart'
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action).with_message('is not included in the list')
 
           doc.action = 'kick'
           doc.should_not have_error_on(:action)
@@ -508,10 +508,10 @@ describe "Validations" do
           @embedded_doc.key :action, String, :in => %w(kick run)
 
           doc = @embedded_doc.new
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action).with_message('is not included in the list')
 
           doc.action = 'fart'
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action).with_message('is not included in the list')
 
           doc.action = 'kick'
           doc.should_not have_error_on(:action)
