@@ -200,7 +200,7 @@ module MongoMapper
 
       def attributes
         HashWithIndifferentAccess.new.tap do |attrs|
-          @keys.each do |name, key|
+          keys.each do |name, key|
             if key.type == ObjectId || !self[key.name].nil?
               value = key.set(self[key.name])
               attrs[name] = value
@@ -253,7 +253,7 @@ module MongoMapper
       end
 
       def keys
-        @keys ||= self.class.keys
+        self.class.keys
       end
 
       def read_key(key_name)
@@ -273,15 +273,15 @@ module MongoMapper
       end
 
       def key_names
-        @key_names ||= @keys.keys
+        @key_names ||= keys.keys
       end
 
       def non_embedded_keys
-        @non_embedded_keys ||= @keys.values.select { |key| !key.embeddable? }
+        @non_embedded_keys ||= keys.values.select { |key| !key.embeddable? }
       end
 
       def embedded_keys
-        @embedded_keys ||= @keys.values.select(&:embeddable?)
+        @embedded_keys ||= keys.values.select(&:embeddable?)
       end
 
       private
@@ -289,10 +289,10 @@ module MongoMapper
           return if attrs == nil || attrs.blank?
 
           # Init the keys ivar. Due to the volume of times this method is called, we don't want it in a method.
-          @keys = self.class.keys
+          @_mm_keys = self.class.keys
 
           attrs.each do |key, value|
-            if !@keys.key?(key) && respond_to?(:"#{key}=")
+            if !@_mm_keys.key?(key) && respond_to?(:"#{key}=")
               self.send(:"#{key}=", value)
             else
               internal_write_key key, value, false
@@ -309,12 +309,11 @@ module MongoMapper
         # This exists to be patched over by plugins, while letting us still get to the undecorated
         # version of the method.
         def write_key(name, value)
-          internal_write_key(name, value)
+          internal_write_key(name.to_s, value)
         end
 
         def internal_write_key(name, value, cast = true)
-          name        = name.to_s
-          key         = @keys[name] || self.class.key(name)
+          key         = @_mm_keys[name] || self.class.key(name)
           as_mongo    = cast ? key.set(value) : value
           as_typecast = key.get(as_mongo)
           if key.embeddable?
@@ -327,7 +326,7 @@ module MongoMapper
 
         def initialize_default_values(except = {})
           # Init the keys ivar. Due to the volume of times this method is called, we don't want it in a method.
-          @keys = self.class.keys
+          @_mm_keys = self.class.keys
 
           self.class.default_keys.each do |key|
             next if except && except.key?(key.name)
