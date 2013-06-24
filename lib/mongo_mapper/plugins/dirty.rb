@@ -33,7 +33,7 @@ module MongoMapper
 
       # We don't call super here to avoid invoking #attributes, which builds a whole new hash per call.
       def attribute_method?(attr_name)
-        @_mm_keys.key?(attr_name) || !embedded_associations.detect {|a| a.name == attr_name }.nil?
+        keys.key?(attr_name) || !embedded_associations.detect {|a| a.name == attr_name }.nil?
       end
 
       private

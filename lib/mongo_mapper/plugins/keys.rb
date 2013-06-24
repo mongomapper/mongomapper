@@ -298,6 +298,8 @@ module MongoMapper
               internal_write_key key, value, false
             end
           end
+
+          @_mm_keys = nil  # If we don't nil this, it causes problems for Marshal#dump
         end
 
         def set_parent_document(key, value)
@@ -332,6 +334,8 @@ module MongoMapper
             next if except && except.key?(key.name)
             internal_write_key key.name, key.default_value, false
           end
+
+          @_mm_keys = nil  # If we don't nil this, it causes problems for Marshal#dump
         end
       #end private
     end
