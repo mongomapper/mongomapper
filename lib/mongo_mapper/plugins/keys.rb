@@ -261,7 +261,7 @@ module MongoMapper
         if instance_variable_defined? instance_key
           instance_variable_get instance_key
         elsif key = keys[key_name.to_s]
-          value = key.get instance_variable_get(instance_key)
+          value = key.get nil
           instance_variable_set instance_key, value
         end
       end

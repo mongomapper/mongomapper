@@ -12,7 +12,7 @@ module MongoMapper
 
         private
           def find_target
-            (@_values || []).map do |attrs|
+            (@_values ||= []).map do |attrs|
               klass.load(attrs).tap do |child|
                 assign_references(child)
               end

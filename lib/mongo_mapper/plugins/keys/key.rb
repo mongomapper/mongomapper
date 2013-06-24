@@ -12,6 +12,11 @@ module MongoMapper
           @name, @type = args.shift.to_s, args.shift
           self.options = (options_from_args || {}).symbolize_keys
           @ivar = :"@#{name}"  # Optimization - used to avoid spamming #intern from internal_write_keys
+          @embeddable = nil
+
+          # We'll use this to reduce the number of operations #get has to perform, which improves load speeds
+          @is_id = @name == ID_STR
+          @typecast = @options[:typecast]
 
           if options.key?(:default)
             self.default = self.options[:default]
@@ -44,10 +49,11 @@ module MongoMapper
 
         def get(value)
           # Special Case: Generate default _id on access
-          value = default_value if !value and name === ID_STR
+          value = default_value if @is_id and !value
 
-          if options[:typecast]
-            type.from_mongo(value).map! { |v| typecast_class.from_mongo(v) }
+          if @typecast
+            klass = typecast_class  # Don't make this lookup on every call
+            type.from_mongo(value).map! { |v| klass.from_mongo(v) }
           else
             type.from_mongo(value)
           end
@@ -56,7 +62,7 @@ module MongoMapper
         def set(value)
           # Avoid tap here so we don't have to create a block binding.
           values = type.to_mongo(value)
-          values.map! { |v| typecast_class.to_mongo(v) } if options[:typecast]
+          values.map! { |v| typecast_class.to_mongo(v) } if @typecast
           values
         end
 
