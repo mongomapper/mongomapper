@@ -104,43 +104,42 @@ module MongoMapper
           IdentityMap.repository.delete(key)
         end
       end
+    end
+  end
+end
 
-      module PluckyMethods
-        module ClassMethods
-          extend ActiveSupport::Concern
+module PluckyMethods
+  module ClassMethods
+    extend ActiveSupport::Concern
 
-          included do
-            attr_accessor :identity_map
-          end
+    included do
+      attr_accessor :identity_map
 
-          def find_one(opts={})
-            query = clone.amend(opts)
+      # Ensure that these aliased methods in plucky also get overridden.
+      alias_method :first, :find_one
+      alias_method :each, :find_each
+    end
 
-            if identity_map && query.simple? && (document = identity_map.get_from_identity_map(query[:_id]))
-              document
-            else
-              super.tap do |doc|
-                doc.remove_from_identity_map if doc && query.fields?
-              end
-            end
-          end
+    def find_one(opts={})
+      query = clone.amend(opts)
 
-          def find_each(opts={})
-            query = clone.amend(opts)
-            super(opts) do |doc|
-              doc.remove_from_identity_map if doc && query.fields?
-              yield doc if block_given?
-            end
-          end
-
-          # Ensure that these aliased methods in plucky also get overridden.
-          alias_method :first, :find_one
-          alias_method :each, :find_each
+      if identity_map && query.simple? && (document = identity_map.get_from_identity_map(query[:_id]))
+        document
+      else
+        super.tap do |doc|
+          doc.remove_from_identity_map if doc && query.fields?
         end
+      end
+    end
 
+    def find_each(opts={})
+      query = clone.amend(opts)
+      super(opts) do |doc|
+        doc.remove_from_identity_map if doc && query.fields?
+        yield doc if block_given?
       end
     end
   end
 end
 
-::MongoMapper::Plugins::Querying::DecoratedPluckyQuery.send :include, MongoMapper::Plugins::IdentityMap::PluckyMethods::ClassMethods
+::MongoMapper::Plugins::Querying::DecoratedPluckyQuery.send :include, ::PluckyMethods::ClassMethods
