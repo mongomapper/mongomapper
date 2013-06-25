@@ -2,15 +2,13 @@ require 'spec_helper'
 
 describe "Querying" do
   let(:document) {
-    Doc "QueryingDocument" do
+    Doc do
       key :first_name, String
       key :last_name, String
       key :age, Integer
       key :date, Date
     end
   }
-
-  before { document.collection.drop }
 
   context ".query" do
     let(:query) { document.query }

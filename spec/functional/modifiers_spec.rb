@@ -45,7 +45,7 @@ module Modifiers
       let!(:page2) { page_class.create(:title => 'Home') }
 
       context "unset" do
-        let(:page)  { page_class.create(:title => 'Home', :tags => %w(foo bar)) }
+        let!(:page)  { page_class.create(:title => 'Home', :tags => %w(foo bar)) }
 
         it "should work with criteria and keys" do
           page_class.unset({:title => 'Home'}, :title, :tags)
@@ -111,8 +111,8 @@ module Modifiers
       end
 
       context "decrement" do
-        let(:page)  { page_class.create(:title => 'Home', :day_count => 1, :week_count => 2, :month_count => 3) }
-        let(:page2) { page_class.create(:title => 'Home', :day_count => 1, :week_count => 2, :month_count => 3) }
+        let!(:page)  { page_class.create(:title => 'Home', :day_count => 1, :week_count => 2, :month_count => 3) }
+        let!(:page2) { page_class.create(:title => 'Home', :day_count => 1, :week_count => 2, :month_count => 3) }
 
         it "should work with criteria and modifier hashes" do
           page_class.decrement({:title => 'Home'}, :day_count => 1, :week_count => 2, :month_count => 3)
@@ -400,14 +400,23 @@ module Modifiers
       end
     end
 
+    context "compound keys" do
+      it "should create a document" do
+        expect {
+          page_class_with_compound_key.create(:title => 'Foo', :tags => %w(foo))
+        }.to change { page_class_with_compound_key.count }.by(1)
+        doc = page_class_with_compound_key.first
+        page_class_with_compound_key.find(doc._id).should == doc
+      end
+    end
+
     context "instance methods" do
       {
         :page_class_with_standard_key => "with standard key",
         :page_class_with_compound_key => "with compound key",
       }.each do |klass, description|
         context description do
-
-          let(:page_class) { send(klass) }
+          let!(:page_class) { send(klass) }
 
           it "should be able to unset with keys" do
             page = page_class.create(:title => 'Foo', :tags => %w(foo))
@@ -432,7 +441,6 @@ module Modifiers
           it "should always decrement when decrement is called whether number is positive or negative" do
             page = page_class.create(:day_count => 1, :week_count => 2, :month_count => 3)
             page.decrement(:day_count => -1, :week_count => 2, :month_count => -3)
-
             assert_page_counts page, 0, 0, 0
           end
 
