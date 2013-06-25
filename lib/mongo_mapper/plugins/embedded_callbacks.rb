@@ -11,8 +11,8 @@ module MongoMapper
         define_model_callbacks :touch, :only => [:after]
 
         proxy_callbacks(
-          before: [:save, :create, :update, :destroy],
-          after:  [:save, :create, :update, :destroy, :touch]
+          :before => [:save, :create, :update, :destroy],
+          :after  => [:save, :create, :update, :destroy, :touch]
         )
 
         @embedded_callbacks_status = nil
