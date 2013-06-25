@@ -54,7 +54,7 @@ module XmlSerialization
       xml.should match %r{<id>#{@contact.id}</id>}
       xml.should match %r{<name>Konata Izumi</name>}
       xml.should match %r{<age.*>16</age>}
-      xml.should match %r(<created-at type="datetime">)
+      xml.should match %r(<created-at type="date[tT]ime">)
       xml.should match %r{<awesome type="boolean">true</awesome>}
       xml.should match %r{<preferences>}
       xml.should match %r{<shows>anime</shows>}

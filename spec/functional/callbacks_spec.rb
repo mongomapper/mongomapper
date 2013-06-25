@@ -203,12 +203,12 @@ describe "Callbacks" do
   end
 
   context "Running validation callbacks with conditional execution" do
-    before do
-      @document = Doc do
+    let(:document) do
+      Doc do
         include CallbacksSupport
         key :message, String
 
-        before_validation :set_message, :on => 'create'
+        before_validation :set_message, :on => :create
 
         def set_message
           self['message'] = 'Hi!'
@@ -217,13 +217,13 @@ describe "Callbacks" do
     end
 
     it 'should run callback on create' do
-      doc = @document.create
+      doc = document.create
       doc.history.should include(:before_validation)
       doc.message.should == 'Hi!'
     end
 
     it 'should skip callback on update' do
-      doc = @document.create
+      doc = document.create
       doc.message = 'Ho!'
       doc.save
       doc.message.should == 'Ho!'

@@ -149,7 +149,7 @@ describe "Validations" do
     it "should work with i18n taken message" do
       @document.create(:name => 'joe')
       doc = @document.create(:name => 'joe')
-      doc.should have_error_on(:name).with_message('has already been taken')
+      doc.should have_error_on(:name, 'has already been taken')
     end
 
     it "should allow to update an object" do
@@ -342,12 +342,12 @@ describe "Validations" do
       @root_class.many :children, :class => @child_class
       @root_class.validates_associated :children, :message => 'are invalid'
     end
-    
+
     it "should pass if there are no associated docs" do
       doc = @root_class.new
       doc.save.should be_true
     end
-    
+
     it "should pass if the associated doc is valid" do
       doc = @root_class.new
       doc.children.build(:name => 'Joe')
@@ -357,7 +357,7 @@ describe "Validations" do
     it "should fail if the associated doc is invalid" do
       doc = @root_class.new
       doc.children.build
-      doc.should have_error_on(:children).with_message('are invalid')
+      doc.should have_error_on(:children, 'are invalid')
     end
 
   end
