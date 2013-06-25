@@ -1,16 +1,18 @@
-RSpec::Matchers.define :have_error_on do |attribute|
+RSpec::Matchers.define :have_error_on do |*args|
   @message = nil
-  chain :with_message do |message|
-    @message = message
+  @attributes = [args]
+
+  chain :or do |*args|
+    @attributes << args
   end
 
   match do |model|
     model.valid?
-    @has_errors = model.errors[attribute].present?
+    @has_errors = @attributes.detect {|attribute| model.errors[attribute[0]].present? }
     if @message
-      @has_errors && model.errors[attribute].include?(@message)
+      !!@has_errors && model.errors[@has_errors[0]].include?(@has_errors[1])
     else
-      @has_errors
+      !!@has_errors
     end
   end
 end
