@@ -23,10 +23,6 @@ module MongoMapper
           @keys ||= {}
         end
 
-        def default_keys
-          @default_keys ||= @keys.values.select(&:default?)
-        end
-
         def key(*args)
           Key.new(*args).tap do |key|
             keys[key.name] = key
@@ -331,9 +327,11 @@ module MongoMapper
         end
 
         def initialize_default_values(except = {})
-          self.class.default_keys.each do |key|
-            next if except && except.key?(key.name)
-            internal_write_key key.name, key.default_value, false
+          @default_keys ||= self.class.keys.values.select(&:default?)
+          @default_keys.each do |key|
+            if !(except && except.key?(key.name))
+              internal_write_key key.name, key.default_value, false
+            end
           end
           @_mm_keys = nil  # If we don't nil this, it causes problems for Marshal#dump
         end
