@@ -27,7 +27,11 @@ module MongoMapper
 
       def read_attribute_before_type_cast(name)
         @__mm_pre_cast ||= {}
-        @__mm_pre_cast[name.to_s] ||= read_attribute(name)
+        name = name.to_s
+        if !@__mm_pre_cast.key?(name)
+          @__mm_pre_cast[name] = read_attribute(name)
+        end
+        @__mm_pre_cast[name]
       end
 
       def write_attribute(name, value)
@@ -63,7 +67,7 @@ module MongoMapper
         def create_accessors_for(key)
           super do
             define_method "#{key.name}_before_type_cast" do
-              read_attribute_before_type_cast key.name.to_s
+              read_attribute_before_type_cast key.name
             end
           end
         end
