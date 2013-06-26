@@ -1,5 +1,5 @@
 # encoding: UTF-8
-require 'mongo_mapper/plugins/querying/decorator'
+require 'mongo_mapper/plugins/querying/decorated_plucky_query'
 
 module MongoMapper
   module Plugins
@@ -42,8 +42,7 @@ module MongoMapper
 
         # @api private for now
         def query(options={})
-          query = Plucky::Query.new(collection, :transformer => transformer)
-          query.extend(Decorator)
+          query = MongoMapper::Plugins::Querying::DecoratedPluckyQuery.new(collection, :transformer => transformer)
           query.object_ids(object_id_keys)
           query.amend(options)
           query.model(self)

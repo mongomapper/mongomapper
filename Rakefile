@@ -1,15 +1,18 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'rake'
-require 'rake/testtask'
 require File.expand_path('../lib/mongo_mapper/version', __FILE__)
 
-Rake::TestTask.new(:test) do |test|
-  test.libs      << 'lib' << 'test'
-  test.pattern   = 'test/**/test_*.rb'
+begin
+  require 'rspec/core/rake_task'
+  RSpec::Core::RakeTask.new(:spec) do |spec|
+    spec.pattern = 'spec/**/*_spec.rb'
+    spec.rspec_opts = ['--color']
+  end
+  task :default => :spec  
+rescue LoadError
+  nil
 end
-
-task :default => :test
 
 desc 'Builds the gem'
 task :build do

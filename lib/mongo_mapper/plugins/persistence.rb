@@ -31,7 +31,7 @@ module MongoMapper
 
         def database_name
           assert_supported
-          @database_name
+          @database_name ||= nil   # ||= idiom prevents uninitialized ivar warnings.
         end
 
         def database
@@ -60,7 +60,8 @@ module MongoMapper
 
         private
           def assert_supported
-            if embeddable?
+            @embeddable ||= embeddable?
+            if @embeddable
               raise NotSupported.new('This is not supported for embeddable documents at this time.')
             end
           end
