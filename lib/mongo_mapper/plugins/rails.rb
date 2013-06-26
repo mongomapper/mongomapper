@@ -26,8 +26,8 @@ module MongoMapper
       end
 
       def read_attribute_before_type_cast(name)
-        return nil unless @__mm_pre_cast
-        @__mm_pre_cast[name.to_s]
+        @__mm_pre_cast ||= {}
+        @__mm_pre_cast[name.to_s] ||= read_attribute(name)
       end
 
       def write_attribute(name, value)
