@@ -91,6 +91,12 @@ describe "Accessible" do
       @doc.admin.should be_falsey
     end
 
+    it "should ignore inaccessible attribute on #assign_attributes" do
+      @doc.assign_attributes({:name => 'Ren Hoek', :admin => true})
+      @doc.name.should == 'Ren Hoek'
+      @doc.admin.should be_falsey
+    end
+
     it "should be indifferent to whether the accessible keys are strings or symbols" do
       @doc.update_attributes!("name" => 'Stimpson J. Cat', "admin" => true)
       @doc.name.should == 'Stimpson J. Cat'
