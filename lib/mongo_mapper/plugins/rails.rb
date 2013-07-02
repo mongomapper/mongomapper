@@ -26,11 +26,22 @@ module MongoMapper
       end
 
       def read_attribute_before_type_cast(name)
-        send "#{name}_before_type_cast"
+        @__mm_pre_cast ||= {}
+        name = name.to_s
+        if !@__mm_pre_cast.key?(name)
+          @__mm_pre_cast[name] = read_attribute(name)
+        end
+        @__mm_pre_cast[name]
       end
 
       def write_attribute(name, value)
         self[name] = value
+      end
+
+      def write_key(name, value)
+        @__mm_pre_cast ||= {}
+        @__mm_pre_cast[name.to_s] = value
+        super
       end
 
       module ClassMethods
@@ -51,6 +62,14 @@ module MongoMapper
         # association helpers in gems like simple_form and formtastic.
         def reflect_on_association(name)
           ActiveRecordAssociationAdapter.for_association(associations[name]) if associations[name]
+        end
+
+        def create_accessors_for(key)
+          super do
+            define_method "#{key.name}_before_type_cast" do
+              read_attribute_before_type_cast key.name
+            end
+          end
         end
       end
     end

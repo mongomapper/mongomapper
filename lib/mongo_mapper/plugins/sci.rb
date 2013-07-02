@@ -37,7 +37,7 @@ module MongoMapper
         end
 
         def single_collection_inherited?
-          @single_collection_inherited == true
+          !!(@single_collection_inherited ||= false)
         end
 
         def query(options={})

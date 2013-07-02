@@ -17,6 +17,7 @@ module MongoMapper
         end
 
         def safe?
+          @safe_options ||= nil
           !!@safe_options
         end
       end
