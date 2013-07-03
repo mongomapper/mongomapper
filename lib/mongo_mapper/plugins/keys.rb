@@ -194,8 +194,8 @@ module MongoMapper
         end
       end
 
-      def attributes
-        HashWithIndifferentAccess.new.tap do |attrs|
+      def to_mongo
+        BSON::OrderedHash.new.tap do |attrs|
           keys.each do |name, key|
             if key.type == ObjectId || !self[key.name].nil?
               value = key.set(self[key.name])
@@ -214,7 +214,10 @@ module MongoMapper
           end
         end
       end
-      alias :to_mongo :attributes
+
+      def attributes
+        to_mongo.with_indifferent_access
+      end
 
       def assign(attrs={})
         warn "[DEPRECATION] #assign is deprecated, use #attributes="

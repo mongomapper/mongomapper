@@ -1,0 +1,15 @@
+source 'https://rubygems.org'
+
+gem 'rake'
+gem 'mongo',    '~> 1.8.0'
+gem 'multi_json', '~> 1.2.0'
+
+platforms :ruby do
+  gem 'bson_ext', '~> 1.8.0'
+end
+
+group :test do
+  gem 'rspec'
+  gem 'timecop',           '~> 0.3'
+  gem 'rack-test',         '~> 0.5'
+end
