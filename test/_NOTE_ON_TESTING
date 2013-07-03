@@ -1,1 +1,0 @@
-I am doing my best to keep unit and functional tests separate. As I see them, functional tests hit the database and should never care about internals. Unit tests do not hit the database.

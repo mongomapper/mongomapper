@@ -1,37 +1,34 @@
-def run(cmd)
-  puts(cmd)
-  output = ""
-  IO.popen(cmd) do |com|
-    com.each_char do |c|
-      print c
-      output << c
-      $stdout.flush
-    end
+def run_spec(file)
+  unless File.exist?(file)
+    puts "#{file} does not exist"
+    return
   end
+
+  puts "Running #{file}"
+  system "bundle exec rspec #{file}"
+  puts
 end
 
-def run_test_file(file)
-  run %Q(ruby -I"lib:test" -rubygems #{file})
-end
-
-def run_all_tests
-  run "rake test"
+watch("spec/.*/*_spec.rb") do |match|
+  run_spec match[0]
 end
 
 def related_test_files(path)
-  Dir['test/**/*.rb'].select { |file| file =~ /test_#{File.basename(path)}/ }
+  Dir.glob "spec/**/#{File.basename(path, File.extname(path))}_spec.rb"
 end
 
-watch('test/test_helper\.rb') { system('clear'); run_all_tests }
-watch('test/.*/test_.*\.rb') { |m| system('clear'); run_test_file(m[0]) }
-watch('lib/.*') { |m| system('clear'); related_test_files(m[0]).each { |file| run_test_file(file) } }
+watch('lib/.*') do |m|
+  system('clear')
+  if files = related_test_files(m[0]) and !files.empty?
+    puts "bundle exec rspec #{files.join(" ")}"
+    system "bundle exec rspec #{files.join(" ")}"
+  end
+end
 
-# Ctrl-\
 Signal.trap('QUIT') do
   puts " --- Running all tests ---\n\n"
-  run_all_tests
+  run "rake"
 end
 
 # Ctrl-C
 Signal.trap('INT') { abort("\n") }
-
