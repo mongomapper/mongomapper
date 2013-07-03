@@ -170,9 +170,9 @@ describe "Scopes" do
         Page.by_title('Home').first.should == page
       end
 
-      should "limit subclass scopes to subclasses" do
-        Item.scopes.keys.map(&:to_s).sort.should == %w(by_title published)
-        Blog.scopes.keys.map(&:to_s).sort.should == %w(by_slug by_title published)
+      it "should limit subclass scopes to subclasses" do
+        Item.scopes.keys.map(&:to_s).should =~ %w(by_title published)
+        Blog.scopes.keys.map(&:to_s).should =~ %w(by_slug by_title published)
       end
     end
   end
