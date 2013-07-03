@@ -61,7 +61,7 @@ module MongoMapper
           def find_one(opts={})
             query = clone.amend(opts)
 
-            if IdentityMap.enabled? && query.simple? && (document = model.get_from_identity_map(query[:_id]))
+            if query.simple? && (document = model.get_from_identity_map(query[:_id]))
               document
             else
               super.tap do |doc|
@@ -78,13 +78,22 @@ module MongoMapper
             end
           end
 
-          # Ensure that these aliased methods in plucky also get overridden.
-          alias_method :first, :find_one
-          alias_method :each, :find_each
+          def first(opts={})
+            find_one(opts)
+          end
+
+          def each(opts={})
+            find_each(opts)
+          end
+
         end
 
         def query(opts={})
-          super.extend(IdentityMapQueryMethods)
+          if IdentityMap.enabled?
+            super.extend(IdentityMapQueryMethods)
+          else
+            super
+          end
         end
 
         def remove_documents_from_map(*documents)

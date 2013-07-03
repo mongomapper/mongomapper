@@ -1,5 +1,6 @@
 gemfile:
   - Gemfile
+  - gemfiles/rails3_0.gemfile
   - gemfiles/rails3_1.gemfile
   - gemfiles/rails3_2.gemfile
 language: ruby
@@ -7,7 +8,10 @@ rvm:
   - 1.8.7
   - ree
   - 1.9.3
+  - 2.0.0
 notifications:
   email: false
 bundler_args: --without development
 services: mongodb
+allow_failures:
+  - rvm: 1.8.7
