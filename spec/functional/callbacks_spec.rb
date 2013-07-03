@@ -156,14 +156,25 @@ describe "Callbacks" do
     end
   end
 
+  context "By default" do
+    it "should not run callbacks when no callbacks were explicitly defined" do
+      EDoc { key :name, String }.embedded_callbacks_off?.should == true
+    end
+
+    it "should run callbacks when a callback was explicitly defined" do
+      EDoc {
+        key :name, String
+        before_save :no_op
+        def noop; end
+      }.embedded_callbacks_on?.should == true
+    end
+  end
+
   context "Turning embedded callbacks off" do
     before do
       @root_class        = Doc  { include CallbacksSupport; embedded_callbacks_off }
       @child_class       = EDoc { include CallbacksSupport; embedded_callbacks_off }
       @grand_child_class = EDoc { include CallbacksSupport; embedded_callbacks_off }
-
-      @root_class.many  :children, :class => @child_class
-      @child_class.many :children, :class => @grand_child_class
 
       @root_class.many  :children, :class => @child_class
       @child_class.many :children, :class => @grand_child_class
