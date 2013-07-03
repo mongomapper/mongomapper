@@ -89,7 +89,11 @@ module MongoMapper
         end
 
         def query(opts={})
-          super.extend(IdentityMapQueryMethods)
+          if IdentityMap.enabled?
+            super.extend(IdentityMapQueryMethods)
+          else
+            super
+          end
         end
 
         def remove_documents_from_map(*documents)
