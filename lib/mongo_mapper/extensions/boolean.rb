@@ -3,29 +3,29 @@ module MongoMapper
   module Extensions
     module Boolean
       Mapping = {
-        true    => true, 
-        'true'  => true, 
-        'TRUE'  => true, 
-        'True'  => true, 
-        't'     => true, 
-        'T'     => true, 
-        '1'     => true, 
-        1       => true, 
+        true    => true,
+        'true'  => true,
+        'TRUE'  => true,
+        'True'  => true,
+        't'     => true,
+        'T'     => true,
+        '1'     => true,
+        1       => true,
         1.0     => true,
-        false   => false, 
-        'false' => false, 
-        'FALSE' => false, 
-        'False' => false, 
-        'f'     => false, 
-        'F'     => false, 
-        '0'     => false, 
-        0       => false, 
-        0.0     => false, 
+        false   => false,
+        'false' => false,
+        'FALSE' => false,
+        'False' => false,
+        'f'     => false,
+        'F'     => false,
+        '0'     => false,
+        0       => false,
+        0.0     => false,
         nil     => nil
       }
 
       def to_mongo(value)
-        if value.is_a?(Boolean)
+        if value.instance_of?(Boolean)
           value
         else
           Mapping[value]
@@ -33,7 +33,8 @@ module MongoMapper
       end
 
       def from_mongo(value)
-        value.nil? ? nil : !!value
+        return nil if value == nil
+        !!value
       end
     end
   end

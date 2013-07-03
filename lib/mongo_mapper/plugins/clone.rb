@@ -8,7 +8,6 @@ module MongoMapper
         @_new       = true
         @_destroyed = false
         remove_instance_variable :@_id
-        remove_instance_variable :@_id_before_type_cast
 
         associations.each do |name, association|
           instance_variable_set(association.ivar, nil)

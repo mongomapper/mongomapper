@@ -4,7 +4,7 @@ module MongoMapper
     module Querying
       Methods = Plucky::Methods + [:delete, :delete_all, :destroy, :destroy_all, :find!]
 
-      module Decorator
+      class DecoratedPluckyQuery < ::Plucky::Query
         include DynamicQuerying::ClassMethods
 
         def delete(*ids)
