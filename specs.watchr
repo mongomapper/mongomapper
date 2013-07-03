@@ -27,7 +27,7 @@ end
 
 Signal.trap('QUIT') do
   puts " --- Running all tests ---\n\n"
-  run "rake"
+  system "bundle exec rake"
 end
 
 # Ctrl-C
