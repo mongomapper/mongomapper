@@ -50,6 +50,15 @@ Get all of the documents in a query as an array. Works with options or criteria.
 Patient.all(:last_name => 'Johnson', :order => :last_name.asc)
 {% endhighlight %}
 
+h3(#find_each). find_each
+
+Get all of the documents in a query one at a time and pass them to the given block. Works with options or criteria.
+{% highlight ruby %}
+Patient.find_each(:last_name => "Johnson") |document| 
+  # do something with document
+end
+{% endhighlight %}
+
 h3(#first). first
 
 Get the first document in a query. Naturally, this makes the most sense when you have also provided a means of "sorting":#sort.
