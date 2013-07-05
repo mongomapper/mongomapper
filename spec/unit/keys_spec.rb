@@ -85,5 +85,38 @@ describe "Key" do
       instance.value = nil
       instance.value.should == nil
     end
+
+    context "for _id" do
+      before do
+        @klass.class_eval do
+          key :_id, Integer, :default => lambda { 12345 }
+        end
+      end
+
+      it "should work" do
+        @klass.new._id.should == 12345
+      end
+    end
+  end
+
+  context "when loading from the database" do
+    it "should not set default values for keys that already exist" do
+      counter = 0
+      instance = nil
+
+      klass = Doc do
+        key :value, Integer, :default => lambda { counter += 1 }
+      end
+
+      expect { instance = klass.create }.to change { counter }.by(1)
+      expect {
+        instance.reload.value.should == 1
+
+        instance.value = 10
+        instance.save
+
+        instance.reload.value.should == 10
+      }.to_not change { counter }
+    end
   end
 end # KeyTest
