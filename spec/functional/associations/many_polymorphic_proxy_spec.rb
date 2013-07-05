@@ -31,6 +31,7 @@ describe "ManyPolymorphicProxy" do
         Chat.new(:body => 'Heyyyoooo!',         :position => 2),
         Exit.new(:body => 'John exited room',   :position => 3)
       ]
+      room.save
     }.should change { Message.count }.by(3)
 
     room = room.reload

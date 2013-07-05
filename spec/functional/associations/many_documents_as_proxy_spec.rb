@@ -35,6 +35,7 @@ describe "ManyDocumentsAsProxy" do
         PostComment.new(:body => 'bar'),
         PostComment.new(:body => 'baz')
       ]
+      post.save
     }.should change { PostComment.count }.by(3)
 
     post = post.reload

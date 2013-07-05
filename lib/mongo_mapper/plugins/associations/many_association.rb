@@ -40,6 +40,22 @@ module MongoMapper
           association = self
           options = self.options
 
+          model.before_save do
+            proxy = self.get_proxy(association)
+            association.dirty[:save].each do |doc|
+              doc.save
+            end
+            association.dirty[:save].clear
+
+            association.dirty[:nullify].each do |target|
+              proxy.send(:nullify_scope, target)
+              target.save
+            end
+            association.dirty[:nullify].clear
+
+            true
+          end
+
           model.before_destroy do
             if !association.embeddable?
               case options[:dependent]

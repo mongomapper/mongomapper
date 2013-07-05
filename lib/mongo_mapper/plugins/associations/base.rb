@@ -14,7 +14,7 @@ module MongoMapper
           options.symbolize_keys!
           options[:extend] = modularized_extensions(extension, options[:extend])
           separate_options_and_conditions
-          @dirty = {:self => false, :nullify => []}
+          @dirty = {:self => false, :save => [], :nullify => []}
         end
 
         def class_name

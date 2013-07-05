@@ -19,6 +19,17 @@ module MongoMapper
           model.key foreign_key, ObjectId unless model.key?(foreign_key)
           model.key type_key_name, String unless model.key?(type_key_name) if polymorphic?
           super
+
+          association = self
+          model.before_save do
+            association.dirty[:save].each do |doc|
+              doc.save unless doc.persisted?
+            end
+            association.dirty[:save].clear
+
+            true
+          end
+
           add_touch_callbacks if touch?
         end
 

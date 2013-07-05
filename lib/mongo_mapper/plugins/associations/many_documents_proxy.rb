@@ -10,16 +10,13 @@ module MongoMapper
         def replace(docs)
           load_target
 
-          (target - docs).each do |t|
-            case options[:dependent]
-              when :destroy    then t.destroy
-              when :delete_all then t.delete
-              else t.update_attributes(self.foreign_key => nil)
-            end
+          (target - docs).each {|doc| association.dirty[:nullify] << doc }
+          docs.each do |doc|
+            doc = klass.new(doc) unless klass === doc
+            scoped_doc = apply_scope(doc)
+            @target << scoped_doc
+            association.dirty[:save] << scoped_doc
           end
-
-          docs.each { |doc| prepare(doc).save }
-          reset
         end
 
         def <<(*docs)
@@ -81,6 +78,11 @@ module MongoMapper
         end
 
         protected
+
+          def nullify_scope(doc)
+            doc[self.foreign_key] = nil
+          end
+
           def query(options={})
             klass.
               query(association.query_options).

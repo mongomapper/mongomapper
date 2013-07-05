@@ -157,74 +157,6 @@ describe "ManyDocumentsProxy" do
         end
       end
 
-      context "=> destroy" do
-        before do
-          @broker_class.many :properties, :class => @property_class, :dependent => :destroy
-
-          @broker = @broker_class.create(:name => "Bob")
-          @property1 = @property_class.create
-          @property2 = @property_class.create
-          @property3 = @property_class.create
-          @broker.properties << @property1
-          @broker.properties << @property2
-          @broker.properties << @property3
-        end
-
-        it "should call destroy the existing documents" do
-          @broker.properties[0].should_receive(:destroy).once
-          @broker.properties[1].should_receive(:destroy).once
-          @broker.properties[2].should_receive(:destroy).once
-          @broker.properties = [@property_class.new]
-        end
-
-        it "should remove the existing document from the database" do
-          @property_class.count.should == 3
-          @broker.properties = []
-          @property_class.count.should == 0
-        end
-
-        it "should skip over documents that are the same" do
-          @broker.properties[0].should_receive(:destroy).never
-          @broker.properties[1].should_receive(:destroy).once
-          @broker.properties[2].should_receive(:destroy).never
-          @broker.properties = [@property3, @property1]
-        end
-      end
-
-      context "=> delete_all" do
-        before do
-          @broker_class.many :properties, :class => @property_class, :dependent => :delete_all
-
-          @broker = @broker_class.create(:name => "Bob")
-          @property1 = @property_class.create
-          @property2 = @property_class.create
-          @property3 = @property_class.create
-          @broker.properties << @property1
-          @broker.properties << @property2
-          @broker.properties << @property3
-        end
-
-        it "should call delete the existing documents" do
-          @broker.properties[0].should_receive(:delete).once
-          @broker.properties[1].should_receive(:delete).once
-          @broker.properties[2].should_receive(:delete).once
-          @broker.properties = [@property_class.new]
-        end
-
-        it "should remove the existing document from the database" do
-          @property_class.count.should == 3
-          @broker.properties = []
-          @property_class.count.should == 0
-        end
-
-        it "should skip over documents that are the same" do
-          @broker.properties[0].should_receive(:delete).never
-          @broker.properties[1].should_receive(:delete).once
-          @broker.properties[2].should_receive(:delete).never
-          @broker.properties = [@property3, @property1]
-        end
-      end
-
       context "=> nullify" do
         before do
           @broker_class.many :properties, :class => @property_class, :dependent => :nullify
@@ -244,6 +176,7 @@ describe "ManyDocumentsProxy" do
           @property3.reload.broker_id.should == @broker.id
 
           @broker.properties = [@property_class.new]
+          @broker.save
 
           @property1.reload.broker_id.should be_nil
           @property2.reload.broker_id.should be_nil
@@ -252,6 +185,7 @@ describe "ManyDocumentsProxy" do
 
         it "should skip over documents that are the same" do
           @broker.properties = [@property3, @property1]
+          @broker.save
 
           @property1.reload.broker_id.should == @broker.id
           @property2.reload.broker_id.should be_nil
@@ -278,6 +212,7 @@ describe "ManyDocumentsProxy" do
           @broker.properties << @property3
 
           @broker.properties = [@property_class.new]
+          @broker.save
 
           @property1.reload.broker_id.should be_nil
           @property2.reload.broker_id.should be_nil
