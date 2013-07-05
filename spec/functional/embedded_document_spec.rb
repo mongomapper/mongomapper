@@ -285,4 +285,13 @@ describe "EmbeddedDocument" do
     person = @klass.create(:pets => [@pet_klass.new(:name => 'sparky')])
     person.pets.first.collection.name.should == person.collection.name
   end
+
+  it "should not fail if the source document contains nils in the embedded document list" do
+    @klass.collection.insert(:pets => [nil, {:name => "Sasha"}])
+    expect { @klass.all.first.pets }.to_not raise_error
+    @klass.all.first.pets.tap do |pets|
+      pets.length.should == 1
+      pets[0].name.should == "Sasha"
+    end
+  end
 end
