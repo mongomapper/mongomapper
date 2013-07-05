@@ -4,6 +4,7 @@ module MongoMapper
     module Associations
       class Base
         attr_reader :name, :options, :query_options
+        attr_accessor :dirty
 
         # Options that should not be considered MongoDB query options/criteria
         AssociationOptions = [:as, :class, :class_name, :dependent, :extend, :foreign_key, :in, :polymorphic, :autosave, :touch]
@@ -13,6 +14,7 @@ module MongoMapper
           options.symbolize_keys!
           options[:extend] = modularized_extensions(extension, options[:extend])
           separate_options_and_conditions
+          @dirty = {:self => false, :nullify => []}
         end
 
         def class_name

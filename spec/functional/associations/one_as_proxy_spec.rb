@@ -56,6 +56,7 @@ describe "OneAsProxy" do
 
       it "should work" do
         @post.author = @author
+        @post.save
         @post.reload
 
         @post.author.should == @author
@@ -68,6 +69,7 @@ describe "OneAsProxy" do
 
       it "should generate a new proxy instead of modifying the existing one" do
         @post.author = @author
+        @post.save
         @post.reload
 
         @post.author.should == @author
@@ -101,6 +103,7 @@ describe "OneAsProxy" do
 
       it "should convert to an object of the class and work" do
         @post.author = {'name' => 'Frank'}
+        @post.save
         @post.reload
 
         @post.author.name.should == 'Frank'
@@ -122,56 +125,6 @@ describe "OneAsProxy" do
     end
 
     context "with :dependent" do
-      context "=> delete" do
-        before do
-          @post_class.one :author, :as => :authorable, :class => @author_class, :dependent => :delete
-
-          @post = @post_class.create
-          @author = @author_class.new
-          @post.author = @author
-        end
-
-        it "should call delete on the existing document" do
-          @author_class.any_instance.should_receive(:delete).once
-          @post.author = @author_class.new
-        end
-
-        it "should remove the existing document from the database" do
-          @post.author = @author_class.new
-          lambda { @author.reload }.should raise_error(MongoMapper::DocumentNotFound)
-        end
-
-        it "should do nothing if it's the same document" do
-          @author_class.any_instance.should_receive(:delete).never
-          @post.author = @author
-        end
-      end
-
-      context "=> destory" do
-        before do
-          @post_class.one :author, :as => :authorable, :class => @author_class, :dependent => :destroy
-
-          @post = @post_class.create
-          @author = @author_class.new
-          @post.author = @author
-        end
-
-        it "should call destroy the existing document" do
-          @author_class.any_instance.should_receive(:destroy).once
-          @post.author = @author_class.new
-        end
-
-        it "should remove the existing document from the database" do
-          @post.author = @author_class.new
-          lambda { @author.reload }.should raise_error(MongoMapper::DocumentNotFound)
-        end
-
-        it "should do nothing if it's the same document" do
-          @author_class.any_instance.should_receive(:destroy).never
-          @post.author = @author
-        end
-      end
-
       context "=> nullify" do
         before do
           @post_class.one :author, :as => :authorable, :class => @author_class, :dependent => :nullify
@@ -179,6 +132,7 @@ describe "OneAsProxy" do
           @post = @post_class.create
           @author = @author_class.new
           @post.author = @author
+          @post.save
         end
 
         it "should nullify the existing document" do
@@ -186,6 +140,7 @@ describe "OneAsProxy" do
           @author.authorable_id.should == @post.id
 
           @post.author = @author_class.new
+          @post.save
 
           @author.reload
           @author.authorable_id.should be_nil
@@ -194,11 +149,13 @@ describe "OneAsProxy" do
         it "should work when it's the same document" do
           old_author = @post.author
           @post.author = @author
+          @post.save
           old_author.should == @post.author
         end
 
         it "should nullify _type" do
           @post.author = @author_class.new
+          @post.save
           @author.reload
           @author.authorable_type.should be_nil
         end
@@ -211,6 +168,7 @@ describe "OneAsProxy" do
           @post = @post_class.create
           @author = @author_class.new
           @post.author = @author
+          @post.save
         end
 
         it "should nullify the existing document" do
@@ -218,6 +176,7 @@ describe "OneAsProxy" do
           @author.authorable_id.should == @post.id
 
           @post.author = @author_class.new
+          @post.save
 
           @author.reload
           @author.authorable_id.should be_nil
@@ -225,6 +184,7 @@ describe "OneAsProxy" do
 
         it "should nullify _type" do
           @post.author = @author_class.new
+          @post.save
           @author.reload
           @author.authorable_type.should be_nil
         end
@@ -238,10 +198,12 @@ describe "OneAsProxy" do
         @post = @post_class.new
         @author = @author_class.new(:name => 'Frank')
         @post.author = @author
+        @post.save
       end
 
       it "should nullify the existing document" do
         @post.author = nil
+        @post.save
         @author.reload
         @author.authorable_id.should be_nil
       end
@@ -253,6 +215,7 @@ describe "OneAsProxy" do
 
       it "should nullify _type" do
         @post.author = nil
+        @post.save
         @author.reload
         @author.authorable_type.should be_nil
       end
@@ -299,6 +262,7 @@ describe "OneAsProxy" do
         @post = @post_class.create
         @author = @author_class.new
         @post.author = @author
+        @post.save
       end
 
       it "should should call destroy on the associated documents" do
@@ -321,18 +285,18 @@ describe "OneAsProxy" do
         @post = @post_class.create
         @author = @author_class.new
         @post.author = @author
+        @post.save
       end
 
-      it "should should call delete the associated documents" do
-        @author_class.any_instance.should_receive(:delete).once
+      it "should not call delete the associated documents" do
+        @author_class.any_instance.should_not_receive(:delete)
         @post.destroy
       end
 
-      it "should remove the associated documents" do
+      it "should not remove the associated documents" do
         @author_class.count.should == 1
-        @post.destroy
+        expect { @post.destroy }.to_not change { @author_class.count }
         @post.author.should == nil
-        @author_class.count.should == 0
       end
     end
 
@@ -343,6 +307,7 @@ describe "OneAsProxy" do
         @post = @post_class.create
         @author = @author_class.new
         @post.author = @author
+        @post.save
       end
 
       it "should should nullify the relationship but not destroy the associated document" do
@@ -368,6 +333,7 @@ describe "OneAsProxy" do
         @post = @post_class.create
         @author = @author_class.new
         @post.author = @author
+        @post.save
       end
 
       it "should should nullify the relationship but not destroy the associated document" do
@@ -468,16 +434,22 @@ describe "OneAsProxy" do
   end
 
   context "namespaced foreign keys" do
-    before do
-      News::Paper.one :article, :as => 'articleable', :class_name => 'News::Article'
-      News::Article.belongs_to :articleable, :polymorphic => true
+    before(:all) do
+      module OneAsProxySpec; end
+      OneAsProxySpec::Paper = Class.new(News::Paper)
+      OneAsProxySpec::Article = Class.new(News::Article)
+    end
 
-      @paper = News::Paper.create
+    before do
+      OneAsProxySpec::Paper.one :article, :as => 'articleable', :class_name => 'OneAsProxySpec::Article'
+      OneAsProxySpec::Article.belongs_to :articleable, :polymorphic => true
+
+      @paper = OneAsProxySpec::Paper.create
     end
 
     it "should work" do
       @paper.create_article
-      @paper.article.class.should == News::Article
+      @paper.article.class.should == OneAsProxySpec::Article
     end
 
     it "should properly infer the foreign key" do

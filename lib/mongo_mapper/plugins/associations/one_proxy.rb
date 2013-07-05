@@ -18,23 +18,14 @@ module MongoMapper
         def replace(doc)
           load_target
 
-          if !target.nil? && target != doc
-            if target.persisted?
-              case options[:dependent]
-                when :delete  then target.delete
-                when :destroy then target.destroy
-                else
-                  nullify_scope(target)
-                  target.save
-              end
-            end
+          if !target.nil? && target != doc && target.persisted?
+            association.dirty[:nullify] << target
           end
 
           unless doc.nil?
-            proxy_owner.save unless proxy_owner.persisted?
+            association.dirty[:self] = true
             doc = klass.new(doc) unless doc.is_a?(klass)
             apply_scope(doc)
-            doc.save unless doc.persisted?
           end
 
           loaded
