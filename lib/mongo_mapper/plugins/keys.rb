@@ -297,8 +297,6 @@ module MongoMapper
               internal_write_key key, value, false
             end
           end
-
-          @_mm_keys = nil  # If we don't nil this, it causes problems for Marshal#dump
         end
 
         def set_parent_document(key, value)
@@ -327,13 +325,12 @@ module MongoMapper
         end
 
         def initialize_default_values(except = {})
-          @default_keys ||= self.class.keys.values.select(&:default?)
-          @default_keys.each do |key|
+          @_mm_default_keys ||= self.class.keys.values.select(&:default?)
+          @_mm_default_keys.each do |key|
             if !(except && except.key?(key.name))
               internal_write_key key.name, key.default_value, false
             end
           end
-          @_mm_keys = nil  # If we don't nil this, it causes problems for Marshal#dump
         end
       #end private
     end

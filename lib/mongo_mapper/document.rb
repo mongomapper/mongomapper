@@ -6,6 +6,7 @@ module MongoMapper
 
     include Plugins::ActiveModel
     include Plugins::Document
+    include Plugins::Dumpable
     include Plugins::Querying # for now needs to be before associations (save_to_collection)
     include Plugins::Associations
     include Plugins::Caching
