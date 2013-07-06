@@ -54,6 +54,7 @@ module MongoMapper
           query.model(self)
           query
         end
+        alias_method :scoped, :query
 
         # @api private for now
         def criteria_hash(criteria={})

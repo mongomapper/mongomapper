@@ -993,4 +993,11 @@ describe "Querying" do
       user.first_name.should == "John"
     end
   end
+
+  context "#scoped" do
+    it "should return a Query" do
+      document.scoped.should be_a MongoMapper::Plugins::Querying::DecoratedPluckyQuery
+      document.scoped.criteria_hash.should be_empty
+    end
+  end
 end
