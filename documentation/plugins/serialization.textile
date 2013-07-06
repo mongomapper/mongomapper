@@ -73,7 +73,13 @@ user.to_json(:except => :email)
 *:include* lets you include an association or the result of a method in the serialized output.
 
 {% highlight ruby %}
-user.to_json(:include => [:friends, :newest_friend])
+user.to_json(:include => [:friends])
+{% endhighlight %}
+
+*:methods* lets you include the result of a method
+
+{% highlight ruby %}
+user.to_json(:methods => [:newest_friend])
 {% endhighlight %}
 
 Internally, the @serializable_hash@ method is used on your model to generate the serialized string. Override it provide your own implementation or to set defaults.
