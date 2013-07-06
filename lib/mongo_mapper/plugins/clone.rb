@@ -7,7 +7,7 @@ module MongoMapper
       def initialize_copy(other)
         @_new       = true
         @_destroyed = false
-        remove_instance_variable :@_id
+        remove_instance_variable :@_id if instance_variable_defined?(:@_id)
 
         associations.each do |name, association|
           instance_variable_set(association.ivar, nil)
