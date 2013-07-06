@@ -8,7 +8,9 @@ module MongoMapper
 
       def initialize(*)
         # never register initial id assignment as a change
-        super.tap { changed_attributes.delete('_id') }
+        # Chaining super into tap breaks implicit block passing in Ruby 1.8
+        doc = super
+        doc.tap { changed_attributes.delete('_id') }
       end
 
       def save(*)
@@ -16,7 +18,8 @@ module MongoMapper
       end
 
       def reload(*)
-        super.tap { clear_changes }
+        doc = super
+        doc.tap { clear_changes }
       end
 
       def clear_changes
