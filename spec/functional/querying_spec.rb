@@ -208,6 +208,12 @@ describe "Querying" do
         }.to raise_error(MongoMapper::DocumentNotFound)
       end
 
+      it "should raise error if not all found when using find!" do
+        expect {
+          document.find!([@doc1._id, BSON::ObjectId.new.to_s])
+        }.to raise_error(MongoMapper::DocumentNotFound)
+      end
+
       it "should return array if array with one element" do
         document.find([@doc1._id]).should == [@doc1]
       end

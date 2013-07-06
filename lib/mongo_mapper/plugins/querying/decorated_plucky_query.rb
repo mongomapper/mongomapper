@@ -30,6 +30,7 @@ module MongoMapper
         end
 
         def find!(*ids)
+          ids = Array(ids).flatten.uniq
           raise DocumentNotFound, "Couldn't find without an ID" if ids.size == 0
 
           find(*ids).tap do |result|
