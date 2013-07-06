@@ -4,6 +4,7 @@ describe "OneProxy" do
   before do
     @post_class = Doc('Post')
     @author_class = Doc do
+      key :name, String
       key :post_id, ObjectId
     end
   end
@@ -316,52 +317,75 @@ describe "OneProxy" do
     end
   end
 
-
-  it "should be able to build" do
-    @post_class.one :author, :class => @author_class
-
-    post = @post_class.create
-    author = post.build_author(:name => 'John')
-    post.author.should be_instance_of(@author_class)
-    post.author.should be_new
-    post.author.name.should == 'John'
-    post.author.should == author
-    post.author.post_id.should == post.id
-  end
-
-  it "should be able to create" do
-    @post_class.one :author, :class => @author_class
-
-    post = @post_class.create
-    author = post.create_author(:name => 'John')
-    post.author.should be_instance_of(@author_class)
-    post.author.should_not be_new
-    post.author.name.should == 'John'
-    post.author.should == author
-    post.author.post_id.should == post.id
-  end
-
-  context "#create!" do
+  context "when building associations" do
     before do
-      @author_class.key :name, String, :required => true
       @post_class.one :author, :class => @author_class
     end
+    let(:post) { @post_class.create }
 
-    it "should raise exception if invalid" do
-      post = @post_class.create
-      expect {
-        post.create_author!
-      }.to raise_error(MongoMapper::DocumentNotValid)
+    context "#build" do
+      it "should work" do
+        author = post.build_author(:name => 'John')
+        post.author.should be_instance_of(@author_class)
+        post.author.should be_new
+        post.author.name.should == 'John'
+        post.author.should == author
+        post.author.post_id.should == post.id
+      end
+
+      it "should allow a block" do
+        author = post.build_author do |doc|
+          doc.name = "John"
+        end
+        author.name.should == "John"
+      end
     end
 
-    it "should work if valid" do
-      post = @post_class.create
-      author = post.create_author!(:name => 'John')
-      post.author.should be_instance_of(@author_class)
-      post.author.should_not be_new
-      post.author.name.should == 'John'
-      post.author.should == author
-      post.author.post_id.should == post.id
+    context "#create" do
+      it "should work" do
+        author = post.create_author(:name => 'John')
+        post.author.should be_instance_of(@author_class)
+        post.author.should_not be_new
+        post.author.name.should == 'John'
+        post.author.should == author
+        post.author.post_id.should == post.id
+      end
+
+      it "should allow a block" do
+        author = post.create_author do |doc|
+          doc.name = "John"
+        end
+        author.name.should == "John"
+      end
+    end
+
+
+    context "#create!" do
+      before do
+        @author_class.key :name, String, :required => true
+      end
+
+      it "should raise exception if invalid" do
+        expect {
+          post.create_author!
+        }.to raise_error(MongoMapper::DocumentNotValid)
+      end
+
+      it "should work if valid" do
+        author = post.create_author!(:name => 'John')
+        post.author.should be_instance_of(@author_class)
+        post.author.should_not be_new
+        post.author.name.should == 'John'
+        post.author.should == author
+        post.author.post_id.should == post.id
+      end
+
+      it "should accept a block" do
+        author = post.create_author! do |doc|
+          doc.name = "John"
+        end
+        author.name.should == "John"
+      end
     end
   end
 

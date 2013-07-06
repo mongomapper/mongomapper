@@ -169,6 +169,7 @@ module MongoMapper
         @_new = true
         initialize_default_values(attrs)
         self.attributes = attrs
+        yield self if block_given?
       end
 
       def initialize_from_database(attrs={})

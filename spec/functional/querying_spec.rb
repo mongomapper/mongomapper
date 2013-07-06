@@ -963,4 +963,34 @@ describe "Querying" do
       @doc1.history.should == []
     end
   end
+
+  context "#new" do
+    it "should accept a block" do
+      user = document.new do |doc|
+        doc.first_name = "John"
+      end
+
+      user.first_name.should == "John"
+    end
+  end
+
+  context "#create" do
+    it "should accept a block" do
+      user = document.create do |doc|
+        doc.first_name = "John"
+      end
+
+      user.first_name.should == "John"
+    end
+  end
+
+  context "#create!" do
+    it "should accept a block" do
+      user = document.create! do |doc|
+        doc.first_name = "John"
+      end
+
+      user.first_name.should == "John"
+    end
+  end
 end

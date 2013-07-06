@@ -7,7 +7,6 @@ describe "BelongsToProxy" do
     @comment_class = Doc do
       key :post_id, ObjectId
     end
-
     @comment_class.belongs_to :post, :class => @post_class
   end
 
@@ -49,7 +48,7 @@ describe "BelongsToProxy" do
     comment.post.should == post
     comment.post.nil?.should be_false
   end
-  
+
   it "should not reload the association when replacing" do
     post = @post_class.new(:name => 'mongomapper')
     comment = @comment_class.new(:name => 'Foo!', :post => post)
@@ -59,10 +58,10 @@ describe "BelongsToProxy" do
   it "should properly assign the associated object when assigning the association with create" do
     child_class = Doc('Child')
     parent_class = Doc('Parent')
-    
+
     parent_class.one :child, :class => child_class
     child_class.belongs_to :parent, :class => parent_class
-    
+
     child = child_class.create(:parent => parent_class.create)
     child.parent.child.should == child
   end
@@ -160,49 +159,70 @@ describe "BelongsToProxy" do
     end
   end
 
-  it "should be able to build" do
-    @comment_class.belongs_to :post, :class => @post_class
+  context "when creating documents" do
+    let(:comment) { @comment_class.create }
 
-    comment = @comment_class.create
-    post = comment.build_post(:title => 'Hello, world!')
-    comment.post.should be_instance_of(@post_class)
-    comment.post.should be_new
-    comment.post.title.should == 'Hello, world!'
-    comment.post.should == post
-    comment.post_id.should == post.id
-  end
-
-  it "should be able to create" do
-    @comment_class.belongs_to :post, :class => @post_class
-
-    comment = @comment_class.create
-    post = comment.create_post(:title => 'Hello, world!')
-    comment.post.should be_instance_of(@post_class)
-    comment.post.should_not be_new
-    comment.post.title.should == 'Hello, world!'
-    comment.post.should == post
-    comment.post_id.should == post.id
-  end
-
-  context "#create!" do
     before do
       @post_class.key :title, String, :required => true
       @comment_class.belongs_to :post, :class => @post_class
     end
 
-    it "should raise exception if invalid" do
-      comment = @comment_class.create
-      expect { comment.create_post! }.to raise_error(MongoMapper::DocumentNotValid)
+    context "#build" do
+      it "should work" do
+        post = comment.build_post(:title => 'Hello, world!')
+        comment.post.should be_instance_of(@post_class)
+        comment.post.should be_new
+        comment.post.title.should == 'Hello, world!'
+        comment.post.should == post
+        comment.post_id.should == post.id
+      end
+
+      it "should accept a block" do
+        comment.build_post(:title => 'Hello, world!') do |post|
+          post.title = "Hello world!"
+        end
+        comment.post.title.should == "Hello world!"
+      end
     end
 
-    it "should work if valid" do
-      comment = @comment_class.create
-      post = comment.create_post!(:title => 'Hello, world!')
-      comment.post.should be_instance_of(@post_class)
-      comment.post.should_not be_new
-      comment.post.title.should == 'Hello, world!'
-      comment.post.should == post
-      comment.post_id.should == post.id
+    context "#create" do
+      it "should work" do
+        post = comment.create_post(:title => 'Hello, world!')
+        comment.post.should be_instance_of(@post_class)
+        comment.post.should_not be_new
+        comment.post.title.should == 'Hello, world!'
+        comment.post.should == post
+        comment.post_id.should == post.id
+      end
+
+      it "should accept a block" do
+        comment.create_post(:title => 'Hello, world!') do |post|
+          post.title = "Hello world!"
+        end
+        comment.post.title.should == "Hello world!"
+      end
+    end
+
+    context "#create!" do
+      it "should accept a block" do
+        comment.create_post! do |post|
+          post.title = "Hello world!"
+        end
+        comment.post.title.should == "Hello world!"
+      end
+
+      it "should raise exception if invalid" do
+        expect { comment.create_post! }.to raise_error(MongoMapper::DocumentNotValid)
+      end
+
+      it "should work if valid" do
+        post = comment.create_post!(:title => 'Hello, world!')
+        comment.post.should be_instance_of(@post_class)
+        comment.post.should_not be_new
+        comment.post.title.should == 'Hello, world!'
+        comment.post.should == post
+        comment.post_id.should == post.id
+      end
     end
   end
 

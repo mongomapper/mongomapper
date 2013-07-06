@@ -9,7 +9,7 @@ module MongoMapper
 
         def replace(docs)
           load_target
-          
+
           (target - docs).each do |t|
             case options[:dependent]
               when :destroy    then t.destroy
@@ -17,7 +17,7 @@ module MongoMapper
               else t.update_attributes(self.foreign_key => nil)
             end
           end
-          
+
           docs.each { |doc| prepare(doc).save }
           reset
         end
@@ -33,6 +33,7 @@ module MongoMapper
         def build(attrs={})
           doc = klass.new(attrs)
           apply_scope(doc)
+          yield doc if block_given?
           @target ||= [] unless loaded?
           @target << doc
           doc
@@ -40,14 +41,18 @@ module MongoMapper
 
         def create(attrs={})
           doc = klass.new(attrs)
-          apply_scope(doc).save
+          apply_scope(doc)
+          yield doc if block_given?
+          doc.save
           reset
           doc
         end
 
         def create!(attrs={})
           doc = klass.new(attrs)
-          apply_scope(doc).save!
+          apply_scope(doc)
+          yield doc if block_given?
+          doc.save!
           reset
           doc
         end

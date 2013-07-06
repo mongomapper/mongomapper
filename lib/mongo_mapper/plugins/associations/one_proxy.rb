@@ -3,16 +3,16 @@ module MongoMapper
   module Plugins
     module Associations
       class OneProxy < Proxy
-        def build(attrs={})
-          instantiate_target(:new, attrs)
+        def build(attrs={}, &block)
+          instantiate_target(:new, attrs, &block)
         end
 
-        def create(attrs={})
-          instantiate_target(:create, attrs)
+        def create(attrs={}, &block)
+          instantiate_target(:create, attrs, &block)
         end
 
-        def create!(attrs={})
-          instantiate_target(:create!, attrs)
+        def create!(attrs={}, &block)
+          instantiate_target(:create!, attrs, &block)
         end
 
         def replace(doc)
@@ -29,7 +29,7 @@ module MongoMapper
               end
             end
           end
-          
+
           unless doc.nil?
             proxy_owner.save unless proxy_owner.persisted?
             doc = klass.new(doc) unless doc.is_a?(klass)
@@ -40,17 +40,17 @@ module MongoMapper
           loaded
           @target = doc
         end
-        
+
         def destroy
           target.destroy
           reset
         end
-        
+
         def delete
           target.delete
           reset
         end
-        
+
         def nullify
           nullify_scope(target)
           target.save
@@ -62,8 +62,8 @@ module MongoMapper
             target_class.first(association.query_options.merge(criteria))
           end
 
-          def instantiate_target(instantiator, attrs={})
-            @target = target_class.send(instantiator, attrs.update(criteria))
+          def instantiate_target(instantiator, attrs={}, &block)
+            @target = target_class.send(instantiator, attrs.update(criteria), &block)
             loaded
             @target
           end

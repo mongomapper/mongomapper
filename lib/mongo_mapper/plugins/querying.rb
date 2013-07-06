@@ -24,11 +24,17 @@ module MongoMapper
         end
 
         def create(*docs)
-          initialize_each(*docs) { |doc| doc.save }
+          initialize_each(*docs) do |doc|
+            yield doc if block_given?
+            doc.save
+          end
         end
 
         def create!(*docs)
-          initialize_each(*docs) { |doc| doc.save! }
+          initialize_each(*docs) do |doc|
+            yield doc if block_given?
+            doc.save!
+          end
         end
 
         def update(*args)

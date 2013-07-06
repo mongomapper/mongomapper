@@ -290,7 +290,7 @@ describe "ManyDocumentsProxy" do
     end
   end
 
-  context "build" do
+  context "#build" do
     it "should assign foreign key" do
       project = Project.create
       status = project.statuses.build
@@ -335,9 +335,17 @@ describe "ManyDocumentsProxy" do
       status = project.statuses.build(:name => 'Foo')
       status.should be_new
     end
+
+    it "should accept a block" do
+      project = Project.new
+      status = project.statuses.build do |doc|
+        doc.name = "Foo"
+      end
+      project.statuses[0].name.should == "Foo"
+    end
   end
 
-  context "create" do
+  context "#create" do
     it "should assign foreign key" do
       project = Project.create
       status = project.statuses.create(:name => 'Foo!')
@@ -363,9 +371,17 @@ describe "ManyDocumentsProxy" do
       project.statuses.create(:name => 'Foo!')
       project.statuses.size.should == 1
     end
+
+    it "should accept a block" do
+      project = Project.new
+      status = project.statuses.create do |doc|
+        doc.name = "Foo"
+      end
+      project.statuses.first.name.should == "Foo"
+    end
   end
 
-  context "create!" do
+  context "#create!" do
     it "should assign foreign key" do
       project = Project.create
       status = project.statuses.create!(:name => 'Foo!')
@@ -397,6 +413,14 @@ describe "ManyDocumentsProxy" do
       project.statuses.size.should == 0
       project.statuses.create!(:name => 'Foo!')
       project.statuses.size.should == 1
+    end
+
+    it "should accept a block" do
+      project = Project.new
+      status = project.statuses.create! do |doc|
+        doc.name = "Foo"
+      end
+      status.name.should == "Foo"
     end
   end
 

@@ -18,16 +18,16 @@ module MongoMapper
           @target
         end
 
-        def build(attrs={})
-          instantiate_target(:new, attrs)
+        def build(attrs={}, &block)
+          instantiate_target(:new, attrs, &block)
         end
 
-        def create(attrs={})
-          instantiate_target(:create, attrs)
+        def create(attrs={}, &block)
+          instantiate_target(:create, attrs, &block)
         end
 
-        def create!(attrs={})
-          instantiate_target(:create!, attrs)
+        def create!(attrs={}, &block)
+          instantiate_target(:create!, attrs, &block)
         end
 
         def save_to_collection(options={})
@@ -40,8 +40,8 @@ module MongoMapper
             klass.find_by_id(proxy_owner[association.foreign_key])
           end
 
-          def instantiate_target(instantiator, attrs={})
-            @target = klass.send(instantiator, attrs)
+          def instantiate_target(instantiator, attrs={}, &block)
+            @target = klass.send(instantiator, attrs, &block)
             proxy_owner[association.foreign_key] = @target.id
             loaded
             @target
