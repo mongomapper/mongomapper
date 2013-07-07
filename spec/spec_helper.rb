@@ -3,8 +3,16 @@ $:.unshift(File.expand_path('../../lib', __FILE__))
 require 'rubygems'
 require 'bundler/setup'
 require 'fileutils'
-require 'mongo_mapper'
 require 'timecop'
+require 'coveralls'
+Coveralls.wear!
+
+if ENV['COVERAGE']
+  require 'simplecov'
+  SimpleCov.start
+end
+
+require 'mongo_mapper'
 
 def Doc(name='Class', &block)
   klass = Class.new
