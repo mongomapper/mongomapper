@@ -9,12 +9,13 @@ describe MongoMapper::Generators::ModelGenerator do
 
   before do
     prepare_destination
-    # run_generator
   end
 
   it 'help shows MongoMapper options' do
-    content = run_generator ['--help']
-    assert_match(/rails generate mongo_mapper:model/, content)
+    pending "Rails 4 breaks Kernel#capture on JRuby", :if => (Rails::VERSION::MAJOR >= 4 && RUBY_PLATFORM == "java") do
+      content = run_generator ['--help']
+      assert_match(/rails generate mongo_mapper:model/, content)
+    end
   end
 
   it 'model are properly created' do
