@@ -61,16 +61,16 @@ describe "Timestamps" do
 
       it "should set updated_at on document update but leave created_at alone" do
         doc = @klass.create(:first_name => 'John', :age => 27)
-        old_created_at = doc.created_at.to_f
+        old_created_at = doc.created_at.to_i
 
-        new_updated_at = Time.at((Time.now.to_f + 5.0).floor)
+        new_updated_at = Time.at(Time.now.to_i + 5.seconds)
         Timecop.freeze(new_updated_at) do
           @klass.update(doc._id, { :first_name => 'Johnny' })
         end
 
         doc = doc.reload
-        doc.created_at.to_f.should be_within(0.001).of(old_created_at)
-        doc.updated_at.to_f.should be_within(0.001).of(new_updated_at.to_f)
+        doc.created_at.to_i.should be_within(1).of(old_created_at.to_i)
+        doc.updated_at.to_i.should be_within(1).of(new_updated_at.to_i)
       end
     end
 

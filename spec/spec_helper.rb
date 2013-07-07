@@ -6,18 +6,20 @@ require 'fileutils'
 require 'timecop'
 require "generator_spec/test_case"
 
-if ENV['TRAVIS']
-  require 'coveralls'
-  Coveralls.wear!
-elsif ENV['COVERAGE'] && RUBY_VERSION > "1.8"
-  require 'simplecov'
-  SimpleCov.start do
-    add_filter 'spec'
-    add_group 'Core',         'lib/mongo_mapper'
-    add_group 'Rails',        'lib/rails'
-    add_group 'Extensions',   'lib/mongo_mapper/extensions'
-    add_group 'Plugins',      'lib/mongo_mapper/plugins'
-    add_group 'Associations', 'lib/mongo_mapper/plugins/associations'
+if RUBY_PLATFORM != "java"
+  if ENV['TRAVIS']
+    require 'coveralls'
+    Coveralls.wear!
+  elsif ENV['COVERAGE'] && RUBY_VERSION > "1.8"
+    require 'simplecov'
+    SimpleCov.start do
+      add_filter 'spec'
+      add_group 'Core',         'lib/mongo_mapper'
+      add_group 'Rails',        'lib/rails'
+      add_group 'Extensions',   'lib/mongo_mapper/extensions'
+      add_group 'Plugins',      'lib/mongo_mapper/plugins'
+      add_group 'Associations', 'lib/mongo_mapper/plugins/associations'
+    end
   end
 end
 
