@@ -54,7 +54,7 @@ module MongoMapper
         end
 
         def column_names
-          keys.keys
+          unaliased_keys.keys
         end
 
         # Returns returns an ActiveRecordAssociationAdapter for an association. This adapter has an API that is a

@@ -23,15 +23,25 @@ module MongoMapper
           @keys ||= {}
         end
 
+        def unaliased_keys
+          keys.inject({}) {|h, (n, k)| h[k.name] = k if n == k.name; h }
+        end
+
         def key(*args)
           Key.new(*args).tap do |key|
             keys[key.name] = key
+            keys[key.abbr] = key if key.abbr
             create_accessors_for(key)
             create_key_in_descendants(*args)
             create_indexes_for(key)
             create_validations_for(key)
           end
         end
+
+        def persisted_name(name)
+          keys[name.to_s].persisted_name
+        end
+        alias_method :abbr, :persisted_name
 
         def key?(key)
           keys.key? key.to_s
@@ -42,7 +52,7 @@ module MongoMapper
         end
 
         def object_id_keys
-          @object_id_keys ||= keys.keys.select { |key| keys[key].type == ObjectId }.map(&:to_sym)
+          @object_id_keys ||= unaliased_keys.keys.select { |key| keys[key].type == ObjectId }.map(&:to_sym)
         end
 
         def object_id_key?(name)
@@ -169,6 +179,8 @@ module MongoMapper
 
       def initialize(attrs={})
         @_new = true
+        @_mm_keys    = self.class.keys
+
         initialize_default_values(attrs)
         self.attributes = attrs
         yield self if block_given?
@@ -176,6 +188,8 @@ module MongoMapper
 
       def initialize_from_database(attrs={})
         @_new = false
+        @_mm_keys    = self.class.keys
+
         initialize_default_values(attrs)
         load_from_database(attrs)
         self
@@ -197,12 +211,11 @@ module MongoMapper
         end
       end
 
-      def to_mongo
+      def to_mongo(include_abbreviatons = true)
         BSON::OrderedHash.new.tap do |attrs|
-          keys.each do |name, key|
+          self.class.unaliased_keys.each do |name, key|
             if key.type == ObjectId || !self[key.name].nil?
-              value = key.set(self[key.name])
-              attrs[name] = value
+              attrs[include_abbreviatons && key.persisted_name || name] = key.set(self[key.name])
             end
           end
 
@@ -219,7 +232,7 @@ module MongoMapper
       end
 
       def attributes
-        to_mongo.with_indifferent_access
+        to_mongo(false).with_indifferent_access
       end
 
       def assign(attrs={})
@@ -290,9 +303,6 @@ module MongoMapper
         def load_from_database(attrs)
           return if attrs == nil || attrs.blank?
 
-          # Init the keys ivar. Due to the volume of times this method is called, we don't want it in a method.
-          @_mm_keys ||= self.class.keys
-
           attrs.each do |key, value|
             if !@_mm_keys.key?(key) && respond_to?(:"#{key}=")
               self.send(:"#{key}=", value)
@@ -315,7 +325,6 @@ module MongoMapper
         end
 
         def internal_write_key(name, value, cast = true)
-          @_mm_keys ||= self.class.keys
           key         = @_mm_keys[name] || self.class.key(name)
           as_mongo    = cast ? key.set(value) : value
           as_typecast = key.get(as_mongo)

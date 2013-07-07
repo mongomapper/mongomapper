@@ -24,7 +24,7 @@ module MongoMapper
             get_proxy(association).reset
           end
           instance_variables.each { |ivar| remove_instance_variable(ivar) }
-          load_from_database(doc)
+          initialize_from_database(doc)
           self
         else
           raise DocumentNotFound, "Document match #{_id.inspect} does not exist in #{collection.name} collection"

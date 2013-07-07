@@ -3,7 +3,7 @@ module MongoMapper
   module Plugins
     module Keys
       class Key
-        attr_accessor :name, :type, :options, :default, :ivar
+        attr_accessor :name, :type, :options, :default, :ivar, :abbr
 
         ID_STR = '_id'
 
@@ -15,6 +15,9 @@ module MongoMapper
           self.options = (options_from_args || {}).symbolize_keys
           @ivar = :"@#{name}"  # Optimization - used to avoid spamming #intern from internal_write_keys
           @embeddable = nil
+          if abbr = @options[:abbr] || @options[:alias] || @options[:field_name]
+            @abbr = abbr.to_s
+          end
 
           # We'll use this to reduce the number of operations #get has to perform, which improves load speeds
           @is_id = @name == ID_STR
@@ -25,8 +28,12 @@ module MongoMapper
           end
         end
 
+        def persisted_name
+          @abbr || @name
+        end
+
         def ==(other)
-          @name == other.name && @type == other.type
+          @name == other.name && @type == other.type && @abbr == other.abbr
         end
 
         def embeddable?
