@@ -90,8 +90,24 @@ module MongoMapper
           def method_missing(method, *args, &block)
             if klass.respond_to?(method)
               result = klass.send(method, *args, &block)
-              result.is_a?(Plucky::Query) ?
-                query.merge(result) : super
+              case result
+              when Plucky::Query
+                query.merge result
+
+              # If we got a single record of this classas a result, return it
+              when klass
+                result
+
+              # If we got an array of this class as a result, return it
+              when Array
+                if result[0].is_a? klass
+                  result
+                else
+                  super
+                end
+              else
+                super
+              end
             else
               super
             end

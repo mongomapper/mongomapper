@@ -16,6 +16,33 @@ describe "ManyDocumentsProxy" do
     @owner_class.many :pets, :class => @pet_class, :foreign_key => :owner_id, :order => 'name'
   end
 
+  it "should return results if found via method_missing" do
+    @pet_class.class_eval do
+      def self.from_param(name)
+        find_by_name(name)
+      end
+
+      def self.all_from_param(names)
+        where(:name => names).all
+      end
+    end
+
+    instance = @owner_class.new
+    instance.pets.build(:name => "Foo")
+    instance.pets.build(:name => "Bar")
+    instance.save
+
+    instance.reload.pets.from_param("Foo").tap do |pet|
+      pet.should be_a @pet_class
+      pet.name.should == "Foo"
+    end
+
+    instance.reload.pets.all_from_param(["Foo", "Bar"]).tap do |pet|
+      pet.should be_a Array
+      pet.map(&:name).should =~ %w(Foo Bar)
+    end
+  end
+
   it "should default reader to empty array" do
     project = Project.new
     project.statuses.should == []
@@ -480,12 +507,21 @@ describe "ManyDocumentsProxy" do
     end
   end
 
-  context "to_a" do
+  context "#to_a" do
     it "should include persisted and new documents" do
       project = Project.create
       3.times { project.statuses.create(:name => 'Foo!') }
       2.times { project.statuses.build(:name => 'Foo!') }
       project.statuses.to_a.size.should == 5
+    end
+  end
+
+  context "#map" do
+    it "should include persisted and new documents" do
+      project = Project.create
+      3.times { project.statuses.create(:name => 'Foo!') }
+      2.times { project.statuses.build(:name => 'Foo!') }
+      project.statuses.map(&:name).size.should == 5
     end
   end
 

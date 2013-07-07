@@ -12,6 +12,8 @@ module MongoMapper
           end
         end
 
+        alias_method :to_a, :to_ary
+
         def include?(*args)
           load_target
           target.include?(*args)
