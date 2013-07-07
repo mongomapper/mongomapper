@@ -82,6 +82,14 @@ describe "Single collection inheritance (document)" do
       DocDaughter.collection.name.should == DocParent.collection.name
     end
 
+    it "should negate SCI if the subclass changes its collection" do
+      klass = Class.new(DocParent) do
+        set_collection_name "foobars"
+      end
+      klass.collection.name.should == "foobars"
+      klass.should_not be_single_collection_inherited
+    end
+
     it "should know single_collection_parent" do
       DocParent.single_collection_parent.should be_nil
       DocDaughter.single_collection_parent.should      == DocParent
