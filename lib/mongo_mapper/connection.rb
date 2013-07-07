@@ -13,6 +13,10 @@ module MongoMapper
       @@connection ||= Mongo::MongoClient.new
     end
 
+    def connection?
+      !!@@connection
+    end
+
     # @api public
     def connection=(new_connection)
       @@connection = new_connection

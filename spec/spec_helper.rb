@@ -49,10 +49,14 @@ logger = Logger.new(log_dir + '/test.log')
 MongoMapper.connection = Mongo::MongoClient.new('127.0.0.1', 27017, :logger => logger)
 MongoMapper.database = "test"
 MongoMapper.database.collections.each { |c| c.drop_indexes }
-
 Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
+
 RSpec.configure do |c|
-  c.before :suite do
+  c.treat_symbols_as_metadata_keys_with_true_values = true
+  c.around(:each, :without_connection) do |example|
+    old, MongoMapper.connection = MongoMapper.connection, nil
+    example.run
+    MongoMapper.connection = old
   end
 end
 
