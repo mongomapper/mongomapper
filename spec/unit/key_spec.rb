@@ -58,6 +58,14 @@ describe "Key" do
       key.name.should == 'foo'
       key.options[:required].should be_true
     end
+
+    it "should not permit reserved names" do
+      expect { Key.new(:id) }.to raise_error(/reserved/)
+    end
+
+    it "should not permit bad names" do
+      expect { Key.new(:"id.bar") }.to raise_error(/must match/)
+    end
   end
 
   context "A key" do

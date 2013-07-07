@@ -10,6 +10,8 @@ module MongoMapper
         def initialize(*args)
           options_from_args = args.extract_options!
           @name, @type = args.shift.to_s, args.shift
+          validate_key_name!
+
           self.options = (options_from_args || {}).symbolize_keys
           @ivar = :"@#{name}"  # Optimization - used to avoid spamming #intern from internal_write_keys
           @embeddable = nil
@@ -80,6 +82,14 @@ module MongoMapper
         private
           def typecast_class
             @typecast_class ||= options[:typecast].constantize
+          end
+
+          def validate_key_name!
+            if %w( id ).include? @name
+              raise MongoMapper::InvalidKey.new("`#{@name}` is a reserved key name (did you mean to use _id?)")
+            elsif !@name.match(/\A[a-z0-9_]+\z/i)
+              raise MongoMapper::InvalidKey.new("`#{@name}` is not a valid key name. Keys must match [a-zA-Z0-9_]+")
+            end
           end
       end
     end

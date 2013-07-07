@@ -12,10 +12,13 @@ module MongoMapper
   # raised when trying to do something not supported, mostly for edocs
   class NotSupported < Error; end
 
+  # raised when trying to create a key with an invalid name
+  class InvalidKey < Error; end
+
   # raised when document not valid and using !
   class DocumentNotValid < Error
     attr_reader :document
-  
+
     def initialize(document)
       @document = document
       super("Validation failed: #{document.errors.full_messages.join(", ")}")

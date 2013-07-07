@@ -14,6 +14,7 @@ module MongoMapper
   autoload :InvalidScheme,          'mongo_mapper/exceptions'
   autoload :DocumentNotValid,       'mongo_mapper/exceptions'
   autoload :AccessibleOrProtected,  'mongo_mapper/exceptions'
+  autoload :InvalidKey,             'mongo_mapper/exceptions'
 
   autoload :Document,               'mongo_mapper/document'
   autoload :EmbeddedDocument,       'mongo_mapper/embedded_document'
