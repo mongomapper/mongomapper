@@ -1,6 +1,7 @@
 = MongoMapper
 
 {<img src="https://travis-ci.org/jnunemaker/mongomapper.png?branch=master" alt="Build Status" />}[https://travis-ci.org/jnunemaker/mongomapper]
+{<img src="https://coveralls.io/repos/jnunemaker/mongomapper/badge.png" alt="Coverage Status" />}[https://coveralls.io/r/jnunemaker/mongomapper]
 
 A Ruby Object Mapper for Mongo.
 
@@ -8,28 +9,30 @@ A Ruby Object Mapper for Mongo.
 
     $ gem install mongo_mapper
 
-== Contributing
+== Documentation
 
-* Fork the project.
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a future version unintentionally.
-* Commit, do not mess with rakefile, version, or history. (if you want to have your own version, that is fine but bump version in a commit by itself in another branch so I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
+http://mongomapper.com/documentation/
 
-== Development
+http://rdoc.info/github/jnunemaker/mongomapper
 
-    $ gem install bundler (if you don't have it)
+== Contributing & Development
+
+    $ git clone https://github.com/jnunemaker/mongomapper && cd mongomapper
     $ bundle install
     $ bundle exec rake
 
+* Fork the project.
+* Make your feature addition or bug fix. All specs should pass.
+* Add specs for your changes. This is important so I don't break it in a future version unintentionally.
+* Commit, do not mess with Rakefile, version, or history. If you want to have your own version, that is fine but bump version in a commit by itself in another branch so a maintainer ignore it when your pull request is merged.
+* Send a pull request. Bonus points for topic branches.
+
 == Problems or Questions?
 
-Hit up the google group:
-http://groups.google.com/group/mongomapper
+Hit up the Google group: http://groups.google.com/group/mongomapper
 
-Hop on IRC:
-irc://chat.freenode.net/#mongomapper
+Hop on IRC: irc://chat.freenode.net/#mongomapper
 
-== Copyright
+== License & Copyright
 
 See LICENSE for details.
