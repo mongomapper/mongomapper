@@ -93,6 +93,15 @@ describe "MongoMapper" do
       MongoMapper.connect('development', :logger => logger)
     end
 
+    it "should convert read preferences to symbols" do
+      MongoMapper.config = {
+        'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'options' =>  {'read' => 'primary'}}
+      }
+      connection, logger = double('connection'), double('logger')
+      Mongo::MongoClient.should_receive(:new).with('127.0.0.1', 27017, :logger => logger, :read => :primary)
+      MongoMapper.connect('development', :logger => logger)
+    end
+
     it "should work with options from config" do
       MongoMapper.config = {
         'development' => {'host' => '192.168.1.1', 'port' => 2222, 'database' => 'test', 'options' => {'safe' => true}}
