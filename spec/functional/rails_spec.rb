@@ -31,4 +31,17 @@ describe "Documents with the Rails plugin" do
       subject.reload.foo_before_type_cast.should == "baz"
     end
   end
+
+  context "#has_one" do
+    subject do
+      Doc do
+        has_one :foo
+      end
+    end
+
+    it "should create a one association" do
+      subject.associations.should have_key :foo
+      subject.associations[:foo].should be_a MongoMapper::Plugins::Associations::OneAssociation
+    end
+  end
 end

@@ -59,15 +59,17 @@ module MongoMapper
           @ivar ||= "@_#{name}"
         end
 
+        # :nocov:
         def proxy_class
           raise NotImplementedError
         end
 
-        def setup(model)
-        end
-
         def autosave?
           raise NotImplementedError
+        end
+        # :nocov:
+
+        def setup(model)
         end
 
         private

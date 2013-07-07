@@ -24,6 +24,39 @@ describe "Key" do
     end
   end
 
+  context "#assign" do
+    it "should raise a deprecation warning" do
+      klass = Doc() do
+        key :_id, Integer
+      end
+      doc = klass.new
+      doc.should_receive(:warn).once
+      doc.assign({:x => :y})
+    end
+  end
+
+  # TODO: Are these methods deprecated?
+  context "#embedded and #non_embedded_keys" do
+    EmbeddableThingie = EDoc {
+      key :whiz, String
+    }
+
+    let(:klass) do
+      Doc do
+        key :foo, String
+        key :embeddable_thingie, EmbeddableThingie
+      end
+    end
+
+    it "should get non-embeddable keys" do
+      klass.new.non_embedded_keys.map(&:name).should == %w(_id foo)
+    end
+
+    it "should get embeddable keys" do
+      klass.new.embedded_keys.map(&:name).should == %w(embeddable_thingie)
+    end
+  end
+
   context ".key?('string')" do
     it "should be true if document has key" do
       Address.key?('city').should be_true

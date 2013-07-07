@@ -66,22 +66,6 @@ module MongoMapper
             @transformer ||= lambda { |doc| load(doc) }
           end
 
-          def find_some(ids, options={})
-            query = query(options).amend(:_id => ids.flatten.compact.uniq)
-            query.all
-          end
-
-          def find_some!(ids, options={})
-            ids  = ids.flatten.compact.uniq
-            docs = find_some(ids, options)
-
-            if ids.size != docs.size
-              raise DocumentNotFound, "Couldn't find all of the ids (#{ids.to_sentence}). Found #{docs.size}, but was expecting #{ids.size}"
-            end
-
-            docs
-          end
-
           def initialize_each(*docs)
             instances = []
             docs = [{}] if docs.blank?

@@ -34,6 +34,19 @@ describe "Validations" do
         end
       end
 
+      context "validating uniqueness of" do
+        it "should work with :unique => true passed to ::key" do
+          @document.key :email, String, :unique => true
+
+          @document.create(:email => "cheald@gmail.com")
+          doc = @document.new :email => "cheald@gmail.com"
+          doc.should_not be_valid
+          doc.should have_error_on(:email)
+          doc.email = "cheald@mashable.com"
+          doc.should be_valid
+        end
+      end
+
       context "validating format of" do
         it "should work with validates_format_of macro" do
           @document.key :name, String

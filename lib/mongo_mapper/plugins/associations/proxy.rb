@@ -76,9 +76,11 @@ module MongoMapper
           self unless target.nil?
         end
 
+        # :nocov:
         def replace(v)
           raise NotImplementedError
         end
+        # :nocov:
 
         def reset
           @loaded = false
@@ -119,9 +121,11 @@ module MongoMapper
             reset
           end
 
+          # :nocov:
           def find_target
             raise NotImplementedError
           end
+          # :nocov:
 
           def flatten_deeper(array)
             array.collect do |element|

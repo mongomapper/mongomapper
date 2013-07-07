@@ -25,11 +25,7 @@ module MongoMapper
       }
 
       def to_mongo(value)
-        if value.instance_of?(Boolean)
-          value
-        else
-          Mapping[value]
-        end
+        Mapping[value]
       end
 
       def from_mongo(value)

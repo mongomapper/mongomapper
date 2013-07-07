@@ -1,5 +1,6 @@
 # encoding: UTF-8
 # This class exists to make sure that Hash's extensions don't end up giving us unordered hashes.
+# :nocov:
 if RUBY_VERSION < "1.9"
   module MongoMapper
     module Extensions
@@ -19,3 +20,4 @@ if RUBY_VERSION < "1.9"
     extend MongoMapper::Extensions::OrderedHash
   end
 end
+# :nocov:

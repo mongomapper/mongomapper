@@ -36,11 +36,13 @@ module MongoMapper
         end
 
         def associations_module_defined?
+          # :nocov:
           if method(:const_defined?).arity == 1 # Ruby 1.9 compat check
             const_defined?('MongoMapperAssociations')
           else
             const_defined?('MongoMapperAssociations', false)
           end
+          # :nocov:
         end
 
         def associations_module

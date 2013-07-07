@@ -356,6 +356,18 @@ describe "IdentityMap" do
       end
     end
 
+    context "#remove_documents_from_map" do
+      before do
+        @person = @person_class.create(:name => 'Fred')
+      end
+
+      it "should remove documents from the map" do
+        assert_in_map @person
+        @person_class.remove_documents_from_map(@person)
+        assert_not_in_map @person
+      end
+    end
+
     context "querying and selecting certain fields" do
       before do
         @person = @person_class.create(:name => 'Bill')

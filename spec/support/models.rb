@@ -125,12 +125,7 @@ class Project
     end
   end
 
-  many :addresses do
-    def find_all_by_state(state)
-      # can't use select here for some reason
-      find_all { |a| a.state == state }
-    end
-  end
+  many :addresses
 end
 
 class Collaborator

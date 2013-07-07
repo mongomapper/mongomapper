@@ -69,11 +69,13 @@ module MongoMapper
 
         private
           def key_accessors_module_defined?
+            # :nocov:
             if IS_RUBY_1_9
               const_defined?('MongoMapperKeys')
             else
               const_defined?('MongoMapperKeys', false)
             end
+            # :nocov:
           end
 
           def accessors_module
