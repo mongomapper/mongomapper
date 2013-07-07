@@ -1,5 +1,6 @@
 = MongoMapper
 
+{<img src="https://badge.fury.io/rb/mongo_mapper.png" alt="RubyGem" />}[https://rubygems.org/gems/mongo_mapper]
 {<img src="https://travis-ci.org/jnunemaker/mongomapper.png?branch=master" alt="Build Status" />}[https://travis-ci.org/jnunemaker/mongomapper]
 {<img src="https://coveralls.io/repos/jnunemaker/mongomapper/badge.png" alt="Coverage Status" />}[https://coveralls.io/r/jnunemaker/mongomapper]
 
@@ -14,6 +15,22 @@ A Ruby Object Mapper for Mongo.
 http://mongomapper.com/documentation/
 
 http://rdoc.info/github/jnunemaker/mongomapper
+
+== Compatibility
+
+MongoMapper is tested against:
+
+* MRI 1.8.7
+* MRI 1.9.3
+* MRI 2.0.0
+* JRuby (1.9)
+
+Additionally, MongoMapper is tested against:
+
+* Rails 3.0.x
+* Rails 3.1.x
+* Rails 3.2.x
+* Rails 4.0.x
 
 == Contributing & Development
 
