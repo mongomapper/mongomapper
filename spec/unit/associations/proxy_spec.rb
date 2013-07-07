@@ -18,9 +18,9 @@ end
 
 describe "Proxy" do
   before do
-    @owner = mock('owner')
+    @owner = double('owner')
     @owner.stub(:new?).and_return(false)
-    @association = mock('association')
+    @association = double('association')
     @association.stub(:options).and_return({:extend => []})
 
     @proxy       = FakeProxy.new(@owner, @association)

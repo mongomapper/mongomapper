@@ -70,7 +70,7 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'}
       }
-      connection, logger = mock('connection'), mock('logger')
+      connection, logger = double('connection'), double('logger')
       Mongo::MongoClient.should_receive(:new).with('127.0.0.1', 27017, :logger => logger)
       MongoMapper.connect('development', :logger => logger)
     end
@@ -79,7 +79,7 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'ssl' => true}
       }
-      connection, logger = mock('connection'), mock('logger')
+      connection, logger = double('connection'), double('logger')
       Mongo::MongoClient.should_receive(:new).with('127.0.0.1', 27017, :logger => logger, :ssl => true)
       MongoMapper.connect('development', :logger => logger)
     end
@@ -88,7 +88,7 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'ssl' => false}
       }
-      connection, logger = mock('connection'), mock('logger')
+      connection, logger = double('connection'), double('logger')
       Mongo::MongoClient.should_receive(:new).with('127.0.0.1', 27017, :logger => logger, :ssl => false)
       MongoMapper.connect('development', :logger => logger)
     end
@@ -97,7 +97,7 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'host' => '192.168.1.1', 'port' => 2222, 'database' => 'test', 'options' => {'safe' => true}}
       }
-      connection, logger = mock('connection'), mock('logger')
+      connection, logger = double('connection'), double('logger')
       Mongo::MongoClient.should_receive(:new).with('192.168.1.1', 2222, :logger => logger, :safe => true)
       MongoMapper.connect('development', :logger => logger)
     end
@@ -106,7 +106,7 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
       }
-      connection, logger = mock('connection'), mock('logger')
+      connection, logger = double('connection'), double('logger')
       Mongo::MongoClient.should_receive(:new).with('127.0.0.1', 27017, :logger => logger)
       MongoMapper.connect('development', :logger => logger)
     end
@@ -165,7 +165,7 @@ describe "MongoMapper" do
 
   context "setup" do
     it "should work as shortcut for setting config, environment and options" do
-      config, logger = mock('config'), mock('logger')
+      config, logger = double('config'), double('logger')
       MongoMapper.should_receive(:config=).with(config)
       MongoMapper.should_receive(:connect).with('development', :logger => logger)
       MongoMapper.should_receive(:handle_passenger_forking).once
