@@ -12,8 +12,10 @@ module MongoMapper
         def inherited(subclass)
           key :_type, String unless key?(:_type)
           super
-          subclass.single_collection_parent = self
-          subclass.instance_variable_set("@single_collection_inherited", true)
+          if @collection_name == subclass.instance_variable_get("@collection_name")
+            subclass.single_collection_parent = self
+            subclass.instance_variable_set("@single_collection_inherited", true)
+          end
         end
 
         def single_collection_root
@@ -33,7 +35,12 @@ module MongoMapper
             single_collection_parent = nil
             @single_collection_inherited = false
           end
+          @collection_defined = true
           super
+        end
+
+        def explicit_collection_defined?
+          @collection_defined == true
         end
 
         def single_collection_parent

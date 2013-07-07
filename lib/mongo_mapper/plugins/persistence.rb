@@ -9,7 +9,7 @@ module MongoMapper
           unless subclass.embeddable?
             subclass.connection(connection)
             subclass.set_database_name(database_name)
-            subclass.set_collection_name(collection_name)
+            subclass.set_collection_name(collection_name) unless subclass.explicit_collection_defined?
           end
           super
         end
@@ -62,7 +62,7 @@ module MongoMapper
           def assert_supported
             @embeddable ||= embeddable?
             if @embeddable
-              raise NotSupported.new('This is not supported for embeddable documents at this time.')
+              raise MongoMapper::NotSupported.new('This is not supported for embeddable documents at this time.')
             end
           end
       end
