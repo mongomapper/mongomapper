@@ -49,7 +49,7 @@ describe "Key" do
     end
 
     it "should get non-embeddable keys" do
-      klass.new.non_embedded_keys.map(&:name).should == %w(_id foo)
+      klass.new.non_embedded_keys.map(&:name).should =~ %w(_id foo)
     end
 
     it "should get embeddable keys" do
