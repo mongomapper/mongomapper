@@ -3,9 +3,8 @@ require 'spec_helper'
 module Modifiers
   describe "Modifiers" do
     let(:page_class_with_compound_key) {
-      compound_key = BSON::OrderedHash['n', 42, 'i', BSON::ObjectId.new]
       Doc do
-        key :_id,         BSON::OrderedHash, :default => lambda { compound_key }
+        key :_id,         BSON::OrderedHash, :default => lambda { BSON::OrderedHash['n', 42, 'i', BSON::ObjectId.new] }
         key :title,       String
         key :day_count,   Integer, :default => 0
         key :week_count,  Integer, :default => 0

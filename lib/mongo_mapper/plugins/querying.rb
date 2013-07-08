@@ -123,16 +123,17 @@ module MongoMapper
         end
 
         def create(options={})
-          save_to_collection(options)
+          save_to_collection(options.merge(:persistence_method => :insert))
         end
 
         def update(options={})
-          save_to_collection(options)
+          save_to_collection(options.merge(:persistence_method => :save))
         end
 
         def save_to_collection(options={})
           @_new = false
-          collection.save(to_mongo, Utils.get_safe_options(options))
+          method = options.delete(:persistence_method) || :save
+          collection.send(method, to_mongo, Utils.get_safe_options(options))
         end
     end
   end

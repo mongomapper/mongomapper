@@ -32,6 +32,20 @@ describe "Safe" do
     end
   end
 
+  context "An unsafe document" do
+    before do
+      @klass = Doc do
+        safe(:w => 0)
+      end
+    end
+    after { drop_indexes(@klass) }
+
+    it "should not raise an error on duplicate IDs" do
+      k = @klass.create
+      expect { j = @klass.create(:_id => k.id) }.to_not raise_error
+    end
+  end
+
   context "A safe document" do
     before do
       @klass = Doc() do
@@ -45,10 +59,15 @@ describe "Safe" do
         @klass.ensure_index :email, :unique => true
       end
 
+      it "should raise an error on duplicate IDs" do
+        k = @klass.create
+        expect { j = @klass.create(:_id => k.id) }.to raise_error(Mongo::OperationFailure)
+      end
+
       context "using safe setting from class" do
         it "should pass :w => 1 option to save" do
           instance = @klass.new(:email => 'john@doe.com')
-          Mongo::Collection.any_instance.should_receive(:save).once.with({'_id' => instance.id, 'email' => 'john@doe.com'}, {:w => 1})
+          Mongo::Collection.any_instance.should_receive(:insert).once.with({'_id' => instance.id, 'email' => 'john@doe.com'}, {:w => 1})
           instance.save!
         end
 
@@ -103,7 +122,7 @@ describe "Safe" do
       context "using safe setting from class" do
         it "should pass :safe => options_hash to save" do
           instance = @klass.new(:email => 'john@doe.com')
-          Mongo::Collection.any_instance.should_receive(:save).once.with({'_id' => instance.id, 'email' => 'john@doe.com'}, {:j => true})
+          Mongo::Collection.any_instance.should_receive(:insert).once.with({'_id' => instance.id, 'email' => 'john@doe.com'}, {:j => true})
           instance.save!
         end
 
