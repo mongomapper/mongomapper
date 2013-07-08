@@ -282,7 +282,7 @@ describe "Support" do
     end
 
     it "should be time to milliseconds if string" do
-      Time.to_mongo('2000-01-01 01:01:01.123456').to_f.should be_within(0.0000001).of(Time.local(2000, 1, 1, 1, 1, 1, 123456).utc.to_f)
+      Time.to_mongo('2000-01-01 01:01:01.123456').to_f.should be_within(0.0000001).of(Time.local(2000, 1, 1, 1, 1, 1, 123000).utc.to_f)
     end
 
     it "should be time in utc if time" do
@@ -301,7 +301,7 @@ describe "Support" do
   context "Time.to_mongo with Time.zone" do
     it "should be time to milliseconds if time" do
       Time.zone = 'Hawaii'
-      Time.to_mongo(Time.zone.local(2009, 8, 15, 14, 0, 0, 123456)).to_f.should be_within(0.0000001).of(Time.utc(2009, 8, 16, 0, 0, 0, 123456).to_f)
+      Time.to_mongo(Time.zone.local(2009, 8, 15, 14, 0, 0, 123456)).to_f.should be_within(0.0000001).of(Time.utc(2009, 8, 16, 0, 0, 0, 123000).to_f)
       Time.zone = nil
     end
 
@@ -312,7 +312,7 @@ describe "Support" do
     end
 
     it "should not round up times at the end of the month" do
-      Time.to_mongo(Time.now.end_of_month).to_f.should be_within(0.0000001).of(Time.now.end_of_month.utc.to_f)
+      Time.to_mongo(Time.now.end_of_month).to_i.should == Time.now.end_of_month.utc.to_i
     end
 
     it "should be nil if blank string" do
