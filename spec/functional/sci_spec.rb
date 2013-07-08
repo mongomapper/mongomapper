@@ -313,4 +313,33 @@ describe "Single collection inheritance (document)" do
       Child.new(:_type => 'OtherChild')._type.should == 'Child'
     end
   end
+
+  describe "With polymorphism" do
+    before :all do
+      class SciPolymorphicPost
+        include MongoMapper::Document
+        belongs_to :article_parent, :polymorphic => true
+      end
+
+      class GalleryItem
+        include MongoMapper::Document
+        belongs_to :gallery_album
+        key :text, Hash
+        timestamps!
+      end
+
+      class TextGalleryItem < GalleryItem;
+        many :sci_polymorphic_posts, :as => :article_parent
+      end
+    end
+
+    it "should find polymorphic SCI items" do
+      item = TextGalleryItem.new()
+      p = SciPolymorphicPost.create(:article_parent => item)
+      p.article_parent_id.should be_a BSON::ObjectId
+      p.article_parent_type.should == "TextGalleryItem"
+
+      p.reload.article_parent.sci_polymorphic_posts.all.should include(p)
+    end
+  end
 end
