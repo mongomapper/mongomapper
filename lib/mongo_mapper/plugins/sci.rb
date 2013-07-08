@@ -30,6 +30,14 @@ module MongoMapper
           root
         end
 
+        def criteria_hash(criteria={})
+          if single_collection_inherited?
+            super criteria.merge(:_type => name)
+          else
+            super
+          end
+        end
+
         def set_collection_name(name)
           if single_collection_inherited?
             single_collection_parent = nil

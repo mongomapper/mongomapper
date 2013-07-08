@@ -52,6 +52,12 @@ describe "Single collection inheritance (document)" do
       DocParent.key?(:_type).should be_true
     end
 
+    it "should use modifiers properly" do
+      DocDaughter.increment({:title => 'Home'}, {:day_count => 1}, :upsert => true)
+      DocDaughter.first.should_not be_nil
+      DocDaughter.first._type.should == "DocDaughter"
+    end
+
     it "should use the same connection in the subclass" do
       parent_class = Class.new do
         include MongoMapper::Document
