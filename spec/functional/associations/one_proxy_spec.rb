@@ -200,14 +200,13 @@ describe "OneProxy" do
         @post.save
       end
 
-      it "should not call delete the associated documents" do
-        author_class.any_instance.should_not_receive(:delete)
+      it "should call delete the associated documents" do
+        author_class.any_instance.should_receive(:delete)
         @post.destroy
       end
 
-      it "should not remove the associated documents" do
-        author_class.count.should == 1
-        expect { @post.destroy }.to_not change { author_class.count }
+      it "should remove the associated documents" do
+        expect { @post.destroy }.to change { author_class.count }.by( -1 )
         @post.author.should == nil
       end
     end

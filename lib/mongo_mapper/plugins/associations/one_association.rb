@@ -47,6 +47,7 @@ module MongoMapper
               unless proxy.nil?
                 case options[:dependent]
                 when :destroy then proxy.destroy
+                when :delete then proxy.delete
                 else proxy.nullify
                 end
               end
