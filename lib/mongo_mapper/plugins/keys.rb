@@ -23,8 +23,16 @@ module MongoMapper
           @keys ||= {}
         end
 
+        def dynamic_keys
+          @dynamic_keys ||= Hash[*unaliased_keys.select {|k, v| v.dynamic? }.flatten(1)]
+        end
+
+        def defined_keys
+          @defined_keys ||= Hash[*unaliased_keys.select {|k, v| !v.dynamic? }.flatten(1)]
+        end
+
         def unaliased_keys
-          keys.inject({}) {|h, (n, k)| h[k.name] = k if n == k.name; h }
+          @unaliased_keys ||= Hash[*keys.select {|k, v| k == v.name }.flatten(1)]
         end
 
         def key(*args)
@@ -35,6 +43,7 @@ module MongoMapper
             create_key_in_descendants(*args)
             create_indexes_for(key)
             create_validations_for(key)
+            @dynamic_keys = @defined_keys = @unaliased_keys = nil
           end
         end
 

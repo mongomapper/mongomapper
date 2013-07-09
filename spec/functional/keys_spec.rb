@@ -1,6 +1,31 @@
 require 'spec_helper'
 
 describe "Keys" do
+  context "key segmenting" do
+    let(:doc) {
+      Doc {
+        key :defined
+      }
+    }
+
+    before do
+      doc.collection.insert(:dynamic => "foo")
+      doc.first
+    end
+
+    describe "#dynamic_keys" do
+      it "should find dynamic keys" do
+        doc.dynamic_keys.keys.should == ["dynamic"]
+      end
+    end
+
+    describe "#defined_keys" do
+      it "should find defined keys" do
+        doc.defined_keys.keys.should =~ ["_id", "defined"]
+      end
+    end
+  end
+
   describe "with invalid names" do
     it "should warn when key names start with an uppercase letter" do
       doc = Doc {}
