@@ -66,6 +66,10 @@ describe "Key" do
     it "should not permit bad names" do
       expect { Key.new(:"id.bar") }.to raise_error(/must match/)
     end
+
+    it "should permit bad names if __dynamic" do
+      expect { Key.new(:"id.bar", :__dynamic => true) }.to_not raise_error
+    end
   end
 
   context "A key" do

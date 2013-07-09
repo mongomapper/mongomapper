@@ -31,7 +31,7 @@ module MongoMapper
           Key.new(*args).tap do |key|
             keys[key.name] = key
             keys[key.abbr] = key if key.abbr
-            create_accessors_for(key)
+            create_accessors_for(key) if key.valid_ruby_name?
             create_key_in_descendants(*args)
             create_indexes_for(key)
             create_validations_for(key)
@@ -179,8 +179,7 @@ module MongoMapper
 
       def initialize(attrs={})
         @_new = true
-        @_mm_keys    = self.class.keys
-
+        init_ivars
         initialize_default_values(attrs)
         self.attributes = attrs
         yield self if block_given?
@@ -188,8 +187,7 @@ module MongoMapper
 
       def initialize_from_database(attrs={})
         @_new = false
-        @_mm_keys    = self.class.keys
-
+        init_ivars
         initialize_default_values(attrs)
         load_from_database(attrs)
         self
@@ -272,16 +270,25 @@ module MongoMapper
       end
 
       def read_key(key_name)
-        instance_key = :"@#{key_name}"
-        if instance_variable_defined? instance_key
-          instance_variable_get instance_key
+        key_name_sym = key_name.to_sym
+        # Primary point of contact for attributes
+        if @mongo_attributes.key?(key_name_sym)
+          @mongo_attributes[key_name_sym]
+
+        # Basically associations.
+        elsif (instance_variable_defined?(:"@#{key_name}") rescue nil)
+          instance_variable_get :"@#{key_name}"
+
+        # Keys with default values.
         elsif key = keys[key_name.to_s]
-          value = key.get nil
-          instance_variable_set instance_key, value
+          value = key.get(nil)
+          @mongo_attributes[key_name_sym] = value
+          instance_variable_set key.ivar, value unless key.dynamic?
         end
       end
 
       alias_method :[], :read_key
+      alias_method :attribute, :read_key
 
       def []=(name, value)
         write_key(name, value)
@@ -300,11 +307,18 @@ module MongoMapper
       end
 
       private
+
+        def init_ivars
+          @__mm_keys = self.class.keys                                # Not dumpable
+          @__mm_default_keys = @__mm_keys.values.select(&:default?)   # Not dumpable
+          @mongo_attributes = {}                                      # Dumpable
+        end
+
         def load_from_database(attrs)
           return if attrs == nil || attrs.blank?
 
           attrs.each do |key, value|
-            if !@_mm_keys.key?(key) && respond_to?(:"#{key}=")
+            if !@__mm_keys.key?(key) && respond_to?(:"#{key}=")
               self.send(:"#{key}=", value)
             else
               internal_write_key key, value, false
@@ -325,20 +339,22 @@ module MongoMapper
         end
 
         def internal_write_key(name, value, cast = true)
-          key         = @_mm_keys[name] || self.class.key(name)
+          key         = @__mm_keys[name] || self.class.key(name, :__dynamic => true)
           as_mongo    = cast ? key.set(value) : value
           as_typecast = key.get(as_mongo)
-          if key.embeddable?
-            set_parent_document(key, value)
-            set_parent_document(key, as_typecast)
+          @mongo_attributes[key.name.to_sym] = as_typecast
+          unless key.dynamic?
+            if key.embeddable?
+              set_parent_document(key, value)
+              set_parent_document(key, as_typecast)
+            end
+            instance_variable_set key.ivar, as_typecast
           end
-          instance_variable_set key.ivar, as_typecast
           @attributes = nil
         end
 
         def initialize_default_values(except = {})
-          @_mm_default_keys ||= self.class.keys.values.select(&:default?)
-          @_mm_default_keys.each do |key|
+          @__mm_default_keys.each do |key|
             if !(except && except.key?(key.name))
               internal_write_key key.name, key.default_value, false
             end

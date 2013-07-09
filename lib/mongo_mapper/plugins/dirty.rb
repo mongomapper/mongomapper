@@ -54,7 +54,7 @@ module MongoMapper
       end
 
       def attribute_value_changed?(key_name)
-        changed_attributes[key_name] != instance_variable_get(:"@#{key_name}")
+        changed_attributes[key_name] != read_key(key_name)
       end
     end
   end

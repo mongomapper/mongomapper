@@ -10,22 +10,26 @@ module MongoMapper
         def initialize(*args)
           options_from_args = args.extract_options!
           @name, @type = args.shift.to_s, args.shift
-          validate_key_name!
-
           self.options = (options_from_args || {}).symbolize_keys
-          @ivar = :"@#{name}"  # Optimization - used to avoid spamming #intern from internal_write_keys
-          @embeddable = nil
+          @dynamic     = !!options[:__dynamic]
+          @embeddable  = type.respond_to?(:embeddable?) ? type.embeddable? : false
+          @is_id       = @name == ID_STR
+          @typecast    = @options[:typecast]
+          @has_default  = !!options.key?(:default)
+          self.default = self.options[:default] if default?
+
           if abbr = @options[:abbr] || @options[:alias] || @options[:field_name]
             @abbr = abbr.to_s
+          elsif @name.match(/^[A-Z]/) and !dynamic?
+            @abbr = @name
+            @name = @name.gsub(/^([A-Z])/) {|m| m.downcase }
+            Kernel.warn "Key names may not start with uppercase letters. If your field starts " +
+                 "with an uppercase letter, use :field_name to specify the real field name. " +
+                 "Accessors called `#{@name}` have been created instead."
           end
+          @ivar        = :"@#{name}"  # Optimization - used to avoid spamming #intern from internal_write_keys
 
-          # We'll use this to reduce the number of operations #get has to perform, which improves load speeds
-          @is_id = @name == ID_STR
-          @typecast = @options[:typecast]
-
-          if options.key?(:default)
-            self.default = self.options[:default]
-          end
+          validate_key_name! unless dynamic?
         end
 
         def persisted_name
@@ -37,15 +41,7 @@ module MongoMapper
         end
 
         def embeddable?
-          # This is ugly, but it's fast. We can't use ||= because false is an expected and common value.
-          return @embeddable if @embeddable != nil
-          @embeddable = begin
-            if type.respond_to?(:embeddable?)
-              type.embeddable?
-            else
-              false
-            end
-          end
+          @embeddable
         end
 
         def number?
@@ -53,7 +49,11 @@ module MongoMapper
         end
 
         def default?
-          options.key?(:default)
+          @has_default
+        end
+
+        def dynamic?
+          @dynamic
         end
 
         def get(value)
@@ -86,6 +86,10 @@ module MongoMapper
           end
         end
 
+        def valid_ruby_name?
+          !!@name.match(/\A[a-z_][a-z0-9_]*\z/i)
+        end
+
         private
           def typecast_class
             @typecast_class ||= options[:typecast].constantize
@@ -94,8 +98,8 @@ module MongoMapper
           def validate_key_name!
             if %w( id ).include? @name
               raise MongoMapper::InvalidKey.new("`#{@name}` is a reserved key name (did you mean to use _id?)")
-            elsif !@name.match(/\A[a-z0-9_]+\z/i)
-              raise MongoMapper::InvalidKey.new("`#{@name}` is not a valid key name. Keys must match [a-zA-Z0-9_]+")
+            elsif !valid_ruby_name?
+              raise MongoMapper::InvalidKey.new("`#{@name}` is not a valid key name. Keys must match [a-z][a-z0-9_]*")
             end
           end
       end

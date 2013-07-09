@@ -1,6 +1,50 @@
 require 'spec_helper'
 
 describe "Keys" do
+  describe "with invalid names" do
+    it "should warn when key names start with an uppercase letter" do
+      doc = Doc {}
+      Kernel.should_receive(:warn).once.with(/may not start with uppercase letters/)
+      doc.class_eval do
+        key :NotConstant
+      end
+    end
+
+    it "should handle keys that start with uppercase letters by translating their first letter to lowercase" do
+      doc = Doc {}
+      Kernel.stub(:warn)
+      doc.class_eval do
+        key :NotConstant
+      end
+      doc.collection.insert("NotConstant" => "Just data!")
+      doc.first.notConstant.should == "Just data!"
+    end
+
+    it "should not create accessors for bad keys" do
+      doc = Doc {}
+      doc.should_not_receive(:create_accessors_for)
+      doc.class_eval do
+        key :"bad-name", :__dynamic => true
+      end
+      expect { doc.new.method(:"bad-name") }.to raise_error(NameError)
+    end
+
+    it "should create accessors for good keys" do
+      doc = Doc {
+        key :good_name
+      }
+      doc.new.good_name.should be_nil
+      expect { doc.new.method("good_name") }.to_not raise_error
+    end
+  end
+
+  it "should handle loading dynamic fields from the database that have bad names" do
+    doc = Doc {}
+    doc.collection.insert("foo-bar" => "baz-bin")
+
+    doc.first["foo-bar"].should == "baz-bin"
+  end
+
   describe "with aliases" do
     AliasedKeyModel = Doc do
       key :foo, :abbr => :f
