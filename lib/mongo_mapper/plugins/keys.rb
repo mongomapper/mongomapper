@@ -287,7 +287,7 @@ module MongoMapper
           if key.ivar && instance_variable_defined?(key.ivar)
             value = instance_variable_get(key.ivar)
           else
-            if key.valid_ruby_name?
+            if key.ivar
               instance_variable_set key.ivar, key.get(nil)
             else
               @_dynamic_attributes[key_name_sym] = key.get(nil)
@@ -363,14 +363,14 @@ module MongoMapper
           key         = @__mm_keys[name] || dynamic_key(name)
           as_mongo    = cast ? key.set(value) : value
           as_typecast = key.get(as_mongo)
-          if !key.valid_ruby_name?
-            @_dynamic_attributes[key.name.to_sym] = as_typecast
-          else
+          if key.ivar
             if key.embeddable?
               set_parent_document(key, value)
               set_parent_document(key, as_typecast)
             end
             instance_variable_set key.ivar, as_typecast
+          else
+            @_dynamic_attributes[key.name.to_sym] = as_typecast
           end
           @attributes = nil
         end
