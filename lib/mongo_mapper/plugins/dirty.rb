@@ -42,7 +42,7 @@ module MongoMapper
       private
 
       def write_key(key, value)
-        key = key.to_s
+        key = unalias_key(key)
         if !keys.key?(key)
           super
         else

@@ -2,7 +2,10 @@ require 'spec_helper'
 
 describe "Dirty" do
   before do
-    @document = Doc { key :phrase, String }
+    @document = Doc {
+      key :phrase, String
+      key :paragraph, String, :alias => :para
+    }
   end
 
   context "marking changes" do
@@ -68,6 +71,13 @@ describe "Dirty" do
       doc.changed?.should be_false
       doc.phrase = 'Bar'
       doc.changed?.should be_true
+    end
+
+    it "should happen with aliased keys" do
+      doc = @document.create(:paragraph => 'Wibbly')
+      doc.paragraph = "Wobbly"
+      doc.changed?.should be_true
+      doc.paragraph_changed?.should be_true
     end
   end
 

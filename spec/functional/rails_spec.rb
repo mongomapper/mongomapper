@@ -1,11 +1,19 @@
 require 'spec_helper'
 
 describe "Documents with the Rails plugin" do
-  let(:doc) { Doc { key :foo, String } }
+  let(:doc) { Doc {
+    key :foo, String
+    key :long_field, String, :alias => "lf"
+   }}
+
   context "with values from the DB" do
-    subject { doc.create(:foo => "bar") }
+    subject { doc.create(:foo => "bar", :long_field => "long value") }
     it "should have x_before_type_cast" do
       subject.foo_before_type_cast.should == "bar"
+    end
+
+    it "should have x_before_type_cast for aliased fields" do
+      subject.long_field_before_type_cast.should == "long value"
     end
 
     it "should honor app-set values over DB-set values" do

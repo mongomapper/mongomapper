@@ -27,8 +27,7 @@ module MongoMapper
                  "with an uppercase letter, use :field_name to specify the real field name. " +
                  "Accessors called `#{@name}` have been created instead."
           end
-          @ivar        = :"@#{name}"  # Optimization - used to avoid spamming #intern from internal_write_keys
-
+          @ivar = :"@#{name}" if valid_ruby_name?
           validate_key_name! unless dynamic?
         end
 

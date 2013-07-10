@@ -27,7 +27,7 @@ module MongoMapper
 
       def read_attribute_before_type_cast(name)
         @__mm_pre_cast ||= {}
-        name = name.to_s
+        name = unalias_key name
         if !@__mm_pre_cast.key?(name)
           @__mm_pre_cast[name] = read_attribute(name)
         end
@@ -39,6 +39,7 @@ module MongoMapper
       end
 
       def write_key(name, value)
+        name = unalias_key name
         @__mm_pre_cast ||= {}
         @__mm_pre_cast[name.to_s] = value
         super

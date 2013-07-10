@@ -1,6 +1,29 @@
 require 'spec_helper'
 
 describe "Keys" do
+  it "should not have a disparity between the ivar and accessor" do
+    doc = Doc do
+      key :foo, String
+
+      def modify_foo
+        @foo = :baz
+      end
+
+      def get_foo
+        @foo
+      end
+    end
+
+    instance = doc.new(:foo => "bar")
+    instance.get_foo.should == instance.foo
+
+    instance.foo = :bing
+    instance.get_foo.should == instance.foo
+
+    instance.modify_foo
+    instance.get_foo.should == instance.foo
+  end
+
   it "should not bomb if a key is written before Keys#initialize gets to get called" do
     doc = Class.new do
       include MongoMapper::Document
@@ -182,7 +205,7 @@ describe "Keys" do
         owner.save
 
         owner.reload
-        owner.associated_documents.should =~ associated_documents
+        owner.associated_documents.to_a.should =~ associated_documents.to_a
 
         AssociatedKeyWithAlias.collection.find_one.keys.should =~ %w(_id n aid)
       end

@@ -221,8 +221,9 @@ module MongoMapper
       def to_mongo(include_abbreviatons = true)
         BSON::OrderedHash.new.tap do |attrs|
           self.class.unaliased_keys.each do |name, key|
-            if key.type == ObjectId || !self[key.name].nil?
-              attrs[include_abbreviatons && key.persisted_name || name] = key.set(self[key.name])
+            value = self.read_key(key.name)
+            if key.type == ObjectId || !value.nil?
+              attrs[include_abbreviatons && key.persisted_name || name] = key.set(value)
             end
           end
 
@@ -279,21 +280,19 @@ module MongoMapper
       end
 
       def read_key(key_name)
-        init_ivars unless @mongo_attributes
         key_name_sym = key_name.to_sym
-        # Primary point of contact for attributes
-        if @mongo_attributes.key?(key_name_sym)
-          @mongo_attributes[key_name_sym]
-
-        # Basically associations.
-        elsif (instance_variable_defined?(:"@#{key_name}") rescue nil)
-          instance_variable_get :"@#{key_name}"
-
-        # Keys with default values.
+        if @_dynamic_attributes && @_dynamic_attributes.key?(key_name_sym)
+          @_dynamic_attributes[key_name_sym]
         elsif key = keys[key_name.to_s]
-          value = key.get(nil)
-          @mongo_attributes[key_name_sym] = value
-          instance_variable_set key.ivar, value unless key.dynamic?
+          if key.ivar && instance_variable_defined?(key.ivar)
+            value = instance_variable_get(key.ivar)
+          else
+            if key.dynamic?
+              @_dynamic_attributes[key_name_sym] = key.get(nil)
+            else
+              instance_variable_set key.ivar, key.get(nil)
+            end
+          end
         end
       end
 
@@ -316,12 +315,23 @@ module MongoMapper
         @embedded_keys ||= keys.values.select(&:embeddable?)
       end
 
+      protected
+
+      def unalias_key(name)
+        name = name.to_s
+        if key = keys[name]
+          key.name
+        else
+          name
+        end
+      end
+
       private
 
         def init_ivars
           @__mm_keys = self.class.keys                                # Not dumpable
           @__mm_default_keys = @__mm_keys.values.select(&:default?)   # Not dumpable
-          @mongo_attributes = {}                                      # Dumpable
+          @_dynamic_attributes = {}                                      # Dumpable
         end
 
         def load_from_database(attrs)
@@ -353,8 +363,9 @@ module MongoMapper
           key         = @__mm_keys[name] || dynamic_key(name)
           as_mongo    = cast ? key.set(value) : value
           as_typecast = key.get(as_mongo)
-          @mongo_attributes[key.name.to_sym] = as_typecast
-          unless key.dynamic?
+          if key.dynamic?
+            @_dynamic_attributes[key.name.to_sym] = as_typecast
+          else
             if key.embeddable?
               set_parent_document(key, value)
               set_parent_document(key, as_typecast)
@@ -365,9 +376,7 @@ module MongoMapper
         end
 
         def dynamic_key(name)
-          self.class.key(name, :__dynamic => true).tap do |key|
-            @__mm_keys = self.class.keys
-          end
+          self.class.key(name, :__dynamic => true)
         end
 
         def initialize_default_values(except = {})
