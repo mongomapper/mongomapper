@@ -1,6 +1,35 @@
 require 'spec_helper'
 
 describe "Keys" do
+  it "should not bomb if a key is written before Keys#initialize gets to get called" do
+    doc = Class.new do
+      include MongoMapper::Document
+
+      def initialize
+        self.class.key :something, String
+        self.something = :other_thing
+        super
+      end
+    end
+
+    expect { doc.new }.to_not raise_error
+  end
+
+  it "should not bomb if a key is read before Keys#initialize gets to get called" do
+    doc = Class.new do
+      include MongoMapper::Document
+
+      def initialize
+        self.class.key :something, String
+        self.something
+        super
+      end
+    end
+
+    expect { doc.new }.to_not raise_error
+  end
+
+
   context "key segmenting" do
     let(:doc) {
       Doc {

@@ -279,6 +279,7 @@ module MongoMapper
       end
 
       def read_key(key_name)
+        init_ivars unless @mongo_attributes
         key_name_sym = key_name.to_sym
         # Primary point of contact for attributes
         if @mongo_attributes.key?(key_name_sym)
@@ -344,11 +345,12 @@ module MongoMapper
         # This exists to be patched over by plugins, while letting us still get to the undecorated
         # version of the method.
         def write_key(name, value)
+          init_ivars unless @__mm_keys
           internal_write_key(name.to_s, value)
         end
 
         def internal_write_key(name, value, cast = true)
-          key         = @__mm_keys[name] || self.class.key(name, :__dynamic => true)
+          key         = @__mm_keys[name] || dynamic_key(name)
           as_mongo    = cast ? key.set(value) : value
           as_typecast = key.get(as_mongo)
           @mongo_attributes[key.name.to_sym] = as_typecast
@@ -360,6 +362,12 @@ module MongoMapper
             instance_variable_set key.ivar, as_typecast
           end
           @attributes = nil
+        end
+
+        def dynamic_key(name)
+          self.class.key(name, :__dynamic => true).tap do |key|
+            @__mm_keys = self.class.keys
+          end
         end
 
         def initialize_default_values(except = {})
