@@ -171,6 +171,20 @@ describe "Support" do
       end
     end
 
+    it "should convert value from mongo to integer" do
+      [21, 21.0, '21'].each do |value|
+        Integer.from_mongo(value).should == 21
+      end
+    end
+
+    it "should convert nil to nil" do
+      Integer.to_mongo(nil).should be_nil
+    end
+
+    it "should convert nil to nil" do
+      Integer.from_mongo(nil).should be_nil
+    end
+
     it "should work fine with big integers" do
       [9223372036854775807, '9223372036854775807'].each do |value|
         Integer.to_mongo(value).should == 9223372036854775807

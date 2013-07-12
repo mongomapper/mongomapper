@@ -10,6 +10,10 @@ module MongoMapper
           value_to_i
         end
       end
+
+      def from_mongo(value)
+        value && value.to_i
+      end
     end
   end
 end
