@@ -34,6 +34,31 @@ describe "Scopes" do
         docs.size.should == 1
         docs[0].name.should == 'John'
       end
+
+      # Regression test for #534
+      context "when where() is invoked via a scope before a key is defined" do
+        let(:given_id) { BSON::ObjectId.new }
+        let(:doc) { Doc {
+           key :type, String
+
+           # Ordering is important here; where needs to happen before foo_id is defined
+           # in order to produce the behavior we're testing against regression.
+           scope :type, where(type: "bar")
+           key :foo_id, ObjectId
+        }}
+        before {
+          doc.collection.drop
+          doc.create({:foo_id => given_id})
+        }
+
+        it "should work without typecasts" do
+          doc.where(:foo_id => given_id).count.should == 1
+        end
+
+        it "should work with typecasts" do
+          doc.where(:foo_id => given_id.to_s).count.should == 1
+        end
+      end
     end
 
     context "dynamic scopes" do

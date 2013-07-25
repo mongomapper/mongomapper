@@ -43,7 +43,7 @@ module MongoMapper
             create_key_in_descendants(*args)
             create_indexes_for(key)
             create_validations_for(key)
-            @dynamic_keys = @defined_keys = @unaliased_keys = nil
+            @dynamic_keys = @defined_keys = @unaliased_keys = @object_id_keys = nil
           end
         end
 
