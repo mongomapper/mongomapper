@@ -5,7 +5,9 @@ Gem::Specification.new do |s|
   s.name               = 'mongo_mapper'
   s.homepage           = 'http://mongomapper.com'
   s.summary            = 'A Ruby Object Mapper for Mongo'
+  s.description        = 'MongoMapper is a Object-Document Mapper for Ruby and Rails'
   s.require_path       = 'lib'
+  s.license            = 'MIT'
   s.authors            = ['John Nunemaker']
   s.email              = ['nunemaker@gmail.com']
   s.executables        = ['mmconsole']
