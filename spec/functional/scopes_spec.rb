@@ -43,7 +43,7 @@ describe "Scopes" do
 
            # Ordering is important here; where needs to happen before foo_id is defined
            # in order to produce the behavior we're testing against regression.
-           scope :type, where(type: "bar")
+           scope :type, where(:type => "bar")
            key :foo_id, ObjectId
         }}
         before {
