@@ -106,19 +106,34 @@ module MongoMapper
           end
 
           def create_accessors_for(key)
-            accessors_module.module_eval <<-end_eval
-              def #{key.name}
-                read_key(:#{key.name})
-              end
+            accessors = ""
+            if key.read_accessor?
+              accessors << <<-end_eval
+                def #{key.name}
+                  read_key(:#{key.name})
+                end
 
-              def #{key.name}=(value)
-                write_key(:#{key.name}, value)
-              end
+                def #{key.name}_before_type_cast
+                  read_key_before_type_cast(:#{key.name})
+                end
+              end_eval
+            end
 
-              def #{key.name}?
-                read_key(:#{key.name}).present?
-              end
-            end_eval
+            if key.write_accessor?
+              accessors << <<-end_eval
+                def #{key.name}=(value)
+                  write_key(:#{key.name}, value)
+                end
+              end_eval
+            end
+
+            if key.predicate_accessor?
+              accessors << <<-end_eval
+                def #{key.name}?
+                  read_key(:#{key.name}).present?
+                end
+              end_eval
+            end
 
             if block_given?
               accessors_module.module_eval do
@@ -126,6 +141,7 @@ module MongoMapper
               end
             end
 
+            accessors_module.module_eval accessors
             include accessors_module
           end
 

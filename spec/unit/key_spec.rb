@@ -70,6 +70,10 @@ describe "Key" do
     it "should permit bad names if __dynamic" do
       expect { Key.new(:"id.bar", :__dynamic => true) }.to_not raise_error
     end
+
+    it "should permit bad names if it is not to create accessors" do
+      expect { Key.new(:"id.bar", :accessors => :skip) }.to_not raise_error
+    end
   end
 
   context "A key" do
@@ -135,6 +139,40 @@ describe "Key" do
     it "should cast each element correctly" do
       ids = [BSON::ObjectId.new, BSON::ObjectId.new, BSON::ObjectId.new.to_s, BSON::ObjectId.new.to_s]
       subject.set(ids).should == ids.map { |id| ObjectId.to_mongo(id) }
+    end
+  end
+
+  context "with the :attributes option" do
+    subject { @key }
+    before { @key = Key.new(:test, String, :accessors => accessor) }
+
+    context "with :read" do
+      let(:accessor) { :read }
+      its(:read_accessor?) { should be_true }
+      its(:write_accessor?) { should be_false }
+      its(:predicate_accessor?) { should be_false }
+    end
+
+    context "with :write" do
+      let(:accessor) { :write }
+      its(:read_accessor?) { should be_false }
+      its(:write_accessor?) { should be_true }
+      its(:predicate_accessor?) { should be_false }
+    end
+
+    context "with :predicate" do
+      let(:accessor) { :predicate }
+      its(:read_accessor?) { should be_false }
+      its(:write_accessor?) { should be_false }
+      its(:predicate_accessor?) { should be_true }
+    end
+
+    context "with an array of options" do
+      let(:accessor) { [:read, :write] }
+
+      its(:read_accessor?) { should be_true }
+      its(:write_accessor?) { should be_true }
+      its(:predicate_accessor?) { should be_false }
     end
   end
 

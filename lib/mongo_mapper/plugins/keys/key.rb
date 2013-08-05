@@ -3,7 +3,7 @@ module MongoMapper
   module Plugins
     module Keys
       class Key
-        attr_accessor :name, :type, :options, :default, :ivar, :abbr
+        attr_accessor :name, :type, :options, :default, :ivar, :abbr, :accessors
 
         ID_STR = '_id'
 
@@ -15,6 +15,7 @@ module MongoMapper
           @embeddable  = type.respond_to?(:embeddable?) ? type.embeddable? : false
           @is_id       = @name == ID_STR
           @typecast    = @options[:typecast]
+          @accessors   = Array(@options[:accessors]).compact.map &:to_s
           @has_default  = !!options.key?(:default)
           self.default = self.options[:default] if default?
 
@@ -28,7 +29,7 @@ module MongoMapper
                  "Accessors called `#{@name}` have been created instead."
           end
           @ivar = :"@#{name}" if valid_ruby_name?
-          validate_key_name! unless dynamic?
+          validate_key_name! unless dynamic? or !any_accessor?
         end
 
         def persisted_name
@@ -87,6 +88,24 @@ module MongoMapper
 
         def valid_ruby_name?
           !!@name.match(/\A[a-z_][a-z0-9_]*\z/i)
+        end
+
+        def read_accessor?
+          any_accessor? ["read"]
+        end
+
+        def write_accessor?
+          any_accessor? ["write"]
+        end
+
+        def predicate_accessor?
+          any_accessor? ["present", "predicate", "boolean"]
+        end
+
+        def any_accessor?(arr_opt = [])
+          return true if @accessors.empty?
+          return false unless (@accessors & ["skip", "none"]).empty?
+          return !(@accessors & arr_opt).empty?
         end
 
         private

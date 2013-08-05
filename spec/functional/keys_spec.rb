@@ -52,6 +52,19 @@ describe "Keys" do
     expect { doc.new }.to_not raise_error
   end
 
+  it "should permit for key overrides" do
+    doc = Class.new do
+      include MongoMapper::Document
+      key :class, String, :accessors => :skip
+    end
+
+    doc.collection.insert('class' => 'String')
+    doc.all.first.tap do |d|
+      d.class.should == doc
+      d["class"].should == "String"
+      d.attributes["class"].should == "String"
+    end
+  end
 
   context "key segmenting" do
     let(:doc) {
