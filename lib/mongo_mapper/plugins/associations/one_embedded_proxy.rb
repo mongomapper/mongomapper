@@ -12,9 +12,9 @@ module MongoMapper
 
         def replace(doc)
           if doc.respond_to?(:attributes)
-            @target = klass.load(doc.attributes)
+            @target = klass.load(doc.attributes, true)
           else
-            @target = klass.load(doc)
+            @target = klass.load(doc, true)
           end
           assign_references(@target)
           loaded
@@ -29,7 +29,7 @@ module MongoMapper
 
           def find_target
             if @value
-              klass.load(@value).tap do |child|
+              klass.load(@value, true).tap do |child|
                 assign_references(child)
               end
             end

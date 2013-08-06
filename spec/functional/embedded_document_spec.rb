@@ -9,6 +9,7 @@ describe "EmbeddedDocument" do
 
     @pet_klass = EDoc('Pet') do
       key :name, String
+      key :flag, Boolean
     end
 
     @klass.many :pets, :class => @pet_klass
@@ -292,6 +293,24 @@ describe "EmbeddedDocument" do
     @klass.all.first.pets.tap do |pets|
       pets.length.should == 1
       pets[0].name.should == "Sasha"
+    end
+  end
+
+  context "Issue #536" do
+    it "should update attributes with string keys" do
+      person = @klass.create(:pets => [@pet_klass.new(:name => 'Rasmus', :flag => true)])
+      person.update_attributes!({"pets" => ["name" => "sparky", "flag" => "false"]})
+      person.reload
+      person.pets.first.name.should == "sparky"
+      person.pets.first.flag.should be_false
+    end
+
+     it "should update attributes with symbol keys" do
+       person = @klass.create(:pets => [@pet_klass.new(:name => 'Rasmus', :flag => true)])
+       person.update_attributes!({pets: [:name => "sparky", :flag => "false"]})
+       person.reload
+       person.pets.first.name.should == "sparky"
+       person.pets.first.flag.should be_false
     end
   end
 end

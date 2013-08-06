@@ -77,13 +77,13 @@ module MongoMapper
         end
 
         # load is overridden in identity map to ensure same objects are loaded
-        def load(attrs)
+        def load(attrs, with_cast = false)
           return nil if attrs.nil?
           begin
             attrs['_type'] ? attrs['_type'].constantize : self
           rescue NameError
             self
-          end.allocate.initialize_from_database(attrs)
+          end.allocate.initialize_from_database(attrs, with_cast)
         end
 
         private
@@ -210,11 +210,11 @@ module MongoMapper
         yield self if block_given?
       end
 
-      def initialize_from_database(attrs={})
+      def initialize_from_database(attrs={}, with_cast = false)
         @_new = false
         init_ivars
         initialize_default_values(attrs)
-        load_from_database(attrs)
+        load_from_database(attrs, with_cast)
         self
       end
 
@@ -350,14 +350,14 @@ module MongoMapper
           @_dynamic_attributes = {}                                      # Dumpable
         end
 
-        def load_from_database(attrs)
+        def load_from_database(attrs, with_cast = false)
           return if attrs == nil || attrs.blank?
 
           attrs.each do |key, value|
             if !@__mm_keys.key?(key) && respond_to?(:"#{key}=")
               self.send(:"#{key}=", value)
             else
-              internal_write_key key, value, false
+              internal_write_key key, value, with_cast
             end
           end
         end

@@ -7,11 +7,11 @@ module MongoMapper
           @value = value.respond_to?(:attributes) ? value.attributes.merge(association.type_key_name => value.class.name) : value
           reset
         end
-        
+
         protected
           def find_target
             if @value
-              child = polymorphic_class(@value).load(@value)
+              child = polymorphic_class(@value).load(@value, true)
               assign_references(child)
               child
             end
