@@ -686,7 +686,7 @@ describe "Querying" do
         @query = document.sort(:_id.desc)
       end
 
-      it "should fetch documents in creation time order" do
+      it "should fetch documents in reverse creation time order" do
         @query.all.should == [@doc3, @doc2, @doc1]
       end
     end
