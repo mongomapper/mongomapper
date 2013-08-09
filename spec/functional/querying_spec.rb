@@ -663,17 +663,32 @@ describe "Querying" do
       @doc1 = document.create(:first_name => 'John',  :last_name => 'Nunemaker', :age => '27')
       @doc2 = document.create(:first_name => 'Steve', :last_name => 'Smith',     :age => '28')
       @doc3 = document.create(:first_name => 'Steph', :last_name => 'Nunemaker', :age => '26')
-      @query = document.sort(:age)
     end
 
-    it "should fetch documents when kicker called" do
-      @query.all.should == [@doc3, @doc1, @doc2]
+    context "with the age field" do
+      before do
+        @query = document.sort(:age)
+      end
+
+      it "should fetch documents when kicker called" do
+        @query.all.should == [@doc3, @doc1, @doc2]
+      end
+
+      it "should be chainable" do
+        result = [28]
+        @query.skip(2).all.map(&:age).should == result
+        @query.count.should > result.size
+      end
     end
 
-    it "should be chainable" do
-      result = [28]
-      @query.skip(2).all.map(&:age).should == result
-      @query.count.should > result.size
+    context "with the _id (descending) field" do
+      before do
+        @query = document.sort(:_id.desc)
+      end
+
+      it "should fetch documents in creation time order" do
+        @query.all.should == [@doc3, @doc2, @doc1]
+      end
     end
   end
 
