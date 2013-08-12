@@ -1,7 +1,7 @@
 = MongoMapper
 
 {<img src="https://badge.fury.io/rb/mongo_mapper.png" alt="RubyGem" />}[https://rubygems.org/gems/mongo_mapper]
-{<img src="https://travis-ci.org/jnunemaker/mongomapper.png?branch=master" alt="Build Status" />}[https://travis-ci.org/jnunemaker/mongomapper]
+{<img src="https://travis-ci.org/mongomapper/mongomapper.png?branch=master" alt="Build Status" />}[https://travis-ci.org/mongomapper/mongomapper]
 {<img src="https://coveralls.io/repos/jnunemaker/mongomapper/badge.png" alt="Coverage Status" />}[https://coveralls.io/r/jnunemaker/mongomapper]
 
 A Ruby Object Mapper for Mongo.
