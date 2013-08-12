@@ -307,7 +307,7 @@ describe "EmbeddedDocument" do
 
      it "should update attributes with symbol keys" do
        person = @klass.create(:pets => [@pet_klass.new(:name => 'Rasmus', :flag => true)])
-       person.update_attributes!({pets: [:name => "sparky", :flag => "false"]})
+       person.update_attributes!({:pets => [:name => "sparky", :flag => "false"]})
        person.reload
        person.pets.first.name.should == "sparky"
        person.pets.first.flag.should be_false
