@@ -54,7 +54,7 @@ h3(#find_each). find_each
 
 Get all of the documents in a query one at a time and pass them to the given block. Works with options or criteria.
 {% highlight ruby %}
-Patient.find_each(:last_name => "Johnson") |document| 
+Patient.find_each(:last_name => "Johnson") do |document| 
   # do something with document
 end
 {% endhighlight %}
