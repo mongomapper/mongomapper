@@ -2,6 +2,9 @@ require "mongo_mapper"
 require "rails"
 require "active_model/railtie"
 
+# Need the action_dispatch railtie to have action_dispatch.rescu_responses initialized correctly
+require "action_dispatch/railtie"
+
 module MongoMapper
   # = MongoMapper Railtie
   class Railtie < Rails::Railtie
