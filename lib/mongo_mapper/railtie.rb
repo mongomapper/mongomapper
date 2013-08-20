@@ -8,6 +8,14 @@ module MongoMapper
 
     config.mongo_mapper = ActiveSupport::OrderedOptions.new
 
+    # Rescue responses similar to ActiveRecord.
+    config.action_dispatch.rescue_responses.merge!(
+        'MongoMapper::DocumentNotFound'  => :not_found,
+        'MongoMapper::InvalidKey'        => :unprocessable_entity,
+        'MongoMapper::InvalidScheme'     => :unprocessable_entity,
+        'MongoMapper::NotSupported'      => :unprocessable_entity
+      )
+
     rake_tasks do
       load "mongo_mapper/railtie/database.rake"
     end
