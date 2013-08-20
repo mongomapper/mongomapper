@@ -12,12 +12,21 @@ module MongoMapper
     config.mongo_mapper = ActiveSupport::OrderedOptions.new
 
     # Rescue responses similar to ActiveRecord.
-    config.action_dispatch.rescue_responses.merge!(
-        'MongoMapper::DocumentNotFound'  => :not_found,
-        'MongoMapper::InvalidKey'        => :unprocessable_entity,
-        'MongoMapper::InvalidScheme'     => :unprocessable_entity,
-        'MongoMapper::NotSupported'      => :unprocessable_entity
-      )
+    # For rails 3.0 and 3.1
+    if Rails.version < "3.2"
+      ActionDispatch::ShowExceptions.rescue_responses['MongoMapper::DocumentNotFound']  = :not_found,
+      ActionDispatch::ShowExceptions.rescue_responses['MongoMapper::InvalidKey']        = :unprocessable_entity,
+      ActionDispatch::ShowExceptions.rescue_responses['MongoMapper::InvalidScheme']     = :unprocessable_entity,
+      ActionDispatch::ShowExceptions.rescue_responses['MongoMapper::NotSupported']      = :unprocessable_entity
+    else
+      # For rails 3.2 and 4.0
+      config.action_dispatch.rescue_responses.merge!(
+          'MongoMapper::DocumentNotFound'  => :not_found,
+          'MongoMapper::InvalidKey'        => :unprocessable_entity,
+          'MongoMapper::InvalidScheme'     => :unprocessable_entity,
+          'MongoMapper::NotSupported'      => :unprocessable_entity
+        )
+    end
 
     rake_tasks do
       load "mongo_mapper/railtie/database.rake"
