@@ -2,7 +2,7 @@ namespace :db do
   unless Rake::Task.task_defined?("db:drop")
     desc 'Drops all the collections for the database for the current Rails.env'
     task :drop => :environment do
-      MongoMapper.database.collections.select {|c| c.name !~ /system/ }.each(&:drop)
+      MongoMapper.database.collections.select {|c| c.name !~ /\Asystem\./ }.each(&:drop)
     end
   end
 
