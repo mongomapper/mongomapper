@@ -9,6 +9,10 @@ platforms :ruby do
   gem 'bson_ext',  '~> 1.9'
 end
 
+platforms :rbx do
+  gem "rubysl"
+end
+
 group :test do
   gem 'rspec',          '~> 2.13'
   gem 'timecop',        '= 0.6.1'
