@@ -29,7 +29,3 @@ matrix:
     - rvm: jruby-19mode
       gemfile: gemfiles/rails4_0.gemfile
       env: JRUBY_OPTS="--server -Xcompile.invokedynamic=false -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -J-Xms512m -J-Xmx1024m"
-    - rvm: rbx-19mode
-      gemfile: gemfiles/rails3_2.gemfile
-    - rvm: rbx-19mode
-      gemfile: gemfiles/rails4_0.gemfile
