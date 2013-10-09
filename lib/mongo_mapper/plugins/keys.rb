@@ -35,6 +35,16 @@ module MongoMapper
           @unaliased_keys ||= Hash[*keys.select {|k, v| k == v.name }.flatten(1)]
         end
 
+        def dealias_keys(hash)
+          out = {}
+          hash.each do |k, v|
+            key = keys[k.to_s]
+            name = key && key.abbr || k
+            out[name] = k.to_s.match(/^\$/) && v.is_a?(Hash) ? dealias_keys(v) : v
+          end
+          out
+        end
+
         def key(*args)
           Key.new(*args).tap do |key|
             keys[key.name] = key
@@ -48,7 +58,11 @@ module MongoMapper
         end
 
         def persisted_name(name)
-          keys[name.to_s].persisted_name
+          if key = keys[name.to_s]
+            key.persisted_name
+          else
+            name
+          end
         end
         alias_method :abbr, :persisted_name
 

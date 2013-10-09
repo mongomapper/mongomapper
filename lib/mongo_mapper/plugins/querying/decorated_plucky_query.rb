@@ -29,6 +29,10 @@ module MongoMapper
           self
         end
 
+        def criteria_hash
+          @model.dealias_keys super
+        end
+
         def find!(*ids)
           ids = Array(ids).flatten.uniq
           raise DocumentNotFound, "Couldn't find without an ID" if ids.size == 0
@@ -40,7 +44,8 @@ module MongoMapper
           end
         end
 
-        private
+        protected
+
           def method_missing(method, *args, &block)
             return super unless model.respond_to?(method)
             result = model.send(method, *args, &block)

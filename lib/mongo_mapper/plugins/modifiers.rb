@@ -84,6 +84,7 @@ module MongoMapper
               criteria = { :id => criteria }
             end
             upgrade_legacy_safe_usage!(options)
+            updates = dealias_keys updates
 
             [criteria_hash(criteria).to_hash, updates, options]
           end

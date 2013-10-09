@@ -159,8 +159,31 @@ describe "Keys" do
         end
       end
 
-      it "should permit querying via aliases" do
-        AliasedKeyModel.where(AliasedKeyModel.abbr(:f) => "whee!").first.foo.should == "whee!"
+      it "should permit querying via direct field names" do
+        AliasedKeyModel.where(AliasedKeyModel.abbr(:foo) => "whee!").first.foo.should == "whee!"
+      end
+
+      it "should permit querying via direct field names" do
+        AliasedKeyModel.where(:foo => "whee!").criteria_hash.keys.should == ["f"]
+        AliasedKeyModel.where(:foo => "whee!").first.foo.should == "whee!"
+      end
+
+      it "should permit dealiasing of atomic operations" do
+        m = AliasedKeyModel.first
+        m.set(:foo => 1)
+        AliasedKeyModel.collection.find_one["f"].should == 1
+        AliasedKeyModel.collection.find_one["foo"].should be_nil
+      end
+
+      it "should permit dealiasing of update operations" do
+        m = AliasedKeyModel.first
+        m.update_attributes(:foo => 1)
+        AliasedKeyModel.collection.find_one["f"].should == 1
+        AliasedKeyModel.collection.find_one["foo"].should be_nil
+      end
+
+      it "should not break when unaliasing non-keys" do
+        AliasedKeyModel.where(:badkey => "whee!").criteria_hash.keys.should == [:badkey]
       end
 
       it "should serialize to JSON with full keys" do
