@@ -44,6 +44,8 @@ module MongoMapper
           end
           out
         end
+        alias_method :dealias, :dealias_keys
+        alias_method :unalias, :dealias_keys
 
         def key(*args)
           Key.new(*args).tap do |key|

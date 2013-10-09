@@ -33,6 +33,20 @@ module MongoMapper
           @model.dealias_keys super
         end
 
+        def options_hash
+          super.tap do |options|
+            case options[:fields]
+            when Hash
+              options[:fields] = @model.dealias options[:fields]
+            when Array
+              options[:fields] = options[:fields].map do |field|
+                key = keys[field.to_s]
+                key && key.abbr || field
+              end
+            end
+          end
+        end
+
         def find!(*ids)
           ids = Array(ids).flatten.uniq
           raise DocumentNotFound, "Couldn't find without an ID" if ids.size == 0
