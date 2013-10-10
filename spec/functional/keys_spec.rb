@@ -169,7 +169,7 @@ describe "Keys" do
       end
 
       it "should permit filtering via aliases" do
-        AliasedKeyModel.where(:foo => "whee!").fields(:foo).first.f.should == "whee!"
+        AliasedKeyModel.where(:foo => "whee!").fields(:foo).first.foo.should == "whee!"
       end
 
       it "should permit dealiasing of atomic operations" do
