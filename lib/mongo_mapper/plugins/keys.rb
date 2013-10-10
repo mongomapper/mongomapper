@@ -44,6 +44,12 @@ module MongoMapper
           end
           out
         end
+
+        def dealias_key(name)
+          key = keys[name.to_s]
+          key && key.abbr || k
+        end
+
         alias_method :dealias, :dealias_keys
         alias_method :unalias, :dealias_keys
 

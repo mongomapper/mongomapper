@@ -5,8 +5,36 @@ module MongoMapper
       extend ActiveSupport::Concern
 
       module ClassMethods
-        extend Forwardable
-        def_delegators :collection, :ensure_index, :create_index, :drop_index, :drop_indexes
+        def ensure_index(spec, options = {})
+          collection.ensure_index dealias_options(spec), options
+        end
+
+        def create_index(spec, options = {})
+          collection.create_index dealias_options(spec), options
+        end
+
+        def drop_index(name)
+          collection.drop_index name
+        end
+
+        def drop_indexes
+          collection.drop_indexes
+        end
+
+        private
+
+        def dealias_options(options)
+          case options
+          when Symbol, String
+             abbr(options)
+          when Hash
+            dealias_keys(options)
+          when Array
+            options.map {|o| dealias_options(o) }
+          else
+            options
+          end
+        end
       end
     end
   end

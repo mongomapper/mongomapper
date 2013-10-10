@@ -3,7 +3,7 @@ require 'spec_helper'
 describe "Indexing" do
   before do
     @document = Doc do
-      key :first_name, String
+      key :first_name, String, :alias => :fn
       key :last_name, String
       key :age, Integer
       key :date, Date
@@ -11,22 +11,46 @@ describe "Indexing" do
   end
   after { drop_indexes(@document) }
 
-  [:create_index, :ensure_index, :drop_index, :drop_indexes].each do |method|
-    it "should delegate #{method} to collection" do
+  context "against a known collection" do
+    before do
       @document.stub(:collection).and_return(double(:name => :foo))
-      @document.collection.should_receive(method).with(:arg)
-      @document.send(method, :arg)
+    end
+    [:create_index, :ensure_index].each do |method|
+      it "should delegate #{method} to collection" do
+        @document.collection.should_receive(method).with(:arg, {})
+        @document.send(method, :arg)
+      end
+    end
+
+    it "should delegate drop_index to collection" do
+      @document.collection.should_receive(:drop_index).with(:arg)
+      @document.drop_index(:arg)
+    end
+
+    it "should delegate drop_indexes to collection" do
+      @document.collection.should_receive(:drop_indexes)
+      @document.drop_indexes
     end
   end
 
-  it "should allow creating index for a key" do
+  it "should allow creating index for an aliased key" do
     @document.ensure_index :first_name
-    @document.should have_index('first_name_1')
+    @document.should have_index('fn_1')
+  end
+
+  it "should allow creating index for an aliased key without using the alias" do
+    @document.ensure_index :fn
+    @document.should have_index('fn_1')
+  end
+
+  it "should allow creating index for an unaliased key" do
+    @document.ensure_index :last_name
+    @document.should have_index('last_name_1')
   end
 
   it "should allow creating unique index for a key" do
     @document.ensure_index :first_name, :unique => true
-    @document.should have_index('first_name_1')
+    @document.should have_index('fn_1')
   end
 
   it "should allow creating index on multiple keys" do
@@ -37,7 +61,7 @@ describe "Indexing" do
     # the values of the indexes to make sure the index creation was successful
     @document.collection.index_information.detect do |index|
       keys = index[0]
-      keys.include?('first_name_1') && keys.include?('last_name_-1')
+      keys.include?('fn_1') && keys.include?('last_name_-1')
     end.should_not be_nil
   end
 
