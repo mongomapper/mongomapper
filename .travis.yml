@@ -1,11 +1,7 @@
 language: ruby
 gemfile:
-  - gemfiles/rails3_0.gemfile
-  - gemfiles/rails3_1.gemfile
-  - gemfiles/rails3_2.gemfile
-  - gemfiles/rails4_0.gemfile
+  - Gemfile
 rvm:
-  - 1.8.7
   - 1.9.3
   - 2.0.0
 notifications:
@@ -13,19 +9,7 @@ notifications:
 bundler_args: --without development
 services: mongodb
 matrix:
-  exclude:
-    - rvm: 1.8.7
-      gemfile: gemfiles/rails4_0.gemfile
   include:
     - rvm: jruby-19mode
-      gemfile: gemfiles/rails3_0.gemfile
-      env: JRUBY_OPTS="--server -Xcompile.invokedynamic=false -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -J-Xms512m -J-Xmx1024m"
-    - rvm: jruby-19mode
-      gemfile: gemfiles/rails3_1.gemfile
-      env: JRUBY_OPTS="--server -Xcompile.invokedynamic=false -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -J-Xms512m -J-Xmx1024m"
-    - rvm: jruby-19mode
-      gemfile: gemfiles/rails3_2.gemfile
-      env: JRUBY_OPTS="--server -Xcompile.invokedynamic=false -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -J-Xms512m -J-Xmx1024m"
-    - rvm: jruby-19mode
-      gemfile: gemfiles/rails4_0.gemfile
+      gemfile: Gemfile
       env: JRUBY_OPTS="--server -Xcompile.invokedynamic=false -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -J-Xms512m -J-Xmx1024m"

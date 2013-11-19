@@ -20,17 +20,13 @@ http://rdoc.info/github/jnunemaker/mongomapper
 
 MongoMapper is tested against:
 
-* MRI 1.8.7
 * MRI 1.9.3
 * MRI 2.0.0
 * JRuby (1.9)
 
 Additionally, MongoMapper is tested against:
 
-* Rails 3.0.x
-* Rails 3.1.x
-* Rails 3.2.x
-* Rails 4.0.x 
+* Rails 4.0.x
 
 NOTE: Rails 4 support is only in the v0.13.0 beta, which is not currently the default in RubyGems.  Use the following line in your gemfile to use the beta:
 
