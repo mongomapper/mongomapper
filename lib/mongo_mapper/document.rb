@@ -21,6 +21,7 @@ module MongoMapper
     include Plugins::Modifiers
     include Plugins::Pagination
     include Plugins::Persistence
+    include Plugins::ForbiddenAttributesProtection
     include Plugins::Accessible
     include Plugins::Protected
     include Plugins::Rails
