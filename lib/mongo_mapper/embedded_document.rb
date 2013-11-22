@@ -14,8 +14,7 @@ module MongoMapper
     include Plugins::Keys
     include Plugins::Logger
     include Plugins::Persistence
-    include Plugins::Accessible
-    include Plugins::Protected
+    include Plugins::ForbiddenAttributesProtection
     include Plugins::Rails
     include Plugins::Sci
     include Plugins::Serialization

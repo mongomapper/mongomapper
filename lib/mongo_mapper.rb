@@ -42,6 +42,7 @@ module MongoMapper
     autoload :EmbeddedCallbacks,  'mongo_mapper/plugins/embedded_callbacks'
     autoload :EmbeddedDocument,   'mongo_mapper/plugins/embedded_document'
     autoload :Equality,           'mongo_mapper/plugins/equality'
+    autoload :ForbiddenAttributesProtection, 'mongo_mapper/plugins/forbidden_attributes_protection'
     autoload :IdentityMap,        'mongo_mapper/plugins/identity_map'
     autoload :Inspect,            'mongo_mapper/plugins/inspect'
     autoload :Indexes,            'mongo_mapper/plugins/indexes'
