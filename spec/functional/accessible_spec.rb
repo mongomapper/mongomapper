@@ -4,6 +4,7 @@ describe "Accessible" do
   context 'A document with accessible attributes' do
     before do
       @doc_class = Doc do
+        include MongoMapper::Plugins::Accessible
         key :name, String
         key :admin, Boolean, :default => false
 
@@ -18,7 +19,9 @@ describe "Accessible" do
     end
 
     it "should default accessible attributes to nil" do
-      Doc().accessible_attributes.should be_nil
+      Doc {
+        include MongoMapper::Plugins::Accessible
+      }.accessible_attributes.should be_nil
     end
 
     it "should have accessible_attributes instance method" do
@@ -26,7 +29,10 @@ describe "Accessible" do
     end
 
     it "should raise error if there are protected attributes" do
-      doc = Doc('Post')
+      doc = Doc('Post') do
+        include MongoMapper::Plugins::Accessible
+        include MongoMapper::Plugins::Protected
+      end
       doc.attr_protected :admin
       lambda { doc.attr_accessible :name }.
         should raise_error(/Declare either attr_protected or attr_accessible for Post/)
@@ -34,7 +40,9 @@ describe "Accessible" do
 
     it "should know if using accessible attributes" do
       @doc_class.accessible_attributes?.should be(true)
-      Doc().accessible_attributes?.should be(false)
+      Doc {
+        include MongoMapper::Plugins::Accessible
+      }.accessible_attributes?.should be(false)
     end
 
     it "should assign inaccessible attribute through accessor" do
@@ -103,6 +111,7 @@ describe "Accessible" do
 
     it "should ignore all attributes if called with no args" do
       @doc_class = Doc do
+        include MongoMapper::Plugins::Accessible
         key :name
         attr_accessible
       end
@@ -115,6 +124,7 @@ describe "Accessible" do
     before do
       class ::GrandParent
         include MongoMapper::Document
+        include MongoMapper::Plugins::Accessible
         attr_accessible :name
         key :name, String
         key :site_id, ObjectId
@@ -154,6 +164,7 @@ describe "Accessible" do
     before do
       @doc_class = Doc('Project')
       @edoc_class = EDoc('Person') do
+        include MongoMapper::Plugins::Accessible
         key :name, String
         key :admin, Boolean, :default => false
 
@@ -171,7 +182,9 @@ describe "Accessible" do
     end
 
     it "should default accessible attributes to nil" do
-      EDoc().accessible_attributes.should be_nil
+      EDoc {
+        include MongoMapper::Plugins::Accessible
+      }.accessible_attributes.should be_nil
     end
 
     it "should have accessible attributes instance method" do

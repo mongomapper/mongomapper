@@ -5,6 +5,8 @@ MongoMapper.database = 'testing'
 
 class User
   include MongoMapper::Document
+  include MongoMapper::Plugins::Accessible
+
   key :email, String
   key :admin, Boolean, :default => false
 

@@ -3,6 +3,7 @@ require 'spec_helper'
 describe 'A document with protected attributes' do
   before do
     @doc_class = Doc do
+      include MongoMapper::Plugins::Protected
       key :name, String
       key :admin, Boolean, :default => false
 
@@ -17,7 +18,9 @@ describe 'A document with protected attributes' do
   end
 
   it "should default protected attributes to nil" do
-    Doc().protected_attributes.should be_nil
+    Doc {
+      include MongoMapper::Plugins::Protected
+    }.protected_attributes.should be_nil
   end
 
   it "should have protected attributes instance method" do
@@ -25,7 +28,10 @@ describe 'A document with protected attributes' do
   end
 
   it "should raise error if there are accessible attributes" do
-    doc = Doc('Post')
+    doc = Doc('Post') do
+      include MongoMapper::Plugins::Accessible
+      include MongoMapper::Plugins::Protected
+    end
     doc.attr_accessible :name
     lambda { doc.attr_protected :admin }.
       should raise_error(/Declare either attr_protected or attr_accessible for Post/)
@@ -33,11 +39,14 @@ describe 'A document with protected attributes' do
 
   it "should know if using protected attributes" do
     @doc_class.protected_attributes?.should be(true)
-    Doc().protected_attributes?.should be(false)
+    Doc {
+      include MongoMapper::Plugins::Protected
+    }.protected_attributes?.should be(false)
   end
 
   it "should work with :protected shortcut when defining key" do
     Doc() do
+      include MongoMapper::Plugins::Protected
       key :user_id, ObjectId, :protected => true
     end.protected_attributes.should == [:user_id].to_set
   end
@@ -111,6 +120,7 @@ describe "Single collection inherited protected attributes" do
   before do
     class ::GrandParent
       include MongoMapper::Document
+      include MongoMapper::Plugins::Protected
 
       key :site_id, ObjectId
       attr_protected :site_id
@@ -151,6 +161,7 @@ describe 'An embedded document with protected attributes' do
   before do
     @doc_class = Doc('Project')
     @edoc_class = EDoc('Person') do
+      include MongoMapper::Plugins::Protected
       key :name, String
       key :admin, Boolean, :default => false
 
@@ -168,7 +179,9 @@ describe 'An embedded document with protected attributes' do
   end
 
   it "should default protected attributes to nil" do
-    EDoc().protected_attributes.should be_nil
+    EDoc {
+      include MongoMapper::Plugins::Protected
+    }.protected_attributes.should be_nil
   end
 
   it "should have protected attributes instance method" do
