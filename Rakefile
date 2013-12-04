@@ -9,7 +9,7 @@ begin
     spec.pattern = 'spec/**/*_spec.rb'
     spec.rspec_opts = ['--color']
   end
-  task :default => :spec  
+  task :default => :spec
 rescue LoadError
   nil
 end

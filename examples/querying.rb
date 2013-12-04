@@ -6,7 +6,7 @@ MongoMapper.database = 'testing'
 
 class User
   include MongoMapper::Document
-  
+
   key :name, String
   key :tags, Array
 end

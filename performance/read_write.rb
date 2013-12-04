@@ -1,4 +1,4 @@
-# The purpose of this is to check finding, initializing, 
+# The purpose of this is to check finding, initializing,
 # and creating objects (typecasting times/dates and booleans).
 
 require 'pp'
@@ -13,7 +13,7 @@ $:.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
 require 'mongo_mapper'
 
 MongoMapper.database = 'testing'
- 
+
 class Foo
   include MongoMapper::Document
   key :approved, Boolean

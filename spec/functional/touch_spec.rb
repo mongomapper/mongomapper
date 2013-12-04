@@ -16,7 +16,7 @@ describe "Touch" do
         end
 
         doc.reload
-        doc.updated_at.should_not == old_updated_at      
+        doc.updated_at.should_not == old_updated_at
       end
     end
 
@@ -79,7 +79,7 @@ describe "Touch" do
 
           @post.reload.updated_at.should_not == orig_updated_at
         end
-        
+
         it "should when the child is updated" do
           @comment.save
           old_updated_at = @post.updated_at
@@ -88,7 +88,7 @@ describe "Touch" do
           end
           @post.reload.updated_at.should_not == old_updated_at
         end
-        
+
         it "should when the child is touched" do
           @comment.save
           old_updated_at = @post.updated_at
@@ -117,7 +117,7 @@ describe "Touch" do
         Timecop.freeze(Time.now + 1.day) do
           comment.save
         end
-      
+
         post.reload.updated_at.should == post.created_at
       end
     end

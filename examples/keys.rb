@@ -24,7 +24,7 @@ john = User.create({
   :age        => 28,
   :skills     => ['ruby', 'mongo', 'javascript'],
   :links      => {"Google" => "http://www.google.com"}
-}) 
+})
 
 steve = User.create({
   :first_name => 'Steve',
