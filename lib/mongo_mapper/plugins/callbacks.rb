@@ -7,7 +7,7 @@ module MongoMapper
       def destroy
         run_callbacks(:destroy) { super }
       end
-      
+
       def touch(*)
         run_callbacks(:touch) { super }
       end
