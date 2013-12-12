@@ -24,6 +24,16 @@ describe "Keys" do
     instance.get_foo.should == instance.foo
   end
 
+  it "should return the value when set using send with the writer method" do
+    doc = Doc do
+      key :foo, String
+    end
+
+    instance = doc.new(:foo => 'bar')
+    instance.send("foo=", 'baz').should == 'baz'
+    instance.foo.should == 'baz'
+  end
+
   it "should not bomb if a key is written before Keys#initialize gets to get called" do
     doc = Class.new do
       include MongoMapper::Document
