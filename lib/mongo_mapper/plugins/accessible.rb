@@ -45,7 +45,16 @@ module MongoMapper
       protected
         def filter_inaccessible_attrs(attrs)
           return attrs if !accessible_attributes? || attrs.blank?
-          attrs.dup.delete_if { |key, val| !accessible_attributes.include?(key.to_sym) }
+          attrs.dup.delete_if { |key, val| attribute_inaccessible?(key.to_sym) }
+        end
+
+        def attribute_inaccessible?(attribute)
+          unless accessible_attributes.include?(attribute)
+            message = "Can't mass-assign protected attribute: #{attribute}"
+            MongoMapper.logger ? MongoMapper.logger.warn(message) : puts(message)
+            
+            return true 
+          end
         end
     end
   end
