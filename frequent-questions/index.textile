@@ -30,7 +30,7 @@ A "Document":/documentation/document.html is a top level entity that has its own
 
 h2. When should I embed?
 
-The general rule of thumb is to only embed when the document will *only* be show in the context of the parent document. If you need access to the document outside of the parent, don't embed (or de-normalize and store the document in two places.
+The general rule of thumb is to embed when the document will *only* be shown in the context of the parent document. If you need access to the document outside of the parent, don't embed. Instead de-normalize and store the document in two places.
 
 h2. What about Mongoid? Candy? MongoDoc? MongoModel?
 
