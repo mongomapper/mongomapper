@@ -62,7 +62,7 @@ module MongoMapper
 
           if @typecast
             klass = typecast_class  # Don't make this lookup on every call
-            type.from_mongo(value).map! { |v| klass.from_mongo(v) }
+            type.from_mongo(value).map { |v| klass.from_mongo(v) }
           else
             type.from_mongo(value)
           end
@@ -71,8 +71,11 @@ module MongoMapper
         def set(value)
           # Avoid tap here so we don't have to create a block binding.
           values = type.to_mongo(value)
-          values.map! { |v| typecast_class.to_mongo(v) } if @typecast
-          values
+          if @typecast
+            values.map { |v| typecast_class.to_mongo(v) }
+          else
+            values
+          end
         end
 
         def default_value
