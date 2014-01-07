@@ -34,6 +34,31 @@ describe "Keys" do
     instance.foo.should == 'baz'
   end
 
+  context "when persisting an typecasted array" do
+    TypecastedKeyModel = Doc do
+      key :people, Array, :typecast => "Person"
+    end
+
+    Person = Struct.new(:name) do
+      def self.to_mongo(value)
+        value.name
+      end
+
+      def self.from_mongo(value)
+        Person.new value
+      end
+    end
+
+    it "should not mutate the model's state" do
+      person = Person.new "Bob"
+      doc = TypecastedKeyModel.new(:people => [person])
+
+      doc.save
+
+      doc.people.should == [person]
+    end
+  end
+
   it "should not bomb if a key is written before Keys#initialize gets to get called" do
     doc = Class.new do
       include MongoMapper::Document
