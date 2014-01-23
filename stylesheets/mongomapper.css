@@ -22,7 +22,7 @@ table {border-collapse:collapse;border-spacing:0;}
 /* end of reset */
 
 /* redeclarations */
-body                               {font:15px/1.6 "HelveticaNeue-Light","Helvetica Neue",Helvetica, arial, sans-serif; color:#777;}
+body                               {font:15px/1.6 "HelveticaNeue-Light","Helvetica Neue",Helvetica, arial, sans-serif; color:#777; background-color:white;}
 h1,h2,h3,h4                        {font-weight:normal; color:#000; line-height:1.2; -webkit-font-smoothing: antialiased;}
 h1                                 {font-size:42px; margin-bottom:16px;}
 h2                                 {font-size:30px; margin-bottom:20px;}
