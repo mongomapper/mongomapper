@@ -10,9 +10,9 @@ module MongoMapper
 
       module ClassMethods
         def inherited(subclass)
-          key :_type, String unless key?(:_type)
           super
           if @collection_name == subclass.instance_variable_get("@collection_name")
+            key :_type, String unless key?(:_type)
             subclass.single_collection_parent = self
             subclass.instance_variable_set("@single_collection_inherited", true)
           end
