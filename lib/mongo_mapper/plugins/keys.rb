@@ -65,6 +65,20 @@ module MongoMapper
           end
         end
 
+        def remove_key(name)
+          if key = keys[name.to_s]
+            keys.delete key.name
+            keys.delete key.abbr
+            remove_method key.name if respond_to? "#{key.name}"
+            remove_method "#{key.name}=" if respond_to? "#{key.name}="
+            remove_method "#{key.name}?" if respond_to? "#{key.name}?"
+            remove_method "#{key.name}_before_type_cast" if respond_to? "#{key.name}_before_type_cast"
+            remove_key_in_descendants key.name
+            remove_validations_for key.name
+            @dynamic_keys = @defined_keys = @unaliased_keys = @object_id_keys = nil
+          end
+        end
+
         def persisted_name(name)
           if key = keys[name.to_s]
             key.persisted_name
@@ -171,6 +185,10 @@ module MongoMapper
             descendants.each { |descendant| descendant.key(*args) }
           end
 
+          def remove_key_in_descendants(name)
+            descendants.each { |descendant| descendant.remove_key(name) }
+          end
+
           def create_indexes_for(key)
             if key.options[:index] && !key.embeddable?
               warn "[DEPRECATION] :index option when defining key #{key.name.inspect} is deprecated. Put indexes in `db/indexes.rb`"
@@ -221,6 +239,14 @@ module MongoMapper
               end
               validates_length_of(attribute, length_options)
             end
+          end
+
+          def remove_validations_for(name)
+            name = name.to_sym
+            a_name = [name]
+
+            _validators.reject!{ |key, _| key == name }
+            _validate_callbacks.reject! {|callback| callback.raw_filter.attributes == a_name }
           end
       end
 

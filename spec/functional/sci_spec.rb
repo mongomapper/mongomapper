@@ -88,12 +88,47 @@ describe "Single collection inheritance (document)" do
       DocDaughter.collection.name.should == DocParent.collection.name
     end
 
-    it "should negate SCI if the subclass changes its collection" do
-      klass = Class.new(DocParent) do
-        set_collection_name "foobars"
+    context "if the subclass changes its collection" do
+      before do
+        class ::DocSCIOrphan < ::DocParent
+          set_collection_name "foobars"
+        end
       end
-      klass.collection.name.should == "foobars"
-      klass.should_not be_single_collection_inherited
+
+      after do
+        Object.send :remove_const, 'DocSCIOrphan'       if defined?(::DocSCIOrphan)
+      end
+
+      it "should negate SCI" do
+        DocSCIOrphan.collection.name.should == "foobars"
+        DocSCIOrphan.should_not be_single_collection_inherited
+      end
+
+      it "should remove the _type key" do
+        DocParent.keys.should_not have_key "_type"
+        DocSCIOrphan.keys.should_not have_key "_type"
+      end
+
+      context "and then is subclassed again" do
+        before do
+          class ::DocSCIOrphanChild < ::DocSCIOrphan
+          end
+        end
+
+        after do
+          Object.send :remove_const, 'DocSCIOrphanChild'  if defined?(::DocSCIOrphanChild)
+        end
+
+        it "should reinstate SCI" do
+          DocSCIOrphan.should_not be_single_collection_inherited
+          DocSCIOrphanChild.should be_single_collection_inherited
+        end
+
+        it "should have the _type key" do
+          DocSCIOrphan.keys.should have_key "_type"
+          DocSCIOrphanChild.keys.should have_key "_type"
+        end
+      end
     end
 
     it "should know single_collection_parent" do
