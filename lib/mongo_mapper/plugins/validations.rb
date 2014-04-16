@@ -29,11 +29,16 @@ module MongoMapper
 
       class UniquenessValidator < ::ActiveModel::EachValidator
         def initialize(options)
+          @klass = options[:class] #only provided in ActiveModel 4.1 and higher
           super(options.reverse_merge(:case_sensitive => true))
         end
 
-        def setup(klass)
-          @klass = klass
+        if ::ActiveModel::VERSION::MAJOR < 4 ||
+          (::ActiveModel::VERSION::MAJOR == 4 && ::ActiveModel::VERSION::MINOR == 0) 
+
+          def setup(klass)
+            @klass = klass
+          end
         end
 
         def validate_each(record, attribute, value)
