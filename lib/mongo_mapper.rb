@@ -1,5 +1,6 @@
 # encoding: UTF-8
 require 'plucky'
+require 'active_support'
 require 'active_support/core_ext'
 require 'active_model'
 require "mongo_mapper/railtie" if defined?(Rails)
