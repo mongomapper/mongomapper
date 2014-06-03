@@ -293,7 +293,7 @@ module MongoMapper
 
           embedded_associations.each do |association|
             if documents = instance_variable_get(association.ivar)
-              if association.instance_of?(Associations::OneAssociation)
+              if association.is_a?(Associations::OneAssociation)
                 attrs[association.name] = documents.to_mongo
               else
                 attrs[association.name] = documents.map(&:to_mongo)
