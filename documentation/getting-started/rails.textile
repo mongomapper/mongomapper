@@ -12,7 +12,7 @@ First, if you're generating a new Rails application, it is recommended to leave 
 rails new my_app --skip-active-record
 {% endhighlight %}
 
-But, not everyone is starting fresh (a great resource is "here":https://github.com/alindeman/upgradingtorails4). If you're converting an existing Rails application from ActiveRecord (or another ORM), simply open @config/application.rb@ and replace:
+But, not everyone is starting fresh. Andy Lindeman has "an eBook about upgrading from Rails 3 to Rails 4":https://github.com/alindeman/upgradingtorails4. If you're not upgrading, but just converting an existing Rails application from ActiveRecord (or another ORM), simply open @config/application.rb@ and replace:
 
 {% highlight ruby %}
 require 'rails/all'
