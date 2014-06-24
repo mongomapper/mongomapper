@@ -14,9 +14,9 @@ module MongoMapper
     # Rescue responses similar to ActiveRecord.
     # For rails 3.0 and 3.1
     if Rails.version < "3.2"
-      ActionDispatch::ShowExceptions.rescue_responses['MongoMapper::DocumentNotFound']  = :not_found,
-      ActionDispatch::ShowExceptions.rescue_responses['MongoMapper::InvalidKey']        = :unprocessable_entity,
-      ActionDispatch::ShowExceptions.rescue_responses['MongoMapper::InvalidScheme']     = :unprocessable_entity,
+      ActionDispatch::ShowExceptions.rescue_responses['MongoMapper::DocumentNotFound']  = :not_found
+      ActionDispatch::ShowExceptions.rescue_responses['MongoMapper::InvalidKey']        = :unprocessable_entity
+      ActionDispatch::ShowExceptions.rescue_responses['MongoMapper::InvalidScheme']     = :unprocessable_entity
       ActionDispatch::ShowExceptions.rescue_responses['MongoMapper::NotSupported']      = :unprocessable_entity
     else
       # For rails 3.2 and 4.0
