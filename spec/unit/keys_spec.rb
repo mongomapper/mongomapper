@@ -24,6 +24,22 @@ describe "Key" do
     end
   end
 
+  context ".remove_key(:symbol)" do
+    let(:klass) do
+      Doc do
+        key :foo, String
+        validate :foo_not_bar
+        def foo_not_bar
+          errors.add(:foo, "was bar") if self.foo == "bar"
+        end
+      end
+    end
+
+    it "should not fail if function callbacks are present" do
+      expect { klass.remove_key(:foo) }.to_not raise_error
+    end
+  end
+
   context "#assign" do
     it "should raise a deprecation warning" do
       klass = Doc() do
