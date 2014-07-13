@@ -246,11 +246,7 @@ module MongoMapper
             a_name = [name]
 
             _validators.reject!{ |key, _| key == name }
-            _validate_callbacks.reject! do |callback|
-              callback.raw_filter.tap do |filter|
-                filter.respond_to?(:attributes) && filter.attributes == a_name
-              end
-            end
+            _validate_callbacks.reject! { |callback| callback.raw_filter.respond_to?(:attributes) && (callback.raw_filter.attributes == a_name) }
           end
       end
 
