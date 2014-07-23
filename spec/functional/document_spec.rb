@@ -130,6 +130,34 @@ describe "Document" do
     end
   end
 
+  context "symbol key" do
+    before do
+      @document.key :foo, Symbol, :default => lambda { 123 }
+    end
+
+    it "should return default value" do
+      doc = @document.new
+      doc.foo.should == :'123'
+    end
+
+    it "should return symbol value" do
+      doc = @document.create :foo => 'qwerty'
+      doc.foo.should == :qwerty
+
+      doc.set :foo => 'poiuyt'
+      doc.reload
+      doc.foo.should == :poiuyt
+
+      doc.foo = 'asdf'
+      doc.foo.should == :asdf
+    end
+
+    it "should return typecasted value" do
+      doc = @document.new
+      (doc.foo = 'qwerty').should == 'qwerty'
+    end
+  end
+
   it "should have instance method for collection" do
     @document.new.collection.name.should == @document.collection.name
   end
