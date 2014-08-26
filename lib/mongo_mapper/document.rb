@@ -28,6 +28,7 @@ module MongoMapper
     include Plugins::Sci
     include Plugins::Scopes
     include Plugins::Serialization
+    include Plugins::Stats
     include Plugins::Timestamps
     include Plugins::Userstamps
     include Plugins::Touch

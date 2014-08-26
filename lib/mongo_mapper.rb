@@ -58,6 +58,7 @@ module MongoMapper
     autoload :Sci,                'mongo_mapper/plugins/sci'
     autoload :Scopes,             'mongo_mapper/plugins/scopes'
     autoload :Serialization,      'mongo_mapper/plugins/serialization'
+    autoload :Stats,              'mongo_mapper/plugins/stats'
     autoload :Timestamps,         'mongo_mapper/plugins/timestamps'
     autoload :Userstamps,         'mongo_mapper/plugins/userstamps'
     autoload :Validations,        'mongo_mapper/plugins/validations'
