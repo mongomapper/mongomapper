@@ -20,7 +20,7 @@ describe "Key" do
     end
 
     it "should be false if document does not have key" do
-      Address.key?(:foo).should be_false
+      Address.key?(:foo).should be_falsey
     end
   end
 
@@ -63,7 +63,7 @@ describe "Key" do
     end
 
     it "should be false if document does not have key" do
-      Address.key?('foo').should be_false
+      Address.key?('foo').should be_falsey
     end
   end
 

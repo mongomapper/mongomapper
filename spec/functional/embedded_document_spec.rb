@@ -77,7 +77,7 @@ describe "EmbeddedDocument" do
       address = @address_class.new(:city => 'South Bend', :state => 'IN')
       doc = @klass.new(:foo => address)
       doc.save
-      doc.foo.new?.should be_false
+      doc.foo.new?.should be_falsey
     end
 
     it "should be false when loaded from database" do
@@ -86,7 +86,7 @@ describe "EmbeddedDocument" do
       doc.save
 
       doc.reload
-      doc.foo.new?.should be_false
+      doc.foo.new?.should be_falsey
     end
   end
 
@@ -117,7 +117,7 @@ describe "EmbeddedDocument" do
       pet = @doc.pets.build(:name => 'Rasmus')
       pet.new?.should be_truthy
       @doc.save
-      pet.new?.should be_false
+      pet.new?.should be_falsey
     end
   end
 
@@ -133,7 +133,7 @@ describe "EmbeddedDocument" do
       address = @doc.pets.first.addresses.build(:city => 'Holland', :state => 'MI')
       address.new?.should be_truthy
       @doc.save
-      address.new?.should be_false
+      address.new?.should be_falsey
     end
   end
 
@@ -148,7 +148,7 @@ describe "EmbeddedDocument" do
       @doc.build_address(:city => 'Holland', :state => 'MI')
       @doc.address.new?.should be_truthy
       @doc.save
-      @doc.address.new?.should be_false
+      @doc.address.new?.should be_falsey
     end
   end
 
@@ -164,7 +164,7 @@ describe "EmbeddedDocument" do
       address = @doc.pets.first.build_address(:city => 'Holland', :stats => 'MI')
       address.new?.should be_truthy
       @doc.save
-      address.new?.should be_false
+      address.new?.should be_falsey
     end
   end
 
@@ -302,7 +302,7 @@ describe "EmbeddedDocument" do
       person.update_attributes!({"pets" => ["name" => "sparky", "flag" => "false"]})
       person.reload
       person.pets.first.name.should == "sparky"
-      person.pets.first.flag.should be_false
+      person.pets.first.flag.should be_falsey
     end
 
      it "should update attributes with symbol keys" do
@@ -310,7 +310,7 @@ describe "EmbeddedDocument" do
        person.update_attributes!({:pets => [:name => "sparky", :flag => "false"]})
        person.reload
        person.pets.first.name.should == "sparky"
-       person.pets.first.flag.should be_false
+       person.pets.first.flag.should be_falsey
     end
   end
 end

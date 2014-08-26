@@ -46,7 +46,7 @@ describe "Support" do
     end
 
     it "should be false for false" do
-      Boolean.to_mongo(false).should be_false
+      Boolean.to_mongo(false).should be_falsey
     end
 
     it "should handle odd assortment of other values" do
@@ -55,10 +55,10 @@ describe "Support" do
       Boolean.to_mongo('1').should be_truthy
       Boolean.to_mongo(1).should be_truthy
 
-      Boolean.to_mongo('false').should be_false
-      Boolean.to_mongo('f').should be_false
-      Boolean.to_mongo('0').should be_false
-      Boolean.to_mongo(0).should be_false
+      Boolean.to_mongo('false').should be_falsey
+      Boolean.to_mongo('f').should be_falsey
+      Boolean.to_mongo('0').should be_falsey
+      Boolean.to_mongo(0).should be_falsey
     end
 
     it "should be nil for nil" do
@@ -72,7 +72,7 @@ describe "Support" do
     end
 
     it "should be false for false" do
-      Boolean.from_mongo(false).should be_false
+      Boolean.from_mongo(false).should be_falsey
     end
 
     it "should be nil for nil" do

@@ -43,7 +43,7 @@ describe "Proxy" do
     end
 
     it "should be false if not nil" do
-      @proxy.nil?.should be_false
+      @proxy.nil?.should be_falsey
     end
   end
 
@@ -54,7 +54,7 @@ describe "Proxy" do
     end
 
     it "should be false if not blank" do
-      @proxy.blank?.should be_false
+      @proxy.blank?.should be_falsey
     end
   end
 
@@ -64,15 +64,15 @@ describe "Proxy" do
     end
 
     it "should be false if not present" do
-      @blank_proxy.present?.should be_false
-      @nil_proxy.present?.should be_false
+      @blank_proxy.present?.should be_falsey
+      @nil_proxy.present?.should be_falsey
     end
   end
 
   it "should delegate respond_to? to target" do
     @proxy.respond_to?(:each).should be_truthy
     @proxy.respond_to?(:size).should be_truthy
-    @proxy.respond_to?(:gsub).should be_false
+    @proxy.respond_to?(:gsub).should be_falsey
   end
 
   it "should alias proxy owner to owner" do

@@ -8,7 +8,7 @@ describe "Document" do
     end
 
     it "should return false for embeddable" do
-      Doc().embeddable?.should be_false
+      Doc().embeddable?.should be_falsey
     end
 
     it "should have logger method" do
@@ -123,7 +123,7 @@ describe "Document" do
       @document.key :active, Boolean, :default => true
 
       @document.new.active.should be_truthy
-      @document.new(:active => false).active.should be_false
+      @document.new(:active => false).active.should be_falsey
     end
 
     it "should use default values if defined even when custom data type" do

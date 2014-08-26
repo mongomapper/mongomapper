@@ -57,7 +57,7 @@ describe "Validations" do
 
     it "should create a new document" do
       instance = @document.create!(:name => "James")
-      instance.new_record?.should be_false
+      instance.new_record?.should be_falsey
     end
   end
 

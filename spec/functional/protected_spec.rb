@@ -49,7 +49,7 @@ describe 'A document with protected attributes' do
 
   it "should ignore protected attribute on #initialize" do
     doc = @doc_class.new(:name => 'John', :admin => true)
-    doc.admin.should be_false
+    doc.admin.should be_falsey
     doc.name.should == 'John'
   end
 
@@ -81,25 +81,25 @@ describe 'A document with protected attributes' do
   it "should ignore protected attribute on #update_attributes" do
     @doc.update_attributes(:name => 'Ren Hoek', :admin => true)
     @doc.name.should == 'Ren Hoek'
-    @doc.admin.should be_false
+    @doc.admin.should be_falsey
   end
 
   it "should ignore protected attribute on #update_attributes!" do
     @doc.update_attributes!(:name => 'Stimpson J. Cat', :admin => true)
     @doc.name.should == 'Stimpson J. Cat'
-    @doc.admin.should be_false
+    @doc.admin.should be_falsey
   end
 
   it "should ignore protecteds attribute on #attributes=" do
     @doc.attributes = {:name => 'Stimpson J. Cat', :admin => true}
     @doc.name.should == 'Stimpson J. Cat'
-    @doc.admin.should be_false
+    @doc.admin.should be_falsey
   end
 
   it "should be indifferent to whether the protected keys are strings or symbols" do
     @doc.update_attributes!("name" => 'Stimpson J. Cat', "admin" => true)
     @doc.name.should == 'Stimpson J. Cat'
-    @doc.admin.should be_false
+    @doc.admin.should be_falsey
   end
 
   it "should accept nil as constructor's argument without raising exception" do
@@ -188,12 +188,12 @@ describe 'An embedded document with protected attributes' do
   it "should ignore protected attribute on #update_attributes" do
     @edoc.update_attributes(:name => 'Ren Hoek', :admin => true)
     @edoc.name.should == 'Ren Hoek'
-    @edoc.admin.should be_false
+    @edoc.admin.should be_falsey
   end
 
   it "should ignore protected attribute on #update_attributes!" do
     @edoc.update_attributes!(:name => 'Stimpson J. Cat', :admin => true)
     @edoc.name.should == 'Stimpson J. Cat'
-    @edoc.admin.should be_false
+    @edoc.admin.should be_falsey
   end
 end

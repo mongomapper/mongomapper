@@ -19,7 +19,7 @@ module OneAssociationSpec
 
       it "should be false if class is not embeddable" do
         base = OneAssociation.new(:project)
-        base.embeddable?.should be_false
+        base.embeddable?.should be_falsey
       end
     end
 

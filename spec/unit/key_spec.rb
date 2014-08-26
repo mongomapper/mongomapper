@@ -94,7 +94,7 @@ describe "Key" do
     end
 
     it "should know if it is not a embedded_document" do
-      Key.new(:name, String).embeddable?.should be_false
+      Key.new(:name, String).embeddable?.should be_falsey
     end
 
     it "should know if it is a number" do
@@ -103,7 +103,7 @@ describe "Key" do
     end
 
     it "should know if it is not a number" do
-      Key.new(:age, String).number?.should be_false
+      Key.new(:age, String).number?.should be_falsey
     end
   end
 
@@ -149,21 +149,21 @@ describe "Key" do
     context "with :read" do
       let(:accessor) { :read }
       its(:read_accessor?) { should be_truthy }
-      its(:write_accessor?) { should be_false }
-      its(:predicate_accessor?) { should be_false }
+      its(:write_accessor?) { should be_falsey }
+      its(:predicate_accessor?) { should be_falsey }
     end
 
     context "with :write" do
       let(:accessor) { :write }
-      its(:read_accessor?) { should be_false }
+      its(:read_accessor?) { should be_falsey }
       its(:write_accessor?) { should be_truthy }
-      its(:predicate_accessor?) { should be_false }
+      its(:predicate_accessor?) { should be_falsey }
     end
 
     context "with :predicate" do
       let(:accessor) { :predicate }
-      its(:read_accessor?) { should be_false }
-      its(:write_accessor?) { should be_false }
+      its(:read_accessor?) { should be_falsey }
+      its(:write_accessor?) { should be_falsey }
       its(:predicate_accessor?) { should be_truthy }
     end
 
@@ -172,7 +172,7 @@ describe "Key" do
 
       its(:read_accessor?) { should be_truthy }
       its(:write_accessor?) { should be_truthy }
-      its(:predicate_accessor?) { should be_false }
+      its(:predicate_accessor?) { should be_falsey }
     end
   end
 
@@ -254,7 +254,7 @@ describe "Key" do
       end
 
       it "should work with Boolean type and false value" do
-        Key.new(:active, Boolean, :default => false).default_value.should be_false
+        Key.new(:active, Boolean, :default => false).default_value.should be_falsey
       end
 
       it "should work with Boolean type and true value" do

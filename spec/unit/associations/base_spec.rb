@@ -32,7 +32,7 @@ module AssociationSpec
       end
 
       it "should be false if not polymorphic" do
-        ManyAssociation.new(:bars).polymorphic?.should be_false
+        ManyAssociation.new(:bars).polymorphic?.should be_falsey
       end
     end
 
@@ -42,7 +42,7 @@ module AssociationSpec
       end
 
       it "should be false if not one" do
-        ManyAssociation.new(:foo).as?.should be_false
+        ManyAssociation.new(:foo).as?.should be_falsey
       end
     end
 
@@ -52,7 +52,7 @@ module AssociationSpec
       end
 
       it "should be false if not one" do
-        ManyAssociation.new(:foo).in_array?.should be_false
+        ManyAssociation.new(:foo).in_array?.should be_falsey
       end
     end
 
@@ -103,10 +103,10 @@ module AssociationSpec
 
       it "should be false if class is not embeddable" do
         base = ManyAssociation.new(:statuses)
-        base.embeddable?.should be_false
+        base.embeddable?.should be_falsey
 
         base = BelongsToAssociation.new(:project)
-        base.embeddable?.should be_false
+        base.embeddable?.should be_falsey
       end
     end
 
@@ -138,7 +138,7 @@ module AssociationSpec
       end
 
       it "should be false if not touch" do
-        BelongsToAssociation.new(:car).touch?.should be_false
+        BelongsToAssociation.new(:car).touch?.should be_falsey
       end
     end
 

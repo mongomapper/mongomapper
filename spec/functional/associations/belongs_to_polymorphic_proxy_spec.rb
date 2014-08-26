@@ -15,7 +15,7 @@ describe "BelongsToPolymorphicProxy" do
 
   it "should have boolean presence method" do
     status = Status.new
-    status.target?.should be_false
+    status.target?.should be_falsey
 
     status.target = Project.new(:name => 'mongomapper')
     status.target?.should be_truthy
@@ -28,7 +28,7 @@ describe "BelongsToPolymorphicProxy" do
     status.save.should be_truthy
 
     status = status.reload
-    status.target.nil?.should be_false
+    status.target.nil?.should be_falsey
     status.target_id.should == project._id
     status.target_type.should == "Project"
     status.target.name.should == "mongomapper"

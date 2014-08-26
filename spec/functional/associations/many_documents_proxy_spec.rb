@@ -497,13 +497,13 @@ describe "ManyDocumentsProxy" do
     it "should be false if a document is built" do
       project = Project.create
       project.statuses.build(:name => 'Foo!')
-      project.statuses.empty?.should be_false
+      project.statuses.empty?.should be_falsey
     end
 
     it "should be false if a document is created" do
       project = Project.create
       project.statuses.create(:name => 'Foo!')
-      project.statuses.empty?.should be_false
+      project.statuses.empty?.should be_falsey
     end
   end
 

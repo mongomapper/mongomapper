@@ -20,7 +20,7 @@ describe "BelongsToProxy" do
 
   it "should have boolean presence method" do
     comment = @comment_class.new(:name => 'Foo!')
-    comment.post?.should be_false
+    comment.post?.should be_falsey
 
     comment.post = @post_class.new(:name => 'mongomapper')
     comment.post?.should be_truthy
@@ -34,7 +34,7 @@ describe "BelongsToProxy" do
     end
 
     instance = @comment_class.new
-    instance.post?.should be_false
+    instance.post?.should be_falsey
     instance.post = @post_class.new
     instance.post?.should be_truthy
   end
@@ -46,7 +46,7 @@ describe "BelongsToProxy" do
 
     comment = comment.reload
     comment.post.should == post
-    comment.post.nil?.should be_false
+    comment.post.nil?.should be_falsey
   end
 
   it "should not reload the association when replacing" do
@@ -76,7 +76,7 @@ describe "BelongsToProxy" do
 
     comment = comment.reload
     comment.post.should == post1
-    comment.post.nil?.should be_false
+    comment.post.nil?.should be_falsey
 
     original_post = comment.post
     original_post.name.should == 'post1'

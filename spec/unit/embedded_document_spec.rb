@@ -71,7 +71,7 @@ describe "EmbeddedDocument" do
 
       it "should know it is not using object id if _id type is changed" do
         @klass.key :_id, String
-        @klass.using_object_id?.should be_false
+        @klass.using_object_id?.should be_falsey
       end
     end
 
@@ -206,7 +206,7 @@ describe "EmbeddedDocument" do
         end
 
         it "should not add anonymous objects to the ancestor tree" do
-          OtherChild.ancestors.any? { |a| a.name.blank? }.should be_false
+          OtherChild.ancestors.any? { |a| a.name.blank? }.should be_falsey
         end
 
         it "should not include descendant keys" do
@@ -550,7 +550,7 @@ describe "EmbeddedDocument" do
       context "checking if a keys value is present" do
         it "should work for defined keys" do
           doc = @document.new
-          doc.name?.should be_false
+          doc.name?.should be_falsey
           doc.name = 'John'
           doc.name?.should be_truthy
         end
@@ -594,12 +594,12 @@ describe "EmbeddedDocument" do
         end
 
         it "should not be equal if class same but id different" do
-          (@document.new('_id' => @oid) == @document.new('_id' => BSON::ObjectId.new)).should be_false
+          (@document.new('_id' => @oid) == @document.new('_id' => BSON::ObjectId.new)).should be_falsey
         end
 
         it "should not be equal if id same but class different" do
           another_document = Doc()
-          (@document.new('_id' => @oid) == another_document.new('_id' => @oid)).should be_false
+          (@document.new('_id' => @oid) == another_document.new('_id' => @oid)).should be_falsey
         end
       end
 

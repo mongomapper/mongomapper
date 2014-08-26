@@ -151,7 +151,7 @@ module Serialization
 
           @instance.name.should == unserialized.name
           @instance.age.should == unserialized.age
-          unserialized.awesome.should be_false
+          unserialized.awesome.should be_falsey
           unserialized.created_at.should be_nil
         end
 

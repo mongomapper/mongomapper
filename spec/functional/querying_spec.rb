@@ -55,7 +55,7 @@ describe "Querying" do
     end
 
     it "should no longer be new?" do
-      doc.new?.should be_false
+      doc.new?.should be_falsey
     end
 
     it "should return instance of document" do
@@ -500,7 +500,7 @@ describe "Querying" do
 
     it "should be false if documents present" do
       @doc = document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
-      document.empty?.should be_false
+      document.empty?.should be_falsey
     end
   end
 
@@ -741,7 +741,7 @@ describe "Querying" do
     end
 
     it "should be false if document not valid" do
-      document.new.update_attributes({}).should be_false
+      document.new.update_attributes({}).should be_falsey
     end
   end
 

@@ -30,7 +30,7 @@ module ManyAssociationSpec
 
       it "should be false if class is not embeddable" do
         base = ManyAssociation.new(:statuses)
-        base.embeddable?.should be_false
+        base.embeddable?.should be_falsey
       end
     end
 

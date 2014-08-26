@@ -31,7 +31,7 @@ describe "DynamicFinder" do
 
     it "should be false for anything else" do
       [:foobar, :bazwick].each do |method|
-        DynamicFinder.new(method).found?.should be_false
+        DynamicFinder.new(method).found?.should be_falsey
       end
     end
   end
@@ -65,7 +65,7 @@ describe "DynamicFinder" do
     end
 
     it "should set bang to false" do
-      DynamicFinder.new(:find_by_foo).bang.should be_false
+      DynamicFinder.new(:find_by_foo).bang.should be_falsey
     end
   end
 
