@@ -148,31 +148,34 @@ describe "Key" do
 
     context "with :read" do
       let(:accessor) { :read }
-      its(:read_accessor?) { should be_truthy }
-      its(:write_accessor?) { should be_falsey }
-      its(:predicate_accessor?) { should be_falsey }
+
+      it { expect( subject.read_accessor? ).to be_truthy }
+      it { expect( subject.write_accessor? ).to be_falsey }
+      it { expect( subject.predicate_accessor? ).to be_falsey }
     end
 
     context "with :write" do
       let(:accessor) { :write }
-      its(:read_accessor?) { should be_falsey }
-      its(:write_accessor?) { should be_truthy }
-      its(:predicate_accessor?) { should be_falsey }
+
+      it { expect( subject.read_accessor? ).to be_falsey }
+      it { expect( subject.write_accessor? ).to be_truthy }
+      it { expect( subject.predicate_accessor? ).to be_falsey }
     end
 
     context "with :predicate" do
       let(:accessor) { :predicate }
-      its(:read_accessor?) { should be_falsey }
-      its(:write_accessor?) { should be_falsey }
-      its(:predicate_accessor?) { should be_truthy }
+
+      it { expect( subject.read_accessor? ).to be_falsey }
+      it { expect( subject.write_accessor? ).to be_falsey }
+      it { expect( subject.predicate_accessor? ).to be_truthy }
     end
 
     context "with an array of options" do
       let(:accessor) { [:read, :write] }
 
-      its(:read_accessor?) { should be_truthy }
-      its(:write_accessor?) { should be_truthy }
-      its(:predicate_accessor?) { should be_falsey }
+      it { expect( subject.read_accessor? ).to be_truthy }
+      it { expect( subject.write_accessor? ).to be_truthy }
+      it { expect( subject.predicate_accessor? ).to be_falsey }
     end
   end
 
