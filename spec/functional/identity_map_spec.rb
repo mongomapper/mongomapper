@@ -3,7 +3,7 @@ require 'spec_helper'
 describe "IdentityMap" do
   def assert_in_map(*resources)
     [resources].flatten.each do |resource|
-      MongoMapper::Plugins::IdentityMap.include?(resource).should be_true
+      MongoMapper::Plugins::IdentityMap.include?(resource).should be_truthy
     end
   end
 
@@ -84,14 +84,14 @@ describe "IdentityMap" do
         MongoMapper::Plugins::IdentityMap.use do
           @person_class.find(@person.id)
         end
-        MongoMapper::Plugins::IdentityMap.repository.empty?.should be_true
+        MongoMapper::Plugins::IdentityMap.repository.empty?.should be_truthy
       end
 
       it "should set enabled back to original status" do
         MongoMapper::Plugins::IdentityMap.enabled = false
         MongoMapper::Plugins::IdentityMap.enabled?.should be_false
         MongoMapper::Plugins::IdentityMap.use do
-          MongoMapper::Plugins::IdentityMap.enabled?.should be_true
+          MongoMapper::Plugins::IdentityMap.enabled?.should be_truthy
         end
         MongoMapper::Plugins::IdentityMap.enabled?.should be_false
       end
@@ -111,11 +111,11 @@ describe "IdentityMap" do
 
       it "should set enabled back to original value" do
         MongoMapper::Plugins::IdentityMap.enabled = true
-        MongoMapper::Plugins::IdentityMap.enabled?.should be_true
+        MongoMapper::Plugins::IdentityMap.enabled?.should be_truthy
         MongoMapper::Plugins::IdentityMap.without do
           MongoMapper::Plugins::IdentityMap.enabled?.should be_false
         end
-        MongoMapper::Plugins::IdentityMap.enabled?.should be_true
+        MongoMapper::Plugins::IdentityMap.enabled?.should be_truthy
       end
     end
 
@@ -126,14 +126,14 @@ describe "IdentityMap" do
     it "should add key to map when saved" do
       person = @person_class.new
       assert_not_in_map(person)
-      person.save.should be_true
+      person.save.should be_truthy
       assert_in_map(person)
     end
 
     it "should allow saving with options" do
       person = @person_class.new
       assert_not_in_map(person)
-      person.save(:validate => false).should be_true
+      person.save(:validate => false).should be_truthy
       assert_in_map(person)
     end
 

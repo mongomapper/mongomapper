@@ -11,7 +11,7 @@ describe "OneProxy" do
 
   it "should default to nil" do
     @post_class.one :author, :class => @author_class
-    @post_class.new.author.nil?.should be_true
+    @post_class.new.author.nil?.should be_truthy
   end
 
   it "should return nil instead of a proxy" do
@@ -25,7 +25,7 @@ describe "OneProxy" do
     post = @post_class.new('author' => { 'name' => 'Frank' })
     post.author.name.should == 'Frank'
 
-    post.save.should be_true
+    post.save.should be_truthy
     post.reload
 
     post.author.name.should == 'Frank'
@@ -210,7 +210,7 @@ describe "OneProxy" do
     post.author?.should be_false
 
     post.author = @author_class.new(:name => 'Frank')
-    post.author?.should be_true
+    post.author?.should be_truthy
   end
 
   it "should work with criteria" do
@@ -232,7 +232,7 @@ describe "OneProxy" do
     post.update_attributes!(:author => author)
     post.reload
     post.author = nil
-    post.author.nil?.should be_true
+    post.author.nil?.should be_truthy
   end
 
   context "destroying parent with :dependent" do

@@ -39,7 +39,7 @@ describe "Accessible" do
 
     it "should assign inaccessible attribute through accessor" do
       @doc.admin = true
-      @doc.admin.should be_true
+      @doc.admin.should be_truthy
     end
 
     it "should ignore inaccessible attribute on #initialize" do
@@ -54,7 +54,7 @@ describe "Accessible" do
       doc.save!
 
       doc = @doc_class.first(:name => 'John')
-      doc.admin.should be_true
+      doc.admin.should be_truthy
       doc.name.should == 'John'
     end
 
@@ -64,13 +64,13 @@ describe "Accessible" do
       doc.save!
 
       doc.reload
-      doc.admin.should be_true
+      doc.admin.should be_truthy
       doc.name.should == 'John'
     end
 
     it "should not ignore inaccessible attribute on #update_attribute" do
       @doc.update_attribute('admin', true)
-      @doc.admin.should be_true
+      @doc.admin.should be_truthy
     end
 
     it "should ignore inaccessible attribute on #update_attributes" do
@@ -180,7 +180,7 @@ describe "Accessible" do
 
     it "should assign inaccessible attribute through accessor" do
       @edoc.admin = true
-      @edoc.admin.should be_true
+      @edoc.admin.should be_truthy
     end
 
     it "should ignore inaccessible attribute on #update_attributes" do

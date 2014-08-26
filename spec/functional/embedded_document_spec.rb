@@ -70,7 +70,7 @@ describe "EmbeddedDocument" do
     it "should be true until document is created" do
       address = @address_class.new(:city => 'South Bend', :state => 'IN')
       doc = @klass.new(:foo => address)
-      address.new?.should be_true
+      address.new?.should be_truthy
     end
 
     it "should be false after document is saved" do
@@ -115,7 +115,7 @@ describe "EmbeddedDocument" do
     it "should be true until existing document is saved" do
       @doc.save
       pet = @doc.pets.build(:name => 'Rasmus')
-      pet.new?.should be_true
+      pet.new?.should be_truthy
       @doc.save
       pet.new?.should be_false
     end
@@ -131,7 +131,7 @@ describe "EmbeddedDocument" do
 
     it "should be true until existing document is saved" do
       address = @doc.pets.first.addresses.build(:city => 'Holland', :state => 'MI')
-      address.new?.should be_true
+      address.new?.should be_truthy
       @doc.save
       address.new?.should be_false
     end
@@ -146,7 +146,7 @@ describe "EmbeddedDocument" do
     it "should be true until existing document is saved" do
       @doc.save
       @doc.build_address(:city => 'Holland', :state => 'MI')
-      @doc.address.new?.should be_true
+      @doc.address.new?.should be_truthy
       @doc.save
       @doc.address.new?.should be_false
     end
@@ -162,7 +162,7 @@ describe "EmbeddedDocument" do
 
     it "should be true until existing document is saved" do
       address = @doc.pets.first.build_address(:city => 'Holland', :stats => 'MI')
-      address.new?.should be_true
+      address.new?.should be_truthy
       @doc.save
       address.new?.should be_false
     end
@@ -248,7 +248,7 @@ describe "EmbeddedDocument" do
     person.reload
     pet = person.pets.first
 
-    pet.update_attribute('name', 'koda').should be_true
+    pet.update_attribute('name', 'koda').should be_truthy
     person.reload
     person.pets.first._id.should == pet._id
     person.pets.first.name.should == 'koda'
@@ -260,7 +260,7 @@ describe "EmbeddedDocument" do
     person.reload
     pet = person.pets.first
 
-    pet.update_attributes(:name => 'koda').should be_true
+    pet.update_attributes(:name => 'koda').should be_truthy
     person.reload
     person.pets.first._id.should == pet._id
     person.pets.first.name.should == 'koda'

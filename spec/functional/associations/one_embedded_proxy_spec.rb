@@ -75,7 +75,7 @@ describe "OneEmbeddedProxy" do
     post.author?.should be_false
 
     post.author = @author_class.new(:name => 'Frank')
-    post.author?.should be_true
+    post.author?.should be_truthy
   end
 
   it "should initialize id for nested embedded document created from hash" do

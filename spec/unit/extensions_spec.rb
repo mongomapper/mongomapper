@@ -21,11 +21,11 @@ describe "Support" do
 
   context "Binary.to_mongo" do
     it "should convert to binary if not binary" do
-      Binary.to_mongo('asdfsadasdfs').is_a?(BSON::Binary).should be_true
+      Binary.to_mongo('asdfsadasdfs').is_a?(BSON::Binary).should be_truthy
     end
 
     it "should be binary if binary" do
-      Binary.to_mongo(BSON::Binary.new('asdfsadasdfs')).is_a?(BSON::Binary).should be_true
+      Binary.to_mongo(BSON::Binary.new('asdfsadasdfs')).is_a?(BSON::Binary).should be_truthy
     end
 
     it "should be nil if nil" do
@@ -42,7 +42,7 @@ describe "Support" do
 
   context "Boolean.to_mongo" do
     it "should be true for true" do
-      Boolean.to_mongo(true).should be_true
+      Boolean.to_mongo(true).should be_truthy
     end
 
     it "should be false for false" do
@@ -50,10 +50,10 @@ describe "Support" do
     end
 
     it "should handle odd assortment of other values" do
-      Boolean.to_mongo('true').should be_true
-      Boolean.to_mongo('t').should be_true
-      Boolean.to_mongo('1').should be_true
-      Boolean.to_mongo(1).should be_true
+      Boolean.to_mongo('true').should be_truthy
+      Boolean.to_mongo('t').should be_truthy
+      Boolean.to_mongo('1').should be_truthy
+      Boolean.to_mongo(1).should be_truthy
 
       Boolean.to_mongo('false').should be_false
       Boolean.to_mongo('f').should be_false
@@ -68,7 +68,7 @@ describe "Support" do
 
   context "Boolean.from_mongo" do
     it "should be true for true" do
-      Boolean.from_mongo(true).should be_true
+      Boolean.from_mongo(true).should be_truthy
     end
 
     it "should be false for false" do
@@ -153,7 +153,7 @@ describe "Support" do
     it "should be hash if nil" do
       hash = Hash.from_mongo(nil)
       hash.should == {}
-      hash.is_a?(HashWithIndifferentAccess).should be_true
+      hash.is_a?(HashWithIndifferentAccess).should be_truthy
     end
   end
 
@@ -359,7 +359,7 @@ describe "Support" do
 
       time = Time.from_mongo(Time.utc(2009, 10, 1))
       time.should == Time.zone.local(2009, 9, 30, 14)
-      time.is_a?(ActiveSupport::TimeWithZone).should be_true
+      time.is_a?(ActiveSupport::TimeWithZone).should be_truthy
 
       Time.zone = nil
     end

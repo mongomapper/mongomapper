@@ -44,7 +44,7 @@ describe 'A document with protected attributes' do
 
   it "should assign protected attribute through accessor" do
     @doc.admin = true
-    @doc.admin.should be_true
+    @doc.admin.should be_truthy
   end
 
   it "should ignore protected attribute on #initialize" do
@@ -59,7 +59,7 @@ describe 'A document with protected attributes' do
     doc.save!
 
     doc = @doc_class.first(:name => 'John')
-    doc.admin.should be_true
+    doc.admin.should be_truthy
     doc.name.should == 'John'
   end
 
@@ -69,13 +69,13 @@ describe 'A document with protected attributes' do
     doc.save!
 
     doc.reload
-    doc.admin.should be_true
+    doc.admin.should be_truthy
     doc.name.should == 'John'
   end
 
   it "should ignore protected attribute on #update_attribute" do
     @doc.update_attribute('admin', true)
-    @doc.admin.should be_true
+    @doc.admin.should be_truthy
   end
 
   it "should ignore protected attribute on #update_attributes" do
@@ -177,12 +177,12 @@ describe 'An embedded document with protected attributes' do
 
   it "should assign protected attribute through accessor" do
     @edoc.admin = true
-    @edoc.admin.should be_true
+    @edoc.admin.should be_truthy
   end
 
   it "should not ignore protected attribute on #update_attribute" do
     @edoc.update_attribute('admin', true)
-    @edoc.admin.should be_true
+    @edoc.admin.should be_truthy
   end
 
   it "should ignore protected attribute on #update_attributes" do

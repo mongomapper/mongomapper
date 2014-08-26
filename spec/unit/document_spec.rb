@@ -122,7 +122,7 @@ describe "Document" do
     it "should use default values if defined for keys" do
       @document.key :active, Boolean, :default => true
 
-      @document.new.active.should be_true
+      @document.new.active.should be_truthy
       @document.new(:active => false).active.should be_false
     end
 
@@ -147,14 +147,14 @@ describe "Document" do
 
     context "new?" do
       it "should be true if no id" do
-        @document.new.new?.should be_true
+        @document.new.new?.should be_truthy
       end
 
       it "should be true if id but using custom id and not saved yet" do
         @document.key :_id, String
         doc = silence_stderr { @document.new }
         doc.id = '1234'
-        doc.new?.should be_true
+        doc.new?.should be_truthy
       end
     end
 

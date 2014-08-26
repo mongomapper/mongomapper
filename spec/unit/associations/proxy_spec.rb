@@ -39,7 +39,7 @@ describe "Proxy" do
 
   context "nil?" do
     it "should be true if nil" do
-      @nil_proxy.nil?.should be_true
+      @nil_proxy.nil?.should be_truthy
     end
 
     it "should be false if not nil" do
@@ -49,8 +49,8 @@ describe "Proxy" do
 
   context "blank?" do
     it "should be true if blank" do
-      @blank_proxy.blank?.should be_true
-      @nil_proxy.blank?.should be_true
+      @blank_proxy.blank?.should be_truthy
+      @nil_proxy.blank?.should be_truthy
     end
 
     it "should be false if not blank" do
@@ -60,7 +60,7 @@ describe "Proxy" do
 
   context "present?" do
     it "should be true if present" do
-      @proxy.present?.should be_true
+      @proxy.present?.should be_truthy
     end
 
     it "should be false if not present" do
@@ -70,8 +70,8 @@ describe "Proxy" do
   end
 
   it "should delegate respond_to? to target" do
-    @proxy.respond_to?(:each).should be_true
-    @proxy.respond_to?(:size).should be_true
+    @proxy.respond_to?(:each).should be_truthy
+    @proxy.respond_to?(:size).should be_truthy
     @proxy.respond_to?(:gsub).should be_false
   end
 

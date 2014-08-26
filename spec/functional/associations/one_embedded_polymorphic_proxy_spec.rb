@@ -35,7 +35,7 @@ describe "OneEmbeddedPolymorhpicProxy" do
     post.author.name.should == 'Frank'
     post.author.class.should == Human
 
-    post.save.should be_true
+    post.save.should be_truthy
     post.reload
 
     post.author.name.should == 'Frank'
@@ -142,13 +142,13 @@ describe "OneEmbeddedPolymorhpicProxy" do
 
     post.author.class.should == TrModels::Ambulance
     post.author.license_plate.should == 'GGG123'
-    post.author.icu.should be_true
-    post.save.should be_true
+    post.author.icu.should be_truthy
+    post.save.should be_truthy
 
     post = post.reload
     post.author.class.should == TrModels::Ambulance
     post.author.license_plate.should == 'GGG123'
-    post.author.icu.should be_true
+    post.author.icu.should be_truthy
   end
 
   it "should not have problem loading root document if embedded one is nil" do
@@ -182,7 +182,7 @@ describe "OneEmbeddedPolymorhpicProxy" do
     post.author?.should be_false
 
     post.author = Human.new(:name => 'Frank')
-    post.author?.should be_true
+    post.author?.should be_truthy
   end
 
   it "should initialize id for nested embedded document created from hash" do

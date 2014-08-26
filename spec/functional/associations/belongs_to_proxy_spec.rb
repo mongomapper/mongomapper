@@ -11,7 +11,7 @@ describe "BelongsToProxy" do
   end
 
   it "should default to nil" do
-    @comment_class.new.post.nil?.should be_true
+    @comment_class.new.post.nil?.should be_truthy
   end
 
   it "should return nil instead of a proxy" do
@@ -23,7 +23,7 @@ describe "BelongsToProxy" do
     comment.post?.should be_false
 
     comment.post = @post_class.new(:name => 'mongomapper')
-    comment.post?.should be_true
+    comment.post?.should be_truthy
   end
 
   it "should allow overriding association methods" do
@@ -36,13 +36,13 @@ describe "BelongsToProxy" do
     instance = @comment_class.new
     instance.post?.should be_false
     instance.post = @post_class.new
-    instance.post?.should be_true
+    instance.post?.should be_truthy
   end
 
   it "should be able to replace the association" do
     post = @post_class.new(:name => 'mongomapper')
     comment = @comment_class.new(:name => 'Foo!', :post => post)
-    comment.save.should be_true
+    comment.save.should be_truthy
 
     comment = comment.reload
     comment.post.should == post
@@ -71,7 +71,7 @@ describe "BelongsToProxy" do
     post2 = @post_class.create(:name => 'post2')
 
     comment = @comment_class.new(:name => 'Foo!', :post => post1)
-    comment.save.should be_true
+    comment.save.should be_truthy
 
 
     comment = comment.reload
@@ -89,23 +89,23 @@ describe "BelongsToProxy" do
   it "should unset the association" do
     post = @post_class.new(:name => 'mongomapper')
     comment = @comment_class.new(:name => 'Foo!', :post => post)
-    comment.save.should be_true
+    comment.save.should be_truthy
 
     comment = comment.reload
     comment.post = nil
-    comment.post.nil?.should be_true
+    comment.post.nil?.should be_truthy
   end
 
   it "should return nil if id set but document not found" do
     id = BSON::ObjectId.new
-    @comment_class.new(:name => 'Foo', :post_id => id).post.nil?.should be_true
+    @comment_class.new(:name => 'Foo', :post_id => id).post.nil?.should be_truthy
   end
 
   it "should define foreign key if it doesn't exist" do
     @category_class = Doc()
     @post_class.belongs_to :category, :class => @category_class
 
-    @post_class.key?(:category_id).should be_true
+    @post_class.key?(:category_id).should be_truthy
   end
 
   it "should not define foreign key if it already exists" do
@@ -228,7 +228,7 @@ describe "BelongsToProxy" do
 
   context 'autosave' do
     it 'should not be true by default' do
-      @comment_class.associations[:post].options[:autosave].should_not be_true
+      @comment_class.associations[:post].options[:autosave].should_not be_truthy
     end
 
     it 'should save parent changes when true' do
