@@ -296,4 +296,20 @@ describe "Keys" do
       end
     end
   end
+
+  describe "removing keys" do
+    DocWithRemovedKey = Doc do
+      key :something
+      validates_uniqueness_of :something
+      remove_key :something
+    end
+
+    it 'should remove the key' do
+      DocWithRemovedKey.keys.should_not have_key "_something"
+    end
+
+    it 'should remove validations' do
+      DocWithRemovedKey._validate_callbacks.should be_empty
+    end
+  end
 end
