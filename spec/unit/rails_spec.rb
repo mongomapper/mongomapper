@@ -66,6 +66,11 @@ describe "Rails integration" do
         @klass.new(:bar => 'Setting Foo').foo.should == 'Setting Foo'
       end
 
+      it "should return the type casted value from write attribute" do
+        obj = @klass.new
+        obj.write_attribute(:foo, true).should == "true"
+      end
+
       context '#to_param' do
         it "should be nil if not persisted" do
           @klass.new.tap do |doc|

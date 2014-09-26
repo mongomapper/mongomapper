@@ -91,12 +91,12 @@ module MongoMapper
           proxy_respond_to?(*args) || (load_target && target.respond_to?(*args))
         end
 
-        def send(method, *args)
+        def send(method, *args, &block)
           if proxy_respond_to?(method, true)
             super
           else
             load_target
-            target.send(method, *args)
+            target.send(method, *args, &block)
           end
         end
 

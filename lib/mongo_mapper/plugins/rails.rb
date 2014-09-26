@@ -36,6 +36,7 @@ module MongoMapper
 
       def write_attribute(name, value)
         self[name] = value
+        self[name]
       end
 
       def write_key(name, value)
