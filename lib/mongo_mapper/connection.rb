@@ -78,11 +78,12 @@ module MongoMapper
         options[:ssl] = env['ssl']
       end
 
-      MongoMapper.connection = if env['hosts']
+      MongoMapper.connection = if env.key?('hosts')
+        klass = (env.key?("mongos") || env.key?("sharded")) ? Mongo::MongoShardedClient : Mongo::MongoReplicaSetClient
         if env['hosts'].first.is_a?(String)
-          Mongo::MongoReplicaSetClient.new( env['hosts'], options )
+          klass.new( env['hosts'], options )
         else
-          Mongo::MongoReplicaSetClient.new( *env['hosts'].push(options) )
+          klass.new( *env['hosts'].push(options) )
         end
       else
         Mongo::MongoClient.new(env['host'], env['port'], options)
