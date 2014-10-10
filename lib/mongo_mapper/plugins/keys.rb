@@ -69,10 +69,10 @@ module MongoMapper
           if key = keys[name.to_s]
             keys.delete key.name
             keys.delete key.abbr
-            remove_method key.name if respond_to? "#{key.name}"
-            remove_method "#{key.name}=" if respond_to? "#{key.name}="
-            remove_method "#{key.name}?" if respond_to? "#{key.name}?"
-            remove_method "#{key.name}_before_type_cast" if respond_to? "#{key.name}_before_type_cast"
+            class_eval { undef_method :"#{key.name}" } if method_defined?(:"#{key.name}")
+            class_eval { undef_method :"#{key.name}=" } if method_defined?(:"#{key.name}=")
+            class_eval { undef_method :"#{key.name}?" } if method_defined?(:"#{key.name}?")
+            class_eval { undef_method :"#{key.name}_before_type_cast" } if method_defined?(:"#{key.name}_before_type_cast")
             remove_key_in_descendants key.name
             remove_validations_for key.name
             @dynamic_keys = @defined_keys = @unaliased_keys = @object_id_keys = nil
