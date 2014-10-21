@@ -17,6 +17,19 @@ module MongoMapper
     #   end
     #
     # Field names follow rails conventions, so counter_cache :user will increment the Integer field `posts_count' on User
+    #
+    # Alternatively, you can also use the more common ActiveRecord syntax:
+    #
+    #   class Post
+    #     belongs_to :user, :counter_cache => true
+    #   end
+    #
+    # Or with an alternative field name:
+    #
+    #   class Post
+    #     belongs_to :user, :counter_cache => :custom_posts_count
+    #   end
+    #
     module CounterCache
       class InvalidCounterCacheError < StandardError; end
 

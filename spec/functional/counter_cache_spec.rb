@@ -20,27 +20,24 @@ module CounterCacheFixtureModels
              :class_name => "CounterCacheFixtureModels::Comment"
 
     belongs_to :user,
+               :counter_cache => true,
                :class_name => "CounterCacheFixtureModels::User"
-
-    counter_cache :user
   end
 
   class Comment
     include MongoMapper::Document
 
     belongs_to :post,
+               :counter_cache => true,
                :class_name => "CounterCacheFixtureModels::Post"
-
-    counter_cache :post
   end
 
   class CustomComment
     include MongoMapper::Document
 
     belongs_to :post,
+               :counter_cache => :some_custom_comments_count,
                :class_name => "CounterCacheFixtureModels::Post"
-
-    counter_cache :post, :field => :some_custom_comments_count
   end
 end
 
