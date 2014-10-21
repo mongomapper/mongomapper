@@ -36,6 +36,7 @@ module MongoMapper
     autoload :Callbacks,          'mongo_mapper/plugins/callbacks'
     autoload :Caching,            'mongo_mapper/plugins/caching'
     autoload :Clone,              'mongo_mapper/plugins/clone'
+    autoload :CounterCache,       'mongo_mapper/plugins/counter_cache'
     autoload :Dirty,              'mongo_mapper/plugins/dirty'
     autoload :Document,           'mongo_mapper/plugins/document'
     autoload :DynamicQuerying,    'mongo_mapper/plugins/dynamic_querying'
