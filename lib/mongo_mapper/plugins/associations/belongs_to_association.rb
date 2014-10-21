@@ -20,6 +20,7 @@ module MongoMapper
           model.key type_key_name, String unless model.key?(type_key_name) if polymorphic?
           super
           add_touch_callbacks if touch?
+          add_counter_cache if counter_cache?
         end
 
         def autosave?
@@ -46,7 +47,15 @@ module MongoMapper
           @model.after_save(method_name)
           @model.after_touch(method_name)
           @model.after_destroy(method_name)
+        end
 
+        def add_counter_cache
+          options = {}
+          if @options[:counter_cache] && @options[:counter_cache] != true
+            options[:field] = @options[:counter_cache]
+          end
+
+          @model.counter_cache name, options
         end
       end
     end
