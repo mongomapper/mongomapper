@@ -255,13 +255,9 @@ module MongoMapper
               f.respond_to?(:attributes) && f.attributes == a_name
             end
             reset_callbacks(:validate)
-            set_callbacks 'validate', chain
-          end
-
-          # Method here for compatibility with pre-4.1.x ActiveSupport:
-          # not needed if ActiveSupport >= 4.1 is known to be in use.
-          def set_callbacks(name, callbacks)
-            send "_#{name}_callbacks=", callbacks
+            chain.each do |callback|
+              set_callback 'validate', callback.raw_filter
+            end
           end
 
       end
