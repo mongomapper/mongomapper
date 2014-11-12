@@ -17,6 +17,10 @@ module MongoMapper
       def to_mongo
         self.class.to_mongo(self)
       end
+
+      def _mongo_mapper_deep_copy_
+        self
+      end
     end
   end
 end

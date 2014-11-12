@@ -127,13 +127,48 @@ module MongoMapper
         end
 
         def update(options={})
-          save_to_collection(options.merge(:persistence_method => :save))
+          save_to_collection(options.reverse_merge(:persistence_method => :save))
         end
 
         def save_to_collection(options={})
           @_new = false
           method = options.delete(:persistence_method) || :save
-          collection.send(method, to_mongo, Utils.get_safe_options(options))
+          update = to_mongo
+          query_options = Utils.get_safe_options(options)
+
+          case method
+          when :insert
+            collection.insert(update, query_options)
+          when :save
+            collection.save(update, query_options)
+          when :update
+            update.stringify_keys!
+
+            id = update.delete("_id")
+
+            set_values = update
+            unset_values = {}
+
+            if fields_for_set = options.delete(:set_fields)
+              set_values = set_values.slice(*fields_for_set)
+            end
+
+            if fields_for_unset = options.delete(:unset_fields)
+              fields_for_unset.each do |field|
+                unset_values[field] = true
+              end
+            end
+
+            find_query = { :_id => id }
+
+            update_query = {}
+            update_query["$set"] = set_values if set_values.any?
+            update_query["$unset"] = unset_values if unset_values.any?
+
+            if update_query.any?
+              collection.update(find_query, update_query, query_options)
+            end
+          end
         end
     end
   end
