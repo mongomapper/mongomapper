@@ -132,7 +132,7 @@ describe "OneAsProxy" do
         end
 
         it "should call delete on the existing document" do
-          @author_class.any_instance.should_receive(:delete).once
+          expect_any_instance_of(@author_class).to receive(:delete).once
           @post.author = @author_class.new
         end
 
@@ -142,7 +142,7 @@ describe "OneAsProxy" do
         end
 
         it "should do nothing if it's the same document" do
-          @author_class.any_instance.should_receive(:delete).never
+          expect_any_instance_of(@author_class).to receive(:delete).never
           @post.author = @author
         end
       end
@@ -157,7 +157,7 @@ describe "OneAsProxy" do
         end
 
         it "should call destroy the existing document" do
-          @author_class.any_instance.should_receive(:destroy).once
+          expect_any_instance_of(@author_class).to receive(:destroy).once
           @post.author = @author_class.new
         end
 
@@ -167,7 +167,7 @@ describe "OneAsProxy" do
         end
 
         it "should do nothing if it's the same document" do
-          @author_class.any_instance.should_receive(:destroy).never
+          expect_any_instance_of(@author_class).to receive(:destroy).never
           @post.author = @author
         end
       end
@@ -302,7 +302,7 @@ describe "OneAsProxy" do
       end
 
       it "should should call destroy on the associated documents" do
-        @author_class.any_instance.should_receive(:destroy).once
+        expect_any_instance_of(@author_class).to receive(:destroy).once
         @post.destroy
       end
 
@@ -324,7 +324,7 @@ describe "OneAsProxy" do
       end
 
       it "should should call delete the associated documents" do
-        @author_class.any_instance.should_receive(:delete).once
+        expect_any_instance_of(@author_class).to receive(:delete).once
         @post.destroy
       end
 

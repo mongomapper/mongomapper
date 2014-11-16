@@ -14,12 +14,12 @@ describe "IdentityMap" do
   end
 
   def expect_no_queries
-    Mongo::Collection.any_instance.should_receive(:find_one).never
-    Mongo::Collection.any_instance.should_receive(:find).never
+    expect_any_instance_of(Mongo::Collection).to receive(:find_one).never
+    expect_any_instance_of(Mongo::Collection).to receive(:find).never
   end
 
   def expects_one_query
-    Mongo::Collection.any_instance.should_receive(:find_one).once.and_return({})
+    expect_any_instance_of(Mongo::Collection).to receive(:find_one).once.and_return({})
   end
 
   def clear_identity_map

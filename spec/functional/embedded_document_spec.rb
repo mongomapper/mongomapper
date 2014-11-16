@@ -227,7 +227,7 @@ describe "EmbeddedDocument" do
     person.pets << pet
     pet.should be_new
 
-    person.should_receive(:save!)
+    expect(person).to receive(:save!)
     pet.save!
   end
 
@@ -272,8 +272,8 @@ describe "EmbeddedDocument" do
     pet = person.pets.first
 
     attributes = {:name => 'koda'}
-    pet.should_receive(:attributes=).with(attributes)
-    pet.should_receive(:save!)
+    expect(pet).to receive(:attributes=).with(attributes)
+    expect(pet).to receive(:save!)
     pet.update_attributes!(attributes)
   end
 

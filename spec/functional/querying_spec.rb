@@ -763,8 +763,9 @@ describe "Querying" do
     it "should update the attribute without invoking validations" do
       document.key :name, String, :required => true
 
-      @doc.should_receive(:valid?).never
-      @doc.update_attribute('name', '').should be_true
+      expect(@doc).to receive(:valid?).never
+      @doc.update_attribute('name', '').should be_truthy
+
       @doc.reload.name.should == ''
       document.count.should == 1
     end
@@ -867,7 +868,7 @@ describe "Querying" do
 
     it "should insert invalid document" do
       doc = document.new
-      doc.should_receive(:valid?).never
+      expect(doc).to receive(:valid?).never
       doc.save(:validate => false)
       document.count.should == 1
     end

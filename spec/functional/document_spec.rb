@@ -240,8 +240,8 @@ describe "Document" do
     end
 
     it "should reset many associations" do
-      @instance.foos.should_receive(:reset).at_least(1).times
-      @instance.bars.should_receive(:reset).at_least(1).times
+      expect(@instance.foos).to receive(:reset).at_least(1).times
+      expect(@instance.bars).to receive(:reset).at_least(1).times
       @instance.reload
     end
 
@@ -304,7 +304,7 @@ describe "Document" do
   end
 
   it "should not walk ObjectSpace when creating a model" do
-    ObjectSpace.should_receive(:each_object).never
+    expect(ObjectSpace).to receive(:each_object).never
     Doc()
   end
 end

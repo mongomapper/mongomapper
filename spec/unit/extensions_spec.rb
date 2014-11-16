@@ -207,7 +207,7 @@ describe "Support" do
   context "ObjectId#to_mongo" do
     it "should call class to_mongo with self" do
       object = Object.new
-      object.class.should_receive(:to_mongo).with(object)
+      expect(object.class).to receive(:to_mongo).with(object)
       object.to_mongo
     end
   end

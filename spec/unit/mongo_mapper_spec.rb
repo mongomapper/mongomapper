@@ -40,9 +40,9 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'}
       }
-      Mongo::MongoClient.should_receive(:new).with('127.0.0.1', 27017, {})
-      MongoMapper.should_receive(:database=).with('test')
-      Mongo::DB.any_instance.should_receive(:authenticate).never
+      expect(Mongo::MongoClient).to receive(:new).with('127.0.0.1', 27017, {})
+      expect(MongoMapper).to receive(:database=).with('test')
+      expect_any_instance_of(Mongo::DB).to receive(:authenticate).never
       MongoMapper.connect('development')
     end
 
@@ -50,9 +50,9 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
       }
-      Mongo::MongoClient.should_receive(:new).with('127.0.0.1', 27017, {})
-      MongoMapper.should_receive(:database=).with('test')
-      Mongo::DB.any_instance.should_receive(:authenticate).never
+      expect(Mongo::MongoClient).to receive(:new).with('127.0.0.1', 27017, {})
+      expect(MongoMapper).to receive(:database=).with('test')
+      expect_any_instance_of(Mongo::DB).to receive(:authenticate).never
       MongoMapper.connect('development')
     end
 
@@ -60,9 +60,9 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'}
       }
-      Mongo::MongoClient.should_receive(:new).with('127.0.0.1', 27017, {})
-      MongoMapper.should_receive(:database=).with('test')
-      Mongo::DB.any_instance.should_receive(:authenticate).never
+      expect(Mongo::MongoClient).to receive(:new).with('127.0.0.1', 27017, {})
+      expect(MongoMapper).to receive(:database=).with('test')
+      expect_any_instance_of(Mongo::DB).to receive(:authenticate).never
       MongoMapper.connect(:development)
     end
 
@@ -71,7 +71,7 @@ describe "MongoMapper" do
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test'}
       }
       connection, logger = double('connection'), double('logger')
-      Mongo::MongoClient.should_receive(:new).with('127.0.0.1', 27017, :logger => logger)
+      expect(Mongo::MongoClient).to receive(:new).with('127.0.0.1', 27017, :logger => logger)
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -80,7 +80,7 @@ describe "MongoMapper" do
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'ssl' => true}
       }
       connection, logger = double('connection'), double('logger')
-      Mongo::MongoClient.should_receive(:new).with('127.0.0.1', 27017, :logger => logger, :ssl => true)
+      expect(Mongo::MongoClient).to receive(:new).with('127.0.0.1', 27017, :logger => logger, :ssl => true)
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -89,7 +89,7 @@ describe "MongoMapper" do
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'ssl' => false}
       }
       connection, logger = double('connection'), double('logger')
-      Mongo::MongoClient.should_receive(:new).with('127.0.0.1', 27017, :logger => logger, :ssl => false)
+      expect(Mongo::MongoClient).to receive(:new).with('127.0.0.1', 27017, :logger => logger, :ssl => false)
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -98,7 +98,7 @@ describe "MongoMapper" do
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'options' =>  {'read' => 'primary'}}
       }
       connection, logger = double('connection'), double('logger')
-      Mongo::MongoClient.should_receive(:new).with('127.0.0.1', 27017, :logger => logger, :read => :primary)
+      expect(Mongo::MongoClient).to receive(:new).with('127.0.0.1', 27017, :logger => logger, :read => :primary)
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -107,7 +107,7 @@ describe "MongoMapper" do
         'development' => {'host' => '192.168.1.1', 'port' => 2222, 'database' => 'test', 'options' => {'safe' => true}}
       }
       connection, logger = double('connection'), double('logger')
-      Mongo::MongoClient.should_receive(:new).with('192.168.1.1', 2222, :logger => logger, :safe => true)
+      expect(Mongo::MongoClient).to receive(:new).with('192.168.1.1', 2222, :logger => logger, :safe => true)
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -116,7 +116,7 @@ describe "MongoMapper" do
         'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
       }
       connection, logger = double('connection'), double('logger')
-      Mongo::MongoClient.should_receive(:new).with('127.0.0.1', 27017, :logger => logger)
+      expect(Mongo::MongoClient).to receive(:new).with('127.0.0.1', 27017, :logger => logger)
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -124,7 +124,7 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1', 'port' => 27017, 'database' => 'test', 'username' => 'john', 'password' => 'secret'}
       }
-      Mongo::DB.any_instance.should_receive(:authenticate).with('john', 'secret')
+      expect_any_instance_of(Mongo::DB).to receive(:authenticate).with('john', 'secret')
       MongoMapper.connect('development')
     end
 
@@ -132,7 +132,7 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'uri' => 'mongodb://john:secret@127.0.0.1:27017/test'}
       }
-      Mongo::DB.any_instance.should_receive(:authenticate).with('john', 'secret')
+      expect_any_instance_of(Mongo::DB).to receive(:authenticate).with('john', 'secret')
       MongoMapper.connect('development')
     end
 
@@ -151,9 +151,9 @@ describe "MongoMapper" do
         }
       }
 
-      Mongo::MongoReplicaSetClient.should_receive(:new).with( ['127.0.0.1', 27017], ['localhost', 27017], {'read_secondary' => true} )
-      MongoMapper.should_receive(:database=).with('test')
-      Mongo::DB.any_instance.should_receive(:authenticate).never
+      expect(Mongo::MongoReplicaSetClient).to receive(:new).with( ['127.0.0.1', 27017], ['localhost', 27017], {'read_secondary' => true} )
+      expect(MongoMapper).to receive(:database=).with('test')
+      expect_any_instance_of(Mongo::DB).to receive(:authenticate).never
       MongoMapper.connect('development', 'read_secondary' => true)
     end
 
@@ -165,9 +165,9 @@ describe "MongoMapper" do
         }
       }
 
-      Mongo::MongoReplicaSetClient.should_receive(:new).with( ['127.0.0.1:27017', 'localhost:27017'], {'read_secondary' => true} )
-      MongoMapper.should_receive(:database=).with('test')
-      Mongo::DB.any_instance.should_receive(:authenticate).never
+      expect(Mongo::MongoReplicaSetClient).to receive(:new).with( ['127.0.0.1:27017', 'localhost:27017'], {'read_secondary' => true} )
+      expect(MongoMapper).to receive(:database=).with('test')
+      expect_any_instance_of(Mongo::DB).to receive(:authenticate).never
       MongoMapper.connect('development', 'read_secondary' => true)
     end
   end
@@ -175,9 +175,9 @@ describe "MongoMapper" do
   context "setup" do
     it "should work as shortcut for setting config, environment and options" do
       config, logger = double('config'), double('logger')
-      MongoMapper.should_receive(:config=).with(config)
-      MongoMapper.should_receive(:connect).with('development', :logger => logger)
-      MongoMapper.should_receive(:handle_passenger_forking).once
+      expect(MongoMapper).to receive(:config=).with(config)
+      expect(MongoMapper).to receive(:connect).with('development', :logger => logger)
+      expect(MongoMapper).to receive(:handle_passenger_forking).once
       MongoMapper.setup(config, 'development', :logger => logger)
     end
   end

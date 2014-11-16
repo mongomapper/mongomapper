@@ -171,9 +171,9 @@ describe "ManyDocumentsProxy" do
         end
 
         it "should call destroy the existing documents" do
-          @broker.properties[0].should_receive(:destroy).once
-          @broker.properties[1].should_receive(:destroy).once
-          @broker.properties[2].should_receive(:destroy).once
+          expect(@broker.properties[0]).to receive(:destroy).once
+          expect(@broker.properties[1]).to receive(:destroy).once
+          expect(@broker.properties[2]).to receive(:destroy).once
           @broker.properties = [@property_class.new]
         end
 
@@ -184,9 +184,9 @@ describe "ManyDocumentsProxy" do
         end
 
         it "should skip over documents that are the same" do
-          @broker.properties[0].should_receive(:destroy).never
-          @broker.properties[1].should_receive(:destroy).once
-          @broker.properties[2].should_receive(:destroy).never
+          expect(@broker.properties[0]).to receive(:destroy).never
+          expect(@broker.properties[1]).to receive(:destroy).once
+          expect(@broker.properties[2]).to receive(:destroy).never
           @broker.properties = [@property3, @property1]
         end
       end
@@ -205,9 +205,9 @@ describe "ManyDocumentsProxy" do
         end
 
         it "should call delete the existing documents" do
-          @broker.properties[0].should_receive(:delete).once
-          @broker.properties[1].should_receive(:delete).once
-          @broker.properties[2].should_receive(:delete).once
+          expect(@broker.properties[0]).to receive(:delete).once
+          expect(@broker.properties[1]).to receive(:delete).once
+          expect(@broker.properties[2]).to receive(:delete).once
           @broker.properties = [@property_class.new]
         end
 
@@ -218,9 +218,9 @@ describe "ManyDocumentsProxy" do
         end
 
         it "should skip over documents that are the same" do
-          @broker.properties[0].should_receive(:delete).never
-          @broker.properties[1].should_receive(:delete).once
-          @broker.properties[2].should_receive(:delete).never
+          expect(@broker.properties[0]).to receive(:delete).never
+          expect(@broker.properties[1]).to receive(:delete).once
+          expect(@broker.properties[2]).to receive(:delete).never
           @broker.properties = [@property3, @property1]
         end
       end

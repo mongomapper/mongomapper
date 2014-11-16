@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 describe "BelongsToProxy" do
   before do
     @post_class = Doc()

@@ -163,7 +163,7 @@ describe "Rails integration" do
 
         it "should array representation of id if persisted" do
           @klass.new.tap do |doc|
-            doc.should_receive(:persisted?).and_return(true)
+            expect(doc).to receive(:persisted?).and_return(true)
             doc.to_param.should == doc.id.to_s
           end
         end
@@ -178,7 +178,7 @@ describe "Rails integration" do
 
         it "should array representation of id if persisted" do
           @klass.new.tap do |doc|
-            doc.should_receive(:persisted?).and_return(true)
+            expect(doc).to receive(:persisted?).and_return(true)
             doc.to_key.should == [doc.id]
           end
         end
