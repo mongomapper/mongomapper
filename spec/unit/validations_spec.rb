@@ -27,7 +27,7 @@ describe "Validations" do
           doc = @document.new
           doc.password = 'foobar'
           doc.password_confirmation = 'foobar1'
-          doc.should have_error_on(:password_confirmation).or(:password)
+          doc.should have_error_on(:password)
 
           doc.password_confirmation = 'foobar'
           doc.should_not have_error_on(:password)
@@ -190,7 +190,8 @@ describe "Validations" do
           doc.should_not have_error_on(:action)
 
           doc.action = 'kick'
-          doc.should have_error_on(:action, 'is reserved')
+          doc.should have_error_on(:action)
+          doc.errors[:action].should == ['is reserved']
         end
 
         it "should work with :not_in shortcut on key definition" do
@@ -203,7 +204,8 @@ describe "Validations" do
           doc.should_not have_error_on(:action)
 
           doc.action = 'kick'
-          doc.should have_error_on(:action, 'is reserved')
+          doc.should have_error_on(:action)
+          doc.errors[:action].should == ['is reserved']
         end
 
         it "should not have error if allow nil is true and value is nil" do
@@ -236,10 +238,12 @@ describe "Validations" do
           @document.validates_inclusion_of :action, :in => %w(kick run)
 
           doc = @document.new
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action)
+          doc.errors[:action].should == ['is not included in the list']
 
           doc.action = 'fart'
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action)
+          doc.errors[:action].should == ['is not included in the list']
 
           doc.action = 'kick'
           doc.should_not have_error_on(:action)
@@ -249,10 +253,12 @@ describe "Validations" do
           @document.key :action, String, :in => %w(kick run)
 
           doc = @document.new
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action)
+          doc.errors[:action].should == ['is not included in the list']
 
           doc.action = 'fart'
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action)
+          doc.errors[:action].should == ['is not included in the list']
 
           doc.action = 'kick'
           doc.should_not have_error_on(:action)
@@ -262,7 +268,8 @@ describe "Validations" do
           @document.key :flag, Boolean, :required => true
 
           doc = @document.new
-          doc.should have_error_on(:flag, 'is not included in the list')
+          doc.should have_error_on(:flag)
+          doc.errors[:flag].should == ['is not included in the list']
 
           doc.flag = true
           doc.should_not have_error_on(:action)
@@ -313,7 +320,7 @@ describe "Validations" do
           doc = @embedded_doc.new
           doc.password = 'foobar'
           doc.password_confirmation = 'foobar1'
-          doc.should have_error_on(:password).or(:password_confirmation)
+          doc.should have_error_on(:password)
           doc.password_confirmation = 'foobar'
           doc.should_not have_error_on(:password)
         end
@@ -462,7 +469,8 @@ describe "Validations" do
           doc.should_not have_error_on(:action)
 
           doc.action = 'kick'
-          doc.should have_error_on(:action, 'is reserved')
+          doc.should have_error_on(:action)
+          doc.errors[:action].should == ['is reserved']
         end
 
         it "should work with :not_in shortcut on key definition" do
@@ -475,7 +483,8 @@ describe "Validations" do
           doc.should_not have_error_on(:action)
 
           doc.action = 'kick'
-          doc.should have_error_on(:action, 'is reserved')
+          doc.should have_error_on(:action)
+          doc.errors[:action].should == ['is reserved']
         end
 
         it "should not have error if allow nil is true and value is nil" do
@@ -508,10 +517,12 @@ describe "Validations" do
           @embedded_doc.validates_inclusion_of :action, :in => %w(kick run)
 
           doc = @embedded_doc.new
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action)
+          doc.errors[:action].should == ['is not included in the list']
 
           doc.action = 'fart'
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action)
+          doc.errors[:action].should == ['is not included in the list']
 
           doc.action = 'kick'
           doc.should_not have_error_on(:action)
@@ -521,10 +532,12 @@ describe "Validations" do
           @embedded_doc.key :action, String, :in => %w(kick run)
 
           doc = @embedded_doc.new
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action)
+          doc.errors[:action].should == ['is not included in the list']
 
           doc.action = 'fart'
-          doc.should have_error_on(:action, 'is not included in the list')
+          doc.should have_error_on(:action)
+          doc.errors[:action].should == ['is not included in the list']
 
           doc.action = 'kick'
           doc.should_not have_error_on(:action)

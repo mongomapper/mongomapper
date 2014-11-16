@@ -149,7 +149,8 @@ describe "Validations" do
     it "should work with i18n taken message" do
       @document.create(:name => 'joe')
       doc = @document.create(:name => 'joe')
-      doc.should have_error_on(:name, 'has already been taken')
+      doc.should have_error_on(:name)
+      doc.errors[:name].should == ['has already been taken']
     end
 
     it "should allow to update an object" do
@@ -357,9 +358,9 @@ describe "Validations" do
     it "should fail if the associated doc is invalid" do
       doc = @root_class.new
       doc.children.build
-      doc.should have_error_on(:children, 'are invalid')
+      doc.should have_error_on(:children)
+      doc.errors[:children].should == ['are invalid']
     end
-
   end
 
   context "validating associated docs with custom context" do
@@ -391,8 +392,8 @@ describe "Validations" do
       doc.children.build(:name => 'Bob')
       doc.valid?(:custom_context).should_not be_truthy
     end
-
   end
+
   # context "validates uniqueness of with :unique shortcut" do
   #   it "should work" do
   #     @document = Doc do
@@ -408,7 +409,8 @@ describe "Validations" do
   #       .and_return(doc)
   #
   #     second_john = @document.create(:name => 'John')
-  #     second_john.should have_error_on(:name, 'has already been taken')
+  #     second_john.should have_error_on(:name)
+  #     second_john.errors[:name].should == ['has already been taken']
   #   end
   # end
 end
