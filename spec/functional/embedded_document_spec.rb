@@ -70,14 +70,14 @@ describe "EmbeddedDocument" do
     it "should be true until document is created" do
       address = @address_class.new(:city => 'South Bend', :state => 'IN')
       doc = @klass.new(:foo => address)
-      address.new?.should be_truthy
+      address.new?.should be_true
     end
 
     it "should be false after document is saved" do
       address = @address_class.new(:city => 'South Bend', :state => 'IN')
       doc = @klass.new(:foo => address)
       doc.save
-      doc.foo.new?.should be_falsey
+      doc.foo.new?.should be_false
     end
 
     it "should be false when loaded from database" do
@@ -86,7 +86,7 @@ describe "EmbeddedDocument" do
       doc.save
 
       doc.reload
-      doc.foo.new?.should be_falsey
+      doc.foo.new?.should be_false
     end
   end
 
@@ -115,9 +115,9 @@ describe "EmbeddedDocument" do
     it "should be true until existing document is saved" do
       @doc.save
       pet = @doc.pets.build(:name => 'Rasmus')
-      pet.new?.should be_truthy
+      pet.new?.should be_true
       @doc.save
-      pet.new?.should be_falsey
+      pet.new?.should be_false
     end
   end
 
@@ -131,9 +131,9 @@ describe "EmbeddedDocument" do
 
     it "should be true until existing document is saved" do
       address = @doc.pets.first.addresses.build(:city => 'Holland', :state => 'MI')
-      address.new?.should be_truthy
+      address.new?.should be_true
       @doc.save
-      address.new?.should be_falsey
+      address.new?.should be_false
     end
   end
 
@@ -146,9 +146,9 @@ describe "EmbeddedDocument" do
     it "should be true until existing document is saved" do
       @doc.save
       @doc.build_address(:city => 'Holland', :state => 'MI')
-      @doc.address.new?.should be_truthy
+      @doc.address.new?.should be_true
       @doc.save
-      @doc.address.new?.should be_falsey
+      @doc.address.new?.should be_false
     end
   end
 
@@ -162,9 +162,9 @@ describe "EmbeddedDocument" do
 
     it "should be true until existing document is saved" do
       address = @doc.pets.first.build_address(:city => 'Holland', :stats => 'MI')
-      address.new?.should be_truthy
+      address.new?.should be_true
       @doc.save
-      address.new?.should be_falsey
+      address.new?.should be_false
     end
   end
 
@@ -248,7 +248,7 @@ describe "EmbeddedDocument" do
     person.reload
     pet = person.pets.first
 
-    pet.update_attribute('name', 'koda').should be_truthy
+    pet.update_attribute('name', 'koda').should be_true
     person.reload
     person.pets.first._id.should == pet._id
     person.pets.first.name.should == 'koda'
@@ -260,7 +260,7 @@ describe "EmbeddedDocument" do
     person.reload
     pet = person.pets.first
 
-    pet.update_attributes(:name => 'koda').should be_truthy
+    pet.update_attributes(:name => 'koda').should be_true
     person.reload
     person.pets.first._id.should == pet._id
     person.pets.first.name.should == 'koda'
@@ -302,7 +302,7 @@ describe "EmbeddedDocument" do
       person.update_attributes!({"pets" => ["name" => "sparky", "flag" => "false"]})
       person.reload
       person.pets.first.name.should == "sparky"
-      person.pets.first.flag.should be_falsey
+      person.pets.first.flag.should be_false
     end
 
      it "should update attributes with symbol keys" do
@@ -310,7 +310,7 @@ describe "EmbeddedDocument" do
        person.update_attributes!({:pets => [:name => "sparky", :flag => "false"]})
        person.reload
        person.pets.first.name.should == "sparky"
-       person.pets.first.flag.should be_falsey
+       person.pets.first.flag.should be_false
     end
   end
 end

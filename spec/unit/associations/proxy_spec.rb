@@ -39,40 +39,40 @@ describe "Proxy" do
 
   context "nil?" do
     it "should be true if nil" do
-      @nil_proxy.nil?.should be_truthy
+      @nil_proxy.nil?.should be_true
     end
 
     it "should be false if not nil" do
-      @proxy.nil?.should be_falsey
+      @proxy.nil?.should be_false
     end
   end
 
   context "blank?" do
     it "should be true if blank" do
-      @blank_proxy.blank?.should be_truthy
-      @nil_proxy.blank?.should be_truthy
+      @blank_proxy.blank?.should be_true
+      @nil_proxy.blank?.should be_true
     end
 
     it "should be false if not blank" do
-      @proxy.blank?.should be_falsey
+      @proxy.blank?.should be_false
     end
   end
 
   context "present?" do
     it "should be true if present" do
-      @proxy.present?.should be_truthy
+      @proxy.present?.should be_true
     end
 
     it "should be false if not present" do
-      @blank_proxy.present?.should be_falsey
-      @nil_proxy.present?.should be_falsey
+      @blank_proxy.present?.should be_false
+      @nil_proxy.present?.should be_false
     end
   end
 
   it "should delegate respond_to? to target" do
-    @proxy.respond_to?(:each).should be_truthy
-    @proxy.respond_to?(:size).should be_truthy
-    @proxy.respond_to?(:gsub).should be_falsey
+    @proxy.respond_to?(:each).should be_true
+    @proxy.respond_to?(:size).should be_true
+    @proxy.respond_to?(:gsub).should be_false
   end
 
   it "should alias proxy owner to owner" do

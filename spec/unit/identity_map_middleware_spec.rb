@@ -36,7 +36,7 @@ module IdentityMapSpec
           [200, {}, nil]
         }
         mw.call({})
-        called.should be_truthy
+        called.should be_true
       end
 
       it "should enable identity map during delegation" do

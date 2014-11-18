@@ -25,12 +25,12 @@ module ManyAssociationSpec
     context "embeddable?" do
       it "should be true if class is embeddable" do
         base = ManyAssociation.new(:medias)
-        base.embeddable?.should be_truthy
+        base.embeddable?.should be_true
       end
 
       it "should be false if class is not embeddable" do
         base = ManyAssociation.new(:statuses)
-        base.embeddable?.should be_falsey
+        base.embeddable?.should be_false
       end
     end
 

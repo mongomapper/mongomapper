@@ -61,7 +61,7 @@ describe "Touch" do
 
       it 'should not be true by default' do
         @comment_class.belongs_to :post, :class => @post_class
-        @comment_class.associations[:post].touch?.should_not be_truthy
+        @comment_class.associations[:post].touch?.should_not be_true
       end
 
       context 'touch the parent when true' do
