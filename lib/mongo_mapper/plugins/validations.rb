@@ -34,7 +34,7 @@ module MongoMapper
         end
 
         if ::ActiveModel::VERSION::MAJOR < 4 ||
-          (::ActiveModel::VERSION::MAJOR == 4 && ::ActiveModel::VERSION::MINOR == 0) 
+          (::ActiveModel::VERSION::MAJOR == 4 && ::ActiveModel::VERSION::MINOR == 0)
 
           def setup(klass)
             @klass = klass

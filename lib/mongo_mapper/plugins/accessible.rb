@@ -52,8 +52,8 @@ module MongoMapper
           unless accessible_attributes.include?(attribute)
             message = "Can't mass-assign protected attribute: #{attribute}"
             MongoMapper.logger ? MongoMapper.logger.warn(message) : puts(message)
-            
-            return true 
+
+            return true
           end
         end
     end

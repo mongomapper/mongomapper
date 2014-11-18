@@ -96,7 +96,7 @@ describe "Proxy" do
     it "should not work if neither the proxy or target respond to method" do
       lambda { @proxy.send(:gsub) }.should raise_error
     end
-    
+
     it "should work if a proc is passed" do
       p = Proc.new {|x| x+1}
       @proxy.send(:collect, &p).should == [2,3]
