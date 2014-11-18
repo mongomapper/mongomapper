@@ -4,6 +4,8 @@ gem 'rake'
 gem 'multi_json',  '~> 1.2'
 gem 'coveralls', :require => false
 gem 'simplecov', :require => false
+gem 'rest-client', '1.6.7'
+
 platforms :ruby do
   gem 'mongo',     '~> 1.9'
   gem 'bson_ext',  '~> 1.9'
