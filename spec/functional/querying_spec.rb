@@ -55,7 +55,7 @@ describe "Querying" do
     end
 
     it "should no longer be new?" do
-      doc.new?.should be_false
+      doc.new?.should be_falsey
     end
 
     it "should return instance of document" do
@@ -495,12 +495,12 @@ describe "Querying" do
 
   context ".empty?" do
     it "should be true if no documents" do
-      document.empty?.should be_true
+      document.empty?.should be_truthy
     end
 
     it "should be false if documents present" do
       @doc = document.create({:first_name => 'John', :last_name => 'Nunemaker', :age => '27'})
-      document.empty?.should be_false
+      document.empty?.should be_falsey
     end
   end
 
@@ -737,11 +737,11 @@ describe "Querying" do
     end
 
     it "should be true if document valid" do
-      document.new.update_attributes(:foo => 'bar').should be_true
+      document.new.update_attributes(:foo => 'bar').should be_truthy
     end
 
     it "should be false if document not valid" do
-      document.new.update_attributes({}).should be_false
+      document.new.update_attributes({}).should be_falsey
     end
   end
 
@@ -751,12 +751,12 @@ describe "Querying" do
     end
 
     it "should accept symbols as keys" do
-      @doc.update_attribute(:first_name, 'Chris').should be_true
+      @doc.update_attribute(:first_name, 'Chris').should be_truthy
       @doc.reload.first_name.should == 'Chris'
     end
 
     it "should update the attribute" do
-      @doc.update_attribute('first_name', 'Chris').should be_true
+      @doc.update_attribute('first_name', 'Chris').should be_truthy
       @doc.reload.first_name.should == 'Chris'
     end
 
@@ -764,7 +764,7 @@ describe "Querying" do
       document.key :name, String, :required => true
 
       @doc.should_receive(:valid?).never
-      @doc.update_attribute('name', '').should be_true
+      @doc.update_attribute('name', '').should be_truthy
       @doc.reload.name.should == ''
       document.count.should == 1
     end

@@ -14,7 +14,7 @@ describe "Logger" do
 
     it "should be able to log messages" do
       MongoMapper.logger.debug 'testing'
-      @output.string.include?('testing').should be_true
+      @output.string.include?('testing').should be_truthy
     end
   end
 end

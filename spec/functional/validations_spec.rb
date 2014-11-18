@@ -57,7 +57,7 @@ describe "Validations" do
 
     it "should create a new document" do
       instance = @document.create!(:name => "James")
-      instance.new_record?.should be_false
+      instance.new_record?.should be_falsey
     end
   end
 
@@ -140,7 +140,7 @@ describe "Validations" do
         validates_uniqueness_of :name, :scope => :adult
       end
       doc = document.new("name" => "joe", :adult => true)
-      doc.save.should be_true
+      doc.save.should be_truthy
 
       doc2 = document.new("name" => "joe", :adult => false)
       doc2.should be_valid
@@ -154,7 +154,7 @@ describe "Validations" do
 
     it "should allow to update an object" do
       doc = @document.new("name" => "joe")
-      doc.save.should be_true
+      doc.save.should be_truthy
 
       @document \
         .stub(:first) \
@@ -162,13 +162,13 @@ describe "Validations" do
         .and_return(doc)
 
       doc.name = "joe"
-      doc.valid?.should be_true
+      doc.valid?.should be_truthy
       doc.should_not have_error_on(:name)
     end
 
     it "should fail if object name is not unique" do
       doc = @document.new("name" => "joe")
-      doc.save.should be_true
+      doc.save.should be_truthy
 
       @document \
         .stub(:first) \
@@ -186,7 +186,7 @@ describe "Validations" do
       end
 
       doc = document.new("name" => "")
-      doc.save.should be_true
+      doc.save.should be_truthy
 
       document \
         .stub(:first) \
@@ -204,7 +204,7 @@ describe "Validations" do
       end
 
       doc = document.new('name' => nil)
-      doc.save.should be_true
+      doc.save.should be_truthy
 
       doc2 = document.new('name' => nil)
       doc2.should_not have_error_on(:name)
@@ -217,7 +217,7 @@ describe "Validations" do
       end
 
       doc = document.new("name" => "BLAMMO")
-      doc.save.should be_true
+      doc.save.should be_truthy
 
       doc2 = document.new("name" => "blammo")
       doc2.should_not have_error_on(:name)
@@ -233,7 +233,7 @@ describe "Validations" do
 
       it "should fail on entries that differ only in case" do
         doc = @document.new("name" => "BLAMMO")
-        doc.save.should be_true
+        doc.save.should be_truthy
 
         doc2 = @document.new("name" => "blammo")
         doc2.should have_error_on(:name)
@@ -251,10 +251,10 @@ describe "Validations" do
 
       it "should check for uniqueness using entire string" do
         doc = @document.new("name" => "John Doe")
-        doc.save.should be_true
+        doc.save.should be_truthy
 
         doc2 = @document.new("name" => "John")
-        doc2.valid?.should be_true
+        doc2.valid?.should be_truthy
       end
     end
 
@@ -269,7 +269,7 @@ describe "Validations" do
 
       it "should fail if the same name exists in the scope" do
         doc = @document.new("name" => "joe", "scope" => "one")
-        doc.save.should be_true
+        doc.save.should be_truthy
 
         @document \
           .stub(:first) \
@@ -282,7 +282,7 @@ describe "Validations" do
 
       it "should pass if the same name exists in a different scope" do
         doc = @document.new("name" => "joe", "scope" => "one")
-        doc.save.should be_true
+        doc.save.should be_truthy
 
         @document \
           .stub(:first) \
@@ -306,7 +306,7 @@ describe "Validations" do
 
       it "should fail if the same name exists in the scope" do
         doc = @document.new("name" => "joe", "first_scope" => "one", "second_scope" => "two")
-        doc.save.should be_true
+        doc.save.should be_truthy
 
         @document \
           .stub(:first) \
@@ -319,7 +319,7 @@ describe "Validations" do
 
       it "should pass if the same name exists in a different scope" do
         doc = @document.new("name" => "joe", "first_scope" => "one", "second_scope" => "two")
-        doc.save.should be_true
+        doc.save.should be_truthy
 
         @document \
           .stub(:first) \
@@ -345,13 +345,13 @@ describe "Validations" do
 
     it "should pass if there are no associated docs" do
       doc = @root_class.new
-      doc.save.should be_true
+      doc.save.should be_truthy
     end
 
     it "should pass if the associated doc is valid" do
       doc = @root_class.new
       doc.children.build(:name => 'Joe')
-      doc.save.should be_true
+      doc.save.should be_truthy
     end
 
     it "should fail if the associated doc is invalid" do
@@ -377,19 +377,19 @@ describe "Validations" do
 
     it "should pass if there are no associated docs" do
       doc = @root_class.new
-      doc.valid?(:custom_context).should be_true
+      doc.valid?(:custom_context).should be_truthy
     end
 
     it "should pass if the associated doc is valid" do
       doc = @root_class.new
       doc.children.build(:name => 'George')
-      doc.valid?(:custom_context).should be_true
+      doc.valid?(:custom_context).should be_truthy
     end
 
     it "should fail if the associated doc is invalid" do
       doc = @root_class.new
       doc.children.build(:name => 'Bob')
-      doc.valid?(:custom_context).should_not be_true
+      doc.valid?(:custom_context).should_not be_truthy
     end
 
   end

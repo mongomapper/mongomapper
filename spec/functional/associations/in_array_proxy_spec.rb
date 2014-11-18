@@ -50,7 +50,7 @@ describe "InArrayProxy" do
       user = User.new(:name => 'John')
       list = List.new(:name => 'Foo')
       user.lists = [list]
-      user.save.should be_true
+      user.save.should be_truthy
 
       user.reload
       user.list_ids.should == [list.id]

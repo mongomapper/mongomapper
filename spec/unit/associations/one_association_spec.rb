@@ -14,12 +14,12 @@ module OneAssociationSpec
     context "embeddable?" do
       it "should be true if class is embeddable" do
         base = OneAssociation.new(:media)
-        base.embeddable?.should be_true
+        base.embeddable?.should be_truthy
       end
 
       it "should be false if class is not embeddable" do
         base = OneAssociation.new(:project)
-        base.embeddable?.should be_false
+        base.embeddable?.should be_falsey
       end
     end
 

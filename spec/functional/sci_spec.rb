@@ -49,7 +49,7 @@ describe "Single collection inheritance (document)" do
     end
 
     it "should automatically add _type key to store class" do
-      DocParent.key?(:_type).should be_true
+      DocParent.key?(:_type).should be_truthy
     end
 
     it "should use modifiers properly" do
@@ -323,7 +323,7 @@ describe "Single collection inheritance (document)" do
     end
 
     it "should automatically add _type key" do
-      Grandparent.key?(:_type).should be_true
+      Grandparent.key?(:_type).should be_truthy
     end
 
     context ".single_collection_inherited?" do
