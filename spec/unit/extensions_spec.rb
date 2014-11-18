@@ -391,4 +391,28 @@ describe "Support" do
       end
     end
   end
+
+  context "Symbol.to_mongo" do
+    it "should convert value to_sym" do
+      Symbol.to_mongo('asdfasdfasdf').should == :asdfasdfasdf
+    end
+
+    it "should convert string if not string" do
+      Symbol.to_mongo(123).should == :'123'
+    end
+
+    it "should return nil for nil" do
+      Symbol.to_mongo(nil).should be_nil
+    end
+  end
+
+  context "Symbol.from_mongo" do
+    it "should convert value to_sym" do
+      Symbol.from_mongo(:asdfasdfasdf).should == :asdfasdfasdf
+    end
+
+    it "should return nil for nil" do
+      Symbol.from_mongo(nil).should be_nil
+    end
+  end
 end
