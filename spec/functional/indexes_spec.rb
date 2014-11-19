@@ -13,22 +13,22 @@ describe "Indexing" do
 
   context "against a known collection" do
     before do
-      @document.stub(:collection).and_return(double(:name => :foo))
+      allow(@document).to receive(:collection).and_return(double(:name => :foo))
     end
     [:create_index, :ensure_index].each do |method|
       it "should delegate #{method} to collection" do
-        @document.collection.should_receive(method).with(:arg, {})
+        expect(@document.collection).to receive(method).with(:arg, {})
         @document.send(method, :arg)
       end
     end
 
     it "should delegate drop_index to collection" do
-      @document.collection.should_receive(:drop_index).with(:arg)
+      expect(@document.collection).to receive(:drop_index).with(:arg)
       @document.drop_index(:arg)
     end
 
     it "should delegate drop_indexes to collection" do
-      @document.collection.should_receive(:drop_indexes)
+      expect(@document.collection).to receive(:drop_indexes)
       @document.drop_indexes
     end
   end

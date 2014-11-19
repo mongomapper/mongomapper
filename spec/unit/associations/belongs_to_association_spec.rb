@@ -18,12 +18,12 @@ module BelongsToAssociation
     context "embeddable?" do
       it "should be false even if class is embeddable" do
         base = BelongsToAssociation.new(:address)
-        base.embeddable?.should be_false
+        base.embeddable?.should be_falsey
       end
 
       it "should be false if class is not embeddable" do
         base = BelongsToAssociation.new(:project)
-        base.embeddable?.should be_false
+        base.embeddable?.should be_falsey
       end
     end
   end

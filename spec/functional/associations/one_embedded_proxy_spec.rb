@@ -38,7 +38,7 @@ describe "OneEmbeddedProxy" do
     post.reload
 
     post.author.should == author
-    post.author.nil?.should be_false
+    post.author.nil?.should be_falsey
 
     new_author = @author_class.new(:name => 'Emily')
     post.author = new_author
@@ -72,10 +72,10 @@ describe "OneEmbeddedProxy" do
     @post_class.one :author, :class => @author_class
 
     post = @post_class.new
-    post.author?.should be_false
+    post.author?.should be_falsey
 
     post.author = @author_class.new(:name => 'Frank')
-    post.author?.should be_true
+    post.author?.should be_truthy
   end
 
   it "should initialize id for nested embedded document created from hash" do

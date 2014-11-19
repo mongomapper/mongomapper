@@ -105,7 +105,7 @@ describe "ManyDocumentsProxy" do
     owner.pets[1].name.should == 'Sasha'
     owner.pets[1].species.should == 'Siberian Husky'
 
-    owner.save.should be_true
+    owner.save.should be_truthy
     owner.reload
 
     owner.name.should == 'Mr. Pet Lover'
@@ -128,7 +128,7 @@ describe "ManyDocumentsProxy" do
       it "should work" do
         project = Project.new
         project.statuses = [Status.new(:name => "ready")]
-        project.save.should be_true
+        project.save.should be_truthy
 
         project.reload
         project.statuses.size.should == 1
@@ -140,7 +140,7 @@ describe "ManyDocumentsProxy" do
       it "should convert to objects of the class and work" do
         project = Project.new
         project.statuses = [{ 'name' => 'ready' }]
-        project.save.should be_true
+        project.save.should be_truthy
 
         project.reload
         project.statuses.size.should == 1
@@ -171,9 +171,9 @@ describe "ManyDocumentsProxy" do
         end
 
         it "should call destroy the existing documents" do
-          @broker.properties[0].should_receive(:destroy).once
-          @broker.properties[1].should_receive(:destroy).once
-          @broker.properties[2].should_receive(:destroy).once
+          expect(@broker.properties[0]).to receive(:destroy).once
+          expect(@broker.properties[1]).to receive(:destroy).once
+          expect(@broker.properties[2]).to receive(:destroy).once
           @broker.properties = [@property_class.new]
         end
 
@@ -184,9 +184,9 @@ describe "ManyDocumentsProxy" do
         end
 
         it "should skip over documents that are the same" do
-          @broker.properties[0].should_receive(:destroy).never
-          @broker.properties[1].should_receive(:destroy).once
-          @broker.properties[2].should_receive(:destroy).never
+          expect(@broker.properties[0]).to receive(:destroy).never
+          expect(@broker.properties[1]).to receive(:destroy).once
+          expect(@broker.properties[2]).to receive(:destroy).never
           @broker.properties = [@property3, @property1]
         end
       end
@@ -205,9 +205,9 @@ describe "ManyDocumentsProxy" do
         end
 
         it "should call delete the existing documents" do
-          @broker.properties[0].should_receive(:delete).once
-          @broker.properties[1].should_receive(:delete).once
-          @broker.properties[2].should_receive(:delete).once
+          expect(@broker.properties[0]).to receive(:delete).once
+          expect(@broker.properties[1]).to receive(:delete).once
+          expect(@broker.properties[2]).to receive(:delete).once
           @broker.properties = [@property_class.new]
         end
 
@@ -218,9 +218,9 @@ describe "ManyDocumentsProxy" do
         end
 
         it "should skip over documents that are the same" do
-          @broker.properties[0].should_receive(:delete).never
-          @broker.properties[1].should_receive(:delete).once
-          @broker.properties[2].should_receive(:delete).never
+          expect(@broker.properties[0]).to receive(:delete).never
+          expect(@broker.properties[1]).to receive(:delete).once
+          expect(@broker.properties[2]).to receive(:delete).never
           @broker.properties = [@property3, @property1]
         end
       end
@@ -491,19 +491,19 @@ describe "ManyDocumentsProxy" do
   context "empty?" do
     it "should be true with no associated docs" do
       project = Project.create
-      project.statuses.empty?.should be_true
+      project.statuses.empty?.should be_truthy
     end
 
     it "should be false if a document is built" do
       project = Project.create
       project.statuses.build(:name => 'Foo!')
-      project.statuses.empty?.should be_false
+      project.statuses.empty?.should be_falsey
     end
 
     it "should be false if a document is created" do
       project = Project.create
       project.statuses.create(:name => 'Foo!')
-      project.statuses.empty?.should be_false
+      project.statuses.empty?.should be_falsey
     end
   end
 
