@@ -69,6 +69,8 @@ module MongoMapper
           if key = keys[name.to_s]
             keys.delete key.name
             keys.delete key.abbr
+            self.attr_accessible.delete(:"#{key.name}") if self.accessible_attributes?
+            self.attr_protected.delete(:"#{key.name}") if self.protected_attributes?
             class_eval { undef_method :"#{key.name}" } if method_defined?(:"#{key.name}")
             class_eval { undef_method :"#{key.name}=" } if method_defined?(:"#{key.name}=")
             class_eval { undef_method :"#{key.name}?" } if method_defined?(:"#{key.name}?")
