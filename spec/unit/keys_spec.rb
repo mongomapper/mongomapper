@@ -16,11 +16,11 @@ describe "Key" do
 
   context ".key?(:symbol)" do
     it "should be true if document has key" do
-      Address.key?(:city).should be_true
+      Address.key?(:city).should be_truthy
     end
 
     it "should be false if document does not have key" do
-      Address.key?(:foo).should be_false
+      Address.key?(:foo).should be_falsey
     end
   end
 
@@ -59,11 +59,11 @@ describe "Key" do
 
   context ".key?('string')" do
     it "should be true if document has key" do
-      Address.key?('city').should be_true
+      Address.key?('city').should be_truthy
     end
 
     it "should be false if document does not have key" do
-      Address.key?('foo').should be_false
+      Address.key?('foo').should be_falsey
     end
   end
 
