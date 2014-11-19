@@ -304,6 +304,18 @@ describe "Keys" do
       remove_key :something
     end
 
+    DocWithRemovedAccessibleKey = Doc do
+      key :something
+      attr_accessible :something
+      remove_key :something
+    end
+
+    DocWithRemovedProtectedKey = Doc do
+      key :something
+      attr_protected :something
+      remove_key :something
+    end
+
     it 'should remove the key' do
       DocWithRemovedKey.keys.should_not have_key "_something"
     end
@@ -311,6 +323,30 @@ describe "Keys" do
     it 'should remove validations' do
       DocWithRemovedKey._validate_callbacks.should be_empty
     end
+
+    it 'should return an error when the key gets' do
+      doc = DocWithRemovedKey.new
+      expect { doc.something }.to raise_error(NoMethodError)
+    end
+
+    it 'should return an error when the key sets' do
+      doc = DocWithRemovedKey.new
+      expect { doc.something = 'Something' }.to raise_error(NoMethodError)
+    end
+
+    it 'should prevent the key from mass-assign' do
+      doc = DocWithRemovedAccessibleKey.create(something: 'Something')
+      doc.attributes.should_not have_key :something
+    end
+
+    it 'should remove the key from accessible_attributes' do
+      DocWithRemovedAccessibleKey.attr_accessible.should_not include :something
+    end
+
+    it 'should remove the key from protected_attributes' do
+      DocWithRemovedProtectedKey.attr_protected.should_not include :something
+    end
+
   end
 
   describe "removing keys in the presence of a validation method" do
@@ -327,4 +363,5 @@ describe "Keys" do
     end
 
   end
+
 end
