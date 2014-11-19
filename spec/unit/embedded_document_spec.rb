@@ -66,12 +66,12 @@ describe "EmbeddedDocument" do
       end
 
       it "should know it is using object id" do
-        @klass.using_object_id?.should be_true
+        @klass.using_object_id?.should be_truthy
       end
 
       it "should know it is not using object id if _id type is changed" do
         @klass.key :_id, String
-        @klass.using_object_id?.should be_false
+        @klass.using_object_id?.should be_falsey
       end
     end
 
@@ -83,7 +83,7 @@ describe "EmbeddedDocument" do
       end
 
       it "should return false for embeddable" do
-        EDoc().embeddable?.should be_true
+        EDoc().embeddable?.should be_truthy
       end
 
       context "#to_mongo" do
@@ -96,7 +96,7 @@ describe "EmbeddedDocument" do
         it "should convert to_mongo for other values" do
           doc = @klass.new(:foo => 'bar')
           to_mongo = @klass.to_mongo(doc)
-          to_mongo.is_a?(Hash).should be_true
+          to_mongo.is_a?(Hash).should be_truthy
           to_mongo['foo'].should == 'bar'
         end
       end
@@ -115,7 +115,7 @@ describe "EmbeddedDocument" do
 
         it "should be instance if hash of attributes" do
           doc = @klass.from_mongo({:foo => 'bar'})
-          doc.instance_of?(@klass).should be_true
+          doc.instance_of?(@klass).should be_truthy
           doc.foo.should == 'bar'
         end
       end
@@ -140,13 +140,13 @@ describe "EmbeddedDocument" do
           key = @document.key(:name, String, :required => true)
           key.name.should == 'name'
           key.type.should == String
-          key.options[:required].should be_true
+          key.options[:required].should be_truthy
         end
 
         it "should work with name and options" do
           key = @document.key(:name, :required => true)
           key.name.should == 'name'
-          key.options[:required].should be_true
+          key.options[:required].should be_truthy
         end
 
         it "should be tracked per document" do
@@ -206,7 +206,7 @@ describe "EmbeddedDocument" do
         end
 
         it "should not add anonymous objects to the ancestor tree" do
-          OtherChild.ancestors.any? { |a| a.name.blank? }.should be_false
+          OtherChild.ancestors.any? { |a| a.name.blank? }.should be_falsey
         end
 
         it "should not include descendant keys" do
@@ -422,7 +422,7 @@ describe "EmbeddedDocument" do
           it "should create key and write value for missing key" do
             doc = @document.new
             doc[:foo] = 'string'
-            doc.class.keys.include?('foo').should be_true
+            doc.class.keys.include?('foo').should be_truthy
             doc[:foo].should == 'string'
           end
 
@@ -550,9 +550,9 @@ describe "EmbeddedDocument" do
       context "checking if a keys value is present" do
         it "should work for defined keys" do
           doc = @document.new
-          doc.name?.should be_false
+          doc.name?.should be_falsey
           doc.name = 'John'
-          doc.name?.should be_true
+          doc.name?.should be_truthy
         end
 
         it "should raise no method error for undefined keys" do
@@ -590,16 +590,16 @@ describe "EmbeddedDocument" do
         end
 
         it "should be equal if id and class are the same" do
-          (@document.new('_id' => @oid) == @document.new('_id' => @oid)).should be_true
+          (@document.new('_id' => @oid) == @document.new('_id' => @oid)).should be_truthy
         end
 
         it "should not be equal if class same but id different" do
-          (@document.new('_id' => @oid) == @document.new('_id' => BSON::ObjectId.new)).should be_false
+          (@document.new('_id' => @oid) == @document.new('_id' => BSON::ObjectId.new)).should be_falsey
         end
 
         it "should not be equal if id same but class different" do
           another_document = Doc()
-          (@document.new('_id' => @oid) == another_document.new('_id' => @oid)).should be_false
+          (@document.new('_id' => @oid) == another_document.new('_id' => @oid)).should be_falsey
         end
       end
 

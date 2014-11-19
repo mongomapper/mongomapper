@@ -12,7 +12,7 @@ module AssociationSpec
 
     it "should also allow options when initializing" do
       base = ManyAssociation.new(:foos, :polymorphic => true)
-      base.options[:polymorphic].should be_true
+      base.options[:polymorphic].should be_truthy
     end
 
     context "klass" do
@@ -28,31 +28,31 @@ module AssociationSpec
 
     context "polymorphic?" do
       it "should be true if polymorphic" do
-        ManyAssociation.new(:foos, :polymorphic => true).polymorphic?.should be_true
+        ManyAssociation.new(:foos, :polymorphic => true).polymorphic?.should be_truthy
       end
 
       it "should be false if not polymorphic" do
-        ManyAssociation.new(:bars).polymorphic?.should be_false
+        ManyAssociation.new(:bars).polymorphic?.should be_falsey
       end
     end
 
     context "as?" do
       it "should be true if one" do
-        OneAssociation.new(:foo, :as => :commentable).as?.should be_true
+        OneAssociation.new(:foo, :as => :commentable).as?.should be_truthy
       end
 
       it "should be false if not one" do
-        ManyAssociation.new(:foo).as?.should be_false
+        ManyAssociation.new(:foo).as?.should be_falsey
       end
     end
 
     context "in_array?" do
       it "should be true if one" do
-        OneAssociation.new(:foo, :in => :list_ids).in_array?.should be_true
+        OneAssociation.new(:foo, :in => :list_ids).in_array?.should be_truthy
       end
 
       it "should be false if not one" do
-        ManyAssociation.new(:foo).in_array?.should be_false
+        ManyAssociation.new(:foo).in_array?.should be_falsey
       end
     end
 
@@ -98,15 +98,15 @@ module AssociationSpec
     context "embeddable?" do
       it "should be true if class is embeddable" do
         base = ManyAssociation.new(:medias)
-        base.embeddable?.should be_true
+        base.embeddable?.should be_truthy
       end
 
       it "should be false if class is not embeddable" do
         base = ManyAssociation.new(:statuses)
-        base.embeddable?.should be_false
+        base.embeddable?.should be_falsey
 
         base = BelongsToAssociation.new(:project)
-        base.embeddable?.should be_false
+        base.embeddable?.should be_falsey
       end
     end
 
@@ -134,11 +134,11 @@ module AssociationSpec
 
     context "touch?" do
       it "should be true if touch" do
-        BelongsToAssociation.new(:car, :touch => true).touch?.should be_true
+        BelongsToAssociation.new(:car, :touch => true).touch?.should be_truthy
       end
 
       it "should be false if not touch" do
-        BelongsToAssociation.new(:car).touch?.should be_false
+        BelongsToAssociation.new(:car).touch?.should be_falsey
       end
     end
 

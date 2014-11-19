@@ -35,7 +35,7 @@ describe "OneEmbeddedPolymorhpicProxy" do
     post.author.name.should == 'Frank'
     post.author.class.should == Human
 
-    post.save.should be_true
+    post.save.should be_truthy
     post.reload
 
     post.author.name.should == 'Frank'
@@ -56,7 +56,7 @@ describe "OneEmbeddedPolymorhpicProxy" do
         @post.reload
 
         @post.author.should == @human
-        @post.author.nil?.should be_false
+        @post.author.nil?.should be_falsey
         @post.author.class.should == Human
 
         new_human = Human.new(:name => 'Emily')
@@ -70,7 +70,7 @@ describe "OneEmbeddedPolymorhpicProxy" do
         @post.reload
 
         @post.author.should == @human
-        @post.author.nil?.should be_false
+        @post.author.nil?.should be_falsey
 
         original_author = @post.author
         original_author.name.should == 'Frank'
@@ -99,7 +99,7 @@ describe "OneEmbeddedPolymorhpicProxy" do
         @post.reload
 
         @post.author.serial_number.should == '1B'
-        @post.author.nil?.should be_false
+        @post.author.nil?.should be_falsey
 
         @post.author = {'serial_number' => '2C'}
         @post.author.serial_number.should == '2C'
@@ -142,13 +142,13 @@ describe "OneEmbeddedPolymorhpicProxy" do
 
     post.author.class.should == TrModels::Ambulance
     post.author.license_plate.should == 'GGG123'
-    post.author.icu.should be_true
-    post.save.should be_true
+    post.author.icu.should be_truthy
+    post.save.should be_truthy
 
     post = post.reload
     post.author.class.should == TrModels::Ambulance
     post.author.license_plate.should == 'GGG123'
-    post.author.icu.should be_true
+    post.author.icu.should be_truthy
   end
 
   it "should not have problem loading root document if embedded one is nil" do
@@ -179,10 +179,10 @@ describe "OneEmbeddedPolymorhpicProxy" do
     @post_class.one :author, :polymorphic => true, :class => Robot
 
     post = @post_class.new
-    post.author?.should be_false
+    post.author?.should be_falsey
 
     post.author = Human.new(:name => 'Frank')
-    post.author?.should be_true
+    post.author?.should be_truthy
   end
 
   it "should initialize id for nested embedded document created from hash" do

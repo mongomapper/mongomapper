@@ -11,38 +11,38 @@ describe "Dirty" do
   context "marking changes" do
     it "should not happen if there are none" do
       doc = @document.new
-      doc.phrase_changed?.should be_false
+      doc.phrase_changed?.should be_falsey
       doc.phrase_change.should be_nil
     end
 
     it "should happen when change happens" do
       doc = @document.new
       doc.phrase = 'Golly Gee Willikers Batman'
-      doc.phrase_changed?.should be_true
+      doc.phrase_changed?.should be_truthy
       doc.phrase_was.should be_nil
       doc.phrase_change.should == [nil, 'Golly Gee Willikers Batman']
     end
 
     it "should happen when initializing" do
       doc = @document.new(:phrase => 'Foo')
-      doc.changed?.should be_true
+      doc.changed?.should be_truthy
     end
 
     it "should clear changes on save" do
       doc = @document.new
       doc.phrase = 'Golly Gee Willikers Batman'
-      doc.phrase_changed?.should be_true
+      doc.phrase_changed?.should be_truthy
       doc.save
-      doc.phrase_changed?.should_not be_true
+      doc.phrase_changed?.should_not be_truthy
       doc.phrase_change.should be_nil
     end
 
     it "should clear changes on save!" do
       doc = @document.new
       doc.phrase = 'Golly Gee Willikers Batman'
-      doc.phrase_changed?.should be_true
+      doc.phrase_changed?.should be_truthy
       doc.save!
-      doc.phrase_changed?.should_not be_true
+      doc.phrase_changed?.should_not be_truthy
       doc.phrase_change.should be_nil
     end
 
@@ -51,33 +51,33 @@ describe "Dirty" do
       @document.any_instance.should_receive(:attribute_will_change!).never
       @document.any_instance.should_receive(:attribute_changed?).never
       doc = @document.find(doc.id)
-      doc.changed?.should be_false
+      doc.changed?.should be_falsey
     end
 
     it "should not happen when reloading from database" do
       doc = @document.create(:phrase => 'Foo')
       doc = @document.find(doc.id)
 
-      doc.changed?.should be_false
+      doc.changed?.should be_falsey
       doc.phrase = 'Fart'
-      doc.changed?.should be_true
+      doc.changed?.should be_truthy
       doc.reload
-      doc.changed?.should be_false
+      doc.changed?.should be_falsey
     end
 
     it "should happen if changed after loading from database" do
       doc = @document.create(:phrase => 'Foo')
       doc.reload
-      doc.changed?.should be_false
+      doc.changed?.should be_falsey
       doc.phrase = 'Bar'
-      doc.changed?.should be_true
+      doc.changed?.should be_truthy
     end
 
     it "should happen with aliased keys" do
       doc = @document.create(:paragraph => 'Wibbly')
       doc.paragraph = "Wobbly"
-      doc.changed?.should be_true
-      doc.paragraph_changed?.should be_true
+      doc.changed?.should be_truthy
+      doc.paragraph_changed?.should be_truthy
     end
   end
 
@@ -88,7 +88,7 @@ describe "Dirty" do
       [nil, ''].each do |value|
         doc = @document.new
         doc.age = value
-        doc.age_changed?.should be_false
+        doc.age_changed?.should be_falsey
         doc.age_change.should be_nil
       end
     end
@@ -101,7 +101,7 @@ describe "Dirty" do
       [nil, ''].each do |value|
         doc = @document.new
         doc.amount = value
-        doc.amount_changed?.should be_false
+        doc.amount_changed?.should be_falsey
         doc.amount_change.should be_nil
       end
     end
@@ -111,27 +111,27 @@ describe "Dirty" do
     it "should be true if key changed" do
       doc = @document.new
       doc.phrase = 'A penny saved is a penny earned.'
-      doc.changed?.should be_true
+      doc.changed?.should be_truthy
     end
 
     it "should be false if no keys changed" do
-      @document.new.changed?.should be_false
+      @document.new.changed?.should be_falsey
     end
 
     it "should not raise when key name is 'value'" do
       @document.key :value, Integer
 
       doc = @document.new
-      doc.value_changed?.should be_false
+      doc.value_changed?.should be_falsey
     end
 
     it "should be false if the same ObjectId was assigned in String format" do
       @document.key :doc_id, ObjectId
 
       doc = @document.create!(:doc_id => BSON::ObjectId.new)
-      doc.changed?.should be_false
+      doc.changed?.should be_falsey
       doc.doc_id = doc.doc_id.to_s
-      doc.changed?.should be_false
+      doc.changed?.should be_falsey
     end
   end
 
@@ -164,14 +164,14 @@ describe "Dirty" do
       doc = @document.create(:phrase => 'Foo')
 
       doc.phrase << 'bar'
-      doc.phrase_changed?.should be_false
+      doc.phrase_changed?.should be_falsey
 
       doc.phrase_will_change!
-      doc.phrase_changed?.should be_true
+      doc.phrase_changed?.should be_truthy
       doc.phrase_change.should == ['Foobar', 'Foobar']
 
       doc.phrase << '!'
-      doc.phrase_changed?.should be_true
+      doc.phrase_changed?.should be_truthy
       doc.phrase_change.should == ['Foobar', 'Foobar!']
     end
   end
@@ -190,7 +190,7 @@ describe "Dirty" do
 
       milestone = milestone_class.create(:name => 'Launch')
       milestone.project = project_class.create(:name => 'Harmony')
-      milestone.changed?.should be_true
+      milestone.changed?.should be_truthy
       milestone.changed.should == %w(project_id)
     end
   end
@@ -204,11 +204,11 @@ describe "Dirty" do
       validated_doc = validated_class.new
       validated_doc.name = "I'm a changin"
       validated_doc.save
-      validated_doc.changed?.should be_true
+      validated_doc.changed?.should be_truthy
 
       validated_doc.required = 1
       validated_doc.save
-      validated_doc.changed?.should be_false
+      validated_doc.changed?.should be_falsey
     end
   end
 
@@ -224,7 +224,7 @@ describe "Dirty" do
       doc = @document.create(:a=>"b")
       doc.a = "c"
       doc.a = "b"
-      doc.changed?.should be_false
+      doc.changed?.should be_falsey
     end
   end
 
@@ -233,7 +233,7 @@ describe "Dirty" do
       doc = @document.create(:a=>"b")
       doc.a = "c"
       doc.reset_a!
-      doc.changed?.should be_false
+      doc.changed?.should be_falsey
       doc.a.should == "b"
     end
     it "should reset the attribute back to the original value after several changes" do
@@ -242,7 +242,7 @@ describe "Dirty" do
       doc.a = "d"
       doc.a = "e"
       doc.reset_a!
-      doc.changed?.should be_false
+      doc.changed?.should be_falsey
       doc.a.should == "b"
     end
   end
@@ -275,21 +275,21 @@ describe "Dirty" do
 
     it "should track changes" do
       @duck.name = "hi"
-      @duck.changed?.should be_true
+      @duck.changed?.should be_truthy
     end
 
     it "should clear changes when saved" do
       @duck.name = "hi"
-      @duck.changed?.should be_true
+      @duck.changed?.should be_truthy
       @duck.save!
-      @duck.changed?.should_not be_true
+      @duck.changed?.should_not be_truthy
     end
 
     it "should clear changes when the parent is saved" do
       @duck.name = "hi"
-      @duck.changed?.should be_true
+      @duck.changed?.should be_truthy
       @doc.save!
-      @duck.changed?.should_not be_true
+      @duck.changed?.should_not be_truthy
     end
 
     context "with nested embedded documents" do
@@ -302,14 +302,14 @@ describe "Dirty" do
 
       it "should track changes" do
         @dong.name = "hi"
-        @dong.changed?.should be_true
+        @dong.changed?.should be_truthy
       end
 
       it "should clear changes when the root saves" do
         @dong.name = "hi"
-        @dong.changed?.should be_true
+        @dong.changed?.should be_truthy
         @doc.save!
-        @dong.changed?.should be_false
+        @dong.changed?.should be_falsey
       end
     end
   end
