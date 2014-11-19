@@ -30,7 +30,7 @@ describe "Key" do
         key :_id, Integer
       end
       doc = klass.new
-      doc.should_receive(:warn).once
+      expect(doc).to receive(:warn).once
       doc.assign({:x => :y})
     end
   end

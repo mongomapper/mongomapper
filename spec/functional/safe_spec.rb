@@ -67,7 +67,7 @@ describe "Safe" do
       context "using safe setting from class" do
         it "should pass :w => 1 option to save" do
           instance = @klass.new(:email => 'john@doe.com')
-          Mongo::Collection.any_instance.should_receive(:insert).once.with({'_id' => instance.id, 'email' => 'john@doe.com'}, {:w => 1})
+          expect_any_instance_of(Mongo::Collection).to receive(:insert).once.with({'_id' => instance.id, 'email' => 'john@doe.com'}, {:w => 1})
           instance.save!
         end
 
@@ -122,7 +122,7 @@ describe "Safe" do
       context "using safe setting from class" do
         it "should pass :safe => options_hash to save" do
           instance = @klass.new(:email => 'john@doe.com')
-          Mongo::Collection.any_instance.should_receive(:insert).once.with({'_id' => instance.id, 'email' => 'john@doe.com'}, {:j => true})
+          expect_any_instance_of(Mongo::Collection).to receive(:insert).once.with({'_id' => instance.id, 'email' => 'john@doe.com'}, {:j => true})
           instance.save!
         end
 

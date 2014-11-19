@@ -69,7 +69,7 @@ module Modifiers
           it "should be able to pass safe option" do
             page_class.create(:title => "Better Be Safe than Sorry")
 
-            Mongo::Collection.any_instance.should_receive(:update).with(
+            expect_any_instance_of(Mongo::Collection).to receive(:update).with(
               {:title => "Better Be Safe than Sorry"},
               {'$unset' => {:tags => 1}},
               {:w => 1, :multi => true}
@@ -196,7 +196,7 @@ module Modifiers
           it "should be able to pass safe option" do
             page_class.create(:title => "Better Be Safe than Sorry")
 
-            Mongo::Collection.any_instance.should_receive(:update).with(
+            expect_any_instance_of(Mongo::Collection).to receive(:update).with(
               {:title => "Better Be Safe than Sorry"},
               {'$set' => {:title => "I like safety."}},
               {:w => 1, :multi => true}

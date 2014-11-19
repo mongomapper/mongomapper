@@ -48,8 +48,8 @@ describe "Dirty" do
 
     it "should not happen when loading from database" do
       doc = @document.create(:phrase => 'Foo')
-      @document.any_instance.should_receive(:attribute_will_change!).never
-      @document.any_instance.should_receive(:attribute_changed?).never
+      expect_any_instance_of(@document).to receive(:attribute_will_change!).never
+      expect_any_instance_of(@document).to receive(:attribute_changed?).never
       doc = @document.find(doc.id)
       doc.changed?.should be_falsey
     end

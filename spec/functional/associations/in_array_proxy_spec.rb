@@ -144,7 +144,7 @@ describe "InArrayProxy" do
 
         it "should not hit the database if ids key is empty" do
           @user.list_ids = []
-          @user.lists.should_receive(:query).never
+          expect(@user.lists).to receive(:query).never
           @user.lists.all.should == []
         end
       end
@@ -160,7 +160,7 @@ describe "InArrayProxy" do
 
         it "should not hit the database if ids key is empty" do
           @user.list_ids = []
-          @user.lists.should_receive(:query).never
+          expect(@user.lists).to receive(:query).never
           @user.lists.first.should be_nil
         end
       end
@@ -176,7 +176,7 @@ describe "InArrayProxy" do
 
         it "should not hit the database if ids key is empty" do
           @user.list_ids = []
-          @user.lists.should_receive(:query).never
+          expect(@user.lists).to receive(:query).never
           @user.lists.last.should be_nil
         end
       end
@@ -230,7 +230,7 @@ describe "InArrayProxy" do
 
         it "should not hit the database if ids key is empty" do
           @user.list_ids = []
-          @user.lists.should_receive(:query).never
+          expect(@user.lists).to receive(:query).never
           @user.lists.paginate(:page => 1).should == []
         end
       end
@@ -293,7 +293,7 @@ describe "InArrayProxy" do
 
       it "should not hit the database if ids key is empty" do
         @user.list_ids = []
-        @user.lists.should_receive(:query).never
+        expect(@user.lists).to receive(:query).never
         @user.lists.count(:name => 'Foo 1').should == 0
       end
     end

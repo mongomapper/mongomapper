@@ -157,10 +157,10 @@ describe "Validations" do
       doc = @document.new("name" => "joe")
       doc.save.should be_truthy
 
-      @document \
-        .stub(:first) \
-        .with(:name => 'joe') \
-        .and_return(doc)
+      allow(@document).to \
+        receive(:first).
+        with(:name => 'joe').
+        and_return(doc)
 
       doc.name = "joe"
       doc.valid?.should be_truthy
@@ -171,10 +171,10 @@ describe "Validations" do
       doc = @document.new("name" => "joe")
       doc.save.should be_truthy
 
-      @document \
-        .stub(:first) \
-        .with(:name => 'joe') \
-        .and_return(doc)
+      allow(@document).to \
+        receive(:first).
+        with(:name => 'joe').
+        and_return(doc)
 
       doc2 = @document.new("name" => "joe")
       doc2.should have_error_on(:name)
@@ -189,10 +189,10 @@ describe "Validations" do
       doc = document.new("name" => "")
       doc.save.should be_truthy
 
-      document \
-        .stub(:first) \
-        .with(:name => '') \
-        .and_return(doc)
+      allow(@document).to \
+        receive(:first).
+        with(:name => '').
+        and_return(doc)
 
       doc2 = document.new("name" => "")
       doc2.should_not have_error_on(:name)
@@ -272,10 +272,10 @@ describe "Validations" do
         doc = @document.new("name" => "joe", "scope" => "one")
         doc.save.should be_truthy
 
-        @document \
-          .stub(:first) \
-          .with(:name => 'joe', :scope => "one") \
-          .and_return(doc)
+        allow(@document).to \
+          receive(:first).
+          with(:name => 'joe', :scope => "one").
+          and_return(doc)
 
         doc2 = @document.new("name" => "joe", "scope" => "one")
         doc2.should have_error_on(:name)
@@ -285,10 +285,10 @@ describe "Validations" do
         doc = @document.new("name" => "joe", "scope" => "one")
         doc.save.should be_truthy
 
-        @document \
-          .stub(:first) \
-          .with(:name => 'joe', :scope => 'two') \
-          .and_return(nil)
+        allow(@document).to \
+          receive(:first).
+          with(:name => 'joe', :scope => 'two').
+          and_return(nil)
 
         doc2 = @document.new("name" => "joe", "scope" => "two")
         doc2.should_not have_error_on(:name)
@@ -309,10 +309,10 @@ describe "Validations" do
         doc = @document.new("name" => "joe", "first_scope" => "one", "second_scope" => "two")
         doc.save.should be_truthy
 
-        @document \
-          .stub(:first) \
-          .with(:name => 'joe', :first_scope => 'one', :second_scope => 'two') \
-          .and_return(doc)
+        allow(@document).to \
+          receive(:first).
+          with(:name => 'joe', :first_scope => 'one', :second_scope => 'two').
+          and_return(doc)
 
         doc2 = @document.new("name" => "joe", "first_scope" => "one", "second_scope" => "two")
         doc2.should have_error_on(:name)
@@ -322,10 +322,10 @@ describe "Validations" do
         doc = @document.new("name" => "joe", "first_scope" => "one", "second_scope" => "two")
         doc.save.should be_truthy
 
-        @document \
-          .stub(:first) \
-          .with(:name => 'joe', :first_scope => 'one', :second_scope => 'one') \
-          .and_return(nil)
+        allow(@document).to \
+          receive(:first).
+          with(:name => 'joe', :first_scope => 'one', :second_scope => 'one').
+          and_return(nil)
 
         doc2 = @document.new("name" => "joe", "first_scope" => "one", "second_scope" => "one")
         doc2.should_not have_error_on(:name)
@@ -403,10 +403,10 @@ describe "Validations" do
   #     doc = @document.create(:name => 'John')
   #     doc.should_not have_error_on(:name)
   #
-  #     @document \
-  #       .stub(:first) \
-  #       .with(:name => 'John') \
-  #       .and_return(doc)
+  #     allow(@document).to \
+  #       receive(:first).
+  #       with(:name => 'John').
+  #       and_return(doc)
   #
   #     second_john = @document.create(:name => 'John')
   #     second_john.should have_error_on(:name)

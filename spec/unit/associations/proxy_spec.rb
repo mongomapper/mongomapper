@@ -18,10 +18,8 @@ end
 
 describe "Proxy" do
   before do
-    @owner = double('owner')
-    @owner.stub(:new?).and_return(false)
-    @association = double('association')
-    @association.stub(:options).and_return({:extend => []})
+    @owner = double('owner', :new? => false)
+    @association = double('association', :options => {:extend => []})
 
     @proxy       = FakeProxy.new(@owner, @association)
     @nil_proxy   = FakeNilProxy.new(@owner, @association)

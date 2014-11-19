@@ -129,7 +129,7 @@ describe "Keys" do
   describe "with invalid names" do
     it "should warn when key names start with an uppercase letter" do
       doc = Doc {}
-      Kernel.should_receive(:warn).once.with(/may not start with uppercase letters/)
+      expect(Kernel).to receive(:warn).once.with(/may not start with uppercase letters/)
       doc.class_eval do
         key :NotConstant
       end
@@ -137,7 +137,7 @@ describe "Keys" do
 
     it "should handle keys that start with uppercase letters by translating their first letter to lowercase" do
       doc = Doc {}
-      Kernel.stub(:warn)
+      allow(Kernel).to receive(:warn)
       doc.class_eval do
         key :NotConstant
       end
@@ -147,7 +147,7 @@ describe "Keys" do
 
     it "should not create accessors for bad keys" do
       doc = Doc {}
-      doc.should_not_receive(:create_accessors_for)
+      expect(doc).to_not receive(:create_accessors_for)
       doc.class_eval do
         key :"bad-name", :__dynamic => true
       end

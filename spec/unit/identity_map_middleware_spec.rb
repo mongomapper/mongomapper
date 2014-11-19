@@ -86,14 +86,14 @@ module IdentityMapSpec
 
       context "with a successful request" do
         it "should clear the identity map" do
-          MongoMapper::Plugins::IdentityMap.should_receive(:clear).twice
+          expect(MongoMapper::Plugins::IdentityMap).to receive(:clear).twice
           get '/'
         end
       end
 
       context "when the request raises an error" do
         it "should clear the identity map" do
-          MongoMapper::Plugins::IdentityMap.should_receive(:clear).once
+          expect(MongoMapper::Plugins::IdentityMap).to receive(:clear).once
           get '/fail' rescue nil
         end
       end
@@ -117,14 +117,14 @@ module IdentityMapSpec
 
   #   context "with a successful request" do
   #     it "should clear the identity map" do
-  #       MongoMapper::Plugins::IdentityMap.should_receive(:clear).twice
+  #       expect(MongoMapper::Plugins::IdentityMap).to receive(:clear).twice
   #       get '/'
   #     end
   #   end
 
   #   context "when the request raises an error" do
   #     it "should clear the identity map" do
-  #       MongoMapper::Plugins::IdentityMap.should_receive(:clear).twice
+  #       expect(MongoMapper::Plugins::IdentityMap).to receive(:clear).twice
   #       get '/fail' rescue nil
   #     end
   #   end
