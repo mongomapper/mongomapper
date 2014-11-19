@@ -246,8 +246,20 @@ module MongoMapper
             a_name = [name]
 
             _validators.reject!{ |key, _| key == name }
-            _validate_callbacks.reject! {|callback| callback.raw_filter.attributes == a_name }
+            remove_validate_callbacks a_name
           end
+
+          def remove_validate_callbacks(a_name)
+            chain = _validate_callbacks.dup.reject do |callback|
+              f = callback.raw_filter
+              f.respond_to?(:attributes) && f.attributes == a_name
+            end
+            reset_callbacks(:validate)
+            chain.each do |callback|
+              set_callback 'validate', callback.raw_filter
+            end
+          end
+
       end
 
       def initialize(attrs={})

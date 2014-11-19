@@ -28,6 +28,7 @@ module MongoMapper
     include Plugins::Sci
     include Plugins::Scopes
     include Plugins::Serialization
+    include Plugins::Stats
     include Plugins::Timestamps
     include Plugins::Userstamps
     include Plugins::Touch
@@ -35,6 +36,7 @@ module MongoMapper
     include Plugins::EmbeddedCallbacks
     include Plugins::Callbacks # for now callbacks needs to be after validations
     include Plugins::IdentityMap
+    include Plugins::CounterCache
 
     included do
       extend Plugins
