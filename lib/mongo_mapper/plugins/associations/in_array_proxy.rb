@@ -6,11 +6,11 @@ module MongoMapper
         include DynamicQuerying::ClassMethods
 
         def find(*args)
-          query.find(*scoped_ids(args))
+          order_results(query.find(*scoped_ids(args)))
         end
 
         def find!(*args)
-          query.find!(*scoped_ids(args))
+          order_results(query.find!(*scoped_ids(args)))
         end
 
         def paginate(options)
@@ -20,17 +20,29 @@ module MongoMapper
 
         def all(options={})
           return [] if ids.blank?
-          query(options).all
+          order_results(query(options).all)
         end
 
         def first(options={})
           return nil if ids.blank?
-          query(options).first
+
+          if ordered?
+            ids = find_ids(options)
+            find!(ids.first) if ids.any?
+          else
+            query(options).first
+          end
         end
 
         def last(options={})
           return nil if ids.blank?
-          query(options).last
+
+          if ordered?
+            ids = find_ids(options)
+            find!(ids.last) if ids.any?
+          else
+            query(options).last
+          end
         end
 
         def count(options={})
@@ -119,6 +131,11 @@ module MongoMapper
             valid.empty? ? nil : valid
           end
 
+          def find_ids(options={})
+            matched_ids = klass.collection.distinct(:_id, query(options).criteria.to_hash)
+            matched_ids.sort_by! { |matched_id| ids.index(matched_id) }
+          end
+
           def find_target
             return [] if ids.blank?
             all
@@ -126,6 +143,16 @@ module MongoMapper
 
           def ids
             proxy_owner[options[:in]]
+          end
+
+          def order_results(objects)
+            return objects if !ordered?
+            return objects unless objects.respond_to?(:to_a) && objects.respond_to?(:sort_by)
+            objects.sort_by { |obj| ids.index(obj.id) }
+          end
+
+          def ordered?
+            association.ordered?
           end
       end
     end

@@ -1,6 +1,10 @@
 
 HEAD
 
+  Enhancements:
+
+    * Add sorting for has_many :in => :an_array.  Add sorting by appending :sorted => true (by default it's off) [smtlaissezfaire]
+
   Internals:
 
     * Changelog updates [smtlaissezfaire]

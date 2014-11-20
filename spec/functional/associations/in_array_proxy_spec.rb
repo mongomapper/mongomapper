@@ -346,4 +346,139 @@ describe "InArrayProxy" do
       end
     end
   end
+
+  describe "ordering" do
+    before do
+      @user_class = Doc("User") do
+        key :list_ids, Array
+      end
+
+      @list_class = Doc("List") do
+        key :name, String, :required => true
+      end
+    end
+
+    def create_list_items
+      @user = @user_class.create!
+      @list1 = @list_class.create!(:name => "one")
+      @list2 = @list_class.create!(:name => "two")
+      @list3 = @list_class.create!(:name => "three")
+
+      @user.lists << [@list3, @list2, @list1]
+      @user.save!
+
+      @user.reload
+    end
+
+    shared_examples_for "ordering is on" do
+      it "should have the items ordered according to order of the ids" do
+        @user.lists.should == [@list3, @list2, @list1]
+      end
+
+      it "should have the right item for #first" do
+        @user.lists.first.should == @list3
+      end
+
+      it "should have the right item for #last" do
+        @user.lists.last.should == @list1
+      end
+
+      it "does not work for pagination (but probably should)" do
+        @user.lists.paginate(:per_page => 100).should == [@list1, @list2, @list3]
+      end
+
+      it "should work with find" do
+        @user.lists.find(@list2.id, @list1.id).should == [@list2, @list1]
+        @user.lists.find(@list1.id, @list2.id).should == [@list2, @list1]
+        @user.lists.find(@list1.id).should == @list1
+      end
+
+      it "should work with find!" do
+        @user.lists.find!(@list2.id, @list1.id).should == [@list2, @list1]
+        @user.lists.find!(@list1.id, @list2.id).should == [@list2, @list1]
+      end
+
+      it "should only load one object with first (and no params given)" do
+        expect(@list_class).to receive(:allocate).once.and_return @list3
+        @user.lists.first
+      end
+
+      it "should only load one object with first (and params given)" do
+        expect(@list_class).to receive(:allocate).once.and_return @list3
+        @user.lists.first(:name => /^t/)
+      end
+
+      it "should only load one object with last (and no params given)" do
+        expect(@list_class).to receive(:allocate).once.and_return @list1
+        @user.lists.last
+      end
+
+      it "should only load one object with last (and params given)" do
+        expect(@list_class).to receive(:allocate).once.and_return @list3
+        @user.lists.last(:name => /^t/)
+      end
+
+      it "should return nil if first with a query matches no objects" do
+        @user.lists.first(:name => "non-existent").should be_nil
+      end
+
+      it "should return nil if last with a query matches no objects" do
+        @user.lists.last(:name => "non-existent").should be_nil
+      end
+
+      it "should work with extra query params to first and last" do
+        @user.lists.first(:name => /^t/).should == @list3
+        @user.lists.first(:name => /^o/).should == @list1
+
+        @user.lists.last(:name => /^t/).should == @list2
+        @user.lists.last(:name => /^o/).should == @list1
+      end
+    end
+
+    shared_examples_for "ordering is off" do
+      it "should include all items" do
+        @user.lists.length == 3
+        @user.lists.should include(@list1)
+        @user.lists.should include(@list2)
+        @user.lists.should include(@list3)
+      end
+
+      it "should return the items in the natural order" do
+        @user.lists.should == [@list1, @list2, @list3]
+      end
+
+      it "should work with find" do
+        @user.lists.find(@list2.id, @list1.id).should == [@list1, @list2]
+        @user.lists.find(@list1.id, @list2.id).should == [@list1, @list2]
+        @user.lists.find(@list1.id).should == @list1
+      end
+    end
+
+    describe "without a param" do
+      before do
+        @user_class.many :lists, :in => :list_ids, :class => @list_class
+        create_list_items
+      end
+
+      it_behaves_like "ordering is off"
+    end
+
+    describe "with ordering off" do
+      before do
+        @user_class.many :lists, :in => :list_ids, :class => @list_class, :ordered => false
+        create_list_items
+      end
+
+      it_behaves_like "ordering is off"
+    end
+
+    describe "with ordering on" do
+      before do
+        @user_class.many :lists, :in => :list_ids, :class => @list_class, :ordered => true
+        create_list_items
+      end
+
+      it_behaves_like "ordering is on"
+    end
+  end
 end
