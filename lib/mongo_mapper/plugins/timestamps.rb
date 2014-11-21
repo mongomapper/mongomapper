@@ -15,6 +15,14 @@ module MongoMapper
           key :updated_at, Time
           class_eval { before_save :update_timestamps }
         end
+
+        def first(options={})
+          super(options.reverse_merge(:order => :created_at))
+        end
+
+        def last(options={})
+          super(options.reverse_merge(:order => :created_at))
+        end
       end
 
       def update_timestamps

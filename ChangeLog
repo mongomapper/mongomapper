@@ -1,6 +1,10 @@
 
 HEAD
 
+  Enhancements:
+
+    * Change #first and #last to return results based on created_at when timestamps are included [smtlaissezfaire]
+
   Internals:
 
     * Changelog updates [smtlaissezfaire]

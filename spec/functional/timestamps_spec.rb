@@ -72,6 +72,31 @@ describe "Timestamps" do
         doc.created_at.to_i.should be_within(1).of(old_created_at.to_i)
         doc.updated_at.to_i.should be_within(1).of(new_updated_at.to_i)
       end
+
+      it "should have #first return the first created object" do
+        doc2 = @klass.create!(:created_at => Time.now)
+        doc1 = @klass.create!(:created_at => 1.week.ago)
+
+        @klass.first.should == doc1
+      end
+
+      it "should have #last return the last created object" do
+        doc2 = @klass.create!(:created_at => Time.now)
+        doc1 = @klass.create!(:created_at => 1.week.ago)
+
+        @klass.last.should == doc2
+      end
+
+      it "should allow sorting by something else" do
+        john = @klass.create!(:first_name => "John", :created_at => 6.months.ago)
+        chris = @klass.create!(:first_name => "Chris", :created_at => 3.weeks.ago)
+
+        @klass.first(:order => :first_name).should == chris
+        @klass.sort(:first_name).first.should == chris
+
+        @klass.last(:order => :first_name).should == john
+        @klass.sort(:first_name).last.should == john
+      end
     end
 
     context "when #record_timestamps is set to false" do
