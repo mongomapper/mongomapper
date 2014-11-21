@@ -8,7 +8,7 @@ module MongoMapper
         extend  ::ActiveModel::Callbacks
 
         define_model_callbacks :save, :create, :update, :destroy, :only => [:before, :after]
-        define_model_callbacks :touch, :only => [:after]
+        define_model_callbacks :initialize, :find, :touch, :only => [:after]
 
         proxy_callbacks(
           :before => [:save, :create, :update, :destroy],

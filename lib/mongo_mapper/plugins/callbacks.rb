@@ -4,6 +4,18 @@ module MongoMapper
     module Callbacks
       extend ActiveSupport::Concern
 
+      def initialize(*)
+        run_callbacks(:initialize) { super }
+      end
+
+      def initialize_from_database(*)
+        run_callbacks(:initialize) do
+          run_callbacks(:find) do
+            super
+          end
+        end
+      end
+
       def destroy
         run_callbacks(:destroy) { super }
       end
@@ -13,6 +25,7 @@ module MongoMapper
       end
 
     private
+
       def create_or_update(*)
         run_callbacks(:save) { super }
       end
