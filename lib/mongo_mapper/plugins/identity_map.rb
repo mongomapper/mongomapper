@@ -69,7 +69,7 @@ module MongoMapper
           end
         end
 
-        def load(attrs)
+        def load(attrs, with_cast = false)
           return super unless Thread.current[:mongo_mapper_identity_map_enabled]
           return nil unless attrs
           document = get_from_identity_map(attrs['_id'])

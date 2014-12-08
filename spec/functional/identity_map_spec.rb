@@ -178,6 +178,19 @@ describe "IdentityMap" do
         second_load = @person_class.load('_id' => @id, 'name' => 'Frank')
         first_load.should equal(second_load)
       end
+
+      it "should allow passing with_cast" do
+        person_with_time_class = Doc('PersonWithTime') do
+          key :name, String
+          key :created_at, Time
+        end
+
+        expect do
+          loaded = person_with_time_class.load({'_id' => @id, 'name' => 'Frank', 'created_at' => '2014-12-07T20:36:45.529-08:00'}, true)
+          loaded.should be_present
+          loaded.created_at.should be_an_instance_of(Time)
+        end.to_not raise_error
+      end
     end
 
     context "#find (with one id)" do
