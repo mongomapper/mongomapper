@@ -471,11 +471,25 @@ module Modifiers
             assert_page_counts page, 1, 2, 3
           end
 
+          it "should be able to increment with just the field name" do
+            page = page_class.create
+            page.increment :day_count
+
+            assert_page_counts page, 1, 0, 0
+          end
+
           it "should be able to decrement with modifier hashes" do
             page = page_class.create(:day_count => 1, :week_count => 2, :month_count => 3)
             page.decrement(:day_count => 1, :week_count => 2, :month_count => 3)
 
             assert_page_counts page, 0, 0, 0
+          end
+
+          it "should be able to decrement with just the field name" do
+            page = page_class.create
+            page.decrement :day_count
+
+            assert_page_counts page, -1, 0, 0
           end
 
           it "should always decrement when decrement is called whether number is positive or negative" do
