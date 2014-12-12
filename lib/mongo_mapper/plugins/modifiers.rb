@@ -113,12 +113,12 @@ module MongoMapper
         self.class.unset({:_id => id}, *args)
       end
 
-      def increment(hash, options=nil)
-        self.class.increment({:_id => id}, hash, options)
+      def increment(args, options=nil)
+        self.class.increment({:_id => id}, _args_for_counter(args), options)
       end
 
-      def decrement(hash, options=nil)
-        self.class.decrement({:_id => id}, hash, options)
+      def decrement(args, options=nil)
+        self.class.decrement({:_id => id}, _args_for_counter(args), options)
       end
 
       def set(hash, options=nil)
@@ -148,6 +148,14 @@ module MongoMapper
 
       def pop(hash, options=nil)
         self.class.pop({:_id => id}, hash, options)
+      end
+
+    private
+
+      def _args_for_counter(args)
+        args.kind_of?(String) || args.kind_of?(Symbol) ?
+          { args => 1 } :
+          args
       end
     end
   end
