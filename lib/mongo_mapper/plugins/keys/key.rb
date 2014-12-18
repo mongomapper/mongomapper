@@ -117,7 +117,7 @@ module MongoMapper
           end
 
           def validate_key_name!
-            if %w( id ).include? @name
+            if %w( id class ).include? @name
               raise MongoMapper::InvalidKey.new("`#{@name}` is a reserved key name (did you mean to use _id?)")
             elsif !valid_ruby_name?
               raise MongoMapper::InvalidKey.new("`#{@name}` is not a valid key name. Keys must match [a-z][a-z0-9_]*")
