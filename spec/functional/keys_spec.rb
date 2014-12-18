@@ -154,6 +154,15 @@ describe "Keys" do
       expect { doc.new.method(:"bad-name") }.to raise_error(NameError)
     end
 
+    it "should not create accessors for reserved keys" do
+      doc = Doc {}
+      expect(doc).to_not receive(:create_accessors_for)
+      doc.class_eval do
+        key :"class", :__dynamic => true
+      end
+      expect(doc.new.class).to eq doc
+    end
+
     it "should create accessors for good keys" do
       doc = Doc {
         key :good_name

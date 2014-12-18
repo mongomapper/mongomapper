@@ -93,6 +93,11 @@ module MongoMapper
           !!@name.match(/\A[a-z_][a-z0-9_]*\z/i)
         end
 
+        RESERVED_KEYS = %w( id class object_id )
+        def reserved_name?
+          RESERVED_KEYS.include?(@name)
+        end
+
         def read_accessor?
           any_accessor? ["read"]
         end
@@ -117,7 +122,7 @@ module MongoMapper
           end
 
           def validate_key_name!
-            if %w( id class ).include? @name
+            if reserved_name?
               raise MongoMapper::InvalidKey.new("`#{@name}` is a reserved key name (did you mean to use _id?)")
             elsif !valid_ruby_name?
               raise MongoMapper::InvalidKey.new("`#{@name}` is not a valid key name. Keys must match [a-z][a-z0-9_]*")
