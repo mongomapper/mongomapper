@@ -50,13 +50,13 @@ describe "Key" do
       key = Key.new(:foo, String, :required => true)
       key.name.should == 'foo'
       key.type.should == String
-      key.options[:required].should be_true
+      key.options[:required].should be_truthy
     end
 
     it "should work with name and options" do
       key = Key.new(:foo, :required => true)
       key.name.should == 'foo'
-      key.options[:required].should be_true
+      key.options[:required].should be_truthy
     end
 
     it "should not permit reserved names" do
@@ -90,20 +90,20 @@ describe "Key" do
     end
 
     it "should know if it is a embedded_document" do
-      Key.new(:name, EDoc()).embeddable?.should be_true
+      Key.new(:name, EDoc()).embeddable?.should be_truthy
     end
 
     it "should know if it is not a embedded_document" do
-      Key.new(:name, String).embeddable?.should be_false
+      Key.new(:name, String).embeddable?.should be_falsey
     end
 
     it "should know if it is a number" do
-      Key.new(:age, Integer).number?.should be_true
-      Key.new(:age, Float).number?.should be_true
+      Key.new(:age, Integer).number?.should be_truthy
+      Key.new(:age, Float).number?.should be_truthy
     end
 
     it "should know if it is not a number" do
-      Key.new(:age, String).number?.should be_false
+      Key.new(:age, String).number?.should be_falsey
     end
   end
 
@@ -148,31 +148,34 @@ describe "Key" do
 
     context "with :read" do
       let(:accessor) { :read }
-      its(:read_accessor?) { should be_true }
-      its(:write_accessor?) { should be_false }
-      its(:predicate_accessor?) { should be_false }
+
+      it { expect( subject.read_accessor? ).to be_truthy }
+      it { expect( subject.write_accessor? ).to be_falsey }
+      it { expect( subject.predicate_accessor? ).to be_falsey }
     end
 
     context "with :write" do
       let(:accessor) { :write }
-      its(:read_accessor?) { should be_false }
-      its(:write_accessor?) { should be_true }
-      its(:predicate_accessor?) { should be_false }
+
+      it { expect( subject.read_accessor? ).to be_falsey }
+      it { expect( subject.write_accessor? ).to be_truthy }
+      it { expect( subject.predicate_accessor? ).to be_falsey }
     end
 
     context "with :predicate" do
       let(:accessor) { :predicate }
-      its(:read_accessor?) { should be_false }
-      its(:write_accessor?) { should be_false }
-      its(:predicate_accessor?) { should be_true }
+
+      it { expect( subject.read_accessor? ).to be_falsey }
+      it { expect( subject.write_accessor? ).to be_falsey }
+      it { expect( subject.predicate_accessor? ).to be_truthy }
     end
 
     context "with an array of options" do
       let(:accessor) { [:read, :write] }
 
-      its(:read_accessor?) { should be_true }
-      its(:write_accessor?) { should be_true }
-      its(:predicate_accessor?) { should be_false }
+      it { expect( subject.read_accessor? ).to be_truthy }
+      it { expect( subject.write_accessor? ).to be_truthy }
+      it { expect( subject.predicate_accessor? ).to be_falsey }
     end
   end
 
@@ -254,11 +257,11 @@ describe "Key" do
       end
 
       it "should work with Boolean type and false value" do
-        Key.new(:active, Boolean, :default => false).default_value.should be_false
+        Key.new(:active, Boolean, :default => false).default_value.should be_falsey
       end
 
       it "should work with Boolean type and true value" do
-        Key.new(:active, Boolean, :default => true).default_value.should be_true
+        Key.new(:active, Boolean, :default => true).default_value.should be_truthy
       end
 
       it "should work with Array values" do

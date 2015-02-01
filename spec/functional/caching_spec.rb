@@ -6,16 +6,16 @@ describe "Caching" do
       extend MongoMapper::Plugins
       plugin MongoMapper::Plugins::Caching
     end
-    @klass.stub(:name).and_return('Post')
-    @klass.any_instance.stub(:persisted?).and_return(true)
-    @klass.any_instance.stub(:[]).and_return(nil)
-    @klass.any_instance.stub(:[]=).and_return(nil)
+    allow(@klass).to receive(:name).and_return('Post')
+    allow_any_instance_of(@klass).to receive(:persisted?).and_return(true)
+    allow_any_instance_of(@klass).to receive(:[]).and_return(nil)
+    allow_any_instance_of(@klass).to receive(:[]=).and_return(nil)
   end
 
   context "new" do
     before do
       @doc = @klass.new
-      @doc.stub(:persisted?).and_return(false)
+      allow(@doc).to receive(:persisted?).and_return(false)
     end
 
     it "should be class/new" do
@@ -35,14 +35,14 @@ describe "Caching" do
     before do
       @object_id = BSON::ObjectId.new
       @doc = @klass.new
-      @doc.stub(:persisted).and_return(true)
-      @doc.stub(:id).and_return(@object_id)
+      allow(@doc).to receive(:persisted).and_return(true)
+      allow(@doc).to receive(:id).and_return(@object_id)
     end
 
     context "with updated_at" do
       before do
         time = Time.utc(2010, 6, 20, 8, 10, 7)
-        @doc.stub(:[]).with(:updated_at).and_return(time)
+        allow(@doc).to receive(:[]).with(:updated_at).and_return(time)
       end
 
       it "should be class/id-timestamp" do

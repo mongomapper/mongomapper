@@ -10,28 +10,28 @@ describe "DynamicFinder" do
 
   context "found?" do
     it "should be true for find_by" do
-      DynamicFinder.new(:find_by_foo).found?.should be_true
+      DynamicFinder.new(:find_by_foo).found?.should be_truthy
     end
 
     it "should be true for find_by with !" do
-      DynamicFinder.new(:find_by_foo!).found?.should be_true
+      DynamicFinder.new(:find_by_foo!).found?.should be_truthy
     end
 
     it "should be true for find_all_by" do
-      DynamicFinder.new(:find_all_by_foo).found?.should be_true
+      DynamicFinder.new(:find_all_by_foo).found?.should be_truthy
     end
 
     it "should be true for find_or_initialize_by" do
-      DynamicFinder.new(:find_or_initialize_by_foo).found?.should be_true
+      DynamicFinder.new(:find_or_initialize_by_foo).found?.should be_truthy
     end
 
     it "should be true for find_or_create_by" do
-      DynamicFinder.new(:find_or_create_by_foo).found?.should be_true
+      DynamicFinder.new(:find_or_create_by_foo).found?.should be_truthy
     end
 
     it "should be false for anything else" do
       [:foobar, :bazwick].each do |method|
-        DynamicFinder.new(method).found?.should be_false
+        DynamicFinder.new(method).found?.should be_falsey
       end
     end
   end
@@ -65,7 +65,7 @@ describe "DynamicFinder" do
     end
 
     it "should set bang to false" do
-      DynamicFinder.new(:find_by_foo).bang.should be_false
+      DynamicFinder.new(:find_by_foo).bang.should be_falsey
     end
   end
 
@@ -83,7 +83,7 @@ describe "DynamicFinder" do
     end
 
     it "should set bang to true" do
-      DynamicFinder.new(:find_by_foo!).bang.should be_true
+      DynamicFinder.new(:find_by_foo!).bang.should be_truthy
     end
   end
 

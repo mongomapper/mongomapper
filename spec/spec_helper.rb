@@ -70,9 +70,12 @@ MongoMapper.database = "test"
 MongoMapper.database.collections.each { |c| c.drop_indexes }
 Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
 
-RSpec.configure do |c|
-  c.treat_symbols_as_metadata_keys_with_true_values = true
-  c.around(:each, :without_connection) do |example|
+RSpec.configure do |config|
+  config.expect_with :rspec do |c|
+    c.syntax = [:should, :expect]
+  end
+
+  config.around(:each, :without_connection) do |example|
     old, MongoMapper.connection = MongoMapper.connection, nil
     example.run
     MongoMapper.connection = old

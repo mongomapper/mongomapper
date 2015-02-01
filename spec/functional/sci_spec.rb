@@ -3,7 +3,7 @@ require 'spec_helper'
 describe "Single collection inheritance (document)" do
   context "without a connection", :without_connection => true do
     it "should attempt to create a connection during inheritance" do
-      Mongo::MongoClient.should_not_receive(:new)
+      expect(Mongo::MongoClient).to_not receive(:new)
       doc = Class.new
       doc.send(:include, MongoMapper::Document)
       expect {
@@ -49,7 +49,7 @@ describe "Single collection inheritance (document)" do
     end
 
     it "should automatically add _type key to store class" do
-      DocParent.key?(:_type).should be_true
+      DocParent.key?(:_type).should be_truthy
     end
 
     it "should use modifiers properly" do
@@ -323,7 +323,7 @@ describe "Single collection inheritance (document)" do
     end
 
     it "should automatically add _type key" do
-      Grandparent.key?(:_type).should be_true
+      Grandparent.key?(:_type).should be_truthy
     end
 
     context ".single_collection_inherited?" do

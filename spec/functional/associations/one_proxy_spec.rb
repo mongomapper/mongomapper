@@ -11,7 +11,7 @@ describe "OneProxy" do
 
   it "should default to nil" do
     @post_class.one :author, :class => @author_class
-    @post_class.new.author.nil?.should be_true
+    @post_class.new.author.nil?.should be_truthy
   end
 
   it "should return nil instead of a proxy" do
@@ -25,7 +25,7 @@ describe "OneProxy" do
     post = @post_class.new('author' => { 'name' => 'Frank' })
     post.author.name.should == 'Frank'
 
-    post.save.should be_true
+    post.save.should be_truthy
     post.reload
 
     post.author.name.should == 'Frank'
@@ -42,7 +42,7 @@ describe "OneProxy" do
         post.reload
 
         post.author.should == author
-        post.author.nil?.should be_false
+        post.author.nil?.should be_falsey
 
         new_author = @author_class.new(:name => 'Emily')
         post.author = new_author
@@ -58,7 +58,7 @@ describe "OneProxy" do
         post.reload
 
         post.author.should == author
-        post.author.nil?.should be_false
+        post.author.nil?.should be_falsey
 
         original_author = post.author
         original_author.name.should == 'Frank'
@@ -79,7 +79,7 @@ describe "OneProxy" do
         post.reload
 
         post.author.name.should == 'Frank'
-        post.author.nil?.should be_false
+        post.author.nil?.should be_falsey
 
         post.author = {'name' => 'Emily'}
         post.author.name.should == 'Emily'
@@ -97,7 +97,7 @@ describe "OneProxy" do
         end
 
         it "should call delete on the existing document" do
-          @author_class.any_instance.should_receive(:delete).once
+          expect_any_instance_of(@author_class).to receive(:delete).once
           @post.author = @author_class.new
         end
 
@@ -107,7 +107,7 @@ describe "OneProxy" do
         end
 
         it "should do nothing if it's the same document" do
-          @author_class.any_instance.should_receive(:delete).never
+          expect_any_instance_of(@author_class).to receive(:delete).never
           @post.author = @author
         end
       end
@@ -122,7 +122,7 @@ describe "OneProxy" do
         end
 
         it "should call destroy the existing document" do
-          @author_class.any_instance.should_receive(:destroy).once
+          expect_any_instance_of(@author_class).to receive(:destroy).once
           @post.author = @author_class.new
         end
 
@@ -132,7 +132,7 @@ describe "OneProxy" do
         end
 
         it "should do nothing if it's the same document" do
-          @author_class.any_instance.should_receive(:destroy).never
+          expect_any_instance_of(@author_class).to receive(:destroy).never
           @post.author = @author
         end
       end
@@ -207,10 +207,10 @@ describe "OneProxy" do
     @post_class.one :author, :class => @author_class
 
     post = @post_class.new
-    post.author?.should be_false
+    post.author?.should be_falsey
 
     post.author = @author_class.new(:name => 'Frank')
-    post.author?.should be_true
+    post.author?.should be_truthy
   end
 
   it "should work with criteria" do
@@ -232,7 +232,7 @@ describe "OneProxy" do
     post.update_attributes!(:author => author)
     post.reload
     post.author = nil
-    post.author.nil?.should be_true
+    post.author.nil?.should be_truthy
   end
 
   context "destroying parent with :dependent" do
@@ -246,7 +246,7 @@ describe "OneProxy" do
       end
 
       it "should should call destroy on the associated documents" do
-        @author_class.any_instance.should_receive(:destroy).once
+        expect_any_instance_of(@author_class).to receive(:destroy).once
         @post.destroy
       end
 
@@ -268,7 +268,7 @@ describe "OneProxy" do
       end
 
       it "should should call delete the associated documents" do
-        @author_class.any_instance.should_receive(:delete).once
+        expect_any_instance_of(@author_class).to receive(:delete).once
         @post.destroy
       end
 

@@ -21,7 +21,7 @@ describe "ManyEmbeddedPolymorphicProxy" do
   it "should be able to replace the association" do
     catalog = Catalog.new
     catalog.medias = [Video.new('file' => 'video.mpg', 'length' => 3600)]
-    catalog.save.should be_true
+    catalog.save.should be_truthy
 
     catalog = catalog.reload
     catalog.medias.size.should == 1
@@ -40,7 +40,7 @@ describe "ManyEmbeddedPolymorphicProxy" do
       catalog.medias[1].serial_number.should == '1B'
       catalog.medias[1].class.should == Robot
 
-      catalog.save.should be_true
+      catalog.save.should be_truthy
       catalog.reload
 
       catalog.medias.size.should == 2
@@ -60,7 +60,7 @@ describe "ManyEmbeddedPolymorphicProxy" do
       catalog.medias[1].serial_number.should == '1B'
       catalog.medias[1].class.should == Robot
 
-      catalog.save.should be_true
+      catalog.save.should be_truthy
       catalog.reload
 
       catalog.medias.size.should == 2
@@ -81,7 +81,7 @@ describe "ManyEmbeddedPolymorphicProxy" do
       catalog.medias[1].serial_number.should == '1B'
       catalog.medias[1].class.should == Robot
 
-      catalog.save.should be_true
+      catalog.save.should be_truthy
       catalog.reload
 
       catalog.medias.size.should == 2
@@ -105,7 +105,7 @@ describe "ManyEmbeddedPolymorphicProxy" do
         Image.new('file' => 'image.png', 'width' => 800, 'height' => 600)
       ]
       catalog.medias.count.should == 3
-      catalog.save.should be_true
+      catalog.save.should be_truthy
       catalog.reload
       catalog.medias.count.should == 3
     end
@@ -118,7 +118,7 @@ describe "ManyEmbeddedPolymorphicProxy" do
       Music.new('file' => 'music.mp3', 'bitrate' => '128kbps'),
       Image.new('file' => 'image.png', 'width' => 800, 'height' => 600)
     ]
-    catalog.save.should be_true
+    catalog.save.should be_truthy
 
     catalog = catalog.reload
     catalog.medias.size.should == 3
@@ -146,7 +146,7 @@ describe "ManyEmbeddedPolymorphicProxy" do
       fleet.transports.size.should == 3
       fleet.transports[0].class.should == TrModels::Ambulance
       fleet.transports[0].license_plate.should == 'GGG123'
-      fleet.transports[0].icu.should be_true
+      fleet.transports[0].icu.should be_truthy
       fleet.transports[1].class.should == TrModels::Car
       fleet.transports[1].license_plate.should == 'ABC123'
       fleet.transports[1].model.should == 'VW Golf'
@@ -155,12 +155,12 @@ describe "ManyEmbeddedPolymorphicProxy" do
       fleet.transports[2].license_plate.should == 'DEF123'
       fleet.transports[2].model.should == 'Honda Accord'
       fleet.transports[2].year.should == 2008
-      fleet.save.should be_true
+      fleet.save.should be_truthy
 
       fleet = fleet.reload
       fleet.transports.size.should == 3
       fleet.transports[0].license_plate.should == 'GGG123'
-      fleet.transports[0].icu.should be_true
+      fleet.transports[0].icu.should be_truthy
       fleet.transports[1].license_plate.should == 'ABC123'
       fleet.transports[1].model.should == 'VW Golf'
       fleet.transports[1].year.should == 2001
@@ -184,7 +184,7 @@ describe "ManyEmbeddedPolymorphicProxy" do
     it "should be able to replace the association" do
       fleet = TrModels::Fleet.new
       fleet.transports = [TrModels::Car.new('license_plate' => 'DCU2013', 'model' => 'Honda Civic')]
-      fleet.save.should be_true
+      fleet.save.should be_truthy
 
       fleet = fleet.reload
       fleet.transports.size.should == 1
@@ -198,7 +198,7 @@ describe "ManyEmbeddedPolymorphicProxy" do
         TrModels::Bus.new('license_plate' => 'XYZ9090', 'max_passengers' => 51),
         TrModels::Ambulance.new('license_plate' => 'HDD3030', 'icu' => true)
       ]
-      fleet.save.should be_true
+      fleet.save.should be_truthy
 
       fleet = fleet.reload
       fleet.transports.size.should == 3

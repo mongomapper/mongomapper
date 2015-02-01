@@ -57,7 +57,7 @@ module MongoMapper
           Key.new(*args).tap do |key|
             keys[key.name] = key
             keys[key.abbr] = key if key.abbr
-            create_accessors_for(key) if key.valid_ruby_name?
+            create_accessors_for(key) if key.valid_ruby_name? && !key.reserved_name?
             create_key_in_descendants(*args)
             create_indexes_for(key)
             create_validations_for(key)

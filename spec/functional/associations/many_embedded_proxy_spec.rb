@@ -89,7 +89,7 @@ describe "ManyEmbeddedProxy" do
     owner.pets[1].name.should == 'Sasha'
     owner.pets[1].species.should == 'Siberian Husky'
 
-    owner.save.should be_true
+    owner.save.should be_truthy
     owner.reload
 
     owner.name.should == 'Mr. Pet Lover'
