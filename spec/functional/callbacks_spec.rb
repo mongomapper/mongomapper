@@ -240,4 +240,91 @@ describe "Callbacks" do
       doc.message.should == 'Ho!'
     end
   end
+
+  describe "after_find" do
+    before do
+      @found_objects = []
+      found_objects = @found_objects # use a local for closure
+
+      @doc_class = Doc("User") do
+        after_find :set_found_object
+
+        define_method :set_found_object do
+          found_objects << self
+        end
+      end
+    end
+
+    it "should run after finding an object with find!" do
+      @doc = @doc_class.create!
+
+      @doc_class.find!(@doc.id)
+      @found_objects.should == [@doc]
+    end
+
+    it "should not have run if nothing was queried" do
+      @found_objects.should == []
+    end
+
+    it "should run for multiple objects" do
+      @doc1 = @doc_class.create!
+      @doc2 = @doc_class.create!
+
+      @doc_class.all
+      @found_objects.should == [@doc1, @doc2]
+    end
+
+    it "should run after finding an object through the query proxy" do
+      @doc = @doc_class.create!
+      @doc_class.where(:_id => @doc.id).first
+      @found_objects.should == [@doc]
+    end
+
+    it "should still return the object" do
+      @doc = @doc_class.create!
+      @doc_class.where(:_id => @doc.id).first.should == @doc
+    end
+
+    it "should not bail if the method return false" do
+      @doc_class = Doc("User") do
+        after_find :set_found_object
+
+        define_method :set_found_object do
+          false
+        end
+      end
+
+      @doc = @doc_class.create!
+      @doc_class.where(:_id => @doc.id).first.should == @doc
+    end
+  end
+
+  describe "after_initialize" do
+    before do
+      @objects = []
+      objects = @objects
+
+      @doc_class = Doc("User") do
+        after_initialize :set_initialized_object
+
+        define_method :set_initialized_object do
+          objects << self
+        end
+      end
+    end
+
+    it "should be triggered for objects created with new" do
+      @objects.should == []
+      obj = @doc_class.new
+      @objects.should == [obj]
+    end
+
+    it "should be triggered for objects found in the db" do
+      @doc = @doc_class.create!
+      @objects.clear # don't re-assign as we want the operation to be in place
+
+      @doc_class.all
+      @objects.should == [@doc]
+    end
+  end
 end

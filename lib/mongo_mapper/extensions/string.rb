@@ -2,17 +2,25 @@
 module MongoMapper
   module Extensions
     module String
-      def to_mongo(value)
-        value && value.to_s
+      extend ActiveSupport::Concern
+
+      module ClassMethods
+        def to_mongo(value)
+          value && value.to_s
+        end
+
+        def from_mongo(value)
+          value && value.to_s
+        end
       end
 
-      def from_mongo(value)
-        value && value.to_s
+      def _mongo_mapper_deep_copy_
+        self.dup
       end
     end
   end
 end
 
 class String
-  extend MongoMapper::Extensions::String
+  include MongoMapper::Extensions::String
 end
