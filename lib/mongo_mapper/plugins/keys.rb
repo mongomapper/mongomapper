@@ -1,5 +1,6 @@
 # encoding: UTF-8
 require 'mongo_mapper/plugins/keys/key'
+require 'mongo_mapper/plugins/keys/static'
 
 module MongoMapper
   module Plugins
