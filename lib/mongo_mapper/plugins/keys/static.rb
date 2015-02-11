@@ -22,9 +22,6 @@ module MongoMapper
           end
         end
 
-        alias_method :[], :read_key
-        alias_method :attribute, :read_key
-
       private
 
         def write_key(name, value)

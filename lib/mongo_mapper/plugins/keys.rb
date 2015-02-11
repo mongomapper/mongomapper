@@ -373,8 +373,8 @@ module MongoMapper
         end
       end
 
-      alias_method :[], :read_key
-      alias_method :attribute, :read_key
+      def [](key_name); read_key(key_name); end
+      def attribute(key_name); read_key(key_name); end
 
       def []=(name, value)
         write_key(name, value)
