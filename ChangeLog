@@ -1,9 +1,45 @@
 
 HEAD
 
+  Enhancements:
+
+    * Only partially update objects (using $set and $unset) when updates occur.
+
+      Partial Updates can be turned on or off per class (by default they are off):
+
+        class Person
+          include MongoMapper::Document
+          self.partial_updates = true
+        end
+
+      [smtlaissezfaire]
+
+    * (Optionally) allow only static (defined) keys, and raise errors for keys that haven't been defined (mimic Mongoid's allow_dynamic_fields = false).
+
+      Turn this on, per model, with:
+
+        class Person
+          include MongoMapper::Document
+          self.static_keys = true
+        end
+
+        p = Person.new
+        p['non_defined_key'] = 'foo' # => MissingKeyError
+
+      [smtlaissezfaire]
+
+    * Add after_find, after_initialize callbacks [smtlaissezfaire]
+
+  Bug Fixes
+
+    * Fix counter caching with polymorphic belongs_to [smtlaissezfaire, bhernez]
+
   Internals:
 
-    * Changelog updates [smtlaissezfaire]
+    * Don't create accessors for reserved keys (id, class, etc) [cheald]
+    * Disallow class as a key name [cheald]
+    * Add ruby 1.8.7 specific gem files to use specific version of i18n <poineau@nationbuilder.com>
+    * Fixing failing tests for rails 4 <poineau@nationbuilder.com>
     * Upgrade to rspec 3.x [smtlaissezfaire, sgnn7]
 
 --------------------------------------
