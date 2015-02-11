@@ -49,28 +49,47 @@ module MongoMapper
             raise InvalidCounterCacheError, "You must define an association with name `#{association_name}' on model #{self}"
           end
 
-          association_class = association.klass
-          key_names = association_class.keys.keys
+          # make a define-time check to make sure the counter cache field is defined.
+          # note: this can only be done in non-polymorphic classes
+          # (since we may not know the class on the other side of the association)
+          if !association.polymorphic?
+            association_class = association.klass
+            key_names = association_class.keys.keys
 
-          if !key_names.include?(field.to_s)
-            raise InvalidCounterCacheError, "Missing `key #{field.to_sym.inspect}, Integer, :default => 0' on model #{association_class}"
+            if !key_names.include?(field.to_s)
+              _raise_when_missing_counter_cache_key(association_class, field)
+            end
           end
 
           after_create do
             if obj = self.send(association_name)
+              if !obj.respond_to?(field)
+                self.class._raise_when_missing_counter_cache_key(obj.class, field)
+              end
+
               obj.increment(field => 1)
               obj.write_attribute(field, obj.read_attribute(field) + 1)
             end
+
             true
           end
 
           after_destroy do
             if obj = self.send(association_name)
+              if !obj.respond_to?(field)
+                self.class._raise_when_missing_counter_cache_key(obj.class, field)
+              end
+
               obj.decrement(field => 1)
               obj.write_attribute(field, obj.read_attribute(field) - 1)
             end
+
             true
           end
+        end
+
+        def _raise_when_missing_counter_cache_key(klass, field)
+          raise InvalidCounterCacheError, "Missing `key #{field.to_sym.inspect}, Integer, :default => 0' on model #{klass}"
         end
       end
     end

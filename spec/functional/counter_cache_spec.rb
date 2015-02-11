@@ -15,6 +15,7 @@ module CounterCacheFixtureModels
 
     key :comments_count, Integer, :default => 0
     key :some_custom_comments_count, Integer, :default => 0
+    key :commentable_count, Integer, :default => 0
 
     has_many :comments,
              :class_name => "CounterCacheFixtureModels::Comment"
@@ -22,6 +23,20 @@ module CounterCacheFixtureModels
     belongs_to :user,
                :counter_cache => true,
                :class_name => "CounterCacheFixtureModels::User"
+
+    many :polymorphic_comments,
+         :as => :commentable,
+         :class_name => "CounterCacheFixtureModels::Comment"
+  end
+
+  class Article
+    include MongoMapper::Document
+
+    key :commentable_count, Integer, :default => 0
+
+    many :polymorphic_comments,
+         :as => :commentable,
+         :class_name => "CounterCacheFixtureModels::Comment"
   end
 
   class Comment
@@ -30,6 +45,10 @@ module CounterCacheFixtureModels
     belongs_to :post,
                :counter_cache => true,
                :class_name => "CounterCacheFixtureModels::Post"
+
+    belongs_to :commentable,
+               :polymorphic => true,
+               :counter_cache => :commentable_count
   end
 
   class CustomComment
@@ -142,5 +161,75 @@ describe MongoMapper::Plugins::CounterCache do
         end
       end
     }.should raise_error(MongoMapper::Plugins::CounterCache::InvalidCounterCacheError, "Missing `key :invalid_field, Integer, :default => 0' on model CounterCacheFixtureModels::Post")
+  end
+
+  describe "with polymorphic associations" do
+    before do
+      @article = CounterCacheFixtureModels::Article.new
+      @comment = CounterCacheFixtureModels::Comment.new
+      @comment.commentable = @article
+    end
+
+    it "should update the counter cache on save" do
+      expect {
+        @comment.save!
+        @article.reload
+      }.to change(@article, :commentable_count).by(1)
+    end
+
+    it "should increment with a second object" do
+      @comment.save!
+
+      expect {
+        second_comment = CounterCacheFixtureModels::Comment.new
+        second_comment.commentable = @article
+        second_comment.save!
+        @article.reload
+      }.to change(@article, :commentable_count).by(1)
+    end
+
+    it "should decrement the counter cache on destroy" do
+      @comment.save!
+
+      expect {
+        @comment.destroy
+        @article.reload
+      }.to change(@article, :commentable_count).by(-1)
+    end
+
+    it "should increment with a different type of object" do
+      @comment.save!
+
+      expect {
+        second_comment = CounterCacheFixtureModels::Comment.new
+        second_comment.commentable = @article
+        second_comment.save!
+
+        @article.reload
+      }.to change(@article, :commentable_count).by(1)
+    end
+
+    describe "without a counter cache field" do
+      before do
+        @comment = CounterCacheFixtureModels::Comment.new
+        @klass = Class.new do
+          include MongoMapper::Document
+
+          many :polymorphic_comments,
+               :as => :commentable,
+               :class_name => "CounterCacheFixtureModels::Comment"
+        end
+
+        @obj = @klass.new
+      end
+
+      it "should raise at save (runtime) if there is no counter cache field" do
+        @comment.commentable = @obj
+
+        expect {
+          @comment.save!
+        }.to raise_error(MongoMapper::Plugins::CounterCache::InvalidCounterCacheError)
+      end
+    end
   end
 end
