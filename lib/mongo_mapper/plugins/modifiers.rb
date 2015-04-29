@@ -13,7 +13,12 @@ module MongoMapper
           criteria, keys, options = criteria_and_keys_from_args(args)
           values, to_decrement = keys.values, {}
           keys.keys.each_with_index { |k, i| to_decrement[k] = -values[i].abs }
-          collection.update(criteria, {'$inc' => to_decrement}, :multi => true)
+          updates = { '$inc' => to_decrement }
+          if self.record_timestamps
+            updates = add_timestamp_update_option('$inc', updates)
+          end
+
+          collection.update(criteria, updates, :multi => true)
         end
 
         def set(*args)
@@ -78,12 +83,27 @@ module MongoMapper
 
         private
           def modifier_update(modifier, args)
-            criteria, updates, options = criteria_and_keys_from_args(args)
-            if options
-              collection.update(criteria, {modifier => updates}, options.merge(:multi => true))
-            else
-              collection.update(criteria, {modifier => updates}, :multi => true)
+            criteria, modifier_updates, options = criteria_and_keys_from_args(args)
+            updates = { modifier => modifier_updates }
+            if self.record_timestamps
+              updates = add_timestamp_update_option(modifier, updates)
             end
+
+            if options
+              collection.update(criteria, updates, options.merge(:multi => true))
+            else
+              collection.update(criteria, updates, :multi => true)
+            end
+          end
+
+          def add_timestamp_update_option(modifier, updates)
+              if modifier == '$set'
+                updates['$set'][:updated_at] = Time.now.utc
+              else
+                updates['$set'] = { :updated_at => Time.now.utc }
+              end
+
+              updates
           end
 
           def criteria_and_keys_from_args(args)
