@@ -23,6 +23,7 @@ module MongoMapper
           self[:created_at] = now if !persisted? && !created_at?
           self[:updated_at] = now
         end
+        true
       end
     end
   end
