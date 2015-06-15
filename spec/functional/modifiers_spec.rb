@@ -15,6 +15,8 @@ module Modifiers
 
     let(:page_class_with_standard_key) {
       Doc do
+        timestamps!
+
         key :title,       String
         key :day_count,   Integer, :default => 0
         key :week_count,  Integer, :default => 0
@@ -35,6 +37,12 @@ module Modifiers
       page.class.collection.find_one({:_id => page.id}).tap do |doc|
         doc.should be_present, "Could not find document"
         (doc.keys & keys).should be_empty, "Expected to not have keys #{keys.inspect}, got #{(keys & doc.keys).inspect}"
+      end
+    end
+
+    def assert_timestamp_updated(page, new_timestamp)
+      page.class.collection.find_one({:_id => page.id}).tap do |doc|
+        doc.fetch('updated_at').to_i.should be_within(1).of(new_timestamp.to_i)
       end
     end
 
@@ -69,12 +77,17 @@ module Modifiers
           it "should be able to pass safe option" do
             page_class.create(:title => "Better Be Safe than Sorry")
 
+            updated_at = Time.at(123456).utc
             expect_any_instance_of(Mongo::Collection).to receive(:update).with(
               {:title => "Better Be Safe than Sorry"},
-              {'$unset' => {:tags => 1}},
+              {'$unset' => {:tags => 1},
+               '$set' => {:updated_at => updated_at }},
               {:w => 1, :multi => true}
             )
-            page_class.unset({:title => "Better Be Safe than Sorry"}, :tags, {:w => 1})
+
+            Timecop.freeze(updated_at) do
+              page_class.unset({:title => "Better Be Safe than Sorry"}, :tags, {:w => 1})
+            end
           end
 
           it "should be able to pass both safe and upsert options" do
@@ -106,6 +119,16 @@ module Modifiers
 
           assert_page_counts page, 1, 2, 3
           assert_page_counts page2, 1, 2, 3
+        end
+
+        it "should work with timestamp plugin" do
+          new_updated_at = Time.at(Time.now.to_i + 5.seconds)
+          Timecop.freeze(new_updated_at) do
+            page_class.increment({:title => 'Home'}, :day_count => 1)
+          end
+
+          assert_timestamp_updated page, new_updated_at
+          assert_timestamp_updated page2, new_updated_at
         end
       end
 
@@ -139,6 +162,16 @@ module Modifiers
 
           assert_page_counts page, 0, 0, 0
           assert_page_counts page2, 0, 0, 0
+        end
+
+        it "should work with timestamp plugin" do
+          new_updated_at = Time.at(Time.now.to_i + 5.seconds)
+          Timecop.freeze(new_updated_at) do
+            page_class.decrement({:title => 'Home'}, :day_count => 1)
+          end
+
+          assert_timestamp_updated page, new_updated_at
+          assert_timestamp_updated page2, new_updated_at
         end
       end
 
@@ -185,6 +218,15 @@ module Modifiers
           page[:colors].should == %w[red green]
         end
 
+        it "should work with timestamp plugin" do
+          new_updated_at = Time.at(Time.now.to_i + 5.seconds)
+          Timecop.freeze(new_updated_at) do
+            page_class.set(page.id, :colors => %w[red green])
+          end
+
+          assert_timestamp_updated page, new_updated_at
+        end
+
         context "additional options (upsert & safe)" do
           it "should be able to pass upsert option" do
             new_key_value = DateTime.now.to_s
@@ -196,12 +238,18 @@ module Modifiers
           it "should be able to pass safe option" do
             page_class.create(:title => "Better Be Safe than Sorry")
 
+            updated_at = Time.at(Time.now).utc
             expect_any_instance_of(Mongo::Collection).to receive(:update).with(
               {:title => "Better Be Safe than Sorry"},
-              {'$set' => {:title => "I like safety."}},
+              {'$set' => {:title => "I like safety.", :updated_at => updated_at}},
               {:w => 1, :multi => true}
             )
-            page_class.set({:title => "Better Be Safe than Sorry"}, {:title => "I like safety."}, {:safe => true})
+
+            Timecop.freeze(updated_at) do
+              page_class.set({:title => "Better Be Safe than Sorry"},
+                             {:title => "I like safety."},
+                             {:safe => true})
+            end
           end
 
           it "should be able to pass both safe and upsert options" do
@@ -257,6 +305,16 @@ module Modifiers
           page2.reload
           page2.tags.should == tags
         end
+
+        it "should work with timestamp plugin" do
+          new_updated_at = Time.at(Time.now.to_i + 5.seconds)
+          Timecop.freeze(new_updated_at) do
+            page_class.push_all(page.id, page2.id, :tags => tags)
+          end
+
+          assert_timestamp_updated page, new_updated_at
+          assert_timestamp_updated page2, new_updated_at
+        end
       end
 
       context "pull" do
@@ -281,6 +339,16 @@ module Modifiers
 
           page2.reload
           page2.tags.should == %w(bar)
+        end
+
+        it "should work with timestamp plugin" do
+          new_updated_at = Time.at(Time.now.to_i + 5.seconds)
+          Timecop.freeze(new_updated_at) do
+            page_class.pull(page.id, page2.id, :tags => 'foo')
+          end
+
+          assert_timestamp_updated page, new_updated_at
+          assert_timestamp_updated page2, new_updated_at
         end
       end
 
@@ -331,6 +399,16 @@ module Modifiers
           page2.reload
           page2.tags.should == %w(foo)
         end
+
+        it "should work with timestamp plugin" do
+          new_updated_at = Time.at(Time.now.to_i + 5.seconds)
+          Timecop.freeze(new_updated_at) do
+            page_class.add_to_set(page.id, page2.id, :tags => 'foo')
+          end
+
+          assert_timestamp_updated page, new_updated_at
+          assert_timestamp_updated page2, new_updated_at
+        end
       end
 
       context "push_uniq" do
@@ -355,6 +433,16 @@ module Modifiers
           page2.reload
           page2.tags.should == %w(foo)
         end
+
+        it "should work with timestamp plugin" do
+          new_updated_at = Time.at(Time.now.to_i + 5.seconds)
+          Timecop.freeze(new_updated_at) do
+            page_class.push_uniq(page.id, page2.id, :tags => 'foo')
+          end
+
+          assert_timestamp_updated page, new_updated_at
+          assert_timestamp_updated page2, new_updated_at
+        end
       end
 
       context "pop" do
@@ -370,6 +458,15 @@ module Modifiers
           page_class.pop(page.id, :tags => -1)
           page.reload
           page.tags.should == %w(bar)
+        end
+
+        it "should work with timestamp plugin" do
+          new_updated_at = Time.at(Time.now.to_i + 5.seconds)
+          Timecop.freeze(new_updated_at) do
+            page_class.pop(page.id, :tags => -1)
+          end
+
+          assert_timestamp_updated page, new_updated_at
         end
       end
 
