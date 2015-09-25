@@ -21,7 +21,7 @@ module MongoMapper
 
         def reset
           super
-          target = []
+          @target = []
         end
       end
     end
