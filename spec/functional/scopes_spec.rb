@@ -165,7 +165,7 @@ describe "Scopes" do
         class ::Item
           include MongoMapper::Document
           scope :by_title,  lambda { |title| {:title => title} }
-          scope :published, lambda { {:published_at.lte => Time.now.utc} }
+          scope :published, lambda { {:published_at.lte => Time.current.utc} }
 
           key   :title, String
           key   :published_at, Time

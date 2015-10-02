@@ -27,7 +27,7 @@ Foo.collection.remove
 Benchmark.bm(5) do |x|
   ids = []
   x.report("write") do
-    1000.times { |i| ids << Foo.create(:count => 0, :approved => true, :approved_at => Time.now, :expire_on => Date.today).id }
+    1000.times { |i| ids << Foo.create(:count => 0, :approved => true, :approved_at => Time.current, :expire_on => Date.today).id }
   end
 
   x.report("read ") do

@@ -51,7 +51,7 @@ module Serialization
         :age         => 25,
         :awesome     => true,
         :preferences => {:language => 'Ruby'},
-        :created_at  => Time.now.change(:usec => 0)
+        :created_at  => Time.current.change(:usec => 0)
       )
     end
 
