@@ -62,7 +62,7 @@ module MongoMapper
 
           if @typecast
             klass = typecast_class  # Don't make this lookup on every call
-            type.from_mongo(value).map { |v| klass.from_mongo(v) }
+            type.from_mongo(value).map! { |v| klass.from_mongo(v) }
           else
             type.from_mongo(value)
           end
