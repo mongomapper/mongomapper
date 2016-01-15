@@ -35,7 +35,7 @@ Additionally, MongoMapper is tested against:
 
 == Contributing & Development
 
-    $ git clone https://github.com/jnunemaker/mongomapper && cd mongomapper
+    $ git clone https://github.com/mongomapper/mongomapper && cd mongomapper
     $ bundle install
     $ bundle exec rake
 
