@@ -58,7 +58,7 @@ module MongoMapper
           end
         end
 
-      protected
+      private
 
         def method_missing(method, *args, &block)
           return super unless model.respond_to?(method)

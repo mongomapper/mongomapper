@@ -102,12 +102,6 @@ module MongoMapper
 
       protected
 
-        def method_missing(method, *args, &block)
-          if load_target
-            target.send(method, *args, &block)
-          end
-        end
-
         def load_target
           unless loaded?
             if @target.is_a?(Array) && @target.any?
@@ -132,6 +126,14 @@ module MongoMapper
           array.collect do |element|
             (element.respond_to?(:flatten) && !element.is_a?(Hash)) ? element.flatten : element
           end.flatten
+        end
+
+      private
+
+        def method_missing(method, *args, &block)
+          if load_target
+            target.send(method, *args, &block)
+          end
         end
       end
     end

@@ -29,7 +29,7 @@ module MongoMapper
           end
         end
 
-      protected
+      private
 
         def method_missing(method, *args, &block)
           finder = DynamicFinder.new(method)
