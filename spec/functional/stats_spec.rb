@@ -59,10 +59,6 @@ describe "Stats" do
       expect(Docs.stats.padding_factor).to eq(Docs.collection.stats['paddingFactor'])
     end
 
-    it "should have the correct system flags" do
-      expect(Docs.stats.system_flags).to eq(Docs.collection.stats['systemFlags'])
-    end
-
     it "should have the correct user flags" do
       expect(Docs.stats.user_flags).to eq(Docs.collection.stats['userFlags'])
     end
