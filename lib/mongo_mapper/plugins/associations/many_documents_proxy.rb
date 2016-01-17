@@ -94,7 +94,7 @@ module MongoMapper
               when Plucky::Query
                 query.merge result
 
-              # If we got a single record of this classas a result, return it
+              # If we got a single record of this class as a result, return it
               when klass
                 result
 
