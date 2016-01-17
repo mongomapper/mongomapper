@@ -8,22 +8,23 @@ module MongoMapper
           reset
         end
 
-        protected
-          def find_target
-            if @value
-              child = polymorphic_class(@value).load(@value, true)
-              assign_references(child)
-              child
-            end
-          end
+      protected
 
-          def polymorphic_class(doc)
-            if class_name = doc[association.type_key_name]
-              class_name.constantize
-            else
-              klass
-            end
+        def find_target
+          if @value
+            child = polymorphic_class(@value).load(@value, true)
+            assign_references(child)
+            child
           end
+        end
+
+        def polymorphic_class(doc)
+          if class_name = doc[association.type_key_name]
+            class_name.constantize
+          else
+            klass
+          end
+        end
       end
     end
   end

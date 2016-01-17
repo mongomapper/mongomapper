@@ -19,15 +19,16 @@ module MongoMapper
           @target
         end
 
-        protected
-          def find_target
-            return nil if association_class.nil? || proxy_owner[association.foreign_key].nil?
-            association_class.find_by_id(proxy_owner[association.foreign_key])
-          end
+      protected
 
-          def association_class
-            proxy_owner[association.type_key_name] ? proxy_owner[association.type_key_name].constantize : nil
-          end
+        def find_target
+          return nil if association_class.nil? || proxy_owner[association.foreign_key].nil?
+          association_class.find_by_id(proxy_owner[association.foreign_key])
+        end
+
+        def association_class
+          proxy_owner[association.type_key_name] ? proxy_owner[association.type_key_name].constantize : nil
+        end
       end
     end
   end

@@ -21,7 +21,7 @@ module MongoMapper
           collection.drop_indexes
         end
 
-        private
+      private
 
         def dealias_options(options)
           case options

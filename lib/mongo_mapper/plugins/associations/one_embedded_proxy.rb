@@ -25,19 +25,19 @@ module MongoMapper
           @target.persist(options) if @target
         end
 
-        protected
+      protected
 
-          def find_target
-            if @value
-              klass.load(@value, true).tap do |child|
-                assign_references(child)
-              end
+        def find_target
+          if @value
+            klass.load(@value, true).tap do |child|
+              assign_references(child)
             end
           end
+        end
 
-          def assign_references(doc)
-            doc._parent_document = proxy_owner if doc
-          end
+        def assign_references(doc)
+          doc._parent_document = proxy_owner if doc
+        end
       end
     end
   end

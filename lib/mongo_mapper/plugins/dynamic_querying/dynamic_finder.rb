@@ -20,24 +20,25 @@ module MongoMapper
           bang == true
         end
 
-        protected
-          def match
-            case method.to_s
-              when /^find_(all_by|by)_([_a-zA-Z]\w*)$/
-                @finder = :all if $1 == 'all_by'
-                names = $2
-              when /^find_by_([_a-zA-Z]\w*)\!$/
-                @bang = true
-                names = $1
-              when /^find_or_(initialize|create)_by_([_a-zA-Z]\w*)$/
-                @instantiator = $1 == 'initialize' ? :new : :create
-                names = $2
-              else
-                @finder = nil
-            end
+      protected
 
-            @attributes = names && names.split('_and_')
+        def match
+          case method.to_s
+            when /^find_(all_by|by)_([_a-zA-Z]\w*)$/
+              @finder = :all if $1 == 'all_by'
+              names = $2
+            when /^find_by_([_a-zA-Z]\w*)\!$/
+              @bang = true
+              names = $1
+            when /^find_or_(initialize|create)_by_([_a-zA-Z]\w*)$/
+              @instantiator = $1 == 'initialize' ? :new : :create
+              names = $2
+            else
+              @finder = nil
           end
+
+          @attributes = names && names.split('_and_')
+        end
       end
     end
   end

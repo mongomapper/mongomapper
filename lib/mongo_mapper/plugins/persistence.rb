@@ -58,13 +58,14 @@ module MongoMapper
           database.collection(collection_name)
         end
 
-        private
-          def assert_supported
-            @embeddable ||= embeddable?
-            if @embeddable
-              raise MongoMapper::NotSupported.new('This is not supported for embeddable documents at this time.')
-            end
+      private
+
+        def assert_supported
+          @embeddable ||= embeddable?
+          if @embeddable
+            raise MongoMapper::NotSupported.new('This is not supported for embeddable documents at this time.')
           end
+        end
       end
 
       def collection

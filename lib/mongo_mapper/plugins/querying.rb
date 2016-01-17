@@ -61,41 +61,42 @@ module MongoMapper
           Plucky::CriteriaHash.new(criteria, :object_ids => object_id_keys)
         end
 
-        private
-          def transformer
-            @transformer ||= lambda { |doc| load(doc) }
+      private
+
+        def transformer
+          @transformer ||= lambda { |doc| load(doc) }
+        end
+
+        def initialize_each(*docs)
+          instances = []
+          docs = [{}] if docs.blank?
+          docs.flatten.each do |attrs|
+            doc = new(attrs)
+            yield(doc)
+            instances << doc
+          end
+          instances.size == 1 ? instances[0] : instances
+        end
+
+        def update_single(id, attrs)
+          if id.blank? || attrs.blank? || !attrs.is_a?(Hash)
+            raise ArgumentError, "Updating a single document requires an id and a hash of attributes"
           end
 
-          def initialize_each(*docs)
-            instances = []
-            docs = [{}] if docs.blank?
-            docs.flatten.each do |attrs|
-              doc = new(attrs)
-              yield(doc)
-              instances << doc
-            end
-            instances.size == 1 ? instances[0] : instances
+          find(id).tap do |doc|
+            doc.update_attributes(attrs)
+          end
+        end
+
+        def update_multiple(docs)
+          unless docs.is_a?(Hash)
+            raise ArgumentError, "Updating multiple documents takes 1 argument and it must be hash"
           end
 
-          def update_single(id, attrs)
-            if id.blank? || attrs.blank? || !attrs.is_a?(Hash)
-              raise ArgumentError, "Updating a single document requires an id and a hash of attributes"
-            end
-
-            find(id).tap do |doc|
-              doc.update_attributes(attrs)
-            end
-          end
-
-          def update_multiple(docs)
-            unless docs.is_a?(Hash)
-              raise ArgumentError, "Updating multiple documents takes 1 argument and it must be hash"
-            end
-
-            instances = []
-            docs.each_pair { |id, attrs| instances << update(id, attrs) }
-            instances
-          end
+          instances = []
+          docs.each_pair { |id, attrs| instances << update(id, attrs) }
+          instances
+        end
       end
 
       def save(options={})
@@ -116,60 +117,61 @@ module MongoMapper
         self.class.delete(id).tap { @_destroyed = true } if persisted?
       end
 
-      private
-        def create_or_update(options={})
-          result = persisted? ? update(options) : create(options)
-          result != false
-        end
+    private
 
-        def create(options={})
-          save_to_collection(options.merge(:persistence_method => :insert))
-        end
+      def create_or_update(options={})
+        result = persisted? ? update(options) : create(options)
+        result != false
+      end
 
-        def update(options={})
-          save_to_collection(options.reverse_merge(:persistence_method => :save))
-        end
+      def create(options={})
+        save_to_collection(options.merge(:persistence_method => :insert))
+      end
 
-        def save_to_collection(options={})
-          @_new = false
-          method = options.delete(:persistence_method) || :save
-          update = to_mongo
-          query_options = Utils.get_safe_options(options)
+      def update(options={})
+        save_to_collection(options.reverse_merge(:persistence_method => :save))
+      end
 
-          case method
-          when :insert
-            collection.insert(update, query_options)
-          when :save
-            collection.save(update, query_options)
-          when :update
-            update.stringify_keys!
+      def save_to_collection(options={})
+        @_new = false
+        method = options.delete(:persistence_method) || :save
+        update = to_mongo
+        query_options = Utils.get_safe_options(options)
 
-            id = update.delete("_id")
+        case method
+        when :insert
+          collection.insert(update, query_options)
+        when :save
+          collection.save(update, query_options)
+        when :update
+          update.stringify_keys!
 
-            set_values = update
-            unset_values = {}
+          id = update.delete("_id")
 
-            if fields_for_set = options.delete(:set_fields)
-              set_values = set_values.slice(*fields_for_set)
-            end
+          set_values = update
+          unset_values = {}
 
-            if fields_for_unset = options.delete(:unset_fields)
-              fields_for_unset.each do |field|
-                unset_values[field] = true
-              end
-            end
+          if fields_for_set = options.delete(:set_fields)
+            set_values = set_values.slice(*fields_for_set)
+          end
 
-            find_query = { :_id => id }
-
-            update_query = {}
-            update_query["$set"] = set_values if set_values.any?
-            update_query["$unset"] = unset_values if unset_values.any?
-
-            if update_query.any?
-              collection.update(find_query, update_query, query_options)
+          if fields_for_unset = options.delete(:unset_fields)
+            fields_for_unset.each do |field|
+              unset_values[field] = true
             end
           end
+
+          find_query = { :_id => id }
+
+          update_query = {}
+          update_query["$set"] = set_values if set_values.any?
+          update_query["$unset"] = unset_values if unset_values.any?
+
+          if update_query.any?
+            collection.update(find_query, update_query, query_options)
+          end
         end
+      end
     end
   end
 end

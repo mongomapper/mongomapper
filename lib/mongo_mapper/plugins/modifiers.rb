@@ -76,37 +76,38 @@ module MongoMapper
           collection.update(criteria, updates, args)
         end
 
-        private
-          def modifier_update(modifier, args)
-            criteria, updates, options = criteria_and_keys_from_args(args)
-            if options
-              collection.update(criteria, {modifier => updates}, options.merge(:multi => true))
-            else
-              collection.update(criteria, {modifier => updates}, :multi => true)
-            end
-          end
+      private
 
-          def criteria_and_keys_from_args(args)
-            if args[0].is_a?(Hash)
-              criteria = args[0]
-              updates  = args[1]
-              options  = args[2]
-            else
-              criteria, (updates, options) = args.partition { |a| !a.is_a?(Hash) }
-              criteria = { :id => criteria }
-            end
-            upgrade_legacy_safe_usage!(options)
-            updates = dealias_keys updates
-
-            [criteria_hash(criteria).to_hash, updates, options]
+        def modifier_update(modifier, args)
+          criteria, updates, options = criteria_and_keys_from_args(args)
+          if options
+            collection.update(criteria, {modifier => updates}, options.merge(:multi => true))
+          else
+            collection.update(criteria, {modifier => updates}, :multi => true)
           end
+        end
 
-          def upgrade_legacy_safe_usage!(options)
-            if options and options.key?(:safe)
-              options.merge! Utils.get_safe_options(options)
-              options.delete :safe
-            end
+        def criteria_and_keys_from_args(args)
+          if args[0].is_a?(Hash)
+            criteria = args[0]
+            updates  = args[1]
+            options  = args[2]
+          else
+            criteria, (updates, options) = args.partition { |a| !a.is_a?(Hash) }
+            criteria = { :id => criteria }
           end
+          upgrade_legacy_safe_usage!(options)
+          updates = dealias_keys updates
+
+          [criteria_hash(criteria).to_hash, updates, options]
+        end
+
+        def upgrade_legacy_safe_usage!(options)
+          if options and options.key?(:safe)
+            options.merge! Utils.get_safe_options(options)
+            options.delete :safe
+          end
+        end
       end
 
       def unset(*args)

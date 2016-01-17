@@ -76,22 +76,23 @@ module MongoMapper
         def setup(model)
         end
 
-        private
-          def separate_options_and_conditions
-            @original_options.each_pair do |key, value|
-              if AssociationOptions.include?(key)
-                @options[key] = value
-              else
-                @query_options[key] = value
-              end
-            end
-          end
+      private
 
-          def modularized_extensions(*extensions)
-            extensions.flatten.compact.map do |extension|
-              Proc === extension ? Module.new(&extension) : extension
+        def separate_options_and_conditions
+          @original_options.each_pair do |key, value|
+            if AssociationOptions.include?(key)
+              @options[key] = value
+            else
+              @query_options[key] = value
             end
           end
+        end
+
+        def modularized_extensions(*extensions)
+          extensions.flatten.compact.map do |extension|
+            Proc === extension ? Module.new(&extension) : extension
+          end
+        end
       end
     end
   end

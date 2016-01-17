@@ -34,18 +34,19 @@ module MongoMapper
           @target.save(options) if @target
         end
 
-        protected
-          def find_target
-            return nil if proxy_owner[association.foreign_key].nil?
-            klass.find_by_id(proxy_owner[association.foreign_key])
-          end
+      protected
 
-          def instantiate_target(instantiator, attrs={}, &block)
-            @target = klass.send(instantiator, attrs, &block)
-            proxy_owner[association.foreign_key] = @target.id
-            loaded
-            @target
-          end
+        def find_target
+          return nil if proxy_owner[association.foreign_key].nil?
+          klass.find_by_id(proxy_owner[association.foreign_key])
+        end
+
+        def instantiate_target(instantiator, attrs={}, &block)
+          @target = klass.send(instantiator, attrs, &block)
+          proxy_owner[association.foreign_key] = @target.id
+          loaded
+          @target
+        end
       end
     end
   end

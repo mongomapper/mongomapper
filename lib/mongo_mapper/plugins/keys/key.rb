@@ -116,18 +116,19 @@ module MongoMapper
           return !(@accessors & arr_opt).empty?
         end
 
-        private
-          def typecast_class
-            @typecast_class ||= options[:typecast].constantize
-          end
+      private
 
-          def validate_key_name!
-            if reserved_name?
-              raise MongoMapper::InvalidKey.new("`#{@name}` is a reserved key name (did you mean to use _id?)")
-            elsif !valid_ruby_name?
-              raise MongoMapper::InvalidKey.new("`#{@name}` is not a valid key name. Keys must match [a-z][a-z0-9_]*")
-            end
+        def typecast_class
+          @typecast_class ||= options[:typecast].constantize
+        end
+
+        def validate_key_name!
+          if reserved_name?
+            raise MongoMapper::InvalidKey.new("`#{@name}` is a reserved key name (did you mean to use _id?)")
+          elsif !valid_ruby_name?
+            raise MongoMapper::InvalidKey.new("`#{@name}` is not a valid key name. Keys must match [a-z][a-z0-9_]*")
           end
+        end
       end
     end
   end

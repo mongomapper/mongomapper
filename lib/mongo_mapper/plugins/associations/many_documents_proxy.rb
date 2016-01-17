@@ -80,63 +80,64 @@ module MongoMapper
           load_target.each(&block)
         end
 
-        protected
-          def query(options={})
-            klass.
-              query(association.query_options).
-              amend(options).amend(criteria)
-          end
+      protected
 
-          def method_missing(method, *args, &block)
-            if klass.respond_to?(method)
-              result = klass.send(method, *args, &block)
-              case result
-              when Plucky::Query
-                query.merge result
+        def query(options={})
+          klass.
+            query(association.query_options).
+            amend(options).amend(criteria)
+        end
 
-              # If we got a single record of this class as a result, return it
-              when klass
+        def method_missing(method, *args, &block)
+          if klass.respond_to?(method)
+            result = klass.send(method, *args, &block)
+            case result
+            when Plucky::Query
+              query.merge result
+
+            # If we got a single record of this class as a result, return it
+            when klass
+              result
+
+            # If we got an array of this class as a result, return it
+            when Array
+              if result[0].is_a? klass
                 result
-
-              # If we got an array of this class as a result, return it
-              when Array
-                if result[0].is_a? klass
-                  result
-                else
-                  super
-                end
               else
                 super
               end
             else
               super
             end
+          else
+            super
           end
+        end
 
-          def criteria
-            {self.foreign_key => proxy_owner.id}
-          end
+        def criteria
+          {self.foreign_key => proxy_owner.id}
+        end
 
-          def find_target
-            all
-          end
+        def find_target
+          all
+        end
 
-          def ensure_owner_saved
-            proxy_owner.save unless proxy_owner.persisted?
-          end
+        def ensure_owner_saved
+          proxy_owner.save unless proxy_owner.persisted?
+        end
 
-          def prepare(doc)
-            klass === doc ? apply_scope(doc) : build(doc)
-          end
+        def prepare(doc)
+          klass === doc ? apply_scope(doc) : build(doc)
+        end
 
-          def apply_scope(doc)
-            criteria.each { |key, value| doc[key] = value }
-            doc
-          end
+        def apply_scope(doc)
+          criteria.each { |key, value| doc[key] = value }
+          doc
+        end
 
-          def foreign_key
-            options[:foreign_key] || proxy_owner.class.name.foreign_key
-          end
+        def foreign_key
+          options[:foreign_key] || proxy_owner.class.name.foreign_key
+        end
       end
     end
   end

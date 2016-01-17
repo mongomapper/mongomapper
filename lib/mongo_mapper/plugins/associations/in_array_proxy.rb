@@ -99,34 +99,35 @@ module MongoMapper
           reset
         end
 
-        private
-          def query(options={})
-            klass.
-              query(association.query_options).
-              amend(options).
-              amend(criteria)
-          end
+      private
 
-          def criteria
-            {:_id => ids}
-          end
+        def query(options={})
+          klass.
+            query(association.query_options).
+            amend(options).
+            amend(criteria)
+        end
 
-          def scoped_ids(args)
-            valid = args.flatten.select do |id|
-              id = ObjectId.to_mongo(id) if klass.using_object_id?
-              ids.include?(id)
-            end
-            valid.empty? ? nil : valid
-          end
+        def criteria
+          {:_id => ids}
+        end
 
-          def find_target
-            return [] if ids.blank?
-            all
+        def scoped_ids(args)
+          valid = args.flatten.select do |id|
+            id = ObjectId.to_mongo(id) if klass.using_object_id?
+            ids.include?(id)
           end
+          valid.empty? ? nil : valid
+        end
 
-          def ids
-            proxy_owner[options[:in]]
-          end
+        def find_target
+          return [] if ids.blank?
+          all
+        end
+
+        def ids
+          proxy_owner[options[:in]]
+        end
       end
     end
   end

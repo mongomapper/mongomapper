@@ -56,12 +56,13 @@ module MongoMapper
           end
         end
 
-        private
-          def create_association(association)
-            @embedded_associations = nil
-            associations[association.name] = association
-            association.setup(self)
-          end
+      private
+
+        def create_association(association)
+          @embedded_associations = nil
+          associations[association.name] = association
+          association.setup(self)
+        end
       end
 
       def associations

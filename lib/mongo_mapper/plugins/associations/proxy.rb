@@ -100,38 +100,39 @@ module MongoMapper
           end
         end
 
-        protected
-          def method_missing(method, *args, &block)
-            if load_target
-              target.send(method, *args, &block)
+      protected
+
+        def method_missing(method, *args, &block)
+          if load_target
+            target.send(method, *args, &block)
+          end
+        end
+
+        def load_target
+          unless loaded?
+            if @target.is_a?(Array) && @target.any?
+              @target = find_target + @target.find_all { |record| !record.persisted? }
+            else
+              @target = find_target
             end
+            loaded
           end
+          @target
+        rescue MongoMapper::DocumentNotFound
+          reset
+        end
 
-          def load_target
-            unless loaded?
-              if @target.is_a?(Array) && @target.any?
-                @target = find_target + @target.find_all { |record| !record.persisted? }
-              else
-                @target = find_target
-              end
-              loaded
-            end
-            @target
-          rescue MongoMapper::DocumentNotFound
-            reset
-          end
+        # :nocov:
+        def find_target
+          raise NotImplementedError
+        end
+        # :nocov:
 
-          # :nocov:
-          def find_target
-            raise NotImplementedError
-          end
-          # :nocov:
-
-          def flatten_deeper(array)
-            array.collect do |element|
-              (element.respond_to?(:flatten) && !element.is_a?(Hash)) ? element.flatten : element
-            end.flatten
-          end
+        def flatten_deeper(array)
+          array.collect do |element|
+            (element.respond_to?(:flatten) && !element.is_a?(Hash)) ? element.flatten : element
+          end.flatten
+        end
       end
     end
   end

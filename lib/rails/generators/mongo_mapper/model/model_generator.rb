@@ -23,18 +23,18 @@ module MongoMapper
 
       hook_for :test_framework
 
-      protected
+    protected
 
-        def parent_class_name
-          options[:parent]
-        end
+      def parent_class_name
+        options[:parent]
+      end
 
-        # Rails 3.0.X compatibility
-        unless methods.include?(:module_namespacing)
-          def module_namespacing(&block)
-            yield if block
-          end
+      # Rails 3.0.X compatibility
+      unless methods.include?(:module_namespacing)
+        def module_namespacing(&block)
+          yield if block
         end
+      end
     end
   end
 end

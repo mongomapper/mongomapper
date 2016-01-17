@@ -123,144 +123,144 @@ module MongoMapper
           end.allocate.initialize_from_database(attrs, with_cast)
         end
 
-        private
-          def key_accessors_module_defined?
-            # :nocov:
-            if IS_RUBY_1_9
-              const_defined?('MongoMapperKeys')
+      private
+
+        def key_accessors_module_defined?
+          # :nocov:
+          if IS_RUBY_1_9
+            const_defined?('MongoMapperKeys')
+          else
+            const_defined?('MongoMapperKeys', false)
+          end
+          # :nocov:
+        end
+
+        def accessors_module
+          if key_accessors_module_defined?
+            const_get 'MongoMapperKeys'
+          else
+            const_set 'MongoMapperKeys', Module.new
+          end
+        end
+
+        def create_accessors_for(key)
+          accessors = ""
+          if key.read_accessor?
+            accessors << <<-end_eval
+              def #{key.name}
+                read_key(:#{key.name})
+              end
+
+              def #{key.name}_before_type_cast
+                read_key_before_type_cast(:#{key.name})
+              end
+            end_eval
+          end
+
+          if key.write_accessor?
+            accessors << <<-end_eval
+              def #{key.name}=(value)
+                write_key(:#{key.name}, value)
+              end
+            end_eval
+          end
+
+          if key.predicate_accessor?
+            accessors << <<-end_eval
+              def #{key.name}?
+                read_key(:#{key.name}).present?
+              end
+            end_eval
+          end
+
+          if block_given?
+            accessors_module.module_eval do
+              yield
+            end
+          end
+
+          accessors_module.module_eval accessors
+          include accessors_module
+        end
+
+        def create_key_in_descendants(*args)
+          descendants.each { |descendant| descendant.key(*args) }
+        end
+
+        def remove_key_in_descendants(name)
+          descendants.each { |descendant| descendant.remove_key(name) }
+        end
+
+        def create_indexes_for(key)
+          if key.options[:index] && !key.embeddable?
+            warn "[DEPRECATION] :index option when defining key #{key.name.inspect} is deprecated. Put indexes in `db/indexes.rb`"
+            ensure_index key.name
+          end
+        end
+
+        def create_validations_for(key)
+          attribute = key.name.to_sym
+
+          if key.options[:required]
+            if key.type == Boolean
+              validates_inclusion_of attribute, :in => [true, false]
             else
-              const_defined?('MongoMapperKeys', false)
-            end
-            # :nocov:
-          end
-
-          def accessors_module
-            if key_accessors_module_defined?
-              const_get 'MongoMapperKeys'
-            else
-              const_set 'MongoMapperKeys', Module.new
+              validates_presence_of(attribute)
             end
           end
 
-          def create_accessors_for(key)
-            accessors = ""
-            if key.read_accessor?
-              accessors << <<-end_eval
-                def #{key.name}
-                  read_key(:#{key.name})
-                end
-
-                def #{key.name}_before_type_cast
-                  read_key_before_type_cast(:#{key.name})
-                end
-              end_eval
-            end
-
-            if key.write_accessor?
-              accessors << <<-end_eval
-                def #{key.name}=(value)
-                  write_key(:#{key.name}, value)
-                end
-              end_eval
-            end
-
-            if key.predicate_accessor?
-              accessors << <<-end_eval
-                def #{key.name}?
-                  read_key(:#{key.name}).present?
-                end
-              end_eval
-            end
-
-            if block_given?
-              accessors_module.module_eval do
-                yield
-              end
-            end
-
-            accessors_module.module_eval accessors
-            include accessors_module
+          if key.options[:unique]
+            validates_uniqueness_of(attribute)
           end
 
-          def create_key_in_descendants(*args)
-            descendants.each { |descendant| descendant.key(*args) }
+          if key.options[:numeric]
+            number_options = key.type == Integer ? {:only_integer => true} : {}
+            validates_numericality_of(attribute, number_options)
           end
 
-          def remove_key_in_descendants(name)
-            descendants.each { |descendant| descendant.remove_key(name) }
+          if key.options[:format]
+            validates_format_of(attribute, :with => key.options[:format])
           end
 
-          def create_indexes_for(key)
-            if key.options[:index] && !key.embeddable?
-              warn "[DEPRECATION] :index option when defining key #{key.name.inspect} is deprecated. Put indexes in `db/indexes.rb`"
-              ensure_index key.name
-            end
+          if key.options[:in]
+            validates_inclusion_of(attribute, :in => key.options[:in])
           end
 
-          def create_validations_for(key)
-            attribute = key.name.to_sym
-
-            if key.options[:required]
-              if key.type == Boolean
-                validates_inclusion_of attribute, :in => [true, false]
-              else
-                validates_presence_of(attribute)
-              end
-            end
-
-            if key.options[:unique]
-              validates_uniqueness_of(attribute)
-            end
-
-            if key.options[:numeric]
-              number_options = key.type == Integer ? {:only_integer => true} : {}
-              validates_numericality_of(attribute, number_options)
-            end
-
-            if key.options[:format]
-              validates_format_of(attribute, :with => key.options[:format])
-            end
-
-            if key.options[:in]
-              validates_inclusion_of(attribute, :in => key.options[:in])
-            end
-
-            if key.options[:not_in]
-              validates_exclusion_of(attribute, :in => key.options[:not_in])
-            end
-
-            if key.options[:length]
-              length_options = case key.options[:length]
-              when Integer
-                {:minimum => 0, :maximum => key.options[:length]}
-              when Range
-                {:within => key.options[:length]}
-              when Hash
-                key.options[:length]
-              end
-              validates_length_of(attribute, length_options)
-            end
+          if key.options[:not_in]
+            validates_exclusion_of(attribute, :in => key.options[:not_in])
           end
 
-          def remove_validations_for(name)
-            name = name.to_sym
-            a_name = [name]
-
-            _validators.reject!{ |key, _| key == name }
-            remove_validate_callbacks a_name
-          end
-
-          def remove_validate_callbacks(a_name)
-            chain = _validate_callbacks.dup.reject do |callback|
-              f = callback.raw_filter
-              f.respond_to?(:attributes) && f.attributes == a_name
+          if key.options[:length]
+            length_options = case key.options[:length]
+            when Integer
+              {:minimum => 0, :maximum => key.options[:length]}
+            when Range
+              {:within => key.options[:length]}
+            when Hash
+              key.options[:length]
             end
-            reset_callbacks(:validate)
-            chain.each do |callback|
-              set_callback 'validate', callback.raw_filter
-            end
+            validates_length_of(attribute, length_options)
           end
+        end
 
+        def remove_validations_for(name)
+          name = name.to_sym
+          a_name = [name]
+
+          _validators.reject!{ |key, _| key == name }
+          remove_validate_callbacks a_name
+        end
+
+        def remove_validate_callbacks(a_name)
+          chain = _validate_callbacks.dup.reject do |callback|
+            f = callback.raw_filter
+            f.respond_to?(:attributes) && f.attributes == a_name
+          end
+          reset_callbacks(:validate)
+          chain.each do |callback|
+            set_callback 'validate', callback.raw_filter
+          end
+        end
       end
 
       def initialize(attrs={})
@@ -392,7 +392,7 @@ module MongoMapper
         @embedded_keys ||= keys.values.select(&:embeddable?)
       end
 
-      protected
+    protected
 
       def unalias_key(name)
         name = name.to_s
@@ -403,68 +403,67 @@ module MongoMapper
         end
       end
 
-      private
+    private
 
-        def init_ivars
-          @__mm_keys = self.class.keys                                # Not dumpable
-          @__mm_default_keys = @__mm_keys.values.select(&:default?)   # Not dumpable
-          @_dynamic_attributes = {}                                      # Dumpable
-        end
+      def init_ivars
+        @__mm_keys = self.class.keys                                # Not dumpable
+        @__mm_default_keys = @__mm_keys.values.select(&:default?)   # Not dumpable
+        @_dynamic_attributes = {}                                      # Dumpable
+      end
 
-        def load_from_database(attrs, with_cast = false)
-          return if attrs == nil || attrs.blank?
+      def load_from_database(attrs, with_cast = false)
+        return if attrs == nil || attrs.blank?
 
-          attrs.each do |key, value|
-            if !@__mm_keys.key?(key) && respond_to?(:"#{key}=")
-              self.send(:"#{key}=", value)
-            else
-              internal_write_key key, value, with_cast
-            end
-          end
-        end
-
-        def set_parent_document(key, value)
-          if key.type and value.instance_of?(key.type) && key.embeddable? && value.respond_to?(:_parent_document)
-            value._parent_document = self
-          end
-        end
-
-        # This exists to be patched over by plugins, while letting us still get to the undecorated
-        # version of the method.
-        def write_key(name, value)
-          init_ivars unless @__mm_keys
-          internal_write_key(name.to_s, value)
-        end
-
-        def internal_write_key(name, value, cast = true)
-          key         = @__mm_keys[name] || dynamic_key(name)
-          as_mongo    = cast ? key.set(value) : value
-          as_typecast = key.get(as_mongo)
-          if key.ivar
-            if key.embeddable?
-              set_parent_document(key, value)
-              set_parent_document(key, as_typecast)
-            end
-            instance_variable_set key.ivar, as_typecast
+        attrs.each do |key, value|
+          if !@__mm_keys.key?(key) && respond_to?(:"#{key}=")
+            self.send(:"#{key}=", value)
           else
-            @_dynamic_attributes[key.name.to_sym] = as_typecast
-          end
-          @attributes = nil
-          value
-        end
-
-        def dynamic_key(name)
-          self.class.key(name, :__dynamic => true)
-        end
-
-        def initialize_default_values(except = {})
-          @__mm_default_keys.each do |key|
-            if !(except && except.key?(key.name))
-              internal_write_key key.name, key.default_value, false
-            end
+            internal_write_key key, value, with_cast
           end
         end
-      #end private
+      end
+
+      def set_parent_document(key, value)
+        if key.type and value.instance_of?(key.type) && key.embeddable? && value.respond_to?(:_parent_document)
+          value._parent_document = self
+        end
+      end
+
+      # This exists to be patched over by plugins, while letting us still get to the undecorated
+      # version of the method.
+      def write_key(name, value)
+        init_ivars unless @__mm_keys
+        internal_write_key(name.to_s, value)
+      end
+
+      def internal_write_key(name, value, cast = true)
+        key         = @__mm_keys[name] || dynamic_key(name)
+        as_mongo    = cast ? key.set(value) : value
+        as_typecast = key.get(as_mongo)
+        if key.ivar
+          if key.embeddable?
+            set_parent_document(key, value)
+            set_parent_document(key, as_typecast)
+          end
+          instance_variable_set key.ivar, as_typecast
+        else
+          @_dynamic_attributes[key.name.to_sym] = as_typecast
+        end
+        @attributes = nil
+        value
+      end
+
+      def dynamic_key(name)
+        self.class.key(name, :__dynamic => true)
+      end
+
+      def initialize_default_values(except = {})
+        @__mm_default_keys.each do |key|
+          if !(except && except.key?(key.name))
+            internal_write_key key.name, key.default_value, false
+          end
+        end
+      end
     end
   end
 end

@@ -34,10 +34,10 @@ module MongoMapper
           @target.each { |doc| doc.persist(options) } if @target
         end
 
-        private
-          def assign_references(*docs)
-            docs.each { |doc| doc._parent_document = proxy_owner }
-          end
+      private
+        def assign_references(*docs)
+          docs.each { |doc| doc._parent_document = proxy_owner }
+        end
       end
     end
   end

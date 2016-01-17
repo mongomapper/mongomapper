@@ -29,16 +29,17 @@ module MongoMapper
           end
         end
 
-        protected
-          def method_missing(method, *args, &block)
-            finder = DynamicFinder.new(method)
+      protected
 
-            if finder.found?
-              dynamic_find(finder, args)
-            else
-              super
-            end
+        def method_missing(method, *args, &block)
+          finder = DynamicFinder.new(method)
+
+          if finder.found?
+            dynamic_find(finder, args)
+          else
+            super
           end
+        end
       end
     end
   end

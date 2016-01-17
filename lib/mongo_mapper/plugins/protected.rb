@@ -35,11 +35,12 @@ module MongoMapper
         super(filter_protected_attrs(attrs))
       end
 
-      protected
-        def filter_protected_attrs(attrs)
-          return attrs if protected_attributes.blank? || attrs.blank?
-          attrs.dup.delete_if { |key, val| protected_attributes.include?(key.to_sym) }
-        end
+    protected
+
+      def filter_protected_attrs(attrs)
+        return attrs if protected_attributes.blank? || attrs.blank?
+        attrs.dup.delete_if { |key, val| protected_attributes.include?(key.to_sym) }
+      end
     end
   end
 end

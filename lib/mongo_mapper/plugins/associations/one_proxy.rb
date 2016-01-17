@@ -57,38 +57,39 @@ module MongoMapper
           reset
         end
 
-        protected
-          def find_target
-            target_class.first(association.query_options.merge(criteria))
-          end
+      protected
 
-          def instantiate_target(instantiator, attrs={}, &block)
-            @target = target_class.send(instantiator, attrs.update(criteria), &block)
-            loaded
-            @target
-          end
+        def find_target
+          target_class.first(association.query_options.merge(criteria))
+        end
 
-          def target_class
-            @target_class ||= options[:class] || (options[:class_name] || association.name.to_s.camelize).constantize
-          end
+        def instantiate_target(instantiator, attrs={}, &block)
+          @target = target_class.send(instantiator, attrs.update(criteria), &block)
+          loaded
+          @target
+        end
 
-          def foreign_key
-            options[:foreign_key] || proxy_owner.class.name.foreign_key
-          end
+        def target_class
+          @target_class ||= options[:class] || (options[:class_name] || association.name.to_s.camelize).constantize
+        end
 
-          def criteria
-            {self.foreign_key => proxy_owner.id}
-          end
+        def foreign_key
+          options[:foreign_key] || proxy_owner.class.name.foreign_key
+        end
 
-          def nullify_scope(doc)
-            criteria.each { |key, value| doc[key] = nil }
-            doc
-          end
+        def criteria
+          {self.foreign_key => proxy_owner.id}
+        end
 
-          def apply_scope(doc)
-            criteria.each { |key, value| doc[key] = value }
-            doc
-          end
+        def nullify_scope(doc)
+          criteria.each { |key, value| doc[key] = nil }
+          doc
+        end
+
+        def apply_scope(doc)
+          criteria.each { |key, value| doc[key] = value }
+          doc
+        end
       end
     end
   end
