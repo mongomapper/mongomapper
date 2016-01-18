@@ -62,7 +62,7 @@ end
 
 The available options when defining keys are:
 
-* *:required* - Boolean that declares @validate_presence_of@
+* *:required* - Boolean that declares @validates_presence_of@
 * *:unique*   - Boolean that declares @validates_uniqueness_of@
 * *:numeric*  - Boolean that declares @validates_numericality_of@
 * *:format*   - Regexp that is passed to @validates_format_of@
