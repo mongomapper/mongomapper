@@ -118,7 +118,12 @@ module MongoMapper
 
         def method_missing(method, *args, &block)
           if klass.respond_to?(method)
-            result = klass.send(method, *args, &block)
+            result = nil
+
+            query.with_scope(query.criteria_hash) do
+              result = klass.send(method, *args, &block)
+            end
+
             case result
             when Plucky::Query
               query.merge result

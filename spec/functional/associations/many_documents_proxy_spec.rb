@@ -950,4 +950,53 @@ describe "ManyDocumentsProxy" do
       @paper.articles.should include(article)
     end
   end
+
+  describe "regression with association proxy" do
+    before do
+      @job_title_class = Doc do
+        set_collection_name "job_titles"
+      end
+
+      @training_class = Doc do
+        set_collection_name "trainings"
+        key :slug, String
+
+        def self.find_by_slug!(the_slug)
+          if res = first(:slug => the_slug)
+            res
+          else
+            raise "MissingSlugError"
+          end
+        end
+
+        validates_presence_of :job_title_id
+        validates_presence_of :slug
+        validates_uniqueness_of :slug, :scope => :job_title_id
+      end
+
+      @job_title_class.has_many :trainings, :class => @training_class, :foreign_key => :job_title_id
+      @training_class.belongs_to :job_title, :class => @job_title_class
+    end
+
+    it "should scope queries that return a single method on has many association with the right parent id" do
+      @job_title_1 = @job_title_class.create!
+      @job_title_2 = @job_title_class.create!
+
+      @training_1 = @training_class.create!(:slug => 'foo', :job_title_id => @job_title_1.id)
+      @training_2 = @training_class.create!(:slug => 'foo', :job_title_id => @job_title_2.id)
+
+      @job_title_1.reload
+      @job_title_2.reload
+
+      @job_title_1.trainings.count.should == 1
+      @job_title_2.trainings.count.should == 1
+
+      @job_title_1.trainings.find_by_slug!('foo').should == @training_1
+      @job_title_2.trainings.find_by_slug!('foo').should == @training_2
+
+      lambda do
+        @job_title_2.trainings.find_by_slug!('bar')
+      end.should raise_error
+    end
+  end
 end

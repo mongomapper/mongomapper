@@ -66,7 +66,7 @@ describe "Scopes" do
         @document.class_eval do
           scope :age,     lambda { |age| {:age => age} }
           scope :ages,    lambda { |low, high| {:age.gte => low, :age.lte => high} }
-          scope :ordered, lambda { |sort| sort(sort) }
+          scope :ordered, lambda { |s| sort(s) }
         end
       end
 
@@ -198,6 +198,151 @@ describe "Scopes" do
       it "should limit subclass scopes to subclasses" do
         Item.scopes.keys.map(&:to_s).should =~ %w(by_title published)
         Blog.scopes.keys.map(&:to_s).should =~ %w(by_slug by_title published)
+      end
+    end
+  end
+
+  describe "with_scope" do
+    describe "with a base query" do
+      before do
+        @klass = Doc do
+        end
+      end
+
+      it "should scope" do
+        u1 = @klass.create!(:first_name => "Scott")
+        u2 = @klass.create!(:first_name => "Andrew")
+
+        run = false
+
+        @klass.with_scope(:first_name => "Scott") do
+          run = true
+          @klass.all.should == [u1]
+        end
+
+        run.should == true
+      end
+
+      it "should return the scope at the end of the block" do
+        u1 = @klass.create!(:first_name => "Scott")
+        u2 = @klass.create!(:first_name => "Andrew")
+
+        run = false
+
+        @klass.with_scope(:first_name => "Scott") do
+          run = true
+          @klass.all.should == [u1]
+        end
+
+        run.should == true
+
+        @klass.all.should include(u1)
+        @klass.all.should include(u2)
+      end
+
+      it "should be able to use an unscoped query" do
+        u1 = @klass.create!(:first_name => "Scott")
+        u2 = @klass.create!(:first_name => "Andrew")
+
+        run = false
+
+        @klass.with_scope(:first_name => "Scott") do
+          @klass.unscoped do
+            run = true
+            @klass.all.should include(u1)
+            @klass.all.should include(u2)
+          end
+
+          @klass.all.should == [u1]
+        end
+
+        run.should == true
+
+        @klass.all.should include(u1)
+        @klass.all.should include(u2)
+      end
+
+      it "should have an empty list of default scope" do
+        @klass.default_scopes.should == []
+      end
+
+      it "should apply the default scope to all queries" do
+        @klass.key :active, Boolean, :default => true
+
+        normal = @klass.create!
+        inactive = @klass.create!(:active => false)
+
+        @klass.default_scope do
+          {
+            :active => true
+          }
+        end
+
+        @klass.all.should == [normal]
+      end
+
+      it "should allow multiple default scopes" do
+        @klass.key :active, Boolean, :default => true
+        @klass.key :soft_deleted, Boolean, :default => false
+
+        normal = @klass.create!
+        inactive = @klass.create!(:active => false)
+        deleted = @klass.create!(:soft_deleted => true)
+
+        @klass.default_scope do
+          {
+            :active => true,
+          }
+        end
+
+        @klass.default_scope do
+          {
+            :soft_deleted => false
+          }
+        end
+
+        @klass.all.should == [normal]
+      end
+
+      it "should allow a where inside a default_scope" do
+        @klass.key :active, Boolean, :default => true
+
+        normal = @klass.create!
+        inactive = @klass.create!(:active => false)
+
+        @klass.default_scope do
+          where(:active => true)
+        end
+
+        @klass.all.should == [normal]
+      end
+
+      it "should allow a hash directly" do
+        @klass.key :active, Boolean, :default => true
+
+        normal = @klass.create!
+        inactive = @klass.create!(:active => false)
+
+        @klass.default_scope :active => true
+
+        @klass.all.should == [normal]
+      end
+
+      it "should inherit default scopes, but only downwards" do
+        @klass.default_scope do
+          where(:active => true)
+        end
+        @subclass = Class.new(@klass)
+        @subclass.default_scopes.length.should == 1
+
+        @subclass.default_scope do
+          {
+            :foo => :bar
+          }
+        end
+
+        @subclass.default_scopes.length.should == 2
+        @klass.default_scopes.length.should == 1
       end
     end
   end

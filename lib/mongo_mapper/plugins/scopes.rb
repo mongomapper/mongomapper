@@ -9,18 +9,89 @@ module MongoMapper
       end
 
       module ClassMethods
-        def scope(name, scope_options={})
+        def scope(name, scope={})
           # Assign to _scopes instead of using []= to avoid mixing subclass scopes
-          self._scopes = scopes.merge(name => lambda do |*args|
-            result = scope_options.is_a?(Proc) ? scope_options.call(*args) : scope_options
-            result = self.query(result) if result.is_a?(Hash)
-            self.query.merge(result)
-          end)
-          singleton_class.send :define_method, name, &scopes[name]
+          self._scopes = scopes.merge(name => scope)
+
+          singleton_class.send :define_method, name do |*args|
+            process_scope(self, scopes[name], *args)
+          end
         end
 
         def scopes
           self._scopes ||= {}
+        end
+
+        def active_scopes
+          @active_scopes ||= []
+        end
+
+        def default_scopes
+          @default_scopes ||= begin
+            superclass.respond_to?(:default_scopes) ?
+              superclass.default_scopes.dup :
+              []
+          end
+        end
+
+        def query(options = {})
+          res = super(options)
+
+          all_anonymous_scopes.each do |scope|
+            unscoped do
+              res = process_scope(res, scope)
+            end
+          end
+
+          res
+        end
+
+        def default_scope(*args, &block)
+          if block_given?
+            default_scopes << instance_exec(&block)
+          end
+
+          if args.any?
+            default_scopes << args
+          end
+
+          default_scopes
+        end
+
+        def with_scope(query = {})
+          active_scopes.push(query)
+          yield
+        ensure
+          active_scopes.pop
+        end
+
+        def unscoped
+          old_default_scopes = default_scopes.dup
+          old_active_scopes = active_scopes.dup
+
+          @default_scopes = []
+          @active_scopes = []
+
+          yield
+        ensure
+          @default_scopes = old_default_scopes
+          @active_scopes = old_active_scopes
+        end
+
+      private
+
+        def process_scope(context, scope, *args)
+          if scope.is_a?(Proc)
+            scope = context.instance_exec(*args, &scope)
+          end
+
+          scope.is_a?(Hash) ?
+            context.where(scope) :
+            scope
+        end
+
+        def all_anonymous_scopes
+          [default_scopes + active_scopes].flatten
         end
       end
     end
