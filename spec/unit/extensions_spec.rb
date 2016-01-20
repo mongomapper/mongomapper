@@ -252,6 +252,10 @@ describe "Support" do
     it "should convert to empty array if nil" do
       Set.to_mongo(nil).should == []
     end
+
+    it "should cast to set and convert value to_a" do
+      Set.to_mongo([1,1,2,3]).should == [1,2,3]
+    end
   end
 
   context "Set.from_mongo" do
