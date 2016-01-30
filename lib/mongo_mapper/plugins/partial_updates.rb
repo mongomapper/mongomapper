@@ -46,6 +46,14 @@ module MongoMapper
 
       def update(options={})
         if partial_updates
+          super(options.merge(:persistence_method => :update))
+        else
+          super
+        end
+      end
+
+      def save_to_collection(options={})
+        if partial_updates && options[:persistence_method] == :update
           updates = fields_for_partial_update
 
           set_fields = updates[:set_fields]
@@ -55,11 +63,12 @@ module MongoMapper
             set_fields.push("_id") if !set_fields.include?("_id")
           end
 
-          super(options.merge({
-            :persistence_method => :update,
+          options = options.merge({
             :set_fields => set_fields,
             :unset_fields => unset_fields
-          }))
+          })
+
+          super(options)
         else
           super
         end

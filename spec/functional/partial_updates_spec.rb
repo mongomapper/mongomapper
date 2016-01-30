@@ -526,5 +526,33 @@ describe "Partial Updates" do
       @author.reload
       @author.authorable_id.should be_nil
     end
+
+    it "should update values set in before_create" do
+      @klass.before_create do
+        self.string_field = "Scott"
+      end
+
+      obj = @klass.new
+      obj.save!
+
+      obj.string_field.should == "Scott"
+      obj.reload
+      obj.string_field.should == "Scott"
+    end
+
+    it "should update values set in before_update" do
+      @klass.before_update do
+        self.string_field = "Scott"
+      end
+
+      obj = @klass.new
+      obj.save!
+
+      obj.save!
+      obj.string_field.should == "Scott"
+      obj.reload
+      obj.string_field.should == "Scott"
+    end
+
   end
 end
