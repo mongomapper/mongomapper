@@ -7,6 +7,7 @@ describe "Partial Updates" do
       key :array_field, Array
       key :hash_field, Hash
       key :integer_field, Integer
+      key :boolean_field, Boolean
 
       timestamps!
     end
@@ -554,5 +555,23 @@ describe "Partial Updates" do
       obj.string_field.should == "Scott"
     end
 
+    it "should respect typecasting" do
+      obj = @klass.create(:boolean_field => 'true')
+      obj.boolean_field.should eq(true)
+
+      obj.boolean_field = "true"
+      obj.boolean_field.should eq(true)
+      updates = obj.fields_for_partial_update
+      updates[:set_fields].should == []
+      updates[:unset_fields].should == []
+
+      mock_collection = double('collection')
+      allow(obj).to receive(:collection).and_return(mock_collection)
+
+      update_query_expectation = hash_including("$set"=> hash_including("boolean_field"))
+
+      obj.collection.should_not receive(:update).with(anything, update_query_expectation, anything)
+      obj.save!
+    end
   end
 end
