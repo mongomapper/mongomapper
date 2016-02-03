@@ -20,5 +20,5 @@ group :test do
   gem 'timecop',        '= 0.6.1'
   gem 'rack-test',      '~> 0.5'
   gem 'generator_spec', '~> 0.9'
-  gem 'ruby-debug'
+  # gem 'ruby-debug'
 end
