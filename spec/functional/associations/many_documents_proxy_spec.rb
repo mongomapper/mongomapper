@@ -951,7 +951,7 @@ describe "ManyDocumentsProxy" do
     end
   end
 
-  describe "regression with association proxy" do
+  describe "regression with association proxy scoping" do
     before do
       @job_title_class = Doc do
         set_collection_name "job_titles"

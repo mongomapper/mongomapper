@@ -62,6 +62,7 @@ module MongoMapper
 
         def method_missing(method, *args, &block)
           return super unless model.respond_to?(method)
+
           result = model.send(method, *args, &block)
           if result.is_a?(Plucky::Query)
             merge(result)

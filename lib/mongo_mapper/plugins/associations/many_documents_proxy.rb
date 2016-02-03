@@ -117,28 +117,26 @@ module MongoMapper
       private
 
         def method_missing(method, *args, &block)
-          if klass.respond_to?(method)
-            result = nil
+          return super unless klass.respond_to?(method)
 
-            query.with_scope(query.criteria_hash) do
-              result = klass.send(method, *args, &block)
-            end
+          result = nil
 
-            case result
-            when Plucky::Query
-              query.merge result
+          query.with_scope(query.criteria_hash) do
+            result = klass.send(method, *args, &block)
+          end
 
-            # If we got a single record of this class as a result, return it
-            when klass
+          case result
+          when Plucky::Query
+            query.merge result
+
+          # If we got a single record of this class as a result, return it
+          when klass
+            result
+
+          # If we got an array of this class as a result, return it
+          when Array
+            if result[0].is_a? klass
               result
-
-            # If we got an array of this class as a result, return it
-            when Array
-              if result[0].is_a? klass
-                result
-              else
-                super
-              end
             else
               super
             end
