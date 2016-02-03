@@ -262,6 +262,17 @@ describe "Scopes" do
         @klass.all.should include(u2)
       end
 
+      it "should return the value of the block" do
+        u1 = @klass.create!(:first_name => "Scott")
+        u2 = @klass.create!(:first_name => "Andrew")
+
+        result = @klass.with_scope(:first_name => "Scott") do
+          @klass.all
+        end
+
+        result.should == [u1]
+      end
+
       it "should have an empty list of default scope" do
         @klass.default_scopes.should == []
       end
@@ -344,6 +355,25 @@ describe "Scopes" do
         @subclass.default_scopes.length.should == 2
         @klass.default_scopes.length.should == 1
       end
+    end
+  end
+
+  describe "regression - multiple named scopes" do
+    it "should merge the hashes from multiple scopes" do
+      klass = Doc do
+        key :a, Boolean
+        key :b, Boolean
+        key :c, Boolean
+
+        scope :one, where(:a => true, :b => true)
+        scope :two, where(:c => true)
+      end
+
+      obj = klass.create!(:a => false, :b => true, :c => true)
+      klass.one.two.all.should == []
+
+      obj2 = klass.create(:a => true, :b => true, :c => true)
+      klass.one.two.all.should == [obj2]
     end
   end
 end

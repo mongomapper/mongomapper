@@ -63,8 +63,15 @@ module MongoMapper
         def method_missing(method, *args, &block)
           return super unless model.respond_to?(method)
 
-          model.with_scope(criteria_hash) do
+          result = model.with_scope(criteria_hash) do
             model.send(method, *args, &block)
+          end
+
+          case result
+          when Plucky::Query
+            merge(result)
+          else
+            result
           end
         end
       end
