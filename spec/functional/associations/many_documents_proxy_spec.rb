@@ -960,6 +960,7 @@ describe "ManyDocumentsProxy" do
       @training_class = Doc do
         set_collection_name "trainings"
         key :slug, String
+        key :is_active, Boolean, default: true
 
         def self.find_by_slug!(the_slug)
           if res = first(:slug => the_slug)
@@ -993,6 +994,27 @@ describe "ManyDocumentsProxy" do
 
       @job_title_1.trainings.find_by_slug!('foo').should == @training_1
       @job_title_2.trainings.find_by_slug!('foo').should == @training_2
+
+      lambda do
+        @job_title_2.trainings.find_by_slug!('bar')
+      end.should raise_error
+    end
+
+    it "should scope with an extra where clause on the proxy (regression #2)" do
+      @job_title_1 = @job_title_class.create!
+      @job_title_2 = @job_title_class.create!
+
+      @training_1 = @training_class.create!(:slug => 'foo', :job_title_id => @job_title_1.id)
+      @training_2 = @training_class.create!(:slug => 'foo', :job_title_id => @job_title_2.id)
+
+      @job_title_1.reload
+      @job_title_2.reload
+
+      @job_title_1.trainings.count.should == 1
+      @job_title_2.trainings.count.should == 1
+
+      @job_title_1.trainings.where(:is_active => true).find_by_slug!('foo').should == @training_1
+      @job_title_2.trainings.where(:is_active => true).find_by_slug!('foo').should == @training_2
 
       lambda do
         @job_title_2.trainings.find_by_slug!('bar')
