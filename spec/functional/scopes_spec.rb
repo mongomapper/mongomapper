@@ -376,4 +376,62 @@ describe "Scopes" do
       klass.one.two.all.should == [obj2]
     end
   end
+
+  describe "regression - with multiple scopes that set a key to nil" do
+    it "should still have the query as nil" do
+      klass = Doc do
+        key :a, Boolean
+
+        scope :one, lambda {
+          {
+            :a => nil
+          }
+        }
+        scope :two, lambda {
+          {
+            :a => nil
+          }
+        }
+      end
+
+      obj = klass.create!(:a => nil)
+      klass.one.two.all.should == [obj]
+    end
+  end
+
+  describe "regression - multiple scopes leading to empty query (array bug?)" do
+    before do
+      @klass = Doc do
+        key :send_at, Time
+
+        scope :unsent, lambda {
+          now = Time.now
+
+          {
+            send_at: {
+              '$lte' => now,
+              '$gte' => now - 30.days,
+            },
+            sent_at: nil,
+          }
+        }
+
+        scope :sorted, lambda {
+          sort(send_at: 1)
+        }
+      end
+    end
+
+    it "should filter properly by dates" do
+      old_obj = @klass.create(send_at: 3.months.ago)
+      one_day_ago = @klass.create(send_at: 1.day.ago)
+      two_days_ago = @klass.create(send_at: 2.days.ago)
+
+      all_unsorted = @klass.unsent.all
+
+      all_unsorted.should include(one_day_ago)
+      all_unsorted.should include(two_days_ago)
+      @klass.unsent.sorted.all.should == [two_days_ago, one_day_ago]
+    end
+  end
 end

@@ -33,6 +33,7 @@ HEAD
   Bug Fixes
 
     * Fix counter caching with polymorphic belongs_to [smtlaissezfaire, bhernez]
+    * Fix issues with arrays + plucky query. (upgrade to plucky query 0.7.0 - see regressions in scope_spec.rb)
 
   Internals:
 
