@@ -140,7 +140,7 @@ module MongoMapper
 
         case method
         when :insert
-          collection.insert(update, query_options)
+          collection.insert_one(update, query_options)
         when :save
           collection.save(update, query_options)
         when :update
@@ -168,7 +168,7 @@ module MongoMapper
           update_query["$unset"] = unset_values if unset_values.any?
 
           if update_query.any?
-            collection.update(find_query, update_query, query_options)
+            collection.update_one(find_query, update_query, query_options)
           end
         end
       end
