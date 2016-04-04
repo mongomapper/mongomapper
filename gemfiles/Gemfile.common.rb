@@ -10,8 +10,7 @@ end
 gem 'rest-client', '1.6.7'
 
 platforms :ruby do
-  gem 'mongo',     '~> 1.9'
-  gem 'bson_ext',  '~> 1.9'
+  gem 'mongo',     '~> 2.0'
 end
 
 platforms :rbx do
