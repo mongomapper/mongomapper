@@ -296,7 +296,7 @@ module MongoMapper
       end
 
       def to_mongo(include_abbreviatons = true)
-        BSON::OrderedHash.new.tap do |attrs|
+        Hash.new.tap do |attrs|
           self.class.unaliased_keys.each do |name, key|
             value = self.read_key(key.name)
             if key.type == ObjectId || !value.nil?

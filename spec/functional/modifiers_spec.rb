@@ -4,7 +4,7 @@ module Modifiers
   describe "Modifiers" do
     let(:page_class_with_compound_key) {
       Doc do
-        key :_id,         BSON::OrderedHash, :default => lambda { BSON::OrderedHash['n', 42, 'i', BSON::ObjectId.new] }
+        key :_id,         Hash, :default => lambda { Hash['n', 42, 'i', BSON::ObjectId.new] }
         key :title,       String
         key :day_count,   Integer, :default => 0
         key :week_count,  Integer, :default => 0
