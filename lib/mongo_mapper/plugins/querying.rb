@@ -142,7 +142,7 @@ module MongoMapper
         when :insert
           collection.insert_one(update, query_options)
         when :save
-          collection.save(update, query_options)
+          collection.update_one({:_id => _id}, update, query_options)
         when :update
           update.stringify_keys!
 
