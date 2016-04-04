@@ -10,7 +10,7 @@ module MongoMapper
 
     # @api public
     def connection
-      @@connection ||= Mongo::MongoClient.new
+      @@connection ||= Mongo::Client.new ['127.0.0.1:27017']
     end
 
     def connection?
@@ -36,8 +36,7 @@ module MongoMapper
     # @api public
     def database
       return nil if @@database_name.blank?
-
-      @@database ||= MongoMapper.connection.db(@@database_name)
+      @@database ||= MongoMapper.connection.use(@@database_name).database
     end
 
     def config=(hash)

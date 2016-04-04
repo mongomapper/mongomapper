@@ -40,7 +40,7 @@ def Doc(name='Class', &block)
   end
 
   klass.class_eval(&block) if block_given?
-  klass.collection.remove
+  klass.collection.drop
   klass
 end
 
@@ -66,7 +66,7 @@ log_dir = File.expand_path('../../log', __FILE__)
 FileUtils.mkdir_p(log_dir) unless File.exist?(log_dir)
 logger = Logger.new(log_dir + '/test.log')
 
-MongoMapper.connection = Mongo::MongoClient.new('127.0.0.1', 27017, :logger => logger)
+MongoMapper.connection = Mongo::Client.new(['127.0.0.1:27017'], :logger => logger)
 MongoMapper.database = "test"
 MongoMapper.database.collections.each { |c| c.drop_indexes }
 Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
