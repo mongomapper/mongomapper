@@ -14,11 +14,11 @@ module MongoMapper
         end
 
         def drop_index(name)
-          collection.drop_index name
+          collection.indexes.drop_one name
         end
 
         def drop_indexes
-          collection.drop_indexes
+          collection.indexes.drop_all
         end
 
       private
