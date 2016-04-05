@@ -32,14 +32,13 @@ module MongoMapper
         def criteria_hash
           @model.dealias_keys super
         end
-
         def options_hash
           super.tap do |options|
-            case options[:fields]
+            case options[:projection]
             when Hash
-              options[:fields] = @model.dealias options[:fields]
+              options[:projection] = @model.dealias options[:projection]
             when Array
-              options[:fields] = options[:fields].map do |field|
+              options[:projection] = options[:projection].map do |field|
                 key = keys[field.to_s]
                 key && key.abbr || field
               end
