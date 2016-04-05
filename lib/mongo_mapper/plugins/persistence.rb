@@ -39,7 +39,7 @@ module MongoMapper
           if database_name.nil?
             MongoMapper.database
           else
-            connection.db(database_name)
+            connection.use(database_name).database
           end
         end
 
