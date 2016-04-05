@@ -10,7 +10,7 @@ describe "Binary" do
     doc.save
 
     doc = doc.reload
-    doc.contents.to_s.should == BSON::Binary.new('010101').to_s
+    doc.contents.data.should == BSON::Binary.new('010101').data
   end
 
   context "Saving a document with a blank binary value" do
