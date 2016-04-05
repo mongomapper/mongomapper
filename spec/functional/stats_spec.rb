@@ -23,48 +23,51 @@ describe "Stats" do
       Docs.create!
     end
 
+    def get_stats
+      MongoMapper.database.command(:collstats => 'docs').documents[0]
+    end
     it "should have the correct count" do
-      expect(Docs.stats.count).to eq(Docs.collection.stats['count'])
+      expect(Docs.stats.count).to eq(get_stats['count'])
     end
 
     it "should have the correct namespace" do
-      expect(Docs.stats.ns).to eq(Docs.collection.stats['ns'])
+      expect(Docs.stats.ns).to eq(get_stats['ns'])
     end
 
     it "should have the correct size" do
-      expect(Docs.stats.size).to eq(Docs.collection.stats['size'])
+      expect(Docs.stats.size).to eq(get_stats['size'])
     end
 
     it "should have the correct storage size" do
-      expect(Docs.stats.storage_size).to eq(Docs.collection.stats['storageSize'])
+      expect(Docs.stats.storage_size).to eq(get_stats['storageSize'])
     end
 
     it "should have the correct average object size" do
-      expect(Docs.stats.avg_obj_size).to eq(Docs.collection.stats['avgObjSize'])
+      expect(Docs.stats.avg_obj_size).to eq(get_stats['avgObjSize'])
     end
 
     it "should have the correct number of extents" do
-      expect(Docs.stats.num_extents).to eq(Docs.collection.stats['numExtents'])
+      expect(Docs.stats.num_extents).to eq(get_stats['numExtents'])
     end
 
     it "should have the correct number of indexes" do
-      expect(Docs.stats.nindexes).to eq(Docs.collection.stats['nindexes'])
+      expect(Docs.stats.nindexes).to eq(get_stats['nindexes'])
     end
 
     it "should have the correct last extent size" do
-      expect(Docs.stats.last_extent_size).to eq(Docs.collection.stats['lastExtentSize'])
+      expect(Docs.stats.last_extent_size).to eq(get_stats['lastExtentSize'])
     end
 
     it "should have the correct padding factor" do
-      expect(Docs.stats.padding_factor).to eq(Docs.collection.stats['paddingFactor'])
+      expect(Docs.stats.padding_factor).to eq(get_stats['paddingFactor'])
     end
 
     it "should have the correct user flags" do
-      expect(Docs.stats.user_flags).to eq(Docs.collection.stats['userFlags'])
+      expect(Docs.stats.user_flags).to eq(get_stats['userFlags'])
     end
 
     it "should have the correct total index size" do
-      expect(Docs.stats.total_index_size).to eq(Docs.collection.stats['totalIndexSize'])
+      expect(Docs.stats.total_index_size).to eq(get_stats['totalIndexSize'])
     end
   end
 end
