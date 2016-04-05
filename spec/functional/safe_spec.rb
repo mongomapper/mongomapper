@@ -61,7 +61,7 @@ describe "Safe" do
 
       it "should raise an error on duplicate IDs" do
         k = @klass.create
-        expect { j = @klass.create(:_id => k.id) }.to raise_error(Mongo::OperationFailure)
+        expect { j = @klass.create(:_id => k.id) }.to raise_error(Mongo::Error::OperationFailure)
       end
 
       context "using safe setting from class" do
@@ -82,7 +82,7 @@ describe "Safe" do
             2.times do
               @klass.new(:email => 'john@doe.com').save
             end
-          }.to raise_error(Mongo::OperationFailure)
+          }.to raise_error(Mongo::Error::OperationFailure)
         end
       end
 
@@ -92,7 +92,7 @@ describe "Safe" do
             2.times do
               @klass.new(:email => 'john@doe.com').save(:safe => true)
             end
-          }.to raise_error(Mongo::OperationFailure)
+          }.to raise_error(Mongo::Error::OperationFailure)
         end
 
         it "should not raise error if safe is false" do
@@ -137,7 +137,7 @@ describe "Safe" do
             2.times do
               @klass.new(:email => 'john@doe.com').save
             end
-          }.to raise_error(Mongo::OperationFailure)
+          }.to raise_error(Mongo::Error::OperationFailure)
         end
       end
 
@@ -147,7 +147,7 @@ describe "Safe" do
             2.times do
               @klass.new(:email => 'john@doe.com').save(:safe => true)
             end
-          }.to raise_error(Mongo::OperationFailure)
+          }.to raise_error(Mongo::Error::OperationFailure)
         end
 
         it "should not raise error if safe is false" do

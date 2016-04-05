@@ -22,7 +22,7 @@ puts
 begin
   user = User.new(:email => 'nunemaker@gmail.com')
   user.save(:safe => true)
-rescue Mongo::OperationFailure => e
+rescue Mongo::Error::OperationFailure => e
   puts 'Mongo Operation failure raised because duplicate email was entered'
   puts e.inspect
   puts
@@ -37,7 +37,7 @@ User.safe
 
 begin
   User.create(:email => 'nunemaker@gmail.com')
-rescue Mongo::OperationFailure => e
+rescue Mongo::Error::OperationFailure => e
   puts 'Mongo Operation failure raised because duplicate email was entered'
   puts e.inspect
 end

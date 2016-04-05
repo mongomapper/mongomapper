@@ -887,7 +887,7 @@ describe "Querying" do
       @document.create(:name => 'John')
       expect {
         @document.new(:name => 'John').save(:safe => true)
-      }.to raise_error(Mongo::OperationFailure)
+      }.to raise_error(Mongo::Error::OperationFailure)
     end
 
     it "should raise argument error if options has unsupported key" do
@@ -908,7 +908,7 @@ describe "Querying" do
       @document.create(:name => 'John')
       expect {
         @document.new(:name => 'John').save!(:safe => true)
-      }.to raise_error(Mongo::OperationFailure)
+      }.to raise_error(Mongo::Error::OperationFailure)
     end
 
     it "should raise argument error if options has unsupported key" do
