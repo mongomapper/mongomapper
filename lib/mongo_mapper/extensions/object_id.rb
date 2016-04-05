@@ -18,7 +18,7 @@ class ObjectId
 end
 
 class BSON::ObjectId
-  alias_method :original_to_json, :to_json
+  alias_method :original_as_json, :as_json
 
   def as_json(options=nil)
     to_s
@@ -29,4 +29,8 @@ class BSON::ObjectId
   end
 
   alias to_str to_s
+
+  def original_to_json(*args)
+    original_as_json.to_json(*args)
+  end
 end

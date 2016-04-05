@@ -388,7 +388,7 @@ describe "Support" do
 
       it "should support ruby driver syntax also" do
         id = BSON::ObjectId.new
-        id.original_to_json.should == %Q({"$oid": "#{id}"})
+        id.original_to_json.should == %Q({"$oid":"#{id}"})
       end
     end
   end
