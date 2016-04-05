@@ -92,7 +92,7 @@ describe MongoMapper::Plugins::Keys::Static do
     end
 
     it "should not blow up when loading if there is a key defined in the db that has not been defined (but it should not load it)" do
-      @klass.collection.insert({ :foo => "bar", :valid_key => "something" })
+      @klass.collection.insert_one({ :foo => "bar", :valid_key => "something" })
       @obj = @klass.first
       @obj.valid_key.should == "something"
 
@@ -147,7 +147,7 @@ describe MongoMapper::Plugins::Keys::Static do
 
       lambda {
         @static_key_object['foo'] = 'bar'
-      }.should raise_error
+      }.should raise_error(MongoMapper::Plugins::Keys::Static::MissingKeyError)
     end
   end
 end
