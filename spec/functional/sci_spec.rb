@@ -3,7 +3,7 @@ require 'spec_helper'
 describe "Single collection inheritance (document)" do
   context "without a connection", :without_connection => true do
     it "should attempt to create a connection during inheritance" do
-      expect(Mongo::MongoClient).to_not receive(:new)
+      expect(Mongo::Client).to_not receive(:new)
       doc = Class.new
       doc.send(:include, MongoMapper::Document)
       expect {
@@ -17,7 +17,7 @@ describe "Single collection inheritance (document)" do
       klass = Class.new(doc)
       klass.connection.should be_nil
       MongoMapper.connection
-      klass.connection.should be_a Mongo::MongoClient
+      klass.connection.should be_a Mongo::Client
     end
   end
 
@@ -61,7 +61,7 @@ describe "Single collection inheritance (document)" do
     it "should use the same connection in the subclass" do
       parent_class = Class.new do
         include MongoMapper::Document
-        connection Mongo::MongoClient.new
+        connection Mongo::Client.new(['127.0.0.1:27017'])
       end
 
       child_class = Class.new(parent_class) do
