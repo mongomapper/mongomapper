@@ -24,7 +24,7 @@ module Modifiers
     }
 
     def assert_page_counts(page, day_count, week_count, month_count)
-      doc = page.collection.find_one({:_id => page.id})
+      doc = page.collection.find({:_id => page.id}).first
       doc.should be_present, "Could not find document"
       doc.fetch('day_count').should == day_count
       doc.fetch('week_count').should == week_count
@@ -32,7 +32,7 @@ module Modifiers
     end
 
     def assert_keys_removed(page, *keys)
-      page.class.collection.find_one({:_id => page.id}).tap do |doc|
+      page.class.collection.find({:_id => page.id}).first.tap do |doc|
         doc.should be_present, "Could not find document"
         (doc.keys & keys).should be_empty, "Expected to not have keys #{keys.inspect}, got #{(keys & doc.keys).inspect}"
       end
