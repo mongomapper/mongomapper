@@ -19,7 +19,7 @@ describe "IdentityMap" do
   end
 
   def expects_one_query
-    expect_any_instance_of(Mongo::Collection).to receive(:find_one).once.and_return({})
+    expect_any_instance_of(Mongo::Collection).to receive(:find).once.and_call_original
   end
 
   def clear_identity_map
