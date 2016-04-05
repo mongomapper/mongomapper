@@ -93,7 +93,7 @@ describe "Keys" do
       key :class, String, :accessors => :skip
     end
 
-    doc.collection.insert('class' => 'String')
+    doc.collection.insert_one('class' => 'String')
     doc.all.first.tap do |d|
       d.class.should == doc
       d["class"].should == "String"
@@ -109,7 +109,7 @@ describe "Keys" do
     }
 
     before do
-      doc.collection.insert(:dynamic => "foo")
+      doc.collection.insert_one(:dynamic => "foo")
       doc.first
     end
 
@@ -141,7 +141,7 @@ describe "Keys" do
       doc.class_eval do
         key :NotConstant
       end
-      doc.collection.insert("NotConstant" => "Just data!")
+      doc.collection.insert_one("NotConstant" => "Just data!")
       doc.first.notConstant.should == "Just data!"
     end
 
@@ -174,7 +174,7 @@ describe "Keys" do
 
   it "should handle loading dynamic fields from the database that have bad names" do
     doc = Doc {}
-    doc.collection.insert("foo-bar" => "baz-bin")
+    doc.collection.insert_one("foo-bar" => "baz-bin")
 
     doc.first["foo-bar"].should == "baz-bin"
   end
@@ -195,7 +195,7 @@ describe "Keys" do
       end
 
       it "should serialize with aliased keys" do
-        AliasedKeyModel.collection.find_one.keys.should =~ %w(_id f bar)
+        AliasedKeyModel.collection.find.first.keys.should =~ %w(_id f bar)
 
         AliasedKeyModel.first.tap do |d|
           d.foo.should == "whee!"
@@ -219,15 +219,15 @@ describe "Keys" do
       it "should permit dealiasing of atomic operations" do
         m = AliasedKeyModel.first
         m.set(:foo => 1)
-        AliasedKeyModel.collection.find_one["f"].should == 1
-        AliasedKeyModel.collection.find_one["foo"].should be_nil
+        AliasedKeyModel.collection.find.first["f"].should == 1
+        AliasedKeyModel.collection.find.first["foo"].should be_nil
       end
 
       it "should permit dealiasing of update operations" do
         m = AliasedKeyModel.first
         m.update_attributes(:foo => 1)
-        AliasedKeyModel.collection.find_one["f"].should == 1
-        AliasedKeyModel.collection.find_one["foo"].should be_nil
+        AliasedKeyModel.collection.find.first["f"].should == 1
+        AliasedKeyModel.collection.find.first["foo"].should be_nil
       end
 
       it "should not break when unaliasing non-keys" do
@@ -246,7 +246,7 @@ describe "Keys" do
       before { AliasedKeyModel.create(:with_underscores => "foobar") }
       it "should work" do
         AliasedKeyModel.first.with_underscores.should == "foobar"
-        AliasedKeyModel.collection.find_one["with-hyphens"].should == "foobar"
+        AliasedKeyModel.collection.find.first["with-hyphens"].should == "foobar"
       end
     end
 
@@ -254,7 +254,7 @@ describe "Keys" do
       before { AliasedKeyModel.create(:field_name => "foobar") }
       it "should work" do
         AliasedKeyModel.first.field_name.should == "foobar"
-        AliasedKeyModel.collection.find_one["alternate_field_name"].should == "foobar"
+        AliasedKeyModel.collection.find.first["alternate_field_name"].should == "foobar"
       end
     end
 
@@ -291,7 +291,7 @@ describe "Keys" do
         owner.reload
         owner.associated_documents.to_a.should =~ associated_documents.to_a
 
-        AssociatedKeyWithAlias.collection.find_one.keys.should =~ %w(_id n aid)
+        AssociatedKeyWithAlias.collection.find.first.keys.should =~ %w(_id n aid)
       end
 
       it "should work with embedded documents" do
@@ -301,7 +301,7 @@ describe "Keys" do
 
         owner.reload
         owner.other_documents[0].embedded_name.should == "Underling"
-        owner.collection.find_one["other_documents"][0]["en"].should == "Underling"
+        owner.collection.find.first["other_documents"][0]["en"].should == "Underling"
       end
     end
   end
