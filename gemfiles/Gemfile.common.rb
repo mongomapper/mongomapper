@@ -35,4 +35,9 @@ group :test do
   platforms :mri_20 do
     gem 'pry'
   end
+
+  platforms :mri_23 do
+    gem 'byebug'
+  end
+
 end
