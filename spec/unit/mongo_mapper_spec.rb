@@ -4,19 +4,19 @@ class Address; end
 
 describe "MongoMapper" do
   it "should be able to write and read connection" do
-    conn = Mongo::MongoClient.new
+    conn = Mongo::Client.new(['127.0.0.1:27001'])
     MongoMapper.connection = conn
     MongoMapper.connection.should == conn
   end
 
   it "should default connection to new mongo ruby driver" do
     MongoMapper.connection = nil
-    MongoMapper.connection.should be_instance_of(Mongo::MongoClient)
+    MongoMapper.connection.should be_instance_of(Mongo::Client)
   end
 
   it "should be able to write and read default database" do
     MongoMapper.database = 'test'
-    MongoMapper.database.should be_instance_of(Mongo::DB)
+    MongoMapper.database.should be_instance_of(Mongo::Database)
     MongoMapper.database.name.should == 'test'
   end
 
