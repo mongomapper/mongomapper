@@ -283,7 +283,7 @@ describe "Document" do
   context "database has keys not defined in model" do
     before do
       @id = BSON::ObjectId.new
-      @document.collection.insert({
+      @document.collection.insert_one({
         :_id            => @id,
         :first_name     => 'John',
         :last_name      => 'Nunemaker',
