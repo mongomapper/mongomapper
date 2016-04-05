@@ -19,7 +19,7 @@ module MongoMapper
       end
 
       def reload
-        if doc = collection.find_one(:_id => id)
+        if doc = collection.find({:_id => id},{limit: -1}).first
           self.class.associations.each_value do |association|
             get_proxy(association).reset
           end
