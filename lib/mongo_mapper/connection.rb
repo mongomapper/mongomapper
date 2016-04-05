@@ -6,7 +6,7 @@ module MongoMapper
     @@connection    = nil
     @@config        = nil
     @@database      = nil
-    
+
     # @api public
     def connection
       @@connection ||= Mongo::Client.new ['127.0.0.1:27017']

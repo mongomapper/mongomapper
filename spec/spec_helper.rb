@@ -72,7 +72,7 @@ Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
   config.example_status_persistence_file_path = "./spec/examples.txt"
-  
+
   config.expect_with :rspec do |c|
     c.syntax = [:should, :expect]
   end
