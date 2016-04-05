@@ -10,7 +10,7 @@ class User
   key :name, String
   key :tags, Array
 end
-User.collection.remove # empties collection
+User.collection.drop # empties collection
 
 User.create(:name => 'John',  :tags => %w[ruby mongo], :age => 28)
 User.create(:name => 'Bill',  :tags => %w[ruby mongo], :age => 30)

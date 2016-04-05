@@ -22,7 +22,7 @@ class Foo
   key :expire_on, Date
   timestamps!
 end
-Foo.collection.remove
+Foo.collection.drop
 
 Benchmark.bm(5) do |x|
   ids = []

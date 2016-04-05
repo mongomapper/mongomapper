@@ -3,8 +3,8 @@ require 'spec_helper'
 
 describe "BelongsToPolymorphicProxy" do
   before do
-    Status.collection.remove
-    Project.collection.remove
+    Status.collection.drop
+    Project.collection.drop
   end
 
   it "should default to nil" do

@@ -16,7 +16,7 @@ class Site
 
   key :title, String
 end
-Site.collection.remove
+Site.collection.drop
 
 site = Site.create(:title => 'Testing')
 

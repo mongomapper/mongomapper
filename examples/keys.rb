@@ -16,7 +16,7 @@ class User
   key :links,       Hash
   timestamps!
 end
-User.collection.remove # empties collection
+User.collection.drop # empties collection
 
 john = User.create({
   :first_name => 'John',

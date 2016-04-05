@@ -9,7 +9,7 @@ module AssociationsSpec
 
         many :posts, :class_name => 'AssociationsSpec::AwesomePost', :foreign_key => :creator_id
       end
-      AwesomeUser.collection.remove
+      AwesomeUser.collection.drop
 
       class AwesomeTag
         include MongoMapper::EmbeddedDocument
@@ -29,8 +29,8 @@ module AssociationsSpec
         many :tags, :class_name => 'AssociationsSpec::AwesomeTag', :foreign_key => :post_id
       end
 
-      AwesomeUser.collection.remove
-      AwesomePost.collection.remove
+      AwesomeUser.collection.drop
+      AwesomePost.collection.drop
 
       user = AwesomeUser.create
       tag1 = AwesomeTag.new(:name => 'awesome')

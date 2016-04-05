@@ -14,8 +14,8 @@ describe "InArrayProxy" do
         key :list_ids, Array
         many :lists, :in => :list_ids
       end
-      User.collection.remove
-      List.collection.remove
+      User.collection.drop
+      List.collection.drop
     end
 
     after do

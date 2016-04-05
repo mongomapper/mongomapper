@@ -121,13 +121,13 @@ describe "BelongsToProxy" do
       class ::Property
         include MongoMapper::Document
       end
-      Property.collection.remove
+      Property.collection.drop
 
       class ::Thing
         include MongoMapper::Document
         key :name, String
       end
-      Thing.collection.remove
+      Thing.collection.drop
     end
 
     after do

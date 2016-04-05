@@ -420,7 +420,7 @@ describe "IdentityMap" do
           belongs_to :parent, :class_name => 'Item'
           one :blog, :class_name => 'Blog', :foreign_key => 'parent_id'
         end
-        Item.collection.remove
+        Item.collection.drop
 
         class ::Blog < ::Item; end
 

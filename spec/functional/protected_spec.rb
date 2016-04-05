@@ -115,7 +115,7 @@ describe "Single collection inherited protected attributes" do
       key :site_id, ObjectId
       attr_protected :site_id
     end
-    GrandParent.collection.remove
+    GrandParent.collection.drop
 
     class ::Child < ::GrandParent
       key :position, Integer

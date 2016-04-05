@@ -27,7 +27,7 @@ describe "Single collection inheritance (document)" do
         include MongoMapper::Document
         key :name, String
       end
-      DocParent.collection.remove
+      DocParent.collection.drop
 
       class ::DocDaughter < ::DocParent; end
       class ::DocSon < ::DocParent; end

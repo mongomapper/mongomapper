@@ -119,7 +119,7 @@ describe "Accessible" do
         key :name, String
         key :site_id, ObjectId
       end
-      GrandParent.collection.remove
+      GrandParent.collection.drop
 
       class ::Child < ::GrandParent
         attr_accessible :position

@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe "ManyDocumentsAsProxy" do
   before do
-    Post.collection.remove
-    PostComment.collection.remove
+    Post.collection.drop
+    PostComment.collection.drop
   end
 
   it "should default reader to empty array" do

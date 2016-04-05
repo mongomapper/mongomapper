@@ -170,7 +170,7 @@ describe "Scopes" do
           key   :title, String
           key   :published_at, Time
         end
-        Item.collection.remove
+        Item.collection.drop
 
         class ::Page < ::Item; end
         class ::Blog < ::Item

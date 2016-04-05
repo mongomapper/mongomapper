@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe "ManyPolymorphicProxy" do
   before do
-    Room.collection.remove
-    Message.collection.remove
+    Room.collection.drop
+    Message.collection.drop
   end
 
   it "should default reader to empty array" do

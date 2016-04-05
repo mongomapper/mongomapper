@@ -2,8 +2,8 @@ require 'spec_helper'
 
 describe "ManyEmbeddedPolymorphicProxy" do
   before do
-    Catalog.collection.remove
-    TrModels::Fleet.collection.remove
+    Catalog.collection.drop
+    TrModels::Fleet.collection.drop
   end
 
   it "should default reader to empty array" do
