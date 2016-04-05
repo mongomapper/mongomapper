@@ -13,7 +13,7 @@ module MongoMapper
           criteria, keys, options = criteria_and_keys_from_args(args)
           values, to_decrement = keys.values, {}
           keys.keys.each_with_index { |k, i| to_decrement[k] = -values[i].abs }
-          collection.update(criteria, {'$inc' => to_decrement}, :multi => true)
+          collection.update_many(criteria, {'$inc' => to_decrement}, options || {})
         end
 
         def set(*args)
@@ -81,9 +81,9 @@ module MongoMapper
         def modifier_update(modifier, args)
           criteria, updates, options = criteria_and_keys_from_args(args)
           if options
-            collection.update(criteria, {modifier => updates}, options.merge(:multi => true))
+            collection.update_many(criteria, {modifier => updates}, options)
           else
-            collection.update(criteria, {modifier => updates}, :multi => true)
+            collection.update_many(criteria, {modifier => updates})
           end
         end
 
