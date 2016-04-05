@@ -20,12 +20,18 @@ module MongoMapper
           @safe_options ||= nil
           !!@safe_options
         end
+
+        def collection_options
+          if @safe_options
+            super.merge(write: Utils.get_safe_options(safe: @safe_options))
+          else
+            super
+          end
+        end
+
       end
 
-      def save_to_collection(options={})
-        options[:safe] = self.class.safe_options if !options.key?(:safe) && self.class.safe?
-        super
-      end
+
     end
   end
 end

@@ -55,7 +55,11 @@ module MongoMapper
 
         def collection
           assert_supported
-          database.collection(collection_name)
+          database.collection(collection_name, collection_options)
+        end
+
+        def collection_options
+          {}
         end
 
       private

@@ -138,6 +138,12 @@ module MongoMapper
         update = to_mongo
         query_options = Utils.get_safe_options(options)
 
+        if query_options.any?
+          collection = self.collection.with(write: query_options)
+        else
+          collection = self.collection
+        end
+
         case method
         when :insert
           collection.insert_one(update, query_options)
