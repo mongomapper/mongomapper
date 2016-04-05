@@ -10,6 +10,6 @@ end
 
 RSpec::Matchers.define :have_index do |index_name|
   match do |model|
-    model.collection.index_information.detect { |index| index[0] == index_name }.present?
+    model.collection.indexes.get(index_name).present?
   end
 end
