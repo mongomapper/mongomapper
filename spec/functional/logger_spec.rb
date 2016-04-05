@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "Logger" do
-  context "with connection that has logger" do
+  context "with connection that has logger", without_connection: true do
     before do
       @output = StringIO.new
       @logger = Logger.new(@output)
