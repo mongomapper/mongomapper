@@ -21,11 +21,11 @@ describe "Document" do
     end
 
     it "should have a connection" do
-      @document.connection.should be_instance_of(Mongo::MongoClient)
+      @document.connection.should be_instance_of(Mongo::Client)
     end
 
     it "should allow setting different connection without affecting the default" do
-      conn = Mongo::MongoClient.new
+      conn = Mongo::Client.new(['127.0.0.1:27001'])
       @document.connection conn
       @document.connection.should == conn
       @document.connection.should_not == MongoMapper.connection
