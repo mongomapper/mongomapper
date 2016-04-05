@@ -92,7 +92,7 @@ describe "Proxy" do
     end
 
     it "should not work if neither the proxy or target respond to method" do
-      lambda { @proxy.send(:gsub) }.should raise_error
+      lambda { @proxy.send(:gsub) }.should raise_error(NoMethodError)
     end
 
     it "should work if a proc is passed" do

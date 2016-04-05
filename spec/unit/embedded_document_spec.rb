@@ -210,7 +210,7 @@ describe "EmbeddedDocument" do
         end
 
         it "should not include descendant keys" do
-          lambda { Parent.new.other_child }.should raise_error
+          lambda { Parent.new.other_child }.should raise_error(NoMethodError)
         end
       end
 
