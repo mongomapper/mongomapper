@@ -5,7 +5,7 @@ describe "Logger" do
     before do
       @output = StringIO.new
       @logger = Logger.new(@output)
-      MongoMapper.connection = Mongo::MongoClient.new('127.0.0.1', 27017, :logger => @logger)
+      MongoMapper.connection = Mongo::Client.new(['127.0.0.1:27017'], :logger => @logger)
     end
 
     it "should be able to get access to that logger" do
