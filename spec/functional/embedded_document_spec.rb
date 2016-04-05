@@ -288,7 +288,7 @@ describe "EmbeddedDocument" do
   end
 
   it "should not fail if the source document contains nils in the embedded document list" do
-    @klass.collection.insert(:pets => [nil, {:name => "Sasha"}])
+    @klass.collection.insert_one(:pets => [nil, {:name => "Sasha"}])
     expect { @klass.all.first.pets }.to_not raise_error
     @klass.all.first.pets.tap do |pets|
       pets.length.should == 1
