@@ -94,9 +94,9 @@ module MongoMapper
     end
 
     def setup(config, environment, options={})
-      handle_passenger_forking
+      handle_passenger_forking if options[:disable_connection]
       self.config = config
-      connect(environment, options)
+      connect(environment, options) if options[:disable_connection]
     end
 
     def handle_passenger_forking
