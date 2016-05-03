@@ -219,6 +219,16 @@ describe "Querying" do
       end
     end
 
+    context "(with array of single id)" do
+      it "should return an array" do
+        document.find([@doc1._id]).should == [@doc1]
+      end
+
+      it "should return an array for find!" do
+        document.find!([@doc1._id]).should == [@doc1]
+      end
+    end
+
     it "should be able to find using condition auto-detection" do
       document.first(:first_name => 'John').should == @doc1
       document.all(:last_name => 'Nunemaker', :order => 'age desc').should == [@doc1, @doc3]
