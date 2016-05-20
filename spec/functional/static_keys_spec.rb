@@ -18,15 +18,18 @@ describe MongoMapper::Plugins::Keys::Static do
 
   describe "a class with static keys" do
     before do
-      @klass = Class.new do
-        include MongoMapper::Document
+      @pet_klass = EDoc('Pet') do
+        key :name, String
+      end
 
+      @klass = Doc('Person') do
         self.static_keys = true
 
         attr_accessor :an_accessor
 
         key "valid_key", String
       end
+      @klass.one :pet, :class => @pet_klass
 
       @obj = @klass.new
     end
@@ -92,9 +95,10 @@ describe MongoMapper::Plugins::Keys::Static do
     end
 
     it "should not blow up when loading if there is a key defined in the db that has not been defined (but it should not load it)" do
-      @klass.collection.insert({ :foo => "bar", :valid_key => "something" })
+      @klass.collection.insert({ :foo => "bar", :valid_key => "something", :pet => { :name => 'Jack' } })
       @obj = @klass.first
       @obj.valid_key.should == "something"
+      @obj.pet.name.should == 'Jack'
 
       lambda {
         @obj.foo

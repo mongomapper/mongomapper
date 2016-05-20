@@ -6,11 +6,19 @@ module MongoMapper
 
         extend ActiveSupport::Concern
 
-        module ClassMethods
-          attr_writer :static_keys
+        included do
+          self.static_keys = false
+        end
 
-          def static_keys
-            @static_keys || false
+        module ClassMethods
+          attr_accessor :static_keys
+
+          def embedded_keys
+            @embedded_keys ||= embedded_associations.collect(&:as)
+          end
+
+          def embedded_key?(key)
+            embedded_keys.include?(key.to_sym)
           end
         end
 
@@ -35,7 +43,7 @@ module MongoMapper
         def load_from_database(attrs, with_cast = false)
           return super if !self.class.static_keys || !attrs.respond_to?(:each)
 
-          attrs = attrs.select { |key, _| self.class.key?(key) }
+          attrs = attrs.select { |key, _| self.class.key?(key) || self.class.embedded_key?(key) }
 
           super(attrs, with_cast)
         end
