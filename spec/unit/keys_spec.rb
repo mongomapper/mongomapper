@@ -9,7 +9,7 @@ describe "Key" do
           key :_id, Integer
         end
         # No sensible default id for integer, people better pass them in if they user this
-        silence_stderr { klass.new.id.should be_nil }
+        silence_warnings { klass.new.id.should be_nil }
       }.should_not raise_error
     end
   end

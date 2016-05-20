@@ -66,7 +66,7 @@ describe "Indexing" do
   end
 
   it "should work with :index shortcut when defining key" do
-    silence_stderr { @document.key :father, String, :index => true }
+    silence_warnings { @document.key :father, String, :index => true }
     @document.should have_index('father_1')
   end
 end

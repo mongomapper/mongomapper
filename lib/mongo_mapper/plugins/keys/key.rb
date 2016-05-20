@@ -27,6 +27,8 @@ module MongoMapper
             Kernel.warn "Key names may not start with uppercase letters. If your field starts " +
                  "with an uppercase letter, use :field_name to specify the real field name. " +
                  "Accessors called `#{@name}` have been created instead."
+          else
+            @abbr = nil
           end
           @ivar = :"@#{name}" if valid_ruby_name?
           validate_key_name! unless dynamic? or !any_accessor?

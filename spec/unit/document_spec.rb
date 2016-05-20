@@ -152,7 +152,7 @@ describe "Document" do
 
       it "should be true if id but using custom id and not saved yet" do
         @document.key :_id, String
-        doc = silence_stderr { @document.new }
+        doc = silence_warnings { @document.new }
         doc.id = '1234'
         doc.new?.should be_truthy
       end
