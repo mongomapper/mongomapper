@@ -7,8 +7,6 @@ gemfile:
 rvm:
   - 2.2.5
   - 2.3.1
-  - jruby-1.7.25
-  - jruby-9.0.5.0
 notifications:
   email: false
 bundler_args: --without development
@@ -25,6 +23,15 @@ matrix:
       gemfile: gemfiles/rails3_1_ruby_1_8_7.gemfile
     - rvm: 1.8.7
       gemfile: gemfiles/rails3_2_ruby_1_8_7.gemfile
-  exclude:
-    - rvm: jruby-1.7.23
+    - rvm: jruby-1.7.25
+      gemfile: gemfiles/rails3_2.gemfile
+      env: JRUBY_OPTS="--server -Xcompile.invokedynamic=false -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -J-Xms512m -J-Xmx1024m"
+    - rvm: jruby-1.7.25
+      gemfile: gemfiles/rails4_0.gemfile
+      env: JRUBY_OPTS="--server -Xcompile.invokedynamic=false -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -J-Xms512m -J-Xmx1024m"
+    - rvm: jruby-9.0.5.0
+      gemfile: gemfiles/rails4_2.gemfile
+      env: JRUBY_OPTS="--server -Xcompile.invokedynamic=false -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -J-Xms512m -J-Xmx1024m"
+    - rvm: jruby-9.0.5.0
       gemfile: gemfiles/rails5_0.gemfile
+      env: JRUBY_OPTS="--server -Xcompile.invokedynamic=false -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -J-Xms512m -J-Xmx1024m"
