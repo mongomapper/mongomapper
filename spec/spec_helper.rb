@@ -4,8 +4,13 @@ require 'rubygems'
 require 'bundler/setup'
 require 'fileutils'
 require 'timecop'
-require "generator_spec/test_case"
+require 'generator_spec/test_case'
 # require 'ruby-debug'
+begin
+  require 'active_model/serializers'
+rescue LoadError
+  # Only used when running Rails 5
+end
 
 if RUBY_PLATFORM != "java"
   if ENV['TRAVIS']
