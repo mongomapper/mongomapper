@@ -35,6 +35,10 @@
     * Fix counter caching with polymorphic belongs_to [smtlaissezfaire, bhernez]
     * Fix issues with arrays + plucky query. (upgrade to plucky query 0.7.0 - see regressions in scope_spec.rb)
 
+  Enhancements:
+
+    * Change #first and #last to return results based on created_at when timestamps are included [smtlaissezfaire]
+
   Internals:
 
     * Don't create accessors for reserved keys (id, class, etc) [cheald]
