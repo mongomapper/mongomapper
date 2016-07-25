@@ -17,16 +17,12 @@ module ActsAsListFu
     key :position, Integer, :default => 1
   end
 
-  module ClassMethods
-    def reorder(ids)
-      # reorder ids...
-    end
+  def self.reorder(ids)
+    # reorder ids...
   end
 
-  module InstanceMethods
-    def move_to_top
-      # move to top
-    end
+  def move_to_top
+    # move to top
   end
 end
 {% endhighlight %}
