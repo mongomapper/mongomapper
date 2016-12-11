@@ -1,4 +1,9 @@
 
+HEAD
+
+  * Drop support for ruby versions < 2.0.x
+  * Drop support for rails before 3.2
+
 0.14.0 RC1 - 2016-03-16
 
   Enhancements:
