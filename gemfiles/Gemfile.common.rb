@@ -1,9 +1,12 @@
 source 'https://rubygems.org'
 
-gem 'rake'
+gem 'rake', "< 11.0"
 gem 'multi_json',  '~> 1.2'
-gem 'coveralls', :require => false
-gem 'simplecov', :require => false
+
+if RUBY_PLATFORM != "java"
+  gem 'coveralls', :require => false
+  gem 'simplecov', :require => false
+end
 gem 'rest-client', '1.6.7'
 
 platforms :ruby do
@@ -16,6 +19,7 @@ platforms :rbx do
 end
 
 group :test do
+  gem 'test-unit',      '~> 3.0'
   gem 'rspec',          '~> 3.1.0'
   gem 'timecop',        '= 0.6.1'
   gem 'rack-test',      '~> 0.5'

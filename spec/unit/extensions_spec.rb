@@ -300,7 +300,8 @@ describe "Support" do
     end
 
     it "should be time in utc if time" do
-      Time.to_mongo(Time.local(2009, 8, 15, 0, 0, 0)).zone.should == 'UTC'
+      utc_str = RUBY_PLATFORM != "java" ? 'UTC' : "GMT"
+      Time.to_mongo(Time.local(2009, 8, 15, 0, 0, 0)).zone.should == utc_str
     end
 
     it "should be nil if blank string" do
