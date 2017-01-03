@@ -61,6 +61,7 @@ module MongoMapper
     autoload :Scopes,             'mongo_mapper/plugins/scopes'
     autoload :Serialization,      'mongo_mapper/plugins/serialization'
     autoload :Stats,              'mongo_mapper/plugins/stats'
+    autoload :StrongParameters,   'mongo_mapper/plugins/strong_parameters'
     autoload :Timestamps,         'mongo_mapper/plugins/timestamps'
     autoload :Userstamps,         'mongo_mapper/plugins/userstamps'
     autoload :Validations,        'mongo_mapper/plugins/validations'
