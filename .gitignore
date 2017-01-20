@@ -1,2 +1,8 @@
 _site
 log
+.bundle
+Gemfile*
+gemfiles
+*.gem
+*.tmproj
+tmp
