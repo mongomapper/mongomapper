@@ -60,7 +60,7 @@ end
 
 Each book stores an array of the id's of its authors in the @author_ids@ key. This allows books to have many authors, and authors to have many books.
 
-Currently, many-to-many associations are one-sided in MongoMapper. "Support will be added":https://github.com/jnunemaker/mongomapper/issues/240 in the near future for the inverse.
+Currently, many-to-many associations are one-sided in MongoMapper. "Support will be added":https://github.com/mongomapper/mongomapper/issues/240 in the near future for the inverse.
 
 h3(#one-to-one). One-to-One
 

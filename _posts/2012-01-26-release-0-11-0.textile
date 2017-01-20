@@ -47,4 +47,4 @@ h2. Bug Fixes
 
 h2. Changelog
 
-See the individual commits via the full "change log":https://github.com/jnunemaker/mongomapper/compare/v0.10.1...v0.11.0 for v0.11.0
+See the individual commits via the full "change log":https://github.com/mongomapper/mongomapper/compare/v0.10.1...v0.11.0 for v0.11.0

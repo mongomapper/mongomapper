@@ -8,7 +8,7 @@ h2. Documentation
 MongoMapper needs your help to make the documentation better. Here's how to contribute:
 
 
-# Fork the "repo on GitHub":http://github.com/jnunemaker/mongomapper and check out the gh-pages branch.
+# Fork the "repo on GitHub":http://github.com/mongomapper/mongomapper and check out the gh-pages branch.
 {% highlight sh %}
 $ git checkout -b gh-pages origin/gh-pages
 {% endhighlight %}
@@ -30,12 +30,12 @@ jekyll serve --watch
 
 h3. Suggestions
 
-If you want to help with the documentation, but don't know how to help, "here are some ideas":https://github.com/jnunemaker/mongomapper/issues?labels=documentation of things that need documented.
+If you want to help with the documentation, but don't know how to help, "here are some ideas":https://github.com/mongomapper/mongomapper/issues?labels=documentation of things that need documented.
 
 h3. Guidelines
 
 In order to maintain quality, here are some guidelines for contributing to the MongoMapper documentation.
 
-* Don't document hacks or workarounds. If MongoMapper is broken or doesn't support something, note it in the docs and add an issue to the "issue tracker":http://github.com/jnunemaker/mongomapper/issues.
+* Don't document hacks or workarounds. If MongoMapper is broken or doesn't support something, note it in the docs and add an issue to the "issue tracker":http://github.com/mongomapper/mongomapper/issues.
 * Avoid narratives. People don't really care why you're writing the documentation, they just want to know how to use MongoMapper.
 * Be concise without sacrificing clarity.
