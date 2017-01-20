@@ -2,11 +2,11 @@
 
 A Ruby Object Mapper for Mongo.
 
-[<img src="https://badge.fury.io/rb/mongo_mapper.png" alt="RubyGems">](https://rubygems.org/gems/mongo_mapper)
+[<img src="https://badge.fury.io/rb/mongo_mapper.svg" alt="RubyGems">](https://rubygems.org/gems/mongo_mapper)
 
-[<img src="https://travis-ci.org/mongomapper/mongomapper.png?branch=master" alt="Build Status" />](https://travis-ci.org/mongomapper/mongomapper)
+[<img src="https://travis-ci.org/mongomapper/mongomapper.svg?branch=master" alt="Build Status" />](https://travis-ci.org/mongomapper/mongomapper)
 
-[<img src="https://coveralls.io/repos/mongomapper/mongomapper/badge.png" alt="Coverage Status" />](https://coveralls.io/r/mongomapper/mongomapper)
+[<img src="https://coveralls.io/repos/mongomapper/mongomapper/badge.svg" alt="Coverage Status" />](https://coveralls.io/r/mongomapper/mongomapper)
 
 ## Install
 
