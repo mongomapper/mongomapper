@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.description        = 'MongoMapper is a Object-Document Mapper for Ruby and Rails'
   s.require_path       = 'lib'
   s.license            = 'MIT'
-  s.authors            = ['John Nunemaker']
-  s.email              = ['nunemaker@gmail.com']
+  s.authors            = ['John Nunemaker', 'Chris Heald', 'Scott Taylor']
+  s.email              = ['nunemaker@gmail.com', 'cheald@gmail.com', 'scott@railsnewbie.com']
   s.executables        = ['mmconsole']
   s.version            = MongoMapper::Version
   s.platform           = Gem::Platform::RUBY
