@@ -44,6 +44,7 @@ describe "Stats" do
     end
 
     it "should have the correct number of extents" do
+      skip 'Not available with newer MongoDB' unless Docs.collection.stats.has_key?('numExtents')
       expect(Docs.stats.num_extents).to eq(Docs.collection.stats['numExtents'])
     end
 
@@ -52,14 +53,17 @@ describe "Stats" do
     end
 
     it "should have the correct last extent size" do
+      skip 'Not available with newer MongoDB' unless Docs.collection.stats.has_key?('lastExtentSize')
       expect(Docs.stats.last_extent_size).to eq(Docs.collection.stats['lastExtentSize'])
     end
 
     it "should have the correct padding factor" do
+      skip 'Not available with newer MongoDB' unless Docs.collection.stats.has_key?('paddingFactor')
       expect(Docs.stats.padding_factor).to eq(Docs.collection.stats['paddingFactor'])
     end
 
     it "should have the correct user flags" do
+      skip 'Not available with newer MongoDB' unless Docs.collection.stats.has_key?('userFlags')
       expect(Docs.stats.user_flags).to eq(Docs.collection.stats['userFlags'])
     end
 
