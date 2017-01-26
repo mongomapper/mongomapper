@@ -1,4 +1,4 @@
-permalink:  /blog/:year/:month/:day/:title
-pygments:   true
+permalink: /blog/:year/:month/:day/:title
+highlighter: true
 lsi: false
 safe: true
