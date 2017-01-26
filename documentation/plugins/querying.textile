@@ -54,7 +54,7 @@ h3(#find_each). find_each
 
 Get all of the documents in a query one at a time and pass them to the given block. Works with options or criteria.
 {% highlight ruby %}
-Patient.find_each(:last_name => "Johnson") do |document| 
+Patient.find_each(:last_name => "Johnson") do |document|
   # do something with document
 end
 {% endhighlight %}
@@ -83,14 +83,14 @@ Paginate the query.
 {% highlight ruby %}
 Patient.paginate({
   :order    => :created_at.asc,
-  :per_page => 25, 
+  :per_page => 25,
   :page     => 3,
 })
 {% endhighlight %}
 
 h2(#criteria). Criteria
 
-Mongo has rich support for "dynamic queries":http://www.mongodb.org/display/DOCS/Querying. MongoMapper uses ["Plucky":https://github.com/jnunemaker/plucky] to construct query proxy objects that only retrieve data from Mongo when needed.  This allows a query to be composed of several conditions before being evaluated.
+Mongo has rich support for "dynamic queries":http://www.mongodb.org/display/DOCS/Querying. MongoMapper uses ["Plucky":https://github.com/mongomapper/plucky] to construct query proxy objects that only retrieve data from Mongo when needed.  This allows a query to be composed of several conditions before being evaluated.
 
 h3(#where). where
 
@@ -178,14 +178,14 @@ Destroy a single or multiple document(s) by providing ID(s) or tne instance of a
 
 {% highlight ruby %}
 # Destroy a single user with the given ID
-User.destroy("50a210d2f7aa6006d2000001") 
+User.destroy("50a210d2f7aa6006d2000001")
 
 # Destroys two user with given ids
-User.destroy("50a210d2f7aa6006d2000001", "50a21153f7aa6006d2000002") 
+User.destroy("50a210d2f7aa6006d2000001", "50a21153f7aa6006d2000002")
 
 # Delete an instance
 u = User.create(:name => cow)
-u.destroy 
+u.destroy
 {% endhighlight %}
 
 h3(#destroy_all). destroy_all
@@ -203,7 +203,7 @@ User.destroy_all(:name => "George")
 
 h3(#delete). delete
 
-Delete document(s) from given ID(s) or the delete an instance of a document. 
+Delete document(s) from given ID(s) or the delete an instance of a document.
 Callbacks are NOT triggered.
 
 Usage is identical to destroy

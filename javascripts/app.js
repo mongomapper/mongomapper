@@ -17,7 +17,7 @@ var App = {
   init: function() {
     this.selectNav();
     this.commits = jQuery('#recent-commits ul');
-    new GitHub.Repo('jnunemaker', 'mongomapper').commits('master', this.loadCommits);
+    new GitHub.Repo('mongomapper', 'mongomapper').commits('master', this.loadCommits);
   },
 
   // Formats github api date
