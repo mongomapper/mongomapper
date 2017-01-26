@@ -1,4 +1,4 @@
 permalink: /blog/:year/:month/:day/:title
-highlighter: pygments
+highlighter: rouge
 lsi: false
 safe: true
