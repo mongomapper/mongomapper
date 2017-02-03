@@ -11,7 +11,7 @@ describe "Touch" do
         doc = @document.create
         old_updated_at = doc.updated_at
 
-        Timecop.freeze(Time.now + 1.day) do
+        Timecop.freeze(Time.current + 1.day) do
           doc.touch
         end
 
@@ -34,7 +34,7 @@ describe "Touch" do
         old_updated_at = emdoc.updated_at
         document_old_updated_at = doc.updated_at
 
-        Timecop.freeze(Time.now + 1.day) do
+        Timecop.freeze(Time.current + 1.day) do
           emdoc.touch
         end
 
@@ -73,7 +73,7 @@ describe "Touch" do
 
         it "should when the child is created" do
           orig_updated_at = @post.updated_at
-          Timecop.freeze(Time.now + 1.day) do
+          Timecop.freeze(Time.current + 1.day) do
             @comment.save
           end
 
@@ -83,7 +83,7 @@ describe "Touch" do
         it "should when the child is updated" do
           @comment.save
           old_updated_at = @post.updated_at
-          Timecop.freeze(Time.now + 2.day) do
+          Timecop.freeze(Time.current + 2.day) do
             @comment.update_attributes(:text => "Something")
           end
           @post.reload.updated_at.should_not == old_updated_at
@@ -92,7 +92,7 @@ describe "Touch" do
         it "should when the child is touched" do
           @comment.save
           old_updated_at = @post.updated_at
-          Timecop.freeze(Time.now + 3.day) do
+          Timecop.freeze(Time.current + 3.day) do
             @comment.touch
           end
           @post.reload.updated_at.should_not == old_updated_at
@@ -114,7 +114,7 @@ describe "Touch" do
       it 'should not touch the parent when false' do
         post = @post_class.create(:title => 'Hello, world!')
         comment = post.comments.build
-        Timecop.freeze(Time.now + 1.day) do
+        Timecop.freeze(Time.current + 1.day) do
           comment.save
         end
 

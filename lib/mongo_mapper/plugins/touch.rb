@@ -6,10 +6,10 @@ module MongoMapper
       def touch(key = :updated_at)
         raise ArgumentError, "Invalid key named #{key}" unless self.key_names.include?(key.to_s)
         if self.class.embeddable?
-          self.write_attribute(key, Time.now.utc)
+          self.write_attribute(key, Time.current.utc)
           self._parent_document.touch
         else
-          self.set(key => Time.now.utc)
+          self.set(key => Time.current.utc)
         end
         true
       end

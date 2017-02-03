@@ -118,7 +118,7 @@ describe "Support" do
     end
 
     it "should be date if time" do
-      time = Time.now
+      time = Time.current
       Date.from_mongo(time).should == time.to_date
     end
 
@@ -327,7 +327,7 @@ describe "Support" do
     end
 
     it "should not round up times at the end of the month" do
-      Time.to_mongo(Time.now.end_of_month).to_i.should == Time.now.end_of_month.utc.to_i
+      Time.to_mongo(Time.current.end_of_month).to_i.should == Time.current.end_of_month.utc.to_i
     end
 
     it "should be nil if blank string" do
@@ -345,7 +345,7 @@ describe "Support" do
 
   context "Time.from_mongo without Time.zone" do
     it "should be time" do
-      time = Time.now
+      time = Time.current
       Time.from_mongo(time).should == time
     end
 

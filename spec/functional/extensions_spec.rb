@@ -9,7 +9,7 @@ describe "Core Extensions" do
     end
 
     it "should match the precision of Time types stored in the database" do
-      d = doc.create(:created_at => Time.now)
+      d = doc.create(:created_at => Time.current)
       d.created_at.should == d.reload.created_at
     end
   end

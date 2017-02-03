@@ -51,7 +51,7 @@ describe "Timestamps" do
         old_updated_at = doc.updated_at
         doc.first_name = 'Johnny'
 
-        Timecop.freeze(Time.now + 5.seconds) do
+        Timecop.freeze(Time.current + 5.seconds) do
           doc.save
         end
 
@@ -63,7 +63,7 @@ describe "Timestamps" do
         doc = @klass.create(:first_name => 'John', :age => 27)
         old_created_at = doc.created_at.to_i
 
-        new_updated_at = Time.at(Time.now.to_i + 5.seconds)
+        new_updated_at = Time.at(Time.current.to_i + 5.seconds)
         Timecop.freeze(new_updated_at) do
           @klass.update(doc._id, { :first_name => 'Johnny' })
         end
