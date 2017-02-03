@@ -5,7 +5,7 @@ module MongoMapper
   module Extensions
     module Set
       def to_mongo(value)
-        value.to_a
+        (value || []).to_set.to_a
       end
 
       def from_mongo(value)
