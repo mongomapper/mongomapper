@@ -5,7 +5,7 @@ module MongoMapper
       safe = options[:safe]
       safe = {:w => 1} if safe == true
       safe = {:w => 0} if safe == false
-      safe = {:w => safe} if safe.is_a? Fixnum
+      safe = {:w => safe} if safe.is_a? Integer
       safe
     end
   end
