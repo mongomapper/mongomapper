@@ -173,10 +173,10 @@ module Modifiers
           }.to_not raise_error
         end
 
-        pending "should not typecast keys that are not defined in document" do
+        it "should not typecast keys that are not defined in document" do
           expect {
             page_class.set(page.id, :colors => ['red', 'green'].to_set)
-          }.to raise_error(BSON::InvalidDocument)
+          }.to raise_error(NoMethodError)
         end
 
         it "should set keys that are not defined in document" do
