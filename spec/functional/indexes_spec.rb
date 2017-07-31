@@ -15,13 +15,16 @@ describe "Indexing" do
     before do
       allow(@document).to receive(:collection).and_return(double(:name => :foo, :indexes => double()))
     end
-    [:create_index, :ensure_index].each do |method|
-      pending "should delegate #{method} to collection" do
-        expect(@document.collection).to receive(method).with(:arg, {})
-        @document.send(method, :arg)
-      end
+
+    it "should delegate create_index to collection#create_one" do
+      expect(@document.collection.indexes).to receive(:create_one).with({:arg => 1}, {})
+      @document.create_index(:arg)
     end
 
+    it "should delegate ensure_index to collection#create_one" do
+      expect(@document.collection.indexes).to receive(:create_one).with({:arg => 1}, {})
+      @document.create_index(:arg)
+    end
     it "should delegate drop_index to collection" do
       expect(@document.collection.indexes).to receive(:drop_one).with(:arg)
       @document.drop_index(:arg)
