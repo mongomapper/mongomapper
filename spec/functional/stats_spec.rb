@@ -47,7 +47,9 @@ describe "Stats" do
     end
 
     it "should have the correct number of extents" do
-      expect(Docs.stats.num_extents).to eq(get_stats['numExtents'])
+      if get_stats['numExtents']
+        expect(Docs.stats.num_extents).to eq(get_stats['numExtents'])
+      end
     end
 
     it "should have the correct number of indexes" do
@@ -55,15 +57,21 @@ describe "Stats" do
     end
 
     it "should have the correct last extent size" do
-      expect(Docs.stats.last_extent_size).to eq(get_stats['lastExtentSize'])
+      if get_stats['lastExtentSize']
+        expect(Docs.stats.last_extent_size).to eq(get_stats['lastExtentSize'])
+      end
     end
 
     it "should have the correct padding factor" do
-      expect(Docs.stats.padding_factor).to eq(get_stats['paddingFactor'])
+      if get_stats['paddingFactor']
+        expect(Docs.stats.padding_factor).to eq(get_stats['paddingFactor'])
+      end
     end
 
     it "should have the correct user flags" do
-      expect(Docs.stats.user_flags).to eq(get_stats['userFlags'])
+      if get_stats['userFlags']
+        expect(Docs.stats.user_flags).to eq(get_stats['userFlags'])
+      end
     end
 
     it "should have the correct total index size" do
