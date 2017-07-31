@@ -84,5 +84,19 @@ RSpec.configure do |config|
     example.run
     MongoMapper.connection = old
   end
+
+  def suppress_stderr
+    begin
+      original_stderr = $stderr.clone
+      $stderr.reopen(File.new('/dev/null', 'w'))
+      retval = yield
+    rescue Exception => e
+      $stderr.reopen(original_stderr)
+      raise e
+    ensure
+      $stderr.reopen(original_stderr)
+    end
+    retval
+  end
 end
 
