@@ -555,7 +555,7 @@ describe "Partial Updates" do
       obj.string_field.should == "Scott"
     end
 
-    pending "should respect typecasting" do
+    it "should respect typecasting" do
       obj = @klass.create(:boolean_field => 'true')
       obj.boolean_field.should eq(true)
 
@@ -570,7 +570,7 @@ describe "Partial Updates" do
 
       update_query_expectation = hash_including("$set"=> hash_including("boolean_field"))
 
-      obj.collection.should_not receive(:update).with(anything, update_query_expectation, anything)
+      obj.collection.should_not receive(:update_one).with(anything, update_query_expectation, anything)
       obj.save!
     end
   end
