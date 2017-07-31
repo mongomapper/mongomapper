@@ -232,7 +232,7 @@ describe "Dirty" do
     it "should reset the attribute back to the previous value" do
       doc = @document.create(:a=>"b")
       doc.a = "c"
-      doc.reset_a!
+      doc.restore_a!
       doc.changed?.should be_falsey
       doc.a.should == "b"
     end
@@ -241,7 +241,7 @@ describe "Dirty" do
       doc.a = "c"
       doc.a = "d"
       doc.a = "e"
-      doc.reset_a!
+      doc.restore_a!
       doc.changed?.should be_falsey
       doc.a.should == "b"
     end
