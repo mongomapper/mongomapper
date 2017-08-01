@@ -38,8 +38,9 @@ group :test do
     gem 'pry'
   end
 
-  platforms :mri_23 do
-    gem 'byebug'
+  if RUBY_VERSION >= '2.3'
+    platforms :mri_23 do
+      gem 'byebug'
+    end
   end
-
 end
