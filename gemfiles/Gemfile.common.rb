@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 gem 'rake', "< 11.0"
 gem 'multi_json',  '~> 1.2'
 
-gem 'plucky', git: "git@github.com:fcheung/plucky.git", branch: 'mongo-2.x'
+gem 'plucky', git: "https://github.com/fcheung/plucky.git", branch: 'mongo-2.x'
 
 if RUBY_PLATFORM != "java"
   gem 'coveralls', :require => false
