@@ -58,6 +58,14 @@ describe "MongoMapper" do
       MongoMapper.connect('development')
     end
 
+    it "should work without authentication using host" do
+      MongoMapper.config = {
+        'development' => {'host' => ['127.0.0.1:27017']}
+      }
+      expect(Mongo::Client).to receive(:new).with(['127.0.0.1:27017'], {})
+      MongoMapper.connect('development')
+    end
+
     it "should convert read preferences to symbols" do
       MongoMapper.config = {
         'development' => {'hosts' => ['127.0.0.1:27017'], 'database' => 'test', 'read' => 'primary'}
