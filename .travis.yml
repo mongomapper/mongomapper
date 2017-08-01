@@ -24,4 +24,4 @@ matrix:
     - rvm: 2.4.1
       gemfile: gemfiles/rails4_0.gemfile
     - rvm: 2.0.0
-      gemfile: gemfiles/rails4_0.gemfile
+      gemfile: gemfiles/rails4_2.gemfile
