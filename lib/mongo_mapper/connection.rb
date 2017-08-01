@@ -53,8 +53,8 @@ module MongoMapper
     def connect(environment, options={})
       raise 'Set config before connecting. MongoMapper.config = {...}' if config.blank?
       env = config_for_environment(environment).dup
-      addresses_or_uri = env.delete('hosts') || 
-                         env.delete('uri') || 
+      addresses_or_uri = env.delete('hosts') ||
+                         env.delete('uri') ||
                          [env.delete('host')].compact
 
       if env['options'].is_a?(Hash)
@@ -66,7 +66,7 @@ module MongoMapper
       if options[:port]
         raise "port should be specified as part of the host or uri"
       end
-      
+
       options[:read] = options[:read].to_sym if options[:read].is_a? String
       MongoMapper.connection = Mongo::Client.new(addresses_or_uri, options)
     end

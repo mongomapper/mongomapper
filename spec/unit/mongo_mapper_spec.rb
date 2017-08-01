@@ -60,7 +60,7 @@ describe "MongoMapper" do
 
     it "should work without authentication using host" do
       MongoMapper.config = {
-        'development' => {'host' => ['127.0.0.1:27017']}
+        'development' => {'host' => '127.0.0.1:27017'}
       }
       expect(Mongo::Client).to receive(:new).with(['127.0.0.1:27017'], {})
       MongoMapper.connect('development')
