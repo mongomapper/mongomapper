@@ -58,7 +58,7 @@ module MongoMapper
                          [env.delete('host')].compact
 
       if env['options'].is_a?(Hash)
-        options = env['options'].symbolize_keys.merge(options)
+        options = env.delete('options').symbolize_keys.merge(options)
       end
       #database etc are all options to Mongo::Client.new now
       options = env.symbolize_keys.merge(options)
