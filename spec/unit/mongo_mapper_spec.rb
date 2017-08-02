@@ -86,10 +86,10 @@ describe "MongoMapper" do
 
     it "should work with options using uri" do
       MongoMapper.config = {
-        'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
+        'development' => {'uri' => 'mongodb://127.0.0.1:27017/test', 'options'=> {:foo => 1}}
       }
       logger = double('logger')
-      expect(Mongo::Client).to receive(:new).with('mongodb://127.0.0.1:27017/test', :logger => logger)
+      expect(Mongo::Client).to receive(:new).with('mongodb://127.0.0.1:27017/test', :logger => logger, :foo => 1)
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -114,6 +114,13 @@ describe "MongoMapper" do
         'development' => {'uri' => 'mysql://127.0.0.1:5336/foo'}
       }
       expect { MongoMapper.connect('development') }.to raise_error(Mongo::Error::InvalidURI)
+    end
+
+    it 'should forbid use of port' do
+      MongoMapper.config = {
+        'development' => {'host' => '192.168.1.1', 'port' => '27017', 'database' => 'test', 'safe' => true}
+      }
+      expect { MongoMapper.connect('development') }.to raise_error(RuntimeError)
     end
 
   end

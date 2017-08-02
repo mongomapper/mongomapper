@@ -51,6 +51,12 @@ describe "Indexing" do
     @document.should have_index('last_name_1')
   end
 
+  it "should allow specifying as a hash" do
+    @document.ensure_index({last_name: -1})
+    @document.should have_index('last_name_-1')
+  end
+
+
   it "should allow creating unique index for a key" do
     @document.ensure_index :first_name, :unique => true
     @document.should have_index('fn_1')

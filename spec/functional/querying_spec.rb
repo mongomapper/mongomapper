@@ -616,6 +616,19 @@ describe "Querying" do
     it "should be chainable" do
       @query.sort(:age).all.map(&:age).should == [26, 27, 28]
     end
+
+    it "supports hash" do
+      @query = document.fields({:age => 0})
+      docs = @query.all
+      docs.should include(@doc1)
+      docs.should include(@doc3)
+      docs.should include(@doc2)
+      docs.each do |doc|
+        doc.age.should              be_nil
+        doc.first_name.should_not   be_nil # key was not loaded
+        doc.last_name.should_not    be_nil # key was not loaded
+      end
+    end
   end
 
   context ".limit" do
