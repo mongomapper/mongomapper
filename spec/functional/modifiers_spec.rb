@@ -397,6 +397,34 @@ module Modifiers
           page_class.first(:title => new_key_value).day_count.should == 1
         end
       end
+
+      context "upsert" do
+        it "should insert document if not present" do
+          expect {
+            page_class.upsert({:title => 'A new story'}, {:title => 'A new story', :day_count => 1})
+          }.to change {page_class.count}
+          page_class.first(title: 'A new story').day_count.should == 1
+        end
+
+        it "should update documents if present" do
+          expect {
+            page_class.upsert({:_id => page2.id}, {tags: %w(foo bar)})
+          }.to_not change {page_class.count}
+          page2.reload.tags.should == %w(foo bar)
+        end
+      end
+
+      context "find_and_modify" do
+        it "should retrieve the document without the changes" do
+          page_class.find_and_modify(query: {_id: page2.id}, update: {title: 'A new title'})['title'].should == 'Home'
+          page2.reload.title.should == 'A new title'
+        end
+
+        it "should allow find_and_modify options" do
+          page_class.find_and_modify(query: {_id: page2.id}, update: {title: 'A new title'}, return_document: :after)['title'].should == 'A new title'
+        end
+      end
+
     end
 
     context "compound keys" do

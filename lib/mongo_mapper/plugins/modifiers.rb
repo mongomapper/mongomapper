@@ -64,16 +64,18 @@ module MongoMapper
           modifier_update('$pop', args)
         end
 
-        def find_and_modify(args)
-          args[:query]  = dealias_keys(args[:query])  if args.key? :query
-          args[:update] = dealias_keys(args[:update]) if args.key? :update
-          collection.find_and_modify(args)
+        def find_one_and_update(args)
+          args = args.dup
+          args[:query]  = dealias_keys(args.delete :query)  if args.key? :query
+          args[:update] = dealias_keys(args.delete :update) if args.key? :update
+          collection.find_one_and_update(args[:query], args[:update], args)
         end
+        alias_method :find_and_modify, :find_one_and_update
 
         def upsert(selector, updates, args = {})
           criteria = dealias_keys(selector)
           updates  = dealias_keys(updates)
-          collection.update(criteria, updates, args)
+          collection.update_one(criteria, updates, args.merge(upsert: true))
         end
 
       private
