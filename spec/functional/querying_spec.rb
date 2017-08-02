@@ -624,9 +624,22 @@ describe "Querying" do
       docs.should include(@doc3)
       docs.should include(@doc2)
       docs.each do |doc|
-        doc.age.should              be_nil
-        doc.first_name.should_not   be_nil # key was not loaded
+        doc.age.should              be_nil # key was not loaded
+        doc.first_name.should_not   be_nil
         doc.last_name.should_not    be_nil # key was not loaded
+      end
+    end
+
+    it "supports array" do
+      @query = document.fields([:age,:first_name])
+      docs = @query.all
+      docs.should include(@doc1)
+      docs.should include(@doc3)
+      docs.should include(@doc2)
+      docs.each do |doc|
+        doc.age.should_not          be_nil
+        doc.first_name.should_not   be_nil
+        doc.last_name.should        be_nil # key was not loaded
       end
     end
   end
