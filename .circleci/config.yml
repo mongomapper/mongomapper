@@ -1,0 +1,58 @@
+version: 2.1
+references:
+  test: &test
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: docker info
+      - run: |
+          set -x
+          docker volume create project
+          docker create -v project:/app --name project busybox chown -R 1000:1000 /app
+          docker cp . project:/app
+          docker start project
+          docker-compose build $SERVICE_NAME
+          docker-compose run $SERVICE_NAME bundle install
+          docker-compose run $SERVICE_NAME bundle exec rake
+jobs:
+  test-ruby-2-1--rails-3-2:
+    <<: *test
+    docker:
+      - image: tmaier/docker-compose
+        environment:
+          COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+          SERVICE_NAME: ruby-2-1
+          BUNDLE_GEMFILE: /app/gemfiles/rails3_2.gemfile
+  test-ruby-2-1--rails-4-0:
+    <<: *test
+    docker:
+      - image: tmaier/docker-compose
+        environment:
+          COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+          SERVICE_NAME: ruby-2-1
+          BUNDLE_GEMFILE: /app/gemfiles/rails4_0.gemfile
+  test-ruby-2-2--rails-3-2:
+    <<: *test
+    docker:
+      - image: tmaier/docker-compose
+        environment:
+          COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+          SERVICE_NAME: ruby-2-2
+          BUNDLE_GEMFILE: /app/gemfiles/rails3_2.gemfile
+  test-ruby-2-2--rails-4-0:
+    <<: *test
+    docker:
+      - image: tmaier/docker-compose
+        environment:
+          COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+          SERVICE_NAME: ruby-2-2
+          BUNDLE_GEMFILE: /app/gemfiles/rails4_0.gemfile
+workflows:
+  version: 2
+  test_and_buld:
+    jobs:
+      - test-ruby-2-1--rails-3-2
+      - test-ruby-2-1--rails-4-0
+      - test-ruby-2-2--rails-3-2
+      - test-ruby-2-2--rails-4-0

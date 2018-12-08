@@ -18,3 +18,4 @@ bin
 vendor/gems
 !bin/mmconsole
 *.tmproj
+*.gemfile.lock
