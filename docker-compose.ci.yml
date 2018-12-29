@@ -1,9 +1,11 @@
 version: "3.7"
 services:
-  ruby-2-2: &ruby
+  ruby-2-6: &ruby
     volumes:
       - project:/app
-  ruby-2-1:
+  ruby-2-5:
+    <<: *ruby
+  ruby-2-4:
     <<: *ruby
 volumes:
   project:
