@@ -1,0 +1,29 @@
+version: "3.7"
+services:
+  ruby-2-2: &ruby
+    build:
+      context: .
+      args:
+        RUBY_VERSION: 2.2.10
+    volumes:
+      - vendor:/vendor
+    working_dir: /app
+    environment:
+      MONGO_HOST: mongo
+    depends_on:
+      - mongo
+  ruby-2-1:
+    <<: *ruby
+    build:
+      context: .
+      args:
+        RUBY_VERSION: 2.1.10
+  mongo:
+    image: mongo:3.2
+    command: --storageEngine mmapv1
+    volumes:
+      - mongo-data:/data/db
+volumes:
+  home:
+  vendor:
+  mongo-data:

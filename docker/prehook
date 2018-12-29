@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+socat tcp-listen:27017,fork tcp-connect:mongo:27017 &

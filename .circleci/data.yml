@@ -1,0 +1,6 @@
+ruby_versions:
+  - "2.1"
+  - "2.2"
+rails_versions:
+  - "3.2"
+  - "4.0"

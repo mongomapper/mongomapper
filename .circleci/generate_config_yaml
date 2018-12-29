@@ -1,0 +1,3 @@
+#! /usr/bin/env sh
+
+cat .circleci/config.yml.erb | docker run --rm -i -v $PWD/.circleci:/.circleci -w /.circleci ruby:alpine ruby -r erb -r yaml -e 'data = YAML.load_file("data.yml"); ERB.new($<.read, nil, "-").run' > .circleci/config.yml

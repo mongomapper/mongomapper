@@ -1,0 +1,8 @@
+version: "3.7"
+services:
+  ruby-2-2: &ruby
+    volumes:
+      - .:/app:cached
+      - home:/home/app
+  ruby-2-1:
+    <<: *ruby
