@@ -16,43 +16,34 @@ references:
           docker-compose run $SERVICE_NAME bundle install
           docker-compose run $SERVICE_NAME bundle exec rake
 jobs:
-  test-ruby-2-1--rails-3-2:
+  test-ruby-2-4--rails-4-2:
     <<: *test
     docker:
       - image: tmaier/docker-compose
         environment:
           COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
-          SERVICE_NAME: ruby-2-1
-          BUNDLE_GEMFILE: /app/gemfiles/rails3_2.gemfile
-  test-ruby-2-1--rails-4-0:
+          SERVICE_NAME: ruby-2-4
+          BUNDLE_GEMFILE: /app/gemfiles/rails4_2.gemfile
+  test-ruby-2-5--rails-4-2:
     <<: *test
     docker:
       - image: tmaier/docker-compose
         environment:
           COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
-          SERVICE_NAME: ruby-2-1
-          BUNDLE_GEMFILE: /app/gemfiles/rails4_0.gemfile
-  test-ruby-2-2--rails-3-2:
+          SERVICE_NAME: ruby-2-5
+          BUNDLE_GEMFILE: /app/gemfiles/rails4_2.gemfile
+  test-ruby-2-6--rails-4-2:
     <<: *test
     docker:
       - image: tmaier/docker-compose
         environment:
           COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
-          SERVICE_NAME: ruby-2-2
-          BUNDLE_GEMFILE: /app/gemfiles/rails3_2.gemfile
-  test-ruby-2-2--rails-4-0:
-    <<: *test
-    docker:
-      - image: tmaier/docker-compose
-        environment:
-          COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
-          SERVICE_NAME: ruby-2-2
-          BUNDLE_GEMFILE: /app/gemfiles/rails4_0.gemfile
+          SERVICE_NAME: ruby-2-6
+          BUNDLE_GEMFILE: /app/gemfiles/rails4_2.gemfile
 workflows:
   version: 2
   test_and_buld:
     jobs:
-      - test-ruby-2-1--rails-3-2
-      - test-ruby-2-1--rails-4-0
-      - test-ruby-2-2--rails-3-2
-      - test-ruby-2-2--rails-4-0
+      - test-ruby-2-4--rails-4-2
+      - test-ruby-2-5--rails-4-2
+      - test-ruby-2-6--rails-4-2
