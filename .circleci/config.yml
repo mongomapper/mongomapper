@@ -24,6 +24,30 @@ jobs:
           COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
           SERVICE_NAME: ruby-2-4
           BUNDLE_GEMFILE: /app/gemfiles/rails4_2.gemfile
+  test-ruby-2-4--rails-5-0:
+    <<: *test
+    docker:
+      - image: tmaier/docker-compose
+        environment:
+          COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+          SERVICE_NAME: ruby-2-4
+          BUNDLE_GEMFILE: /app/gemfiles/rails5_0.gemfile
+  test-ruby-2-4--rails-5-1:
+    <<: *test
+    docker:
+      - image: tmaier/docker-compose
+        environment:
+          COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+          SERVICE_NAME: ruby-2-4
+          BUNDLE_GEMFILE: /app/gemfiles/rails5_1.gemfile
+  test-ruby-2-4--rails-5-2:
+    <<: *test
+    docker:
+      - image: tmaier/docker-compose
+        environment:
+          COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+          SERVICE_NAME: ruby-2-4
+          BUNDLE_GEMFILE: /app/gemfiles/rails5_2.gemfile
   test-ruby-2-5--rails-4-2:
     <<: *test
     docker:
@@ -32,6 +56,30 @@ jobs:
           COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
           SERVICE_NAME: ruby-2-5
           BUNDLE_GEMFILE: /app/gemfiles/rails4_2.gemfile
+  test-ruby-2-5--rails-5-0:
+    <<: *test
+    docker:
+      - image: tmaier/docker-compose
+        environment:
+          COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+          SERVICE_NAME: ruby-2-5
+          BUNDLE_GEMFILE: /app/gemfiles/rails5_0.gemfile
+  test-ruby-2-5--rails-5-1:
+    <<: *test
+    docker:
+      - image: tmaier/docker-compose
+        environment:
+          COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+          SERVICE_NAME: ruby-2-5
+          BUNDLE_GEMFILE: /app/gemfiles/rails5_1.gemfile
+  test-ruby-2-5--rails-5-2:
+    <<: *test
+    docker:
+      - image: tmaier/docker-compose
+        environment:
+          COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+          SERVICE_NAME: ruby-2-5
+          BUNDLE_GEMFILE: /app/gemfiles/rails5_2.gemfile
   test-ruby-2-6--rails-4-2:
     <<: *test
     docker:
@@ -40,10 +88,43 @@ jobs:
           COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
           SERVICE_NAME: ruby-2-6
           BUNDLE_GEMFILE: /app/gemfiles/rails4_2.gemfile
+  test-ruby-2-6--rails-5-0:
+    <<: *test
+    docker:
+      - image: tmaier/docker-compose
+        environment:
+          COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+          SERVICE_NAME: ruby-2-6
+          BUNDLE_GEMFILE: /app/gemfiles/rails5_0.gemfile
+  test-ruby-2-6--rails-5-1:
+    <<: *test
+    docker:
+      - image: tmaier/docker-compose
+        environment:
+          COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+          SERVICE_NAME: ruby-2-6
+          BUNDLE_GEMFILE: /app/gemfiles/rails5_1.gemfile
+  test-ruby-2-6--rails-5-2:
+    <<: *test
+    docker:
+      - image: tmaier/docker-compose
+        environment:
+          COMPOSE_FILE: docker-compose.yml:docker-compose.ci.yml
+          SERVICE_NAME: ruby-2-6
+          BUNDLE_GEMFILE: /app/gemfiles/rails5_2.gemfile
 workflows:
   version: 2
   test_and_buld:
     jobs:
       - test-ruby-2-4--rails-4-2
+      - test-ruby-2-4--rails-5-0
+      - test-ruby-2-4--rails-5-1
+      - test-ruby-2-4--rails-5-2
       - test-ruby-2-5--rails-4-2
+      - test-ruby-2-5--rails-5-0
+      - test-ruby-2-5--rails-5-1
+      - test-ruby-2-5--rails-5-2
       - test-ruby-2-6--rails-4-2
+      - test-ruby-2-6--rails-5-0
+      - test-ruby-2-6--rails-5-1
+      - test-ruby-2-6--rails-5-2
