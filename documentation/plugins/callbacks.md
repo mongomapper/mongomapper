@@ -7,29 +7,29 @@ MongoMapper makes use of the [ActiveModel::Callbacks](http://api.rubyonrails.org
 
 The callbacks supported are the same as on ActiveModel, the callbacks provided are:
 
-\* before\_validation
-\* after\_validation
-\* before\_save
-\* after\_save
-\* before\_create
-\* after\_create
-\* before\_update
-\* after\_update
-\* before\_destroy
-\* after\_destroy
+* before\_validation
+* after\_validation
+* before\_save
+* after\_save
+* before\_create
+* after\_create
+* before\_update
+* after\_update
+* before\_destroy
+* after\_destroy
 
 For embedded documents you have similar callbacks:
 
-\* before\_validation
-\* after\_validation
-\* before\_save
-\* after\_save
-\* before\_create
-\* after\_create
-\* before\_update
-\* after\_update
-\* before\_destroy
-\* after\_destroy
+* before\_validation
+* after\_validation
+* before\_save
+* after\_save
+* before\_create
+* after\_create
+* before\_update
+* after\_update
+* before\_destroy
+* after\_destroy
 
 Example
 -------
