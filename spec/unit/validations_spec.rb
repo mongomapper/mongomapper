@@ -157,19 +157,19 @@ describe "Validations" do
       end # numericality of
 
       context "validating presence of" do
-           it "should work with validates_presence_of macro" do
-             @document.key :name, String
-             @document.validates_presence_of :name
-             doc = @document.new
-             doc.should have_error_on(:name)
-           end
+        it "should work with validates_presence_of macro" do
+          @document.key :name, String
+          @document.validates_presence_of :name
+          doc = @document.new
+          doc.should have_error_on(:name)
+        end
 
-           it "should work with :required shortcut on key definition" do
-             @document.key :name, String, :required => true
-             doc = @document.new
-             doc.should have_error_on(:name)
-           end
-         end
+        it "should work with :required shortcut on key definition" do
+          @document.key :name, String, :required => true
+          doc = @document.new
+          doc.should have_error_on(:name)
+        end
+      end
 
       context "validating exclusion of" do
         it "should throw error if enumerator not provided" do
@@ -436,19 +436,19 @@ describe "Validations" do
       end # numericality of
 
       context "validating presence of" do
-         it "should work with validates_presence_of macro" do
+        it "should work with validates_presence_of macro" do
            @embedded_doc.key :name, String
            @embedded_doc.validates_presence_of :name
            doc = @embedded_doc.new
            doc.should have_error_on(:name)
-         end
+        end
 
-         it "should work with :required shortcut on key definition" do
+        it "should work with :required shortcut on key definition" do
            @embedded_doc.key :name, String, :required => true
            doc = @embedded_doc.new
            doc.should have_error_on(:name)
-         end
-       end
+        end
+      end
 
       context "validating exclusion of" do
         it "should throw error if enumerator not provided" do
