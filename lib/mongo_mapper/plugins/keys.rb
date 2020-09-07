@@ -449,7 +449,6 @@ module MongoMapper
         else
           @_dynamic_attributes[key.name.to_sym] = as_typecast
         end
-        @attributes = nil
         value
       end
 
