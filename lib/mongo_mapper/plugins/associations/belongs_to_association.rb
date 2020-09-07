@@ -29,7 +29,7 @@ module MongoMapper
 
         def add_touch_callbacks
           name        = self.name
-          method_name = "belongs_to_touch_after_save_or_destroy_for_#{name}"
+          method_name = :"belongs_to_touch_after_save_or_destroy_for_#{name}"
           touch       = options.fetch(:touch)
 
           @model.send(:define_method, method_name) do
