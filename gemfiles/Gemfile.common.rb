@@ -4,12 +4,14 @@ gem 'rake', "< 11.0"
 gem 'multi_json',  '~> 1.2'
 
 gem 'plucky', git: "https://github.com/fcheung/plucky.git", branch: 'mongo-2.x'
+gem 'activemodel'
+gem 'activemodel-serializers-xml'
 
 if RUBY_PLATFORM != "java"
   gem 'coveralls', :require => false
   gem 'simplecov', :require => false
 end
-gem 'rest-client', '1.6.7'
+gem 'rest-client'
 
 platforms :ruby do
   gem 'mongo',     '~> 2.0'
@@ -38,8 +40,10 @@ group :test do
     gem 'pry'
   end
 
+  # puts "RUBY_VERSION: #{RUBY_VERSION}"
+
   if RUBY_VERSION >= '2.3'
-    platforms :mri_23 do
+    platforms :mri do
       gem 'byebug'
     end
   end

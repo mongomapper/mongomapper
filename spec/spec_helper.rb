@@ -2,10 +2,11 @@ $:.unshift(File.expand_path('../../lib', __FILE__))
 
 require 'rubygems'
 require 'bundler/setup'
+Bundler.require(:default)
 require 'fileutils'
 require 'timecop'
 require "generator_spec/test_case"
-# require 'ruby-debug'
+require 'byebug'
 
 if RUBY_PLATFORM != "java"
   if ENV['TRAVIS']
@@ -99,4 +100,3 @@ RSpec.configure do |config|
     retval
   end
 end
-

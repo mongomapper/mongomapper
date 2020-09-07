@@ -44,6 +44,7 @@ module MongoMapper
           definition.each do |prefix, suffixes|
             suffixes.each do |suffix|
               callback = "%s_%s" % [prefix, suffix]
+
               class_eval <<-CALLBACK, __FILE__, __LINE__ + 1
                 class << self
                   alias_method :__original_#{callback}, :#{callback}

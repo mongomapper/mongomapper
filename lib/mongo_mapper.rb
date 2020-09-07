@@ -3,6 +3,7 @@ require 'plucky'
 require 'active_support'
 require 'active_support/core_ext'
 require 'active_model'
+require 'activemodel-serializers-xml'
 require "mongo_mapper/railtie" if defined?(Rails)
 
 I18n.load_path << File.expand_path('../mongo_mapper/locale/en.yml', __FILE__)
