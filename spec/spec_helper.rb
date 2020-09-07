@@ -80,6 +80,10 @@ RSpec.configure do |config|
     c.syntax = [:should, :expect]
   end
 
+  config.mock_with :rspec do |mocks|
+    mocks.syntax = [:should, :expect]
+  end
+
   config.around(:each, :without_connection) do |example|
     old, MongoMapper.connection = MongoMapper.connection, nil
     example.run

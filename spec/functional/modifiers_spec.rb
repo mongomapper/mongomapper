@@ -173,10 +173,10 @@ module Modifiers
           }.to_not raise_error
         end
 
-        it "should not typecast keys that are not defined in document" do
+        it "should not typecast keys that are not defined in document and have no default typecasing" do
           expect {
             page_class.set(page.id, :colors => ['red', 'green'].to_set)
-          }.to raise_error(NoMethodError)
+          }.to raise_error(BSON::Error::UnserializableClass, 'Value does not define its BSON serialized type: #<Set: {"red", "green"}>')
         end
 
         it "should set keys that are not defined in document" do
@@ -237,6 +237,15 @@ module Modifiers
 
       context "push_all" do
         let(:tags) { %w(foo bar) }
+
+        before do
+          Kernel.stub(:warn)
+        end
+
+        it "should issue a warning" do
+          Kernel.should_receive(:warn).with("push_all no longer supported. use $push with $each")
+          page_class.push_all({:title => 'Home'}, :tags => tags)
+        end
 
         it "should work with criteria and modifier hashes" do
           page_class.push_all({:title => 'Home'}, :tags => tags)
@@ -438,6 +447,10 @@ module Modifiers
     end
 
     context "instance methods" do
+      before do
+        Kernel.stub(:warn)
+      end
+
       {
         :page_class_with_standard_key => "with standard key",
         :page_class_with_compound_key => "with compound key",
@@ -493,6 +506,13 @@ module Modifiers
 
             page.reload
             page.tags.should == %w(foo bar)
+          end
+
+          it "should issue a warning with push_all" do
+            Kernel.should_receive(:warn).with("push_all no longer supported. use $push with $each")
+
+            page = page_class.create
+            page.push_all(:tags => %w(foo bar))
           end
 
           it "should be able to pull with criteria and modifier hashes" do

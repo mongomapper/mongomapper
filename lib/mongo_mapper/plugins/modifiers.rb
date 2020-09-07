@@ -44,7 +44,16 @@ module MongoMapper
         end
 
         def push_all(*args)
-          modifier_update('$pushAll', args)
+          Kernel.warn "push_all no longer supported. use $push with $each"
+
+          hash = args.pop
+          ids = args
+
+          push_values = hash.inject({}) do |hsh, (key, values)|
+            { key => { '$each' => values } }
+          end
+
+          modifier_update('$addToSet', [ids, push_values].flatten)
         end
 
         def add_to_set(*args)
@@ -133,7 +142,13 @@ module MongoMapper
       end
 
       def push_all(hash, options=nil)
-        self.class.push_all({:_id => id}, hash, options)
+        Kernel.warn "push_all no longer supported. use $push with $each"
+
+        push_values = hash.inject({}) do |hsh, (key, values)|
+          { key => { '$each' => values } }
+        end
+
+        self.class.push({:_id => id}, push_values, options)
       end
 
       def pull(hash, options=nil)
