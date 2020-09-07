@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rake', "< 11.0"
+gem 'rake'
 gem 'multi_json',  '~> 1.2'
 
 gem 'plucky', git: "https://github.com/fcheung/plucky.git", branch: 'mongo-2.x'
