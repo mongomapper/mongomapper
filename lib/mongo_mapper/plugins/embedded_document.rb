@@ -41,7 +41,7 @@ module MongoMapper
 
       def persist(options={})
         @_new = false
-        clear_changes if respond_to?(:clear_changes)
+        changes_applied if respond_to?(:changes_applied)
         save_to_collection(options)
       end
 
