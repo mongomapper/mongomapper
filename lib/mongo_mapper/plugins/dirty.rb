@@ -25,12 +25,6 @@ module MongoMapper
         end
       end
 
-      def rollback!
-        super.tap do
-          restore_attributes
-        end
-      end
-
     private
 
       def write_key(key_name, value)
