@@ -19,3 +19,4 @@ vendor/gems
 !bin/mmconsole
 *.tmproj
 spec/examples.txt
+.byebug_history
