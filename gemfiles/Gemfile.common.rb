@@ -11,7 +11,6 @@ if RUBY_PLATFORM != "java"
   gem 'coveralls', :require => false
   gem 'simplecov', :require => false
 end
-gem 'rest-client'
 
 platforms :ruby do
   gem 'mongo',     '~> 2.0'
