@@ -176,7 +176,7 @@ module Modifiers
         it "should not typecast keys that are not defined in document and have no default typecasing" do
           lambda {
             page_class.set(page.id, :colors => ['red', 'green'].to_set)
-          }.should raise_error(BSON::Error::UnserializableClass, 'Value does not define its BSON serialized type: #<Set: {"red", "green"}>')
+          }.should raise_error(BSON::Error::UnserializableClass, /does not define its BSON serialized type/)
         end
 
         it "should set keys that are not defined in document" do
