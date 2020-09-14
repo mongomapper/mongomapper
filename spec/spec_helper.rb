@@ -6,7 +6,10 @@ Bundler.require(:default)
 require 'fileutils'
 require 'timecop'
 require "generator_spec/test_case"
-require 'byebug'
+
+if RUBY_ENGINE == "ruby" && RUBY_VERSION >= '2.3'
+  require 'byebug'
+end
 
 if RUBY_PLATFORM != "java"
   if ENV['TRAVIS']
