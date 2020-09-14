@@ -10,7 +10,8 @@ rvm:
   - 2.3.4
   - 2.4.1
 notifications:
-  email: false
+  email:
+    - scott@railsnewbie.com
 bundler_args: --without development
 services: mongodb
 matrix:
