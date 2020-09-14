@@ -15,3 +15,7 @@ notifications:
     - scott@railsnewbie.com
 bundler_args: --without development
 services: mongodb
+matrix:
+  exclude:
+    - rvm: 2.4.10
+      gemfile: gemfiles/rails6_0.gemfile
