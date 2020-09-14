@@ -171,42 +171,42 @@ describe MongoMapper::Plugins::CounterCache do
     end
 
     it "should update the counter cache on save" do
-      expect {
+      lambda {
         @comment.save!
         @article.reload
-      }.to change(@article, :commentable_count).by(1)
+      }.should change(@article, :commentable_count).by(1)
     end
 
     it "should increment with a second object" do
       @comment.save!
 
-      expect {
+      lambda {
         second_comment = CounterCacheFixtureModels::Comment.new
         second_comment.commentable = @article
         second_comment.save!
         @article.reload
-      }.to change(@article, :commentable_count).by(1)
+      }.should change(@article, :commentable_count).by(1)
     end
 
     it "should decrement the counter cache on destroy" do
       @comment.save!
 
-      expect {
+      lambda {
         @comment.destroy
         @article.reload
-      }.to change(@article, :commentable_count).by(-1)
+      }.should change(@article, :commentable_count).by(-1)
     end
 
     it "should increment with a different type of object" do
       @comment.save!
 
-      expect {
+      lambda {
         second_comment = CounterCacheFixtureModels::Comment.new
         second_comment.commentable = @article
         second_comment.save!
 
         @article.reload
-      }.to change(@article, :commentable_count).by(1)
+      }.should change(@article, :commentable_count).by(1)
     end
 
     describe "without a counter cache field" do
@@ -226,9 +226,9 @@ describe MongoMapper::Plugins::CounterCache do
       it "should raise at save (runtime) if there is no counter cache field" do
         @comment.commentable = @obj
 
-        expect {
+        lambda {
           @comment.save!
-        }.to raise_error(MongoMapper::Plugins::CounterCache::InvalidCounterCacheError)
+        }.should raise_error(MongoMapper::Plugins::CounterCache::InvalidCounterCacheError)
       end
     end
   end

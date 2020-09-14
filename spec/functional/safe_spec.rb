@@ -42,7 +42,7 @@ describe "Safe" do
 
     it "should not raise an error on duplicate IDs" do
       k = @klass.create
-      expect { j = @klass.create(:_id => k.id) }.to_not raise_error
+      lambda { j = @klass.create(:_id => k.id) }.should_not raise_error
     end
   end
 
@@ -61,44 +61,44 @@ describe "Safe" do
 
       it "should raise an error on duplicate IDs" do
         k = @klass.create
-        expect { j = @klass.create(:_id => k.id) }.to raise_error(Mongo::Error::OperationFailure)
+        lambda { j = @klass.create(:_id => k.id) }.should raise_error(Mongo::Error::OperationFailure)
       end
 
       context "using safe setting from class" do
         it "should pass :w => 1 option to the collection" do
-          expect(@klass.collection.write_concern.options).to eq(w: 1)
+          @klass.collection.write_concern.options.should == { w: 1 }
         end
 
         it "should work fine when all is well" do
-          expect {
+          lambda {
             @klass.new(:email => 'john@doe.com').save
-          }.to_not raise_error
+          }.should_not raise_error
         end
 
         it "should raise error when operation fails" do
-          expect {
+          lambda {
             2.times do
               @klass.new(:email => 'john@doe.com').save
             end
-          }.to raise_error(Mongo::Error::OperationFailure)
+          }.should raise_error(Mongo::Error::OperationFailure)
         end
       end
 
       context "overriding safe setting" do
         it "should raise error if safe is true" do
-          expect {
+          lambda {
             2.times do
               @klass.new(:email => 'john@doe.com').save(:safe => true)
             end
-          }.to raise_error(Mongo::Error::OperationFailure)
+          }.should raise_error(Mongo::Error::OperationFailure)
         end
 
         it "should not raise error if safe is false" do
-          expect {
+          lambda {
             2.times do
               @klass.new(:email => 'john@doe.com').save(:safe => false)
             end
-          }.to_not raise_error
+          }.should_not raise_error
         end
       end
     end
@@ -119,39 +119,39 @@ describe "Safe" do
 
       context "using safe setting from class" do
         it "should pass :safe => options_hash to the collection" do
-          expect(@klass.collection.write_concern.options).to eq(j: true)
+          @klass.collection.write_concern.options.should == { j: true }
         end
 
         it "should work fine when all is well" do
-          expect {
+          lambda {
             @klass.new(:email => 'john@doe.com').save
-          }.to_not raise_error
+          }.should_not raise_error
         end
 
         it "should raise error when operation fails" do
-          expect {
+          lambda {
             2.times do
               @klass.new(:email => 'john@doe.com').save
             end
-          }.to raise_error(Mongo::Error::OperationFailure)
+          }.should raise_error(Mongo::Error::OperationFailure)
         end
       end
 
       context "overriding safe setting" do
         it "should raise error if safe is true" do
-          expect {
+          lambda {
             2.times do
               @klass.new(:email => 'john@doe.com').save(:safe => true)
             end
-          }.to raise_error(Mongo::Error::OperationFailure)
+          }.should raise_error(Mongo::Error::OperationFailure)
         end
 
         it "should not raise error if safe is false" do
-          expect {
+          lambda {
             2.times do
               @klass.new(:email => 'john@doe.com').save(:safe => false)
             end
-          }.to_not raise_error
+          }.should_not raise_error
         end
       end
     end

@@ -148,11 +148,11 @@ describe "Callbacks" do
       @root_class.define_callbacks :after_publish
       @root_class.after_save { |d| d.run_callbacks(:after_publish) }
 
-      expect {
+      lambda {
         child = @child_class.new(:name => 'Child')
         root  = @root_class.create(:name => 'Parent', :children => [child])
         child.history.should_not include(:after_publish)
-      }.to_not raise_error
+      }.should_not raise_error
     end
   end
 

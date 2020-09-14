@@ -88,14 +88,14 @@ module IdentityMapSpec
         # for some reason, body.close gets called twice - once in rack-2.2.3/lib/rack/response.rb:281
         # the other time rack-test-0.8.3/lib/rack/mock_session.rb:32
         # use at_least(:twice) here to handle the error happening more than twice
-        expect(MongoMapper::Plugins::IdentityMap).to receive(:clear).at_least(:twice)
+        MongoMapper::Plugins::IdentityMap.should_receive(:clear).at_least(:twice)
         get '/'
       end
     end
 
     context "when the request raises an error" do
       it "should clear the identity map" do
-        expect(MongoMapper::Plugins::IdentityMap).to receive(:clear).once
+        MongoMapper::Plugins::IdentityMap.should_receive(:clear).once
         get '/fail' rescue nil
       end
     end

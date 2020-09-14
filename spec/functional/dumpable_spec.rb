@@ -7,7 +7,7 @@ describe "Documents with the Dumpable plugin" do
   let(:store)  { ActiveSupport::Cache::MemoryStore.new(:size => 1.megabyte) }
 
   it "should be able to be marshalled" do
-    expect { Marshal.dump(answer) }.to_not raise_error
+    lambda { Marshal.dump(answer) }.should_not raise_error
   end
 
   it "should be able to be unmarshalled" do

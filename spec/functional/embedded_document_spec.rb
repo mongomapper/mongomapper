@@ -227,7 +227,7 @@ describe "EmbeddedDocument" do
     person.pets << pet
     pet.should be_new
 
-    expect(person).to receive(:save!)
+    person.should_receive(:save!)
     pet.save!
   end
 
@@ -272,8 +272,8 @@ describe "EmbeddedDocument" do
     pet = person.pets.first
 
     attributes = {:name => 'koda'}
-    expect(pet).to receive(:attributes=).with(attributes)
-    expect(pet).to receive(:save!)
+    pet.should_receive(:attributes=).with(attributes)
+    pet.should_receive(:save!)
     pet.update_attributes!(attributes)
   end
 
@@ -289,7 +289,7 @@ describe "EmbeddedDocument" do
 
   it "should not fail if the source document contains nils in the embedded document list" do
     @klass.collection.insert_one(:pets => [nil, {:name => "Sasha"}])
-    expect { @klass.all.first.pets }.to_not raise_error
+    lambda { @klass.all.first.pets }.should_not raise_error
     @klass.all.first.pets.tap do |pets|
       pets.length.should == 1
       pets[0].name.should == "Sasha"

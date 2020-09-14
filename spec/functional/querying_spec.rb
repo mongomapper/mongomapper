@@ -164,7 +164,7 @@ describe "Querying" do
     end
 
     it "should raise document not found if nothing provided for find!" do
-      expect { document.find! }.to raise_error(MongoMapper::DocumentNotFound)
+      lambda { document.find! }.should raise_error(MongoMapper::DocumentNotFound)
     end
 
     context "(with a single id)" do
@@ -177,7 +177,7 @@ describe "Querying" do
       end
 
       it "should raise error if document not found with find!" do
-        expect { document.find!(123) }.to raise_error(MongoMapper::DocumentNotFound)
+        lambda { document.find!(123) }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
 
@@ -203,15 +203,15 @@ describe "Querying" do
       end
 
       it "should raise error if not all found when using find!" do
-        expect {
+        lambda {
           document.find!(@doc1._id, BSON::ObjectId.new.to_s)
-        }.to raise_error(MongoMapper::DocumentNotFound)
+        }.should raise_error(MongoMapper::DocumentNotFound)
       end
 
       it "should raise error if not all found when using find!" do
-        expect {
+        lambda {
           document.find!([@doc1._id, BSON::ObjectId.new.to_s])
-        }.to raise_error(MongoMapper::DocumentNotFound)
+        }.should raise_error(MongoMapper::DocumentNotFound)
       end
 
       it "should return array if array with one element" do
@@ -292,12 +292,12 @@ describe "Querying" do
     end
 
     it "should disregard non-keys when creating, but use them in the query" do
-      expect {
+      lambda {
         document.create(:first_name => 'John', :age => 9)
         lambda {
           document.first_or_create(:first_name => 'John', :age.gt => 10).first_name.should == 'John'
         }.should change { document.count }.by(1)
-      }.to_not raise_error
+      }.should_not raise_error
     end
   end
 
@@ -320,10 +320,10 @@ describe "Querying" do
     end
 
     it "should disregard non-keys when initializing, but use them in the query" do
-      expect {
+      lambda {
         document.create(:first_name => 'John', :age => 9)
         document.first_or_new(:first_name => 'John', :age.gt => 10).first_name.should == 'John'
-      }.to_not raise_error
+      }.should_not raise_error
     end
   end
 
@@ -789,7 +789,7 @@ describe "Querying" do
     it "should update the attribute without invoking validations" do
       document.key :name, String, :required => true
 
-      expect(@doc).to receive(:valid?).never
+      @doc.should_receive(:valid?).never
       @doc.update_attribute('name', '').should be_truthy
 
       @doc.reload.name.should == ''
@@ -894,7 +894,7 @@ describe "Querying" do
 
     it "should insert invalid document" do
       doc = document.new
-      expect(doc).to receive(:valid?).never
+      doc.should_receive(:valid?).never
       doc.save(:validate => false)
       document.count.should == 1
     end
@@ -911,15 +911,15 @@ describe "Querying" do
 
     it "should allow passing safe" do
       @document.create(:name => 'John')
-      expect {
+      lambda {
         @document.new(:name => 'John').save(:safe => true)
-      }.to raise_error(Mongo::Error::OperationFailure)
+      }.should raise_error(Mongo::Error::OperationFailure)
     end
 
     it "should raise argument error if options has unsupported key" do
-      expect {
+      lambda {
         @document.new.save(:foo => true)
-      }.to raise_error(ArgumentError)
+      }.should raise_error(ArgumentError)
     end
   end
 
@@ -932,21 +932,21 @@ describe "Querying" do
 
     it "should allow passing safe" do
       @document.create(:name => 'John')
-      expect {
+      lambda {
         @document.new(:name => 'John').save!(:safe => true)
-      }.to raise_error(Mongo::Error::OperationFailure)
+      }.should raise_error(Mongo::Error::OperationFailure)
     end
 
     it "should raise argument error if options has unsupported key" do
-      expect {
+      lambda {
         @document.new.save!(:foo => true)
-      }.to raise_error(ArgumentError)
+      }.should raise_error(ArgumentError)
     end
 
     it "should raise argument error if using validate as that would be pointless with save!" do
-      expect {
+      lambda {
         @document.new.save!(:validate => false)
-      }.to raise_error(ArgumentError)
+      }.should raise_error(ArgumentError)
     end
   end
 

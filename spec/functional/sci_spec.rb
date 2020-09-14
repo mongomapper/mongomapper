@@ -3,12 +3,12 @@ require 'spec_helper'
 describe "Single collection inheritance (document)" do
   context "without a connection", :without_connection => true do
     it "should attempt to create a connection during inheritance" do
-      expect(Mongo::Client).to_not receive(:new)
+      Mongo::Client.should_not_receive(:new)
       doc = Class.new
       doc.send(:include, MongoMapper::Document)
-      expect {
+      lambda {
         Class.new(doc)
-      }.to_not raise_error
+      }.should_not raise_error
     end
 
     it "should pick up a connection if one wasn't set" do

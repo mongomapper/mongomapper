@@ -80,11 +80,11 @@ RSpec.configure do |config|
   config.example_status_persistence_file_path = "./spec/examples.txt"
 
   config.expect_with :rspec do |c|
-    c.syntax = [:should, :expect]
+    c.syntax = :should
   end
 
   config.mock_with :rspec do |mocks|
-    mocks.syntax = [:should, :expect]
+    mocks.syntax = :should
   end
 
   config.around(:each, :without_connection) do |example|

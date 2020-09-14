@@ -30,7 +30,7 @@ describe "Key" do
         key :_id, Integer
       end
       doc = klass.new
-      expect(doc).to receive(:warn).once
+      doc.should_receive(:warn).once
       doc.assign({:x => :y})
     end
   end
@@ -82,11 +82,11 @@ describe "Key" do
     end
 
     it "should use []= for keys instead of public writer" do
-      expect {
+      lambda {
         doc = @klass.first
         doc.user['id'].should   == 1
         doc.user['name'].should == 'John Nunemaker'
-      }.to_not raise_error
+      }.should_not raise_error
     end
   end
 
@@ -141,15 +141,15 @@ describe "Key" do
         key :value, Integer, :default => lambda { counter += 1 }
       end
 
-      expect { instance = klass.create }.to change { counter }.by(1)
-      expect {
+      lambda { instance = klass.create }.should change { counter }.by(1)
+      lambda {
         instance.reload.value.should == 1
 
         instance.value = 10
         instance.save
 
         instance.reload.value.should == 10
-      }.to_not change { counter }
+      }.should_not change { counter }
     end
   end
 end # KeyTest

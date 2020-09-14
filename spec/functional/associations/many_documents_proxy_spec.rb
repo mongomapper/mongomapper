@@ -171,9 +171,9 @@ describe "ManyDocumentsProxy" do
         end
 
         it "should call destroy the existing documents" do
-          expect(@broker.properties[0]).to receive(:destroy).once
-          expect(@broker.properties[1]).to receive(:destroy).once
-          expect(@broker.properties[2]).to receive(:destroy).once
+          @broker.properties[0].should_receive(:destroy).once
+          @broker.properties[1].should_receive(:destroy).once
+          @broker.properties[2].should_receive(:destroy).once
           @broker.properties = [@property_class.new]
         end
 
@@ -184,9 +184,9 @@ describe "ManyDocumentsProxy" do
         end
 
         it "should skip over documents that are the same" do
-          expect(@broker.properties[0]).to receive(:destroy).never
-          expect(@broker.properties[1]).to receive(:destroy).once
-          expect(@broker.properties[2]).to receive(:destroy).never
+          @broker.properties[0].should_receive(:destroy).never
+          @broker.properties[1].should_receive(:destroy).once
+          @broker.properties[2].should_receive(:destroy).never
           @broker.properties = [@property3, @property1]
         end
       end
@@ -205,9 +205,9 @@ describe "ManyDocumentsProxy" do
         end
 
         it "should call delete the existing documents" do
-          expect(@broker.properties[0]).to receive(:delete).once
-          expect(@broker.properties[1]).to receive(:delete).once
-          expect(@broker.properties[2]).to receive(:delete).once
+          @broker.properties[0].should_receive(:delete).once
+          @broker.properties[1].should_receive(:delete).once
+          @broker.properties[2].should_receive(:delete).once
           @broker.properties = [@property_class.new]
         end
 
@@ -218,9 +218,9 @@ describe "ManyDocumentsProxy" do
         end
 
         it "should skip over documents that are the same" do
-          expect(@broker.properties[0]).to receive(:delete).never
-          expect(@broker.properties[1]).to receive(:delete).once
-          expect(@broker.properties[2]).to receive(:delete).never
+          @broker.properties[0].should_receive(:delete).never
+          @broker.properties[1].should_receive(:delete).once
+          @broker.properties[2].should_receive(:delete).never
           @broker.properties = [@property3, @property1]
         end
       end
@@ -430,9 +430,9 @@ describe "ManyDocumentsProxy" do
 
     it "should raise exception if not valid" do
       project = Project.create
-      expect {
+      lambda {
         project.statuses.create!(:name => nil)
-      }.to raise_error(MongoMapper::DocumentNotValid)
+      }.should raise_error(MongoMapper::DocumentNotValid)
     end
 
     it "should reset cache" do
@@ -754,9 +754,9 @@ describe "ManyDocumentsProxy" do
       end
 
       it "should not work for ids not in association" do
-        expect {
+        lambda {
           @project1.statuses.find!(@brand_new.id, @complete.id, @archived.id)
-        }.to raise_error(MongoMapper::DocumentNotFound)
+        }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
 

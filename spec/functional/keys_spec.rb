@@ -70,7 +70,7 @@ describe "Keys" do
       end
     end
 
-    expect { doc.new }.to_not raise_error
+    lambda { doc.new }.should_not raise_error
   end
 
   it "should not bomb if a key is read before Keys#initialize gets to get called" do
@@ -84,7 +84,7 @@ describe "Keys" do
       end
     end
 
-    expect { doc.new }.to_not raise_error
+    lambda { doc.new }.should_not raise_error
   end
 
   it "should permit for key overrides" do
@@ -129,7 +129,7 @@ describe "Keys" do
   describe "with invalid names" do
     it "should warn when key names start with an uppercase letter" do
       doc = Doc {}
-      expect(Kernel).to receive(:warn).once.with(/may not start with uppercase letters/)
+      Kernel.should_receive(:warn).once.with(/may not start with uppercase letters/)
       doc.class_eval do
         key :NotConstant
       end
@@ -137,7 +137,7 @@ describe "Keys" do
 
     it "should handle keys that start with uppercase letters by translating their first letter to lowercase" do
       doc = Doc {}
-      allow(Kernel).to receive(:warn)
+      Kernel.stub(:warn)
       doc.class_eval do
         key :NotConstant
       end
@@ -147,20 +147,20 @@ describe "Keys" do
 
     it "should not create accessors for bad keys" do
       doc = Doc {}
-      expect(doc).to_not receive(:create_accessors_for)
+      doc.should_not_receive(:create_accessors_for)
       doc.class_eval do
         key :"bad-name", :__dynamic => true
       end
-      expect { doc.new.method(:"bad-name") }.to raise_error(NameError)
+      lambda { doc.new.method(:"bad-name") }.should raise_error(NameError)
     end
 
     it "should not create accessors for reserved keys" do
       doc = Doc {}
-      expect(doc).to_not receive(:create_accessors_for)
+      doc.should_not_receive(:create_accessors_for)
       doc.class_eval do
         key :"class", :__dynamic => true
       end
-      expect(doc.new.class).to eq doc
+      doc.new.class.should == doc
     end
 
     it "should create accessors for good keys" do
@@ -168,7 +168,7 @@ describe "Keys" do
         key :good_name
       }
       doc.new.good_name.should be_nil
-      expect { doc.new.method("good_name") }.to_not raise_error
+      lambda { doc.new.method("good_name") }.should_not raise_error
     end
   end
 

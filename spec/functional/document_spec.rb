@@ -240,8 +240,8 @@ describe "Document" do
     end
 
     it "should reset many associations" do
-      expect(@instance.foos).to receive(:reset).at_least(1).times
-      expect(@instance.bars).to receive(:reset).at_least(1).times
+      @instance.foos.should_receive(:reset).at_least(1).times
+      @instance.bars.should_receive(:reset).at_least(1).times
       @instance.reload
     end
 
@@ -271,7 +271,7 @@ describe "Document" do
 
     it "should raise DocumentNotFound if not found" do
       @instance.destroy
-      expect { @instance.reload }.to raise_error(MongoMapper::DocumentNotFound)
+      lambda { @instance.reload }.should raise_error(MongoMapper::DocumentNotFound)
     end
 
     it "should clear keys that were removed from the database" do
@@ -304,7 +304,7 @@ describe "Document" do
   end
 
   it "should not walk ObjectSpace when creating a model" do
-    expect(ObjectSpace).to receive(:each_object).never
+    ObjectSpace.should_receive(:each_object).never
     Doc()
   end
 end

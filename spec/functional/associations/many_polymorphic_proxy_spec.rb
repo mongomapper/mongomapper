@@ -247,9 +247,9 @@ describe "ManyPolymorphicProxy" do
       end
 
       it "should not work for ids not in association" do
-        expect {
+        lambda {
           @lounge.messages.find!(@lm1._id, @lm2._id, @hm2._id)
-        }.to raise_error(MongoMapper::DocumentNotFound)
+        }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
 

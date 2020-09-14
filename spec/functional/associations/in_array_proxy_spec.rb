@@ -112,9 +112,9 @@ describe "InArrayProxy" do
       end
 
       it "should raise exception if invalid" do
-        expect {
+        lambda {
           @user.lists.create!
-        }.to raise_error(MongoMapper::DocumentNotValid)
+        }.should raise_error(MongoMapper::DocumentNotValid)
       end
 
       it "should reset cache" do
@@ -144,7 +144,7 @@ describe "InArrayProxy" do
 
         it "should not hit the database if ids key is empty" do
           @user.list_ids = []
-          expect(@user.lists).to receive(:query).never
+          @user.lists.should_receive(:query).never
           @user.lists.all.should == []
         end
       end
@@ -160,7 +160,7 @@ describe "InArrayProxy" do
 
         it "should not hit the database if ids key is empty" do
           @user.list_ids = []
-          expect(@user.lists).to receive(:query).never
+          @user.lists.should_receive(:query).never
           @user.lists.first.should be_nil
         end
       end
@@ -176,7 +176,7 @@ describe "InArrayProxy" do
 
         it "should not hit the database if ids key is empty" do
           @user.list_ids = []
-          expect(@user.lists).to receive(:query).never
+          @user.lists.should_receive(:query).never
           @user.lists.last.should be_nil
         end
       end
@@ -195,9 +195,9 @@ describe "InArrayProxy" do
         end
 
         it "should raise error when using ! and not found" do
-          expect {
+          lambda {
             @user.lists.find!(@list3.id)
-          }.to raise_error(MongoMapper::DocumentNotFound)
+          }.should raise_error(MongoMapper::DocumentNotFound)
         end
       end
 
@@ -230,7 +230,7 @@ describe "InArrayProxy" do
 
         it "should not hit the database if ids key is empty" do
           @user.list_ids = []
-          expect(@user.lists).to receive(:query).never
+          @user.lists.should_receive(:query).never
           @user.lists.paginate(:page => 1).should == []
         end
       end
@@ -249,9 +249,9 @@ describe "InArrayProxy" do
         end
 
         it "should raise error when using ! and not found" do
-          expect {
+          lambda {
             @user.lists.find_by_name!('Foo 3')
-          }.to raise_error(MongoMapper::DocumentNotFound)
+          }.should raise_error(MongoMapper::DocumentNotFound)
         end
 
         context "find_or_create_by" do
@@ -293,7 +293,7 @@ describe "InArrayProxy" do
 
       it "should not hit the database if ids key is empty" do
         @user.list_ids = []
-        expect(@user.lists).to receive(:query).never
+        @user.lists.should_receive(:query).never
         @user.lists.count(:name => 'Foo 1').should == 0
       end
     end

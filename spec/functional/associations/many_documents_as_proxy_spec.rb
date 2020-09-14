@@ -155,9 +155,9 @@ describe "ManyDocumentsAsProxy" do
       end
 
       it "should not work for id not in association" do
-        expect {
+        lambda {
           @post.comments.find!(@comment5._id)
-        }.to raise_error(MongoMapper::DocumentNotFound)
+        }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
 
@@ -168,9 +168,9 @@ describe "ManyDocumentsAsProxy" do
       end
 
       it "should not work for ids not in association" do
-        expect {
+        lambda {
           @post.comments.find!(@comment1._id, @comment2._id, @comment4._id)
-        }.to raise_error(MongoMapper::DocumentNotFound)
+        }.should raise_error(MongoMapper::DocumentNotFound)
       end
     end
 

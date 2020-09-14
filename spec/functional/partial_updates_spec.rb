@@ -85,9 +85,9 @@ describe "Partial Updates" do
       @obj.save!
 
       mock_collection = double 'collection'
-      allow(@obj).to receive(:collection).and_return mock_collection
+      @obj.stub(:collection).and_return mock_collection
 
-      expect(@obj.collection).to receive(:update_one).with({:_id => @obj.id}, {
+      @obj.collection.should_receive(:update_one).with({:_id => @obj.id}, {
         '$set' => {
           "string_field" => "bar",
           "updated_at" => kind_of(Time),
@@ -126,9 +126,9 @@ describe "Partial Updates" do
       @obj.save!
 
       mock_collection = double 'collection'
-      allow(@obj).to receive(:collection).and_return mock_collection
+      @obj.stub(:collection).and_return mock_collection
 
-      expect(@obj.collection).to receive(:update_one).with({:_id => @obj.id}, {
+      @obj.collection.should_receive(:update_one).with({:_id => @obj.id}, {
         "_id" => @obj.id,
         "string_field" => "bar",
         "array_field" => [],
@@ -234,7 +234,7 @@ describe "Partial Updates" do
       attrs = @obj.attributes.dup
       attrs.delete("foo")
 
-      allow(@obj).to receive(:attributes).and_return(attrs)
+      @obj.stub(:attributes).and_return(attrs)
 
       @obj.fields_for_partial_update.should == {
         :set_fields => [],
@@ -566,11 +566,11 @@ describe "Partial Updates" do
       updates[:unset_fields].should == []
 
       mock_collection = double('collection')
-      allow(obj).to receive(:collection).and_return(mock_collection)
+      obj.stub(:collection).and_return(mock_collection)
 
       update_query_expectation = hash_including("$set"=> hash_including("boolean_field"))
 
-      obj.collection.should_not receive(:update_one).with(anything, update_query_expectation, anything)
+      obj.collection.should_not_receive(:update_one).with(anything, update_query_expectation, anything)
       obj.save!
     end
   end

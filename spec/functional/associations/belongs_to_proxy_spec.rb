@@ -211,7 +211,7 @@ describe "BelongsToProxy" do
       end
 
       it "should raise exception if invalid" do
-        expect { comment.create_post! }.to raise_error(MongoMapper::DocumentNotValid)
+        lambda { comment.create_post! }.should raise_error(MongoMapper::DocumentNotValid)
       end
 
       it "should work if valid" do

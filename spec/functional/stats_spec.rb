@@ -14,9 +14,9 @@ describe "Stats" do
   context "with no documents present" do
     it "should return nil" do
       if Docs.stats == nil
-        expect(Docs.stats).to eq(nil)
+        Docs.stats.should == nil
       else
-        expect(Docs.stats['count']).to eq(0)
+        Docs.stats['count'].should == 0
       end
     end
   end
@@ -32,55 +32,55 @@ describe "Stats" do
     end
 
     it "should have the correct count" do
-      expect(Docs.stats.count).to eq(get_stats['count'])
+      Docs.stats.count.should == get_stats['count']
     end
 
     it "should have the correct namespace" do
-      expect(Docs.stats.ns).to eq(get_stats['ns'])
+      Docs.stats.ns.should == get_stats['ns']
     end
 
     it "should have the correct size" do
-      expect(Docs.stats.size).to eq(get_stats['size'])
+      Docs.stats.size.should == get_stats['size']
     end
 
     it "should have the correct storage size" do
-      expect(Docs.stats.storage_size).to eq(get_stats['storageSize'])
+      Docs.stats.storage_size.should == get_stats['storageSize']
     end
 
     it "should have the correct average object size" do
-      expect(Docs.stats.avg_obj_size).to eq(get_stats['avgObjSize'])
+      Docs.stats.avg_obj_size.should == get_stats['avgObjSize']
     end
 
     it "should have the correct number of extents" do
       if get_stats['numExtents']
-        expect(Docs.stats.num_extents).to eq(get_stats['numExtents'])
+        Docs.stats.num_extents.should == get_stats['numExtents']
       end
     end
 
     it "should have the correct number of indexes" do
-      expect(Docs.stats.nindexes).to eq(get_stats['nindexes'])
+      Docs.stats.nindexes.should == get_stats['nindexes']
     end
 
     it "should have the correct last extent size" do
       if get_stats['lastExtentSize']
-        expect(Docs.stats.last_extent_size).to eq(get_stats['lastExtentSize'])
+        Docs.stats.last_extent_size.should == get_stats['lastExtentSize']
       end
     end
 
     it "should have the correct padding factor" do
       if get_stats['paddingFactor']
-        expect(Docs.stats.padding_factor).to eq(get_stats['paddingFactor'])
+        Docs.stats.padding_factor.should == get_stats['paddingFactor']
       end
     end
 
     it "should have the correct user flags" do
       if get_stats['userFlags']
-        expect(Docs.stats.user_flags).to eq(get_stats['userFlags'])
+        Docs.stats.user_flags.should == get_stats['userFlags']
       end
     end
 
     it "should have the correct total index size" do
-      expect(Docs.stats.total_index_size).to eq(get_stats['totalIndexSize'])
+      Docs.stats.total_index_size.should == get_stats['totalIndexSize']
     end
   end
 end

@@ -132,7 +132,7 @@ describe "OneAsProxy" do
         end
 
         it "should call delete on the existing document" do
-          expect_any_instance_of(@author_class).to receive(:delete).once
+          @author_class.any_instance.should_receive(:delete).once
           @post.author = @author_class.new
         end
 
@@ -142,7 +142,7 @@ describe "OneAsProxy" do
         end
 
         it "should do nothing if it's the same document" do
-          expect_any_instance_of(@author_class).to receive(:delete).never
+          @author_class.any_instance.should_receive(:delete).never
           @post.author = @author
         end
       end
@@ -157,7 +157,7 @@ describe "OneAsProxy" do
         end
 
         it "should call destroy the existing document" do
-          expect_any_instance_of(@author_class).to receive(:destroy).once
+          @author_class.any_instance.should_receive(:destroy).once
           @post.author = @author_class.new
         end
 
@@ -167,7 +167,7 @@ describe "OneAsProxy" do
         end
 
         it "should do nothing if it's the same document" do
-          expect_any_instance_of(@author_class).to receive(:destroy).never
+          @author_class.any_instance.should_receive(:destroy).never
           @post.author = @author
         end
       end
@@ -302,7 +302,7 @@ describe "OneAsProxy" do
       end
 
       it "should should call destroy on the associated documents" do
-        expect_any_instance_of(@author_class).to receive(:destroy).once
+        @author_class.any_instance.should_receive(:destroy).once
         @post.destroy
       end
 
@@ -324,7 +324,7 @@ describe "OneAsProxy" do
       end
 
       it "should should call delete the associated documents" do
-        expect_any_instance_of(@author_class).to receive(:delete).once
+        @author_class.any_instance.should_receive(:delete).once
         @post.destroy
       end
 
@@ -445,7 +445,7 @@ describe "OneAsProxy" do
     end
 
     it "should raise exception if invalid" do
-      expect { @post.create_author! }.to raise_error(MongoMapper::DocumentNotValid)
+      lambda { @post.create_author! }.should raise_error(MongoMapper::DocumentNotValid)
     end
 
     it "should work if valid" do

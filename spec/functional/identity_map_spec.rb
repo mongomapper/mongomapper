@@ -14,12 +14,12 @@ describe "IdentityMap" do
   end
 
   def expect_no_queries
-    expect_any_instance_of(Mongo::Collection).to receive(:find_one).never
-    expect_any_instance_of(Mongo::Collection).to receive(:find).never
+    Mongo::Collection.any_instance.should_receive(:find_one).never
+    Mongo::Collection.any_instance.should_receive(:find).never
   end
 
   def expects_one_query
-    expect_any_instance_of(Mongo::Collection).to receive(:find).once.and_call_original
+    Mongo::Collection.any_instance.should_receive(:find).once.and_call_original
   end
 
   def clear_identity_map
@@ -185,11 +185,11 @@ describe "IdentityMap" do
           key :created_at, Time
         end
 
-        expect do
+        lambda do
           loaded = person_with_time_class.load({'_id' => @id, 'name' => 'Frank', 'created_at' => '2014-12-07T20:36:45.529-08:00'}, true)
           loaded.should be_present
           loaded.created_at.should be_an_instance_of(Time)
-        end.to_not raise_error
+        end.should_not raise_error
       end
     end
 

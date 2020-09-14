@@ -69,7 +69,7 @@ module Modifiers
           it "should be able to pass safe option" do
             page_class.create(:title => "Better Be Safe than Sorry")
 
-            expect_any_instance_of(Mongo::Collection).to receive(:update_many).with(
+            Mongo::Collection.any_instance.should_receive(:update_many).with(
               {:title => "Better Be Safe than Sorry"},
               {'$unset' => {:tags => 1}},
               {:w => 1}
@@ -166,17 +166,17 @@ module Modifiers
         it "should typecast values before querying" do
           page_class.key :tags, Set
 
-          expect {
+          lambda {
             page_class.set(page.id, :tags => ['foo', 'bar'].to_set)
             page.reload
             page.tags.should == Set.new(['foo', 'bar'])
-          }.to_not raise_error
+          }.should_not raise_error
         end
 
         it "should not typecast keys that are not defined in document and have no default typecasing" do
-          expect {
+          lambda {
             page_class.set(page.id, :colors => ['red', 'green'].to_set)
-          }.to raise_error(BSON::Error::UnserializableClass, 'Value does not define its BSON serialized type: #<Set: {"red", "green"}>')
+          }.should raise_error(BSON::Error::UnserializableClass, 'Value does not define its BSON serialized type: #<Set: {"red", "green"}>')
         end
 
         it "should set keys that are not defined in document" do
@@ -196,7 +196,7 @@ module Modifiers
           it "should be able to pass safe option" do
             page_class.create(:title => "Better Be Safe than Sorry")
 
-            expect_any_instance_of(Mongo::Collection).to receive(:update_many).with(
+            Mongo::Collection.any_instance.should_receive(:update_many).with(
               {:title => "Better Be Safe than Sorry"},
               {'$set' => {:title => "I like safety."}},
               {:w => 1}
@@ -394,9 +394,9 @@ module Modifiers
           page_class.create(:title => "Better Be Safe than Sorry")
 
           # We are trying to increment a key of type string here which should fail
-          expect {
+          lambda {
             page_class.increment({:title => "Better Be Safe than Sorry"}, {:title => 1}, {:safe => true})
-          }.to raise_error(Mongo::Error::OperationFailure)
+          }.should raise_error(Mongo::Error::OperationFailure)
         end
 
         it "should be able to pass both safe and upsert options" do
@@ -409,16 +409,16 @@ module Modifiers
 
       context "upsert" do
         it "should insert document if not present" do
-          expect {
+          lambda {
             page_class.upsert({:title => 'A new story'}, {:title => 'A new story', :day_count => 1})
-          }.to change {page_class.count}
+          }.should change {page_class.count}
           page_class.first(title: 'A new story').day_count.should == 1
         end
 
         it "should update documents if present" do
-          expect {
+          lambda {
             page_class.upsert({:_id => page2.id}, {tags: %w(foo bar)})
-          }.to_not change {page_class.count}
+          }.should_not change {page_class.count}
           page2.reload.tags.should == %w(foo bar)
         end
       end
@@ -438,9 +438,9 @@ module Modifiers
 
     context "compound keys" do
       it "should create a document" do
-        expect {
+        lambda {
           page_class_with_compound_key.create(:title => 'Foo', :tags => %w(foo))
-        }.to change { page_class_with_compound_key.count }.by(1)
+        }.should change { page_class_with_compound_key.count }.by(1)
         doc = page_class_with_compound_key.first
         page_class_with_compound_key.find(doc._id).should == doc
       end
@@ -579,9 +579,9 @@ module Modifiers
             page = page_class.create(:title => "Safe Page")
 
             # We are trying to increment a key of type string here which should fail
-            expect {
+            lambda {
               page.increment({:title => 1}, {:safe => true})
-            }.to raise_error(Mongo::Error::OperationFailure)
+            }.should raise_error(Mongo::Error::OperationFailure)
           end
 
           it "should be able to pass upsert and safe options" do

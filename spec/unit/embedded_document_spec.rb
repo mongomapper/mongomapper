@@ -308,7 +308,7 @@ describe "EmbeddedDocument" do
         end
 
         it "should not throw error if initialized with nil" do
-          expect { @document.new(nil) }.to_not raise_error
+          lambda { @document.new(nil) }.should_not raise_error
         end
       end
 
@@ -661,16 +661,15 @@ describe "EmbeddedDocument" do
 
          it "should should raise errors when invalid" do
            @doc.name = ''
-           expect { @doc.save! }.to raise_error(MongoMapper::DocumentNotValid)
+           lambda { @doc.save! }.should raise_error(MongoMapper::DocumentNotValid)
          end
 
          it "should should raise errors when root document is invalid" do
            @root.name = ''
            @root.save(:validate => false)
-           expect{ @doc.save! }.to raise_error(MongoMapper::DocumentNotValid)
+           lambda { @doc.save! }.should raise_error(MongoMapper::DocumentNotValid)
          end
        end
     end # instance of a embedded document
   end
 end
-

@@ -21,7 +21,7 @@ describe "Binary" do
     end
 
     it "not fail" do
-      expect { @document.new(:file => nil).save }.to_not raise_error
+      lambda { @document.new(:file => nil).save }.should_not raise_error
     end
   end
 end

@@ -46,6 +46,6 @@ describe "The library itself" do
         error_messages << check_for_extra_spaces(filename)
       end
     end
-    expect(error_messages.compact).to be_well_formed
+    error_messages.compact.should be_well_formed
   end
 end

@@ -13,25 +13,25 @@ describe "Indexing" do
 
   context "against a known collection" do
     before do
-      allow(@document).to receive(:collection).and_return(double(:name => :foo, :indexes => double()))
+      @document.stub(:collection).and_return(double(:name => :foo, :indexes => double()))
     end
 
     it "should delegate create_index to collection#create_one" do
-      expect(@document.collection.indexes).to receive(:create_one).with({:arg => 1}, {})
+      @document.collection.indexes.should_receive(:create_one).with({:arg => 1}, {})
       @document.create_index(:arg)
     end
 
     it "should delegate ensure_index to collection#create_one" do
-      expect(@document.collection.indexes).to receive(:create_one).with({:arg => 1}, {})
+      @document.collection.indexes.should_receive(:create_one).with({:arg => 1}, {})
       @document.create_index(:arg)
     end
     it "should delegate drop_index to collection" do
-      expect(@document.collection.indexes).to receive(:drop_one).with(:arg)
+      @document.collection.indexes.should_receive(:drop_one).with(:arg)
       @document.drop_index(:arg)
     end
 
     it "should delegate drop_indexes to collection" do
-      expect(@document.collection.indexes).to receive(:drop_all)
+      @document.collection.indexes.should_receive(:drop_all)
       @document.drop_indexes
     end
   end
@@ -55,7 +55,6 @@ describe "Indexing" do
     @document.ensure_index({last_name: -1})
     @document.should have_index('last_name_-1')
   end
-
 
   it "should allow creating unique index for a key" do
     @document.ensure_index :first_name, :unique => true

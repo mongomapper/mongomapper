@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 class FooType < Struct.new(:bar)
   def self.to_mongo(value)
     'to_mongo'
@@ -60,19 +59,19 @@ describe "Key" do
     end
 
     it "should not permit reserved names" do
-      expect { Key.new(:id) }.to raise_error(/reserved/)
+      lambda { Key.new(:id) }.should raise_error(/reserved/)
     end
 
     it "should not permit bad names" do
-      expect { Key.new(:"id.bar") }.to raise_error(/must match/)
+      lambda { Key.new(:"id.bar") }.should raise_error(/must match/)
     end
 
     it "should permit bad names if __dynamic" do
-      expect { Key.new(:"id.bar", :__dynamic => true) }.to_not raise_error
+      lambda { Key.new(:"id.bar", :__dynamic => true) }.should_not raise_error
     end
 
     it "should permit bad names if it is not to create accessors" do
-      expect { Key.new(:"id.bar", :accessors => :skip) }.to_not raise_error
+      lambda { Key.new(:"id.bar", :accessors => :skip) }.should_not raise_error
     end
   end
 
@@ -149,33 +148,33 @@ describe "Key" do
     context "with :read" do
       let(:accessor) { :read }
 
-      it { expect( subject.read_accessor? ).to be_truthy }
-      it { expect( subject.write_accessor? ).to be_falsey }
-      it { expect( subject.predicate_accessor? ).to be_falsey }
+      it { subject.read_accessor?.should be_truthy }
+      it { subject.write_accessor?.should be_falsey }
+      it { subject.predicate_accessor?.should be_falsey }
     end
 
     context "with :write" do
       let(:accessor) { :write }
 
-      it { expect( subject.read_accessor? ).to be_falsey }
-      it { expect( subject.write_accessor? ).to be_truthy }
-      it { expect( subject.predicate_accessor? ).to be_falsey }
+      it { subject.read_accessor?.should be_falsey }
+      it { subject.write_accessor?.should be_truthy }
+      it { subject.predicate_accessor?.should be_falsey }
     end
 
     context "with :predicate" do
       let(:accessor) { :predicate }
 
-      it { expect( subject.read_accessor? ).to be_falsey }
-      it { expect( subject.write_accessor? ).to be_falsey }
-      it { expect( subject.predicate_accessor? ).to be_truthy }
+      it { subject.read_accessor?.should be_falsey }
+      it { subject.write_accessor?.should be_falsey }
+      it { subject.predicate_accessor?.should be_truthy }
     end
 
     context "with an array of options" do
       let(:accessor) { [:read, :write] }
 
-      it { expect( subject.read_accessor? ).to be_truthy }
-      it { expect( subject.write_accessor? ).to be_truthy }
-      it { expect( subject.predicate_accessor? ).to be_falsey }
+      it { subject.read_accessor?.should be_truthy }
+      it { subject.write_accessor?.should be_truthy }
+      it { subject.predicate_accessor?.should be_falsey }
     end
   end
 
