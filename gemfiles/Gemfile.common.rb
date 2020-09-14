@@ -1,19 +1,18 @@
 source 'https://rubygems.org'
 
 gem 'rake'
-gem 'multi_json',  '~> 1.2'
-
-gem 'plucky', git: "https://github.com/fcheung/plucky.git", branch: 'mongo-2.x'
-gem 'activemodel'
-gem 'activemodel-serializers-xml'
+gem 'multi_json', '~> 1.2'
+gem 'plucky', git: "https://github.com/mongomapper/plucky.git", branch: 'v0.8.0'
+# gem 'plucky', '~ 0.8.0'
+# gem 'activemodel'
+# gem 'activemodel-serializers-xml'
+# platforms :ruby do
+#   gem 'mongo',     '~> 2.0'
+# end
 
 if RUBY_PLATFORM != "java"
   gem 'coveralls', :require => false
   gem 'simplecov', :require => false
-end
-
-platforms :ruby do
-  gem 'mongo',     '~> 2.0'
 end
 
 platforms :rbx do

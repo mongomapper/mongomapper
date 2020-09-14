@@ -1,28 +1,17 @@
 language: ruby
 gemfile:
-  - gemfiles/rails3_2.gemfile
-  - gemfiles/rails4_0.gemfile
-  - gemfiles/rails4_2.gemfile
+  - gemfiles/rails5_0.gemfile
+  - gemfiles/rails5_1.gemfile
+  - gemfiles/rails5_2.gemfile
+  - gemfiles/rails6_0.gemfile
 rvm:
-  - 2.0.0
-  - 2.1.1
-  - 2.2.4
-  - 2.3.4
-  - 2.4.1
+  - jruby-19mode
+  - 2.4.10
+  - 2.5.8
+  - 2.6.6
+  - 2.7.1
 notifications:
   email:
     - scott@railsnewbie.com
 bundler_args: --without development
 services: mongodb
-matrix:
-  include:
-    - rvm: jruby-19mode
-      gemfile: gemfiles/rails3_2.gemfile
-      env: JRUBY_OPTS="--server -Xcompile.invokedynamic=false -J-XX:+TieredCompilation -J-XX:TieredStopAtLevel=1 -J-noverify -J-Xms512m -J-Xmx1024m"
-  exclude:
-    - rvm: 2.4.1
-      gemfile: gemfiles/rails3_2.gemfile
-    - rvm: 2.4.1
-      gemfile: gemfiles/rails4_0.gemfile
-    - rvm: 2.0.0
-      gemfile: gemfiles/rails4_2.gemfile

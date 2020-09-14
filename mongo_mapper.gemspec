@@ -15,9 +15,10 @@ Gem::Specification.new do |s|
   s.platform           = Gem::Platform::RUBY
   s.files              = Dir.glob("{bin,examples,lib,spec}/**/*") + %w[LICENSE UPGRADES README.rdoc]
 
-  s.add_dependency 'activemodel',   ">= 6.0"
-  s.add_dependency 'activesupport', '>= 6.0'
-  s.add_dependency 'plucky',        '~> 0.8.0'
   s.add_dependency 'mongo',         '~> 2.0'
+  s.add_dependency 'plucky',        '~> 0.8.0'
+
+  s.add_dependency 'activesupport', '>= 5.0'
+  s.add_dependency 'activemodel',   ">= 5.0"
   s.add_dependency 'activemodel-serializers-xml'
 end
