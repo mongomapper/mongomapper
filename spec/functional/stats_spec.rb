@@ -13,7 +13,11 @@ describe "Stats" do
 
   context "with no documents present" do
     it "should return nil" do
-      expect(Docs.stats).to eq(nil)
+      if Docs.stats == nil
+        expect(Docs.stats).to eq(nil)
+      else
+        expect(Docs.stats['count']).to eq(0)
+      end
     end
   end
 
@@ -26,6 +30,7 @@ describe "Stats" do
     def get_stats
       MongoMapper.database.command(:collstats => 'docs').documents[0]
     end
+
     it "should have the correct count" do
       expect(Docs.stats.count).to eq(get_stats['count'])
     end
