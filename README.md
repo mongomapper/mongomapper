@@ -1,22 +1,24 @@
-= MongoMapper
-
-{<img src="https://badge.fury.io/rb/mongo_mapper.png" alt="RubyGem" />}[https://rubygems.org/gems/mongo_mapper]
-{<img src="https://travis-ci.org/mongomapper/mongomapper.png?branch=master" alt="Build Status" />}[https://travis-ci.org/mongomapper/mongomapper]
-{<img src="https://coveralls.io/repos/mongomapper/mongomapper/badge.png" alt="Coverage Status" />}[https://coveralls.io/r/mongomapper/mongomapper]
+# MongoMapper
 
 A Ruby Object Mapper for Mongo.
 
-== Install
+{<img src="https://badge.fury.io/rb/mongo_mapper.png" alt="RubyGem" />}[https://rubygems.org/gems/mongo_mapper]
+
+{<img src="https://travis-ci.org/mongomapper/mongomapper.png?branch=master" alt="Build Status" />}[https://travis-ci.org/mongomapper/mongomapper]
+
+{<img src="https://coveralls.io/repos/mongomapper/mongomapper/badge.png" alt="Coverage Status" />}[https://coveralls.io/r/mongomapper/mongomapper]
+
+## Install
 
     $ gem install mongo_mapper
 
-== Documentation
+## Documentation
 
 http://mongomapper.com/documentation/
 
 http://rdoc.info/github/mongomapper/mongomapper
 
-== Compatibility
+## Compatibility
 
 MongoMapper is tested against:
 
@@ -30,7 +32,7 @@ Additionally, MongoMapper is tested against:
 * Rails 3.2.x
 * Rails 4.0.x
 
-== Contributing & Development
+## Contributing & Development
 
     $ git clone https://github.com/mongomapper/mongomapper && cd mongomapper
     $ bundle install
@@ -42,12 +44,12 @@ Additionally, MongoMapper is tested against:
 * Commit, do not mess with Rakefile, version, or history. If you want to have your own version, that is fine but bump version in a commit by itself in another branch so a maintainer ignore it when your pull request is merged.
 * Send a pull request. Bonus points for topic branches.
 
-== Problems or Questions?
+## Problems or Questions?
 
 Hit up the Google group: http://groups.google.com/group/mongomapper
 
 Hop on IRC: irc://chat.freenode.net/#mongomapper
 
-== License & Copyright
+## License & Copyright
 
 See LICENSE for details.
