@@ -50,6 +50,18 @@ Hit up the Google group: http://groups.google.com/group/mongomapper
 
 Hop on IRC: irc://chat.freenode.net/#mongomapper
 
-## License & Copyright
+## Copyright
 
-See LICENSE for details.
+Copyright (c) 2009-2020 MongoMapper. See LICENSE for details.
+
+## Contributors
+
+MongoMapper/Plucky is:
+
+* John Nunemaker
+* Chris Heald
+* Scott Taylor
+
+With contributions from:
+
+* Frederick Cheung
