@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.executables        = ['mmconsole']
   s.version            = MongoMapper::Version
   s.platform           = Gem::Platform::RUBY
-  s.files              = Dir.glob("{bin,examples,lib,spec}/**/*") + %w[LICENSE UPGRADES README.rdoc]
+  s.files              = Dir.glob("{bin,examples,lib,spec}/**/*") + %w[LICENSE UPGRADES README.md]
 
   s.add_dependency 'mongo',         '~> 2.0'
   s.add_dependency 'plucky',        '~> 0.8.0'
