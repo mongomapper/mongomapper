@@ -22,15 +22,12 @@ http://rdoc.info/github/mongomapper/mongomapper
 
 MongoMapper is tested against:
 
-* MRI 2.0.0
-* MRI 2.1.1
-* MRI 2.2.4
+* MRI 2.4 - 2.7
 * JRuby (Versions with 1.9 compatibility)
 
 Additionally, MongoMapper is tested against:
 
-* Rails 3.2.x
-* Rails 4.0.x
+* Rails 5.0+ - 6.0
 
 ## Contributing & Development
 
