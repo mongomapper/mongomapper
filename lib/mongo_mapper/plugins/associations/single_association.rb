@@ -8,13 +8,11 @@ module MongoMapper
 
           model.associations_module.module_eval(<<-end_eval, __FILE__, __LINE__ + 1)
             def #{name}
-              proxy = get_proxy(associations[#{name.inspect}])
-              proxy.read
+              get_proxy(associations[#{name.inspect}]).read
             end
 
             def #{name}=(value)
-              proxy = get_proxy(associations[#{name.inspect}])
-              proxy.write(value)
+              get_proxy(associations[#{name.inspect}]).write(value)
             end
 
             def #{name}?
