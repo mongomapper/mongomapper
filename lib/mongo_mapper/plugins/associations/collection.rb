@@ -23,6 +23,15 @@ module MongoMapper
           super
           target = []
         end
+
+        def read
+          self
+        end
+
+        def write(value)
+          replace(value)
+          read
+        end
       end
     end
   end

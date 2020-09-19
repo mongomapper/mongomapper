@@ -104,6 +104,11 @@ module MongoMapper
           @target
         end
 
+        def write(value)
+          replace(value)
+          read
+        end
+
       protected
 
         def load_target
