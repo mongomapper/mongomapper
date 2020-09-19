@@ -1,5 +1,6 @@
 # encoding: UTF-8
 require 'forwardable'
+
 module MongoMapper
   module Plugins
     module Associations
@@ -9,7 +10,18 @@ module MongoMapper
         alias :proxy_respond_to? :respond_to?
         alias :proxy_extend :extend
 
-        instance_methods.each { |m| undef_method m unless m =~ /(^__|^nil\?$|^send$|proxy_|^respond_to_missing\?$|^object_id$)/ }
+        methods_to_undefine = [
+          :to_mongo,
+          :is_a?,
+          :==,
+          :!=,
+        ]
+
+        instance_methods.each do |m|
+          if methods_to_undefine.include?(m)
+            undef_method m
+          end
+        end
 
         attr_reader :proxy_owner, :association, :target
 
