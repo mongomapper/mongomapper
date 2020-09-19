@@ -252,4 +252,21 @@ describe "BelongsToProxy" do
       post.reload.title.should == 'Hello, world!'
     end
   end
+
+  context "regression with reassignment" do
+    it "should not infinite regress (shouldn't raise SystemStackError) when assigned to twice (when the proxy isn't around)" do
+      post = @post_class.create!
+      comment = @comment_class.create!(post: post)
+
+      comment = @comment_class.find(comment.id)
+
+      post = comment.post
+
+      comment.post = post
+
+      lambda do
+        comment.post = post
+      end.should_not raise_error
+    end
+  end
 end
