@@ -1,3 +1,19 @@
+HEAD
+
+  Enhancements:
+
+    * PR-649 Chris Heald <cheald@gmail.com> Add StrongParameters plugin. Not included by default.
+
+  Bug Fixes:
+
+    * PR-640 Seth Jeffery <seth@quipper.com> Fix find! with a one item array to return a one item array object
+
+  Doc Fixes:
+
+    * PR-650 Olle Jonsson <olle.jonsson@gmail.com> README: SVG badges
+    * PR-660 Kenichi Kamiya <kachick1@gmail.com> Fix indent
+
+
 0.15.0 - 2020-09-14
 
   * Upgrade to use modern mongo by upgrading to use the mongo 2.0 driver.
