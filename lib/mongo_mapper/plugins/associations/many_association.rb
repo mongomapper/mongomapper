@@ -28,7 +28,7 @@ module MongoMapper
         end
 
         def setup(model)
-          model.associations_module.module_eval(<<-end_eval, __FILE__, __LINE__)
+          model.associations_module.module_eval(<<-end_eval, __FILE__, __LINE__ + 1)
             def #{name}
               get_proxy(associations[#{name.inspect}])
             end
