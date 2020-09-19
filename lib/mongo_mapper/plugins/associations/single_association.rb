@@ -5,7 +5,8 @@ module MongoMapper
       class SingleAssociation < Base
         def setup(model)
           @model = model
-          model.associations_module.module_eval <<-end_eval
+
+          model.associations_module.module_eval(<<-end_eval, __FILE__, __LINE__)
             def #{name}
               proxy = get_proxy(associations[#{name.inspect}])
               proxy.nil? ? nil : proxy
