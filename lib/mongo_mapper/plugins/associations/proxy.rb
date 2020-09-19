@@ -13,7 +13,6 @@ module MongoMapper
 
         attr_reader :proxy_owner, :association, :target
 
-        alias :proxy_target :target
         alias :proxy_association :association
 
         def_delegators :proxy_association, :klass, :options
@@ -98,6 +97,11 @@ module MongoMapper
             load_target
             target.send(method, *args, &block)
           end
+        end
+
+        def read
+          load_target
+          @target
         end
 
       protected

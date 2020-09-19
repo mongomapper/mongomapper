@@ -51,7 +51,7 @@ describe "BelongsToProxy" do
   it "should not reload the association when replacing" do
     post = @post_class.new(:name => 'mongomapper')
     comment = @comment_class.new(:name => 'Foo!', :post => post)
-    comment.post.proxy_target.object_id.should == post.object_id
+    comment.post.object_id.should == post.object_id
   end
 
   it "should properly assign the associated object when assigning the association with create" do
