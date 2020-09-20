@@ -10,19 +10,6 @@ module MongoMapper
         alias :proxy_respond_to? :respond_to?
         alias :proxy_extend :extend
 
-        methods_to_undefine = [
-          :to_mongo,
-          :is_a?,
-          :==,
-          :!=,
-        ]
-
-        instance_methods.each do |m|
-          if methods_to_undefine.include?(m)
-            undef_method m
-          end
-        end
-
         attr_reader :proxy_owner, :association, :target
 
         alias :proxy_association :association
@@ -36,26 +23,38 @@ module MongoMapper
           reset
         end
 
-        # Active support in rails 3 beta 4 can override to_json after this is loaded,
-        # at least when run in mongomapper tests. The implementation was changed in master
-        # some time after this, so not sure whether this is still a problem.
-        #
-        # In rails 2, this isn't a problem however it also solves an issue where
-        # to_json isn't forwarded because it supports to_json itself
-        def to_json(*options)
-          load_target
-          target.to_json(*options)
+        [
+          :to_mongo,
+          :is_a?,
+        ].each do |m|
+          define_method m do |*args, &block|
+            if load_target
+              target.send(m, *args, &block)
+            end
+          end
         end
 
-        # see comments to to_json
-        def as_json(*options)
-          load_target
-          target.as_json(*options)
-        end
-
-        def inspect
-          load_target
-          target.inspect
+        [
+          :==,
+          :!=,
+          :nil?,
+          :blank?,
+          :present?,
+          # Active support in rails 3 beta 4 can override to_json after this is loaded,
+          # at least when run in mongomapper tests. The implementation was changed in master
+          # some time after this, so not sure whether this is still a problem.
+          #
+          # In rails 2, this isn't a problem however it also solves an issue where
+          # to_json isn't forwarded because it supports to_json itself
+          :to_json,
+          # see comments to to_json
+          :as_json,
+          :inspect,
+        ].each do |m|
+          define_method m do |*args, &block|
+            load_target
+            target.send(m, *args, &block)
+          end
         end
 
         def loaded?
@@ -64,21 +63,6 @@ module MongoMapper
 
         def loaded
           @loaded = true
-        end
-
-        def nil?
-          load_target
-          target.nil?
-        end
-
-        def blank?
-          load_target
-          target.blank?
-        end
-
-        def present?
-          load_target
-          target.present?
         end
 
         def reload
