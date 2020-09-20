@@ -49,12 +49,16 @@ module MongoMapper
           :to_json,
           # see comments to to_json
           :as_json,
-          :inspect,
         ].each do |m|
           define_method m do |*args, &block|
             load_target
             target.send(m, *args, &block)
           end
+        end
+
+        def inspect
+          load_target
+          "#<#{self.class.inspect}:#{object_id} #{@target.inspect}>"
         end
 
         def loaded?

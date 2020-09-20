@@ -1,19 +1,19 @@
 require 'spec_helper'
 
 class FakeNilProxy < MongoMapper::Plugins::Associations::Proxy
-  def find_target; nil end
+  def load_target; @target = nil end
 end
 
 class FakeBlankProxy < MongoMapper::Plugins::Associations::Proxy
-  def find_target; '' end
+  def load_target; @target = '' end
 end
 
 class FakeNumberProxy < MongoMapper::Plugins::Associations::Proxy
-  def find_target; 17 end
+  def load_target; @target = 17 end
 end
 
 class FakeProxy < MongoMapper::Plugins::Associations::Proxy
-  def find_target; [1, 2] end
+  def load_target; @target = [1, 2] end
 end
 
 describe "Proxy" do
@@ -32,7 +32,7 @@ describe "Proxy" do
   end
 
   it "should be able to inspect the proxy" do
-    @proxy.inspect.should == '[1, 2]'
+    @proxy.inspect.should == "#<FakeProxy:#{@proxy.object_id} [1, 2]>"
   end
 
   context "nil?" do
