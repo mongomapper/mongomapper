@@ -7,12 +7,19 @@ module MongoMapper
       class Proxy
         extend Forwardable
 
-        alias :proxy_respond_to? :respond_to?
-        alias :proxy_extend :extend
+        class << self
+          def define_proxy_method(method)
+            define_method(method) do |*args, &block|
+              proxy_method(method, *args, &block)
+            end
+          end
+        end
 
         attr_reader :proxy_owner, :association, :target
 
-        alias :proxy_association :association
+        alias_method :proxy_respond_to?, :respond_to?
+        alias_method :proxy_extend, :extend
+        alias_method :proxy_association, :association
 
         def_delegators :proxy_association, :klass, :options
         def_delegator  :klass, :collection
@@ -24,17 +31,8 @@ module MongoMapper
         end
 
         [
-          :to_mongo,
           :is_a?,
-        ].each do |m|
-          define_method m do |*args, &block|
-            if load_target
-              target.send(m, *args, &block)
-            end
-          end
-        end
-
-        [
+          :to_mongo,
           :==,
           :!=,
           :nil?,
@@ -50,10 +48,7 @@ module MongoMapper
           # see comments to to_json
           :as_json,
         ].each do |m|
-          define_method m do |*args, &block|
-            load_target
-            target.send(m, *args, &block)
-          end
+          define_proxy_method(m)
         end
 
         def inspect
@@ -87,16 +82,7 @@ module MongoMapper
         end
 
         def respond_to?(*args)
-          proxy_respond_to?(*args) || (load_target && target.respond_to?(*args))
-        end
-
-        def send(method, *args, &block)
-          if proxy_respond_to?(method, true)
-            super
-          else
-            load_target
-            target.send(method, *args, &block)
-          end
+          super || (load_target && target.respond_to?(*args))
         end
 
         def read
@@ -107,6 +93,11 @@ module MongoMapper
         def write(value)
           replace(value)
           read
+        end
+
+        def proxy_method(method, *args, &block)
+          load_target
+          target.public_send(method, *args, &block)
         end
 
       protected
@@ -143,9 +134,28 @@ module MongoMapper
           false
         end
 
+        def define_proxy_method(method)
+          metaclass = class << self; self; end
+          metaclass.class_eval do
+            define_proxy_method(method)
+          end
+        end
+
+        def define_and_call_proxy_method(method, *args, &block)
+          define_proxy_method(method)
+          public_send(method, *args, &block)
+        end
+
         def method_missing(method, *args, &block)
-          if load_target
-            target.public_send(method, *args, &block)
+          # load the target just in case it isn't loaded
+          load_target
+
+          # only define the method if the target has the method
+          # NOTE: include private methods!
+          if target.respond_to?(method, true)
+            define_and_call_proxy_method(method, *args, &block)
+          else
+            super
           end
         end
       end

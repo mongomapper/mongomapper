@@ -1,19 +1,19 @@
 require 'spec_helper'
 
 class FakeNilProxy < MongoMapper::Plugins::Associations::Proxy
-  def load_target; @target = nil end
+  def load_target; @target ||= nil end
 end
 
 class FakeBlankProxy < MongoMapper::Plugins::Associations::Proxy
-  def load_target; @target = '' end
+  def load_target; @target ||= '' end
 end
 
 class FakeNumberProxy < MongoMapper::Plugins::Associations::Proxy
-  def load_target; @target = 17 end
+  def load_target; @target ||= 17 end
 end
 
 class FakeProxy < MongoMapper::Plugins::Associations::Proxy
-  def load_target; @target = [1, 2] end
+  def load_target; @target ||= [1, 2] end
 end
 
 describe "Proxy" do

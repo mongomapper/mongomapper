@@ -192,15 +192,21 @@ describe "Support" do
     end
   end
 
-  context "NilClass#from_mongo" do
+  context "NilClass.from_mongo" do
     it "should return nil" do
-      nil.from_mongo(nil).should be_nil
+      NilClass.from_mongo(nil).should be_nil
+    end
+  end
+
+  context "NilClass.to_mongo" do
+    it "should return nil" do
+      NilClass.to_mongo(nil).should be_nil
     end
   end
 
   context "NilClass#to_mongo" do
     it "should return nil" do
-      nil.to_mongo(nil).should be_nil
+      nil.to_mongo.should be_nil
     end
   end
 

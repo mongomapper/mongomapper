@@ -3,20 +3,37 @@ module MongoMapper
   module Plugins
     module Associations
       class Collection < Proxy
-        def to_ary
+        include Enumerable
+
+        def to_a
           load_target
-          if target.is_a?(Array)
-            target.to_ary
-          else
+
+          target.is_a?(Array) ?
+            target :
             Array(target)
-          end
         end
 
-        alias_method :to_a, :to_ary
+        alias_method :to_ary, :to_a
 
-        def include?(*args)
-          load_target
-          target.include?(*args)
+        def each(&block)
+          to_a.each(&block)
+        end
+
+        def [](val)
+          objs = to_a
+          objs ? objs[val] : nil
+        end
+
+        def empty?
+          to_a.empty?
+        end
+
+        def size
+          to_a.size
+        end
+
+        def length
+          to_a.length
         end
 
         def reset

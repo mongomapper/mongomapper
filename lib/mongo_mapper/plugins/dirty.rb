@@ -38,7 +38,7 @@ module MongoMapper
 
           # typecast to the new value
           old_value = read_key(key_name)
-          new_value = key.get(key.set(value))
+          new_value = key.set(value)
 
           # only mark changed if really changed value (after typecasting)
           unless old_value == new_value

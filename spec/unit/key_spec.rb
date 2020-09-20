@@ -111,7 +111,12 @@ describe "Key" do
     subject { @key }
 
     it "should cast each element correctly" do
-      ids = [BSON::ObjectId.new, BSON::ObjectId.new, BSON::ObjectId.new.to_s, BSON::ObjectId.new.to_s]
+      ids = [
+        BSON::ObjectId.new,
+        BSON::ObjectId.new,
+        BSON::ObjectId.new.to_s,
+        BSON::ObjectId.new.to_s
+      ]
       subject.set(ids).should == ids.map { |id| ObjectId.to_mongo(id) }
     end
   end
