@@ -34,28 +34,46 @@ describe "Keys" do
     instance.foo.should == 'baz'
   end
 
-  context "when persisting an typecasted array" do
-    TypecastedKeyModel = Doc do
-      key :people, Array, :typecast => "Person"
-    end
-
+  context "when persisting typecasts" do
     Person = Struct.new(:name) do
       def self.to_mongo(value)
         value.name
       end
 
       def self.from_mongo(value)
-        Person.new value
+        new(value)
       end
     end
 
-    it "should not mutate the model's state" do
-      person = Person.new "Bob"
-      doc = TypecastedKeyModel.new(:people => [person])
+    context "when persisting a typecast Array" do
+      typecast_key_model = Doc do
+        key :people, Array, :typecast => "Person"
+      end
 
-      doc.save
+      it "should not mutate the model's state" do
+        person = Person.new "Bob"
+        doc = typecast_key_model.new(:people => [person])
 
-      doc.people.should == [person]
+        doc.save!
+
+        doc.people.should == [person]
+      end
+    end
+
+    context "when persisting a typecast Set" do
+      typecast_key_model = Doc do
+        key :people, Set, :typecast => "Person"
+      end
+
+      it "should not mutate the model's state" do
+        person = Person.new "Bob"
+
+        doc = typecast_key_model.new(:people => Set.new([person]))
+
+        doc.save!
+
+        doc.people.should == Set.new([person])
+      end
     end
   end
 

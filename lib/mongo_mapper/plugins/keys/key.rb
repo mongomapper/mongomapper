@@ -60,12 +60,17 @@ module MongoMapper
           # Special Case: Generate default _id on access
           value = default_value if @is_id and !value
 
+          value = type.from_mongo(value)
+
           if @typecast
-            klass = typecast_class  # Don't make this lookup on every call
-            type.from_mongo(value).map { |v| klass.from_mongo(v) }
-          else
-            type.from_mongo(value)
+            klass = typecast_class # Don't make this lookup on every call
+            # typecast assumes array-ish object.
+            value = value.map { |v| klass.from_mongo(v) }
+            # recast it in the original type
+            value = type.from_mongo(value)
           end
+
+          value
         end
 
         def set(value)
