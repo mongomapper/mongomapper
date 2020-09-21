@@ -257,9 +257,6 @@ describe "Document" do
       @instance.bar.should_not be_nil
     end
 
-    it "should reset nil one association" do
-    end
-
     it "should reinstantiate embedded associations" do
       @instance.reload
       @instance.bars.first.name.should == '1'
