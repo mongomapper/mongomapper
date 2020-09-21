@@ -7,11 +7,13 @@ HEAD
   Bug Fixes:
 
     * PR-640 Seth Jeffery <seth@quipper.com> Fix find! with a one item array to return a one item array object
+    * PR-628 jamieorc <jamieorc@gmail.com> Corrected a regression on Set keys with typecast
 
   Doc Fixes:
 
     * PR-650 Olle Jonsson <olle.jonsson@gmail.com> README: SVG badges
     * PR-660 Kenichi Kamiya <kachick1@gmail.com> Fix indent
+    * PR-617 Update types to follow Symbol support (kachick)
 
 
 0.15.0 - 2020-09-14
