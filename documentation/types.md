@@ -3,7 +3,23 @@ layout: documentation
 title: Types
 ---
 
-Because of MongoDB's ability to store rich documents, MongoMapper supports most of Ruby's data types out of the box, such as [Array](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/array.rb), [Float](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/float.rb), [Hash](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/hash.rb), [Integer](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/integer.rb), [NilClass](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/nil_class.rb), [Object](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/object.rb), [String](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/string.rb), and [Time](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/time.rb). In addition to those, MongoMapper adds support for [Binary](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/binary.rb), [Boolean](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/boolean.rb), [Date](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/date.rb), [ObjectId](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/object_id.rb), and [Set](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/set.rb) by serializing to and from Mongo safe types.
+Because of MongoDB's ability to store rich documents, MongoMapper supports most of Ruby's data types out of the box, such as
+[Array](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/array.rb),
+[Float](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/float.rb),
+[Hash](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/hash.rb),
+[Integer](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/integer.rb),
+[NilClass](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/nil_class.rb),
+[Object](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/object.rb),
+[String](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/string.rb),
+[Symbol](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/symbol.rb), and
+[Time](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/time.rb).
+
+In addition to those, MongoMapper adds support for
+[Binary](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/binary.rb),
+[Boolean](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/boolean.rb),
+[Date](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/date.rb),
+[ObjectId](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/object_id.rb), and
+[Set](http://github.com/mongomapper/mongomapper/blob/master/lib/mongo_mapper/extensions/set.rb) by serializing to and from Mongo safe types.
 
 Custom Types
 ------------
