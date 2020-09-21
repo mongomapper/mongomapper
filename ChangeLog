@@ -13,7 +13,8 @@ HEAD
 
     * PR-650 Olle Jonsson <olle.jonsson@gmail.com> README: SVG badges
     * PR-660 Kenichi Kamiya <kachick1@gmail.com> Fix indent
-    * PR-617 Update types to follow Symbol support (kachick)
+    * PR-617 Kenichi Kamiya <kachick1@gmail.com> Update types to follow Symbol support 
+    * PR-616 Kenichi Kamiya <kachick1@gmail.com> Remove an unused spec
 
 
 0.15.0 - 2020-09-14
