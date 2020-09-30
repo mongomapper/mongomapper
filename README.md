@@ -59,6 +59,5 @@ MongoMapper/Plucky is:
 * Chris Heald
 * Scott Taylor
 
-With contributions from:
-
-* Frederick Cheung
+But all open source projects are a team effort and could not happen without
+everyone who has contributed.  See `CONTRIBUTORS` for the full list.  Thank you!
