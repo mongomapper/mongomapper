@@ -6,7 +6,7 @@ module MongoMapper
         attr_reader :name, :options, :query_options
 
         # Options that should not be considered MongoDB query options/criteria
-        AssociationOptions = [:as, :class, :class_name, :dependent, :extend, :foreign_key, :in, :polymorphic, :autosave, :touch, :counter_cache]
+        AssociationOptions = [:as, :class, :class_name, :dependent, :extend, :foreign_key, :in, :polymorphic, :autosave, :touch, :counter_cache, :ordered]
 
         def initialize(name, options={}, &extension)
           @name, @options, @query_options, @original_options = name.to_sym, {}, {}, options
@@ -45,6 +45,10 @@ module MongoMapper
 
         def counter_cache?
           !!@options[:counter_cache]
+        end
+
+        def ordered?
+          !!@options[:ordered]
         end
 
         def type_key_name
