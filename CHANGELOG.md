@@ -4,11 +4,15 @@
 
     * PR-649 Chris Heald <cheald@gmail.com> Add StrongParameters plugin. Not included by default.
     * PR-615 Kenichi Kamiya <kachick1@gmail.com> Return an Enumerator on #find_each when not given a block
+    * PR-598 Scott Taylor <scott@railsnewbie.com> Allow incrementing + decrementing using only the field name (example: `obj.increment(:my_counter)`)
+    * PR-593 Scott Taylor <scott@railsnewbie.com> Add sorting with :ordered => true for has_many :in => :array (Closes #428)
+
 
 ### Bug Fixes:
 
     * PR-640 Seth Jeffery <seth@quipper.com> Fix find! with a one item array to return a one item array object
     * PR-628 jamieorc <jamieorc@gmail.com> Corrected a regression on Set keys with typecast
+    * PR-611 SteffanPerry <sperry1988@gmail.com> Missing yaml requirement was throwing error on rail 4.2.1: "uninitialized constant MongoMapper::Railtie::YAML (NameError)"
 
 ### Doc Fixes:
 
