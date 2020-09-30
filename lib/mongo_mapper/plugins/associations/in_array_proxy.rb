@@ -27,7 +27,7 @@ module MongoMapper
           return nil if ids.blank?
 
           if ordered?
-            ids = find_ids(options)
+            ids = find_ordered_ids(options)
             find!(ids.first) if ids.any?
           else
             query(options).first
@@ -38,7 +38,7 @@ module MongoMapper
           return nil if ids.blank?
 
           if ordered?
-            ids = find_ids(options)
+            ids = find_ordered_ids(options)
             find!(ids.last) if ids.any?
           else
             query(options).last
@@ -132,7 +132,9 @@ module MongoMapper
           valid.empty? ? nil : valid
         end
 
-        def find_ids(options={})
+        def find_ordered_ids(options={})
+          return ids if options.empty?
+
           matched_ids = klass.collection.distinct(:_id, query(options).criteria.to_hash)
           matched_ids.sort_by! { |matched_id| ids.index(matched_id) }
         end
