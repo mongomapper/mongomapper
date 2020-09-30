@@ -32,6 +32,7 @@ module MongoMapper
         def criteria_hash
           @model.dealias_keys super
         end
+
         def options_hash
           super.tap do |options|
             case options[:projection]
