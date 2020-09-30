@@ -24,6 +24,16 @@ task :install => :build do
   sh "gem install mongo_mapper-#{MongoMapper::Version}"
 end
 
+desc 'Update contributors'
+task :update_contributors do
+  git_rank_contributors = File.expand_path('etc/git-rank-contributors', __dir__)
+  sh "#{git_rank_contributors} > CONTRIBUTORS && git add CONTRIBUTORS"
+end
+
+task update_contributors_and_commit: [:update_contributors] do
+  sh "git commit -m 'Updating Contributors'"
+end
+
 desc 'Tags version, pushes to remote, and pushes gem'
 task :release => :build do
   sh "git tag v#{MongoMapper::Version}"
