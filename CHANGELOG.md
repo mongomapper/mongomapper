@@ -3,6 +3,7 @@
 ### Enhancements:
 
     * PR-649 Chris Heald <cheald@gmail.com> Add StrongParameters plugin. Not included by default.
+    * PR-615 Kenichi Kamiya <kachick1@gmail.com> Return an Enumerator on #find_each when not given a block
 
 ### Bug Fixes:
 
