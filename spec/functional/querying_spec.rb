@@ -265,6 +265,18 @@ describe "Querying" do
         document.find_each(:last_name => 'Nunemaker', :order => 'age desc') {|doc| yield_documents << doc }
         yield_documents.should == [@doc1, @doc3]
       end
+
+      it "should return an enumerator when no block is given" do
+        yield_documents = []
+        enum = document.find_each(:order => "first_name")
+        enum.with_index {|doc, idx| yield_documents << [doc, idx] }
+        yield_documents.should == [[@doc1, 0], [@doc3, 1], [@doc2, 2]]
+
+        yield_documents = []
+        enum = document.find_each(:last_name => 'Nunemaker', :order => 'age desc')
+        enum.with_index {|doc, idx| yield_documents << [doc, idx] }
+        yield_documents.should == [[@doc1, 0], [@doc3, 1]]
+      end
     end
   end # finding documents
 

@@ -133,10 +133,12 @@ module PluckyMethods
     end
 
     def find_each(opts={})
+      return super if !block_given?
+
       query = clone.amend(opts)
       super(opts) do |doc|
         doc.remove_from_identity_map if doc && query.fields?
-        yield doc if block_given?
+        yield doc
       end
     end
   end
