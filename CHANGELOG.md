@@ -1,41 +1,41 @@
-HEAD
+## HEAD
 
-  Enhancements:
+### Enhancements:
 
     * PR-649 Chris Heald <cheald@gmail.com> Add StrongParameters plugin. Not included by default.
 
-  Bug Fixes:
+### Bug Fixes:
 
     * PR-640 Seth Jeffery <seth@quipper.com> Fix find! with a one item array to return a one item array object
     * PR-628 jamieorc <jamieorc@gmail.com> Corrected a regression on Set keys with typecast
 
-  Doc Fixes:
+### Doc Fixes:
 
     * PR-650 Olle Jonsson <olle.jonsson@gmail.com> README: SVG badges
     * PR-660 Kenichi Kamiya <kachick1@gmail.com> Fix indent
-    * PR-617 Kenichi Kamiya <kachick1@gmail.com> Update types to follow Symbol support 
+    * PR-617 Kenichi Kamiya <kachick1@gmail.com> Update types to follow Symbol support
     * PR-616 Kenichi Kamiya <kachick1@gmail.com> Remove an unused spec
 
 
-0.15.0 - 2020-09-14
+## 0.15.0 - 2020-09-14
 
-  * Upgrade to use modern mongo by upgrading to use the mongo 2.0 driver.
+    * Upgrade to use modern mongo by upgrading to use the mongo 2.0 driver.
 
-    This update means MongoMapper should work with any version of mongo after (2.6+).
+      This update means MongoMapper should work with any version of mongo after (2.6+).
 
-    Many thanks to Frederick Cheung <frederick.cheung@gmail.com> for his contribution.
+      Many thanks to Frederick Cheung <frederick.cheung@gmail.com> for his contribution.
 
-    Note that MyModel.collection now returns a mongo 2.0 driver collection object which does not mirror the shell methods.
+      Note that MyModel.collection now returns a mongo 2.0 driver collection object which does not mirror the shell methods.
 
-    Patches welcome for a compatibility layer!
+      Patches welcome for a compatibility layer!
 
-  * Support for ruby 2.4+, rails 5.0+
-  * Dropping support for all older rubies, older rails.
+    * Support for ruby 2.4+, rails 5.0+
+    * Dropping support for all older rubies, older rails.
 
-0.14.0 - 2017-01-19
-0.14.0 RC1 - 2016-03-16
+## 0.14.0 - 2017-01-19
+## 0.14.0 RC1 - 2016-03-16
 
-  Enhancements:
+### Enhancements:
 
     * Only partially update objects (using $set and $unset) when updates occur.
 
@@ -64,12 +64,12 @@ HEAD
 
     * Add after_find, after_initialize callbacks [smtlaissezfaire]
 
-  Bug Fixes
+### Bug Fixes
 
     * Fix counter caching with polymorphic belongs_to [smtlaissezfaire, bhernez]
     * Fix issues with arrays + plucky query. (upgrade to plucky query 0.7.0 - see regressions in scope_spec.rb)
 
-  Internals:
+### Internals:
 
     * Don't create accessors for reserved keys (id, class, etc) [cheald]
     * Disallow class as a key name [cheald]
@@ -79,9 +79,9 @@ HEAD
     * Officially Drop support for ruby versions < 2.0.x
     * Officially Drop support for rails < 3.2
 
-0.13.1 - 2014-11-18
+## 0.13.1 - 2014-11-18
 
-  Enhancements:
+### Enhancements:
 
     * Add counter caching [smtlaissezfaire]
 
@@ -93,7 +93,7 @@ HEAD
 
       MyModel.stats.snake_cased_field
 
-  Bug Fixes:
+### Bug Fixes:
 
     * Proxy#send should work with blocks and procs [mgroeneman]
     * Support inheriting OneAssociation. [DimaSamodurov]
@@ -102,15 +102,15 @@ HEAD
     * Fix autosupport loading issue (See rails issue 14664), and add test for ruby 2.1.1 [leifcr]
     * Fix syntax error in rescue response declarations for rails < 3.2 was causing MongoMapper::DocumentNotFound exceptions to cause an exception in WebBrick's exception handling in development. [bsoule]
 
-  Internals:
+### Internals:
 
     * Lock rest-client to 1.6.7 to ensure installation on 1.8.7
     * Added error message: can't mass assign protected attribute. This should be deprecated for proper protected_attributes support down the road.  [ThomasAlxDmy]
     * Add a spec to check for extra whitespace in files [rthbound]
 
-0.13.0 - 2014-05-2014
+## 0.13.0 - 2014-05-2014
 
-  Enhancements:
+### Enhancements:
 
     * Rails 4 support! [cheald]
     * Added error message: can't mass assign protected attribute [tdmytryk@fanhattan.com]
@@ -124,7 +124,7 @@ HEAD
     * Add automatic id generation when not set (for instance, when calling clone). [wpeterson@brightcove.com]
 
 
-  Bug Fixes:
+### Bug Fixes:
 
     * validatior#setup is deprecated in activemodel 4.1 [fcheung]
     * Only add the _type key to inherited classes when they have the same collection as their parent. Classes with a different collection name don't need the SCI keys. [cheald]
@@ -154,8 +154,7 @@ HEAD
     * Support non-ObjectID ids being given to modifiers. [jnunemaker]
     * Inherit connection and database name. Subclasses were not getting these before. Only collection name was inherited. [jnunemaker][#420][#424]
 
-
-  Internals:
+### Internals:
 
     * Update travis to test on 2.1.1 [leifcr]
     * Do not mutate model values using key with typecast [joel.junstrom@oktavilla.se]
@@ -177,24 +176,24 @@ HEAD
     * Improvements to key methods (see 942003cca2)[cheald]
     * Fix travis suport [wpeterson@brightcove.com]
 
-0.12.0 - 2012-09-12
+## 0.12.0 - 2012-09-12
 
-  * Identity map is now more opt-in. Middleware turns it on, but it stays off for background jobs and such without explicit intervention.
-  * Update to latest version of plucky
-  * Rails 3.2 support
-  * Support new mongo hosts option format
-  * A few bug fixes
+    * Identity map is now more opt-in. Middleware turns it on, but it stays off for background jobs and such without explicit intervention.
+    * Update to latest version of plucky
+    * Rails 3.2 support
+    * Support new mongo hosts option format
+    * A few bug fixes
 
-0.11.1 - 2012-03-30
+## 0.11.1 - 2012-03-30
 
-  Enhancements:
+### Enhancements:
 
     * Add ActiveRecord-style #touch to documents and associations
     * Add options to atomic modifiers that are passed to the driver
 
         Page.increment({:title => "Hello World"}, {:comment_count => 1}, {:upsert => true})
 
-  Bug Fixes:
+### Bug Fixes:
 
     * Stop raising error if MongoMapper.database is nil
     * Delegate :distinct, :size, :reverse, :offset, :order, :empty?, :filter,
@@ -203,11 +202,11 @@ HEAD
     * Ensure milliseconds are preserved with time values [#308]
     * Allow MongoMapper.setup to accept a symbol for the environment name
 
-  https://github.com/jnunemaker/mongomapper/compare/v0.11.0...v0.11.1
+https://github.com/mongomapper/mongomapper/compare/v0.11.0...v0.11.1
 
-0.11.0 - 2012-01-26
+## 0.11.0 - 2012-01-26
 
-  Enhancements:
+### Enhancements:
 
     * Adds support for has_one polymorphic embedded associations
     * Adds namespacing to model generator
@@ -226,9 +225,9 @@ HEAD
 
     * Adds #timestamps! to embedded documents
 
-  Bug Fixes
+### Bug Fixes
 
     * #update_attribute now ignores attr_accessible and attr_protected
     * Fix deprecation warnings in Rails 3.2
 
-  https://github.com/jnunemaker/mongomapper/compare/v0.10.1...v0.11.0
+https://github.com/jnunemaker/mongomapper/compare/v0.10.1...v0.11.0
