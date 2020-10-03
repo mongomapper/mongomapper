@@ -7,6 +7,25 @@
     * PR-598 Scott Taylor <scott@railsnewbie.com> Allow incrementing + decrementing using only the field name (example: `obj.increment(:my_counter)`)
     * PR-593 Scott Taylor <scott@railsnewbie.com> Add sorting with :ordered => true for has_many :in => :array (Closes #428)
     * PR-523 Shevaun Coker <shevaun.coker@gmail.com> Add `assign_attributes` "alias" method for `attributes=`
+    * PR-259 Hubert <hubert.lepicki@amberbit.com> Add Inverse Many to Many associations.  Example:
+
+        class List
+          include MongoMapper::Document
+
+          key :name, String, required: true
+          key :user_ids, Array
+
+          many :users, in: :user_ids
+        end
+
+        class User
+          include MongoMapper::Document
+
+          key :name, String, required: true
+
+          many :lists, from: :user_ids, as: :user
+        end
+
 
 ### Bug Fixes:
 
