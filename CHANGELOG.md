@@ -34,6 +34,7 @@
     * PR-628 jamieorc <jamieorc@gmail.com> Corrected a regression on Set keys with typecast
     * PR-611 SteffanPerry <sperry1988@gmail.com> Missing yaml requirement was throwing error on rail 4.2.1: "uninitialized constant MongoMapper::Railtie::YAML (NameError)"
     * Add `attributes` to reserved keys
+    * Fix infinite regression with duplicate assignment to belongs_to proxy
 
 ### Doc Fixes:
 
