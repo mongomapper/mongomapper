@@ -106,9 +106,9 @@ module MongoMapper
 
           def query(options={})
             klass.query({}.
-                merge(association.query_options).
-                merge(options).
-                merge(criteria))
+              merge(association.query_options).
+              merge(options).
+              merge(criteria))
           end
 
           def criteria
