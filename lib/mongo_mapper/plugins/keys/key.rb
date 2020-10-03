@@ -3,9 +3,10 @@ module MongoMapper
   module Plugins
     module Keys
       class Key
-        attr_accessor :name, :type, :options, :default, :ivar, :abbr, :accessors
-
+        RESERVED_KEYS = %w( id class object_id )
         ID_STR = '_id'
+
+        attr_accessor :name, :type, :options, :default, :ivar, :abbr, :accessors
 
         def initialize(*args)
           options_from_args = args.extract_options!
@@ -98,7 +99,6 @@ module MongoMapper
           !!@name.match(/\A[a-z_][a-z0-9_]*\z/i)
         end
 
-        RESERVED_KEYS = %w( id class object_id )
         def reserved_name?
           RESERVED_KEYS.include?(@name)
         end
