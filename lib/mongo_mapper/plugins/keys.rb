@@ -295,6 +295,14 @@ module MongoMapper
         end
       end
 
+      # NOTE: We can't use alias_method here as we need the #attributes=
+      # superclass method to get called (for example:
+      # MongoMapper::Plugins::Accessible filters non-permitted parameters
+      # through `attributes=`
+      def assign_attributes(new_attributes)
+        self.attributes = new_attributes
+      end
+
       def to_mongo(include_abbreviatons = true)
         Hash.new.tap do |attrs|
           self.class.unaliased_keys.each do |name, key|
