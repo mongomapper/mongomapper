@@ -13,6 +13,7 @@
     * PR-640 Seth Jeffery <seth@quipper.com> Fix find! with a one item array to return a one item array object
     * PR-628 jamieorc <jamieorc@gmail.com> Corrected a regression on Set keys with typecast
     * PR-611 SteffanPerry <sperry1988@gmail.com> Missing yaml requirement was throwing error on rail 4.2.1: "uninitialized constant MongoMapper::Railtie::YAML (NameError)"
+    * Add `attributes` to reserved keys
 
 ### Doc Fixes:
 
