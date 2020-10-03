@@ -1,8 +1,8 @@
-require 'test_helper'
+require 'spec_helper'
 
-class InArrayProxyTest < Test::Unit::TestCase
+describe "InForeignArrayProxyTest" do
   context "description" do
-    setup do
+    before do
       class ::List
         include MongoMapper::Document
         key :name, String, :required => true
@@ -15,20 +15,20 @@ class InArrayProxyTest < Test::Unit::TestCase
         key :name, String, :required => true
         many :lists, :in_foreign => :user_ids, :as => :user
       end
-      User.collection.remove
-      List.collection.remove
+      User.collection.drop
+      List.collection.drop
     end
 
-    teardown do
+    after do
       Object.send :remove_const, 'List' if defined?(::List)
       Object.send :remove_const, 'User' if defined?(::User)
     end
 
-    should "default reader to empty array" do
+    it "should default reader to empty array" do
       User.new.lists.should == []
     end
 
-    should "allow adding to association like it was an array" do
+    it "should allow adding to association like it was an array" do
       user = User.new(:name => 'John')
       user.lists <<     List.new(:name => 'Foo1!')
       user.lists.push   List.new(:name => 'Foo2!')
@@ -36,7 +36,7 @@ class InArrayProxyTest < Test::Unit::TestCase
       user.lists.size.should == 3
     end
 
-    should "ignore adding duplicate ids" do
+    it "should ignore adding duplicate ids" do
       user = User.create(:name => 'John')
       list = List.create(:name => 'Foo')
       user.lists << list
@@ -47,11 +47,11 @@ class InArrayProxyTest < Test::Unit::TestCase
       user.lists.count.should == 1
     end
 
-    should "be able to replace the association" do
+    it "should be able to replace the association" do
       user = User.new(:name => 'John')
       list = List.new(:name => 'Foo')
       user.lists = [list]
-      user.save.should be_true
+      user.save.should == true
 
       user.reload
       list.reload
@@ -61,29 +61,29 @@ class InArrayProxyTest < Test::Unit::TestCase
     end
 
     context "create" do
-      setup do
+      before do
         @user = User.create(:name => 'John')
         @list = @user.lists.create(:name => 'Foo!')
       end
 
-      should "add id to key" do
+      it "should add id to key" do
         @list.user_ids.should include(@user.id)
       end
 
-      should "persist id addition to key in database" do
+      it "should persist id addition to key in database" do
         @list.reload
         @list.user_ids.should include(@user.id)
       end
 
-      should "add doc to association" do
+      it "should add doc to association" do
         @user.lists.should include(@list)
       end
 
-      should "save doc" do
+      it "should save doc" do
         @list.should_not be_new
       end
 
-      should "reset cache" do
+      it "should reset cache" do
         @user.lists.size.should == 1
         @user.lists.create(:name => 'Moo!')
         @user.lists.size.should == 2
@@ -91,35 +91,35 @@ class InArrayProxyTest < Test::Unit::TestCase
     end
 
     context "create!" do
-      setup do
+      before do
         @user = User.create(:name => 'John')
         @list = @user.lists.create!(:name => 'Foo!')
       end
 
-      should "add id to key" do
+      it "should add id to key" do
         @list.user_ids.should include(@user.id)
       end
 
-      should "persist id addition to key in database" do
+      it "should persist id addition to key in database" do
         @list.reload
         @list.user_ids.should include(@user.id)
       end
 
-      should "add doc to association" do
+      it "should add doc to association" do
         @user.lists.should include(@list)
       end
 
-      should "save doc" do
+      it "should save doc" do
         @list.should_not be_new
       end
 
-      should "raise exception if invalid" do
-        assert_raises(MongoMapper::DocumentNotValid) do
+      it "should raise exception if invalid" do
+        lambda do
           @user.lists.create!
-        end
+        end.should raise_error(MongoMapper::DocumentNotValid)
       end
 
-      should "reset cache" do
+      it "should reset cache" do
         @user.lists.size.should == 1
         @user.lists.create!(:name => 'Moo!')
         @user.lists.size.should == 2
@@ -127,7 +127,7 @@ class InArrayProxyTest < Test::Unit::TestCase
     end
 
     context "Finding scoped to association" do
-      setup do
+      before do
         @user = User.create(:name => 'John')
         @user2 = User.create(:name => 'Brandon')
         @list1 = @user.lists.create!(:name => 'Foo 1', :position => 1)
@@ -136,111 +136,111 @@ class InArrayProxyTest < Test::Unit::TestCase
       end
 
       context "all" do
-        should "work" do
+        it "should work" do
           @user.lists.all(:order => :position.asc).should == [@list1, @list2]
         end
 
-        should "work with conditions" do
+        it "should work with conditions" do
           @user.lists.all(:name => 'Foo 1').should == [@list1]
         end
       end
 
       context "first" do
-        should "work" do
+        it "should work" do
           @user.lists.first(:order => 'position').should == @list1
         end
 
-        should "work with conditions" do
+        it "should work with conditions" do
           @user.lists.first(:position => 2).should == @list2
         end
       end
 
       context "last" do
-        should "work" do
+        it "should work" do
           @user.lists.last(:order => 'position').should == @list2
         end
 
-        should "work with conditions" do
+        it "should work with conditions" do
           @user.lists.last(:position => 2, :order => 'position').should == @list2
         end
       end
 
       context "with one id" do
-        should "work for id in association" do
+        it "should work for id in association" do
           @user.lists.find(@list1.id).should == @list1
         end
 
-        should "work with string ids" do
+        it "should work with string ids" do
           @user.lists.find(@list1.id.to_s).should == @list1
         end
 
-        should "not work for id not in association" do
+        it "should not work for id not in association" do
           @user.lists.find(@list3.id).should be_nil
         end
 
-        should "raise error when using ! and not found" do
-          assert_raises MongoMapper::DocumentNotFound do
+        it "should raise error when using ! and not found" do
+          lambda do
             @user.lists.find!(@list3.id)
-          end
+          end.should raise_error(MongoMapper::DocumentNotFound)
         end
       end
 
       context "with multiple ids" do
-        should "work for ids in association" do
+        it "should work for ids in association" do
           @user.lists.find(@list1.id, @list2.id).should == [@list1, @list2]
         end
 
-        should "not work for ids not in association" do
+        it "should not work for ids not in association" do
           @user.lists.find(@list1.id, @list2.id, @list3.id).should == [@list1, @list2]
         end
       end
 
       context "with #paginate" do
-        setup do
+        before do
           @lists = @user.lists.paginate(:per_page => 1, :page => 1, :order => 'position')
         end
 
-        should "return total pages" do
+        it "should return total pages" do
           @lists.total_pages.should == 2
         end
 
-        should "return total entries" do
+        it "should return total entries" do
           @lists.total_entries.should == 2
         end
 
-        should "return the subject" do
+        it "should return the subject" do
           @lists.collect(&:name).should == ['Foo 1']
         end
       end
 
       context "dynamic finders" do
-        should "work with single key" do
+        it "should work with single key" do
           @user.lists.find_by_name('Foo 1').should == @list1
           @user.lists.find_by_name!('Foo 1').should == @list1
           @user.lists.find_by_name('Foo 3').should be_nil
         end
 
-        should "work with multiple keys" do
+        it "should work with multiple keys" do
           @user.lists.find_by_name_and_position('Foo 1', 1).should == @list1
           @user.lists.find_by_name_and_position!('Foo 1', 1).should == @list1
           @user.lists.find_by_name_and_position('Foo 3', 1).should be_nil
         end
 
-        should "raise error when using ! and not found" do
-          assert_raises(MongoMapper::DocumentNotFound) do
+        it "should raise error when using ! and not found" do
+          lambda do
             @user.lists.find_by_name!('Foo 3')
-          end
+          end.should raise_error(MongoMapper::DocumentNotFound)
         end
 
         context "find_or_create_by" do
-          should "not create document if found" do
+          it "should not create document if found" do
             lambda {
               list = @user.lists.find_or_create_by_name('Foo 1')
               list.should == @list1
             }.should_not change { List.count }
           end
 
-          should "create document if not found" do
+          it "should create document if not found" do
             lambda {
               list = @user.lists.find_or_create_by_name('Home')
               @user.lists.should include(list)
@@ -251,7 +251,7 @@ class InArrayProxyTest < Test::Unit::TestCase
     end
 
     context "count" do
-      setup do
+      before do
         @user = User.create(:name => 'John')
         @user2 = User.create(:name => 'Brandon')
         @list1 = @user.lists.create!(:name => 'Foo 1')
@@ -259,19 +259,19 @@ class InArrayProxyTest < Test::Unit::TestCase
         @list3 = @user2.lists.create!(:name => 'Foo 3')
       end
 
-      should "return number of ids" do
+      it "should return number of ids" do
         @user.lists.count.should == 2
         @user2.lists.count.should == 1
       end
 
-      should "return correct count when given criteria" do
+      it "should return correct count when given criteria" do
         @user.lists.count(:name => 'Foo 1').should == 1
         @user2.lists.count(:name => 'Foo 1').should == 0
       end
     end
 
     context "Removing documents" do
-      setup do
+      before do
         @user = User.create(:name => 'John')
         @user2 = User.create(:name => 'Brandon')
         @list1 = @user.lists.create!(:name => 'Foo 1', :position => 1)
@@ -280,13 +280,13 @@ class InArrayProxyTest < Test::Unit::TestCase
       end
 
       context "destroy_all" do
-        should "work" do
+        it "should work" do
           @user.lists.count.should == 2
           @user.lists.destroy_all
           @user.lists.count.should == 0
         end
 
-        should "work with conditions" do
+        it "should work with conditions" do
           @user.lists.count.should == 2
           @user.lists.destroy_all(:name => 'Foo 1')
           @user.lists.count.should == 1
@@ -294,20 +294,20 @@ class InArrayProxyTest < Test::Unit::TestCase
       end
 
       context "delete_all" do
-        should "work" do
+        it "should work" do
           @user.lists.count.should == 2
           @user.lists.delete_all
           @user.lists.count.should == 0
         end
 
-        should "work with conditions" do
+        it "should work with conditions" do
           @user.lists.count.should == 2
           @user.lists.delete_all(:name => 'Foo 1')
           @user.lists.count.should == 1
         end
       end
 
-      should "work with nullify" do
+      it "should work with nullify" do
         @user.lists.count.should == 2
 
         lambda {

@@ -95,19 +95,17 @@ module MongoMapper
             replace_selector[:_id] = {"$not" => {"$in" => doc_ids}}
           end
 
-          klass.collection.update( replace_selector,
-                                   { "$pull" => { options[:in_foreign] => proxy_owner.id}},
-                                   { :multi => true } )
+          klass.collection.update_many(replace_selector, {
+            "$pull" => { options[:in_foreign] => proxy_owner.id }
+          })
 
           reset
         end
 
         private
+
           def query(options={})
-            klass.
-              query(association.query_options).
-              update(options).
-              update(criteria)
+            klass.query({}.merge(association.query_options, options, criteria))
           end
 
           def criteria
