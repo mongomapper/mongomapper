@@ -13,7 +13,7 @@ describe "InForeignArrayProxyTest" do
       class ::User
         include MongoMapper::Document
         key :name, String, :required => true
-        many :lists, :in_foreign => :user_ids, :as => :user
+        many :lists, :from => :user_ids, :as => :user
       end
       User.collection.drop
       List.collection.drop

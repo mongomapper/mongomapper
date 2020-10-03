@@ -90,13 +90,13 @@ module MongoMapper
             doc.id
           end
 
-          replace_selector =  { options[:in_foreign] => proxy_owner.id }
+          replace_selector =  { options[:from] => proxy_owner.id }
           unless doc_ids.empty?
             replace_selector[:_id] = {"$not" => {"$in" => doc_ids}}
           end
 
           klass.collection.update_many(replace_selector, {
-            "$pull" => { options[:in_foreign] => proxy_owner.id }
+            "$pull" => { options[:from] => proxy_owner.id }
           })
 
           reset
@@ -109,7 +109,7 @@ module MongoMapper
           end
 
           def criteria
-            {options[:in_foreign] => proxy_owner.id}
+            {options[:from] => proxy_owner.id}
           end
 
           def scoped_ids(args)
