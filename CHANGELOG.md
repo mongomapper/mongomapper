@@ -26,6 +26,7 @@
           many :lists, from: :user_ids, as: :user
         end
 
+    * Support ruby 2.7.2
 
 ### Bug Fixes:
 
