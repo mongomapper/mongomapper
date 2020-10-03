@@ -35,7 +35,7 @@ task update_contributors_and_commit: [:update_contributors] do
 end
 
 desc 'Tags version, pushes to remote, and pushes gem'
-task :release => [:rspec, :update_contributors_and_commit, :build] do
+task :release => [:spec, :update_contributors_and_commit, :build] do
   sh "git tag v#{MongoMapper::Version}"
   sh "git push origin master"
   sh "git push origin v#{MongoMapper::Version}"
