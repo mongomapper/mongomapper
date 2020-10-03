@@ -9,7 +9,7 @@ module MongoMapper
           model.associations_module.module_eval(<<-end_eval, __FILE__, __LINE__ + 1)
             def #{name}
               proxy = get_proxy(associations[#{name.inspect}])
-              proxy.nil? ? nil : proxy
+              proxy.nil? ? nil : proxy.read
             end
 
             def #{name}=(value)
@@ -21,7 +21,7 @@ module MongoMapper
               end
 
               proxy.replace(value)
-              value
+              proxy.read
             end
 
             def #{name}?

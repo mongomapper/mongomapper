@@ -77,10 +77,6 @@ describe "Proxy" do
     @proxy.proxy_owner.should == @owner
   end
 
-  it "should alias proxy target to target" do
-    @proxy.proxy_target.should == @target
-  end
-
   context "send" do
     it "should work if proxy responds to method" do
       @proxy.send(:reset)

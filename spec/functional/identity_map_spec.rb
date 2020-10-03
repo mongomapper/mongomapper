@@ -461,7 +461,7 @@ describe "IdentityMap" do
 
         blog = Blog.create(:title => 'Jill', :parent => root)
         assert_in_map(blog)
-        root.should equal(blog.parent.target)
+        root.should equal(blog.parent)
       end
 
       it "should work correctly with one proxy" do
@@ -470,7 +470,7 @@ describe "IdentityMap" do
 
         root = Item.create(:title => 'Root', :blog => blog)
         assert_in_map(root)
-        blog.should equal(root.blog.target)
+        blog.should equal(root.blog)
       end
 
       it "should work correctly with one proxy create" do
