@@ -6,7 +6,7 @@
     * PR-615 Kenichi Kamiya <kachick1@gmail.com> Return an Enumerator on #find_each when not given a block
     * PR-598 Scott Taylor <scott@railsnewbie.com> Allow incrementing + decrementing using only the field name (example: `obj.increment(:my_counter)`)
     * PR-593 Scott Taylor <scott@railsnewbie.com> Add sorting with :ordered => true for has_many :in => :array (Closes #428)
-
+    * PR-523 Shevaun Coker <shevaun.coker@gmail.com> Add `assign_attributes` "alias" method for `attributes=`
 
 ### Bug Fixes:
 
