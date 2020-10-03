@@ -3,7 +3,7 @@ module MongoMapper
   module Plugins
     module Keys
       class Key
-        RESERVED_KEYS = %w( id class object_id )
+        RESERVED_KEYS = %w( id class object_id attributes )
         ID_STR = '_id'
 
         attr_accessor :name, :type, :options, :default, :ivar, :abbr, :accessors
@@ -129,7 +129,7 @@ module MongoMapper
 
         def validate_key_name!
           if reserved_name?
-            raise MongoMapper::InvalidKey.new("`#{@name}` is a reserved key name (did you mean to use _id?)")
+            raise MongoMapper::InvalidKey.new("`#{@name}` is a reserved key name")
           elsif !valid_ruby_name?
             raise MongoMapper::InvalidKey.new("`#{@name}` is not a valid key name. Keys must match [a-z][a-z0-9_]*")
           end

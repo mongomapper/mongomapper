@@ -151,4 +151,14 @@ describe "Key" do
       }.should_not change { counter }
     end
   end
+
+  context "with attributes key" do
+    it "should raise an error" do
+      lambda do
+        klass = Doc do
+          key :attributes, Hash
+        end
+      end.should raise_error("`attributes` is a reserved key name")
+    end
+  end
 end # KeyTest
