@@ -144,9 +144,8 @@ module MongoMapper
         end
 
         def create_accessors_for(key)
-          accessors = ""
           if key.read_accessor?
-            accessors << <<-end_eval
+            accessors_module.module_eval(<<-end_eval, __FILE__, __LINE__+1)
               def #{key.name}
                 read_key(:#{key.name})
               end
@@ -158,7 +157,7 @@ module MongoMapper
           end
 
           if key.write_accessor?
-            accessors << <<-end_eval
+            accessors_module.module_eval(<<-end_eval, __FILE__, __LINE__+1)
               def #{key.name}=(value)
                 write_key(:#{key.name}, value)
               end
@@ -166,7 +165,7 @@ module MongoMapper
           end
 
           if key.predicate_accessor?
-            accessors << <<-end_eval
+            accessors_module.module_eval(<<-end_eval, __FILE__, __LINE__+1)
               def #{key.name}?
                 read_key(:#{key.name}).present?
               end
@@ -179,7 +178,6 @@ module MongoMapper
             end
           end
 
-          accessors_module.module_eval accessors
           include accessors_module
         end
 
