@@ -23,7 +23,7 @@ module MongoMapper
         end
 
         def active_scopes
-          @active_scopes ||= []
+          Thread.current["mongo_mapper_#{name}_active_scopes"] ||= []
         end
 
         def default_scopes
@@ -70,12 +70,12 @@ module MongoMapper
           old_active_scopes = active_scopes.dup
 
           @default_scopes = []
-          @active_scopes = []
+          active_scopes.clear
 
           yield
         ensure
           @default_scopes = old_default_scopes
-          @active_scopes = old_active_scopes
+          active_scopes.concat(old_active_scopes)
         end
 
       private
