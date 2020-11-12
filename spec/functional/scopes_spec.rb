@@ -434,4 +434,37 @@ describe "Scopes" do
       @klass.unsent.sorted.all.should == [two_days_ago, one_day_ago]
     end
   end
+
+  describe "thread safety" do
+    around do |ex|
+      @klass = Doc do
+        key :name, String
+
+        scope :x, -> { where }
+      end
+
+      @klass.create!(name: "foo")
+      @klass.create!(name: "bar")
+
+      thread = Thread.new do
+        loop do
+          sleep Float::EPSILON
+          @klass.where(name: "foo").x
+        end
+      end
+
+      ex.run
+
+      thread.kill
+    end
+
+    it "should not taint another thread" do
+      ends_at = 3.seconds.from_now
+
+      while ends_at.future?
+        sleep Float::EPSILON
+        @klass.count.should == 2
+      end
+    end
+  end
 end
