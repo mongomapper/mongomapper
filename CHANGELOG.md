@@ -3,6 +3,7 @@
 ### Enhancements:
 
     * PR-662 Masato Ikeda <masato.ikeda@gmail.com> Add __FILE__ and __LINE__ to accessor definitions
+    * PR-663 Fumiaki MATSUSHIMA <mtsmfm@gmail.com> Make active_scopes thread safe
 
 ### Bug Fixes:
 ### Doc Fixes:
