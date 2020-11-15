@@ -434,4 +434,79 @@ describe "Scopes" do
       @klass.unsent.sorted.all.should == [two_days_ago, one_day_ago]
     end
   end
+
+  describe "thread safety" do
+    before do
+      @klass = Doc do
+        key :name, String
+      end
+
+      @threads = []
+    end
+
+    after do
+      @threads.each do |thread|
+        thread.kill
+      end
+    end
+
+    def make_thread(&block)
+      Thread.new(&block).tap do |thread|
+        @threads << thread
+      end
+    end
+
+    def wait_for_threads!
+      @threads.each { |t| t.join }
+    end
+
+    it "should not taint another thread's active scopes" do
+      count_active_scopes = nil
+      second_thread_run = false
+
+      make_thread do
+        @klass.with_scope(name: 'foo') do
+          loop do
+            sleep Float::EPSILON
+            break if second_thread_run
+          end
+        end
+      end
+
+      make_thread do
+        count_active_scopes = @klass.active_scopes.length
+        second_thread_run = true
+      end
+
+      wait_for_threads!
+
+      count_active_scopes.should == 0
+    end
+
+    it "should not taint another thread's count method" do
+      @klass.create!(name: 'foo')
+      @klass.create!(name: 'bar')
+
+      klass_count = nil
+      second_thread_run = false
+
+      make_thread do
+        @klass.with_scope(name: 'foo') do
+          loop do
+            sleep Float::EPSILON
+            break if second_thread_run
+          end
+        end
+      end
+
+      make_thread do
+        klass_count = @klass.count
+        second_thread_run = true
+      end
+
+      wait_for_threads!
+
+      klass_count.should == 2
+    end
+  end
 end
