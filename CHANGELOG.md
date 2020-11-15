@@ -1,3 +1,13 @@
+## HEAD
+
+### Enhancements:
+
+    * PR-662 Masato Ikeda <masato.ikeda@gmail.com> Add __FILE__ and __LINE__ to accessor definitions
+
+### Bug Fixes:
+### Doc Fixes:
+
+
 ## 0.15.1 - 2020-10-03
 
 ### Enhancements:
@@ -27,6 +37,7 @@
         end
 
     * Support ruby 2.7.2
+
 
 ### Bug Fixes:
 
