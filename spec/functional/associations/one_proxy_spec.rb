@@ -403,4 +403,14 @@ describe "OneProxy" do
       article.paper_id.should == @paper.id
     end
   end
+
+  it "should keep the reference to assigned document" do
+    @post_class.one(:author, :class => @author_class)
+    post = @post_class.new
+    new_author = @author_class.new
+    post.author = new_author
+    new_author.name = 'Frank'
+
+    post.author.name.should == 'Frank'
+  end
 end
