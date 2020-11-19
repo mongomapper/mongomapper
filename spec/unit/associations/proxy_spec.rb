@@ -95,5 +95,17 @@ describe "Proxy" do
       p = Proc.new {|x| x+1}
       @proxy.send(:collect, &p).should == [2,3]
     end
+
+    it "should not respond to private method" do
+      @proxy.reload # To load @proxy.target
+      @proxy.target.extend(Module.new do
+        private
+
+          def private_foo
+          end
+      end)
+
+      lambda { @proxy.private_foo }.should raise_error(NoMethodError, /private method `private_foo' called/)
+    end
   end
 end

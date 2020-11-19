@@ -136,7 +136,7 @@ module MongoMapper
 
         def method_missing(method, *args, &block)
           if load_target
-            target.send(method, *args, &block)
+            target.public_send(method, *args, &block)
           end
         end
       end
