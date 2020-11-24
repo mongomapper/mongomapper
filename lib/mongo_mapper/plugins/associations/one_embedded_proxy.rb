@@ -11,7 +11,9 @@ module MongoMapper
         end
 
         def replace(doc)
-          if doc.respond_to?(:attributes)
+          if doc.instance_of?(klass)
+            @target = doc
+          elsif doc.respond_to?(:attributes)
             @target = klass.load(doc.attributes, true)
           else
             @target = klass.load(doc, true)
