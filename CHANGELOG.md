@@ -4,6 +4,8 @@
 
     * PR-662 Masato Ikeda <masato.ikeda@gmail.com> Add __FILE__ and __LINE__ to accessor definitions
     * PR-663 Fumiaki MATSUSHIMA <mtsmfm@gmail.com> Make active_scopes thread safe
+    * PR-664 Fumiaki MATSUSHIMA <mtsmfm@gmail.com> Fix one embedded proxy to keep the assigned object (don't reassign it)
+    * PR-665 Fumiaki MATSUSHIMA <mtsmfm@gmail.com> Proxy shouldn't respond to private method
 
 ### Bug Fixes:
 ### Doc Fixes:
