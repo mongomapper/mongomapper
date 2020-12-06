@@ -10,6 +10,14 @@ module MongoMapper
 
       module ClassMethods
         def scope(name, scope={})
+          if dangerous_class_method?(name)
+            raise ArgumentError, <<~end_message
+              You tried to define a scope named "#{name}"
+              on the model "#{self.name}", but MongoMapper::Document already defined
+              a class method with the same name.
+            end_message
+          end
+
           # Assign to _scopes instead of using []= to avoid mixing subclass scopes
           self._scopes = scopes.merge(name => scope)
 
@@ -92,6 +100,14 @@ module MongoMapper
 
         def all_anonymous_scopes
           [default_scopes + active_scopes].flatten
+        end
+
+        RESTRICTED_CLASS_METHODS = %w(private public protected allocate new name parent superclass)
+        private_constant :RESTRICTED_CLASS_METHODS
+
+        def dangerous_class_method?(method_name)
+          return true if RESTRICTED_CLASS_METHODS.include?(method_name.to_s)
+          Document.method_defined?(method_name, true)
         end
       end
     end
