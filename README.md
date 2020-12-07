@@ -4,7 +4,7 @@ A Ruby Object Mapper for Mongo.
 
 [<img src="https://badge.fury.io/rb/mongo_mapper.svg" alt="RubyGems">](https://rubygems.org/gems/mongo_mapper)
 
-[<img src="https://travis-ci.org/mongomapper/mongomapper.svg?branch=master" alt="Build Status" />](https://travis-ci.org/mongomapper/mongomapper)
+[<img src="https://github.com/mongomapper/mongomapper/workflows/Ruby/badge.svg?branch=master" alt="Build Status" />](https://github.com/mongomapper/mongomapper/actions?query=workflow%3ARuby+branch%3Amaster)
 
 [<img src="https://coveralls.io/repos/mongomapper/mongomapper/badge.svg" alt="Coverage Status" />](https://coveralls.io/r/mongomapper/mongomapper)
 
