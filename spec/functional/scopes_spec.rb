@@ -200,6 +200,19 @@ describe "Scopes" do
         Blog.scopes.keys.map(&:to_s).should =~ %w(by_slug by_title published)
       end
     end
+
+    context 'with predefined class method name' do
+      it 'should raise ArgumentError' do
+        bad_names = %i(private public protected allocate new name parent superclass reload)
+        bad_names.each do |bad_name|
+          -> {
+            Doc() do
+              scope bad_name, -> {}
+            end
+          }.should raise_error(ArgumentError, /You tried to define a scope named "#{bad_name}"/)
+        end
+      end
+    end
   end
 
   describe "with_scope" do
