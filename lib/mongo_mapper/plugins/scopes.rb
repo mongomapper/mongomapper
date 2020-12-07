@@ -107,7 +107,7 @@ module MongoMapper
 
         def dangerous_class_method?(method_name)
           return true if RESTRICTED_CLASS_METHODS.include?(method_name.to_s)
-          Document.method_defined?(method_name, true)
+          Document.method_defined?(method_name)
         end
       end
     end
