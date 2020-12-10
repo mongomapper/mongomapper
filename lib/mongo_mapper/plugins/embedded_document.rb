@@ -46,7 +46,7 @@ module MongoMapper
       end
 
       def _root_document
-        @_root_document ||= _parent_document.try(:_root_document)
+        _parent_document.try(:_root_document)
       end
     end
   end

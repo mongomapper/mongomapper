@@ -106,4 +106,23 @@ describe "OneEmbeddedProxy" do
 
     post.author.name.should == 'Frank'
   end
+
+  it "should update references for parent and root" do
+    @post_class.key(:author_name, String)
+    @post_class.one(:author, :class => @author_class)
+    @post_class.before_save do
+      self.author_name = author.name
+    end
+
+    author = @author_class.new
+    @post_class.create!(author: author)
+    author.save!
+
+    post = @post_class.create!(author: author)
+    post.author.name = 'Frank'
+    post.author.save!
+
+    post.author.name.should == 'Frank'
+    post.author_name.should == 'Frank'
+  end
 end
