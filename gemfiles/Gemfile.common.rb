@@ -8,10 +8,6 @@ if RUBY_PLATFORM != "java"
   gem 'simplecov', :require => false
 end
 
-platforms :rbx do
-  gem "rubysl"
-end
-
 group :test do
   gem 'test-unit',      '~> 3.0'
   gem 'rspec',          '~> 3.4.0'
