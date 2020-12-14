@@ -9,7 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
+      fail-fast: false
       matrix:
         ruby-version:
         - jruby
@@ -18,17 +20,38 @@ jobs:
         - 2.6.6
         - 2.7.1
         - 2.7.2
+        - 3.0.0
         gemfile:
         - gemfiles/rails5_0.gemfile
         - gemfiles/rails5_1.gemfile
         - gemfiles/rails5_2.gemfile
         - gemfiles/rails6_0.gemfile
         - gemfiles/rails6_1.gemfile
+        experimental:
+        - false
         exclude:
           - ruby-version: 2.4.10
             gemfile: gemfiles/rails6_0.gemfile
+            experimental: false
           - ruby-version: 2.4.10
             gemfile: gemfiles/rails6_1.gemfile
+            experimental: false
+        include:
+          - ruby-version: head
+            gemfile: gemfiles/rails5_0.gemfile
+            experimental: true
+          - ruby-version: head
+            gemfile: gemfiles/rails5_1.gemfile
+            experimental: true
+          - ruby-version: head
+            gemfile: gemfiles/rails5_2.gemfile
+            experimental: true
+          - ruby-version: head
+            gemfile: gemfiles/rails6_0.gemfile
+            experimental: true
+          - ruby-version: head
+            gemfile: gemfiles/rails6_1.gemfile
+            experimental: true
     env:
       JRUBY_OPTS: "--1.9"
       BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
