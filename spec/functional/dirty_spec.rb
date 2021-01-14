@@ -280,6 +280,27 @@ describe "Dirty" do
     end
   end
 
+  context "Document having Array key with typecast option" do
+    before do
+      @author_id = BSON::ObjectId.new
+      @doc = Doc('Book') { key :author_ids, Array, typecast: "ObjectId" }
+      @doc.plugin MongoMapper::Plugins::Dirty
+      @book = @doc.create!(author_ids: [@author_id])
+    end
+
+    context "changed" do
+      it "should be empty if assigned the same array" do
+        @book.author_ids = [@author_id]
+        @book.changed.should be_empty
+      end
+
+      it "should be empty if assigned the same but before-typecasted array" do
+        @book.author_ids = [@author_id.to_s]
+        @book.changed.should be_empty
+      end
+    end
+  end
+
   context "Embedded documents" do
     before do
       @edoc = EDoc('Duck') { key :name, String }
