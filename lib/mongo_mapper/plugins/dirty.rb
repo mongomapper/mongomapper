@@ -13,7 +13,7 @@ module MongoMapper
         end
       end
 
-      def create_or_update(*)
+      def save_to_collection(*)
         super.tap do
           changes_applied
         end
