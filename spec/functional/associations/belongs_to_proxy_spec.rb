@@ -269,4 +269,22 @@ describe "BelongsToProxy" do
       end.should_not raise_error
     end
   end
+
+  context "foreign_key=" do
+    it "should reset parent when foreign key is changed" do
+      post = @post_class.create!
+      comment = @comment_class.create!(post: post)
+      another_post = @post_class.create!
+
+      comment.post.should == post
+
+      comment.post_id = another_post.id
+
+      comment.post.should == another_post
+
+      comment.post_id = nil
+
+      comment.post.should == nil
+    end
+  end
 end
