@@ -107,7 +107,7 @@ module MongoMapper
       protected
 
         def load_target
-          unless loaded?
+          if !loaded? || stale_target?
             if @target.is_a?(Array) && @target.any?
               @target = find_target + @target.find_all { |record| !record.persisted? }
             else
@@ -133,6 +133,10 @@ module MongoMapper
         end
 
       private
+
+        def stale_target?
+          false
+        end
 
         def method_missing(method, *args, &block)
           if load_target
