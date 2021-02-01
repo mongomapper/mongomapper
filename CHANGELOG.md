@@ -9,8 +9,8 @@
 ### Enhancements:
 
     * PR-662 Masato Ikeda <masato.ikeda@gmail.com> Add __FILE__ and __LINE__ to accessor definitions
-    * PR-668 ujihisa <ujihisa@users.noreply.github.com> - Use GitHub Actions for CI, instead of Travis
-    * PR-671 ujihisa <ujihisa@users.noreply.github.com> - Test against Rails 6.1
+    * PR-668 ujihisa <ujihisa@users.noreply.github.com> Use GitHub Actions for CI, instead of Travis
+    * PR-671 ujihisa <ujihisa@users.noreply.github.com> Test against Rails 6.1
 
 ### Bug Fixes:
 
@@ -18,10 +18,10 @@
     * PR-664 Fumiaki MATSUSHIMA <mtsmfm@gmail.com> Fix one embedded proxy to keep the assigned object (don't reassign it)
     * PR-665 Fumiaki MATSUSHIMA <mtsmfm@gmail.com> Proxy shouldn't respond to private method
     * PR-666 Masato Ikeda <masato.ikeda@gmail.com> Typecast in-array elements before detecting dirty
-    * PR-667 ujihisa <ujihisa@users.noreply.github.com> - Update dirty before callbacks
-    * PR-670 ujihisa <ujihisa@users.noreply.github.com> - Prohibit defining some scope names that overrides existing methods, such as "private"
-    * PR-672 Fumiaki MATSUSHIMA <mtsmfm@gmail.com> - Avoid caching _root_document
-    * PR-676 Fumiaki MATSUSHIMA <mtsmfm@gmail.com> - Reload belongs to association when foreign key is changed
+    * PR-667 ujihisa <ujihisa@users.noreply.github.com> Update dirty before callbacks
+    * PR-670 ujihisa <ujihisa@users.noreply.github.com> Prohibit defining some scope names that overrides existing methods, such as "private"
+    * PR-672 Fumiaki MATSUSHIMA <mtsmfm@gmail.com> Avoid caching _root_document
+    * PR-676 Fumiaki MATSUSHIMA <mtsmfm@gmail.com> Reload belongs to association when foreign key is changed
 
 ### Doc Fixes:
 
