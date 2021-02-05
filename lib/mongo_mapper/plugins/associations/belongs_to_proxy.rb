@@ -51,7 +51,7 @@ module MongoMapper
       private
 
         def stale_target?
-          loaded? && @target && proxy_owner[association.foreign_key] != @target.id
+          loaded? && proxy_owner[association.foreign_key] != @target&.id
         end
       end
     end
