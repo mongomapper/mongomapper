@@ -2,6 +2,13 @@ $:.unshift(File.expand_path('../../lib', __FILE__))
 
 require 'rubygems'
 require 'bundler/setup'
+
+# workaround for https://github.com/jruby/jruby/issues/6547
+if RUBY_PLATFORM == 'java'
+  require 'i18n/backend'
+  require 'i18n/backend/simple'
+end
+
 Bundler.require(:default)
 require 'fileutils'
 require 'timecop'
