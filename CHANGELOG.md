@@ -4,6 +4,18 @@
 ### Doc Fixes:
 
 
+## 0.15.3 - 2021-02-11
+
+### Bug Fixes:
+
+    * PR-677 Masato Ikeda <masato.ikeda@gmail.com> Reload proxy target for stale nil target on belongs_to associations.
+
+    child = Child.create!(parent: nil)
+    child.parent_id = Parent.create!.id
+    p child.parent #=> nil
+
+
+
 ## 0.15.2 - 2021-01-31
 
 ### Enhancements:
@@ -22,8 +34,6 @@
     * PR-670 ujihisa <ujihisa@users.noreply.github.com> Prohibit defining some scope names that overrides existing methods, such as "private"
     * PR-672 Fumiaki MATSUSHIMA <mtsmfm@gmail.com> Avoid caching _root_document
     * PR-676 Fumiaki MATSUSHIMA <mtsmfm@gmail.com> Reload belongs to association when foreign key is changed
-
-### Doc Fixes:
 
 
 ## 0.15.1 - 2020-10-03
