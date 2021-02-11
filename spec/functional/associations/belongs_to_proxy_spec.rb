@@ -286,5 +286,20 @@ describe "BelongsToProxy" do
 
       comment.post.should == nil
     end
+
+    it "should reset parent when foreign key is changed from nil" do
+      post = @post_class.create!
+      comment = @comment_class.create!(post: nil)
+
+      comment.post.should == nil
+
+      comment.post_id = post.id
+
+      comment.post.should == post
+
+      comment.post_id = nil
+
+      comment.post.should == nil
+    end
   end
 end
