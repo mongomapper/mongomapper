@@ -76,10 +76,6 @@ module MongoMapper
           @target.each { |doc| doc.save(options) } if @target
         end
 
-        def each(&block)
-          load_target.each(&block)
-        end
-
       protected
 
         def query(options={})

@@ -14,5 +14,5 @@ module MongoMapper
 end
 
 class NilClass
-  include MongoMapper::Extensions::NilClass
+  extend MongoMapper::Extensions::NilClass
 end

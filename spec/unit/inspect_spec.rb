@@ -31,7 +31,7 @@ describe "Inspect" do
       klass.many :pets, :class => pets
 
       doc = klass.new(:pets => [{:name => "Kitten"}])
-      doc.inspect.should =~ /_id:.*, pets: \[.*_id.*, name: "Kitten".*\]/
+      doc.inspect.should =~ /_id:.*, pets: .*\[.*_id.*, name: "Kitten".*\]/
     end
 
     it "should include embedded document" do
