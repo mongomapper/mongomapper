@@ -55,6 +55,7 @@ describe "Key" do
     it "should work with name and options" do
       key = Key.new(:foo, :required => true)
       key.name.should == 'foo'
+      key.type.should be_nil
       key.options[:required].should be_truthy
     end
 

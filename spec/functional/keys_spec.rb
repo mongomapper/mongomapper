@@ -352,6 +352,19 @@ describe "Keys" do
     it 'should remove the key' do
       DocWithRemovedKey.keys.should_not have_key "_something"
     end
+  end
 
+  describe "default with no type" do
+    it "should work (regression)" do
+      doc = Doc do
+        key :a_num, default: 0
+      end
+
+      instance = doc.new
+      instance.a_num.should == 0
+
+      instance = doc.new(a_num: 10)
+      instance.a_num.should == 10
+    end
   end
 end
