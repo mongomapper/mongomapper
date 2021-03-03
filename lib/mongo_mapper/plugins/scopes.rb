@@ -30,10 +30,6 @@ module MongoMapper
           self._scopes ||= {}
         end
 
-        def active_scopes
-          Thread.current["mongo_mapper_#{name}_active_scopes"] ||= []
-        end
-
         def default_scopes
           @default_scopes ||= begin
             superclass.respond_to?(:default_scopes) ?
@@ -42,16 +38,26 @@ module MongoMapper
           end
         end
 
+        # @param Hash options
+        # @options options [Boolean] :unscoped Specify to return plain query object
         def query(options = {})
-          res = super(options)
+          if options.delete(:unscoped)
+            context = super(options)
+          else
+            context = current_context
 
-          all_anonymous_scopes.each do |scope|
-            unscoped do
-              res = process_scope(res, scope)
+            if context
+              context = process_scope(context, options)
+            else
+              context = super(options)
+
+              default_scopes.flatten.each do |scope|
+                context = process_scope(context, scope)
+              end
             end
           end
 
-          res
+          context
         end
 
         def default_scope(*args, &block)
@@ -66,27 +72,29 @@ module MongoMapper
           default_scopes
         end
 
-        def with_scope(query = {})
-          active_scopes.push(query)
+        def with_scope(scope = {})
+          prev, self.current_context = current_context, process_scope(query, scope)
           yield
         ensure
-          active_scopes.pop
+          self.current_context = prev
         end
 
         def unscoped
-          old_default_scopes = default_scopes.dup
-          old_active_scopes = active_scopes.dup
-
-          @default_scopes = []
-          active_scopes.clear
-
+          prev, self.current_context = current_context, query(unscoped: true)
           yield
         ensure
-          @default_scopes = old_default_scopes
-          active_scopes.concat(old_active_scopes)
+          self.current_context = prev
         end
 
       private
+
+        def current_context
+          Thread.current["mongo_mapper_#{name}_current_context"]
+        end
+
+        def current_context=(context)
+          Thread.current["mongo_mapper_#{name}_current_context"] = context
+        end
 
         def process_scope(context, scope, *args)
           if scope.is_a?(Proc)
@@ -96,10 +104,6 @@ module MongoMapper
           scope.is_a?(Hash) ?
             context.where(scope) :
             scope
-        end
-
-        def all_anonymous_scopes
-          [default_scopes + active_scopes].flatten
         end
 
         RESTRICTED_CLASS_METHODS = %w(private public protected allocate new name parent superclass)
