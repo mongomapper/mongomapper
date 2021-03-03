@@ -61,6 +61,17 @@ describe "Key" do
 
     it "should not permit reserved names" do
       lambda { Key.new(:id) }.should raise_error(/reserved/)
+      lambda { Key.new(:valid) }.should raise_error(/reserved/)
+    end
+
+    it "should permit reserved names if __dynamic" do
+      lambda { Key.new(:id, :__dynamic => true) }.should_not raise_error
+      lambda { Key.new(:valid, :__dynamic => true) }.should_not raise_error
+    end
+
+    it "should permit reserved names if it is not to create accessors" do
+      lambda { Key.new(:id, :accessors => :skip) }.should_not raise_error
+      lambda { Key.new(:valid, :accessors => :skip) }.should_not raise_error
     end
 
     it "should not permit bad names" do
