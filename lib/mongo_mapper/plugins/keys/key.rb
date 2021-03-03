@@ -8,6 +8,12 @@ module MongoMapper
 
         attr_accessor :name, :type, :options, :default, :ivar, :abbr, :accessors
 
+        def self.reserved_names
+          @reserved_names ||= MongoMapper::DOCUMENT_MODULES.flat_map { |klass|
+            klass.instance_methods.map(&:to_s)
+          }.uniq + RESERVED_KEYS
+        end
+
         def initialize(*args)
           options_from_args = args.extract_options!
           @name, @type = args.shift.to_s, args.shift
@@ -103,7 +109,9 @@ module MongoMapper
         end
 
         def reserved_name?
-          RESERVED_KEYS.include?(@name)
+          [@name, "#{@name}_before_typecast", "#{@name}=", "#{@name}?"].any? { |name|
+            self.class.reserved_names.include?(name)
+          }
         end
 
         def read_accessor?
