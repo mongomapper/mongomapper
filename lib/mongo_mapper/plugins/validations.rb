@@ -54,7 +54,7 @@ module MongoMapper
           conditions[:_id.ne] = record._id if record._id
 
           if @klass.exists?(conditions)
-            record.errors.add(attribute, :taken, options.except(:case_sensitive, :scope).merge(:value => value))
+            record.errors.add(attribute, :taken, **options.except(:case_sensitive, :scope).merge(:value => value))
           end
         end
 
