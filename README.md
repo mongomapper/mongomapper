@@ -37,8 +37,8 @@ Additionally, MongoMapper is tested against:
 
 * Fork the project.
 * Make your feature addition or bug fix. All specs should pass.
-* Add specs for your changes. This is important so I don't break it in a future version unintentionally.
-* Commit, do not mess with Rakefile, version, or history. If you want to have your own version, that is fine but bump version in a commit by itself in another branch so a maintainer ignore it when your pull request is merged.
+* Add specs for your changes. This is important so that it doesn't break in a future version.
+* Commit, do not mess with Rakefile, version, or history. If you want to have your own version, that is fine but bump version in a commit by itself in another branch so a maintainer can ignore it when your pull request is merged.
 * Send a pull request. Bonus points for topic branches.
 
 ## Problems or Questions?
