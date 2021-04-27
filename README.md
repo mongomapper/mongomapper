@@ -18,6 +18,14 @@ http://mongomapper.com/documentation/
 
 http://rdoc.info/github/mongomapper/mongomapper
 
+## Open Commit Policy
+
+Like Rubinius, we're trying out an "open commit policy".
+
+If you've committed one (code) patch that has been accepted and would like to
+work some more on the project, send an email to Scott Taylor
+<scott@railsnewbie.com> along with your commit sha1.
+
 ## Compatibility
 
 MongoMapper is tested against:
@@ -40,17 +48,6 @@ Additionally, MongoMapper is tested against:
 * Add specs for your changes. This is important so that it doesn't break in a future version.
 * Commit, do not mess with Rakefile, version, or history. If you want to have your own version, that is fine but bump version in a commit by itself in another branch so a maintainer can ignore it when your pull request is merged.
 * Send a pull request. Bonus points for topic branches.
-
-## Open Commit Policy
-
-We're trying an open commit policy for MongoMapper.
-
-This has worked out great for projects just as fakefs and rubinius.
-
-If you've committed one code patch that has been accepted, send an email to
-Scott Taylor <scott@railsnewbie.com> and ask to be added as a contributor,
-along with your commit sha1.  You'll be added as a full time contributor and
-can then commit away.
 
 ## Problems or Questions?
 
