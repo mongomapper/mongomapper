@@ -1,5 +1,8 @@
 ## HEAD
 ### Enhancements:
+
+* PR-680 and PR-685 Masato Ikeda <masato.ikeda@gmail.com> Support Ruby 3.0
+
 ### Bug Fixes:
 ### Doc Fixes:
 
