@@ -37,8 +37,6 @@ jobs:
             gemfile: gemfiles/rails5_1.gemfile
           - ruby-version: 3.0.0
             gemfile: gemfiles/rails5_2.gemfile
-          - ruby-version: 3.0.0
-            gemfile: gemfiles/rails6_0.gemfile
     env:
       JRUBY_OPTS: "--1.9"
       BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
