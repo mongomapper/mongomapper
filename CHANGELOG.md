@@ -1,11 +1,14 @@
+<!--
 ## HEAD
+### Enhancements:
+### Bug Fixes:
+### Doc Fixes:
+-->
+
+## 0.15.4 - 2021-06-18
 ### Enhancements:
 
 * PR-680 and PR-685 Masato Ikeda <masato.ikeda@gmail.com> Support Ruby 3.0
-
-### Bug Fixes:
-### Doc Fixes:
-
 
 ## 0.15.3 - 2021-02-11
 
