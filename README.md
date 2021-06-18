@@ -35,7 +35,8 @@ MongoMapper is tested against:
 
 Additionally, MongoMapper is tested against:
 
-* Rails 5.0+ - 6.0
+* Rails 5.0 - 5.2
+* Rails 6.0 - 6.1
 
 Note, if you are using Ruby 3.0+, you'll need Rails 6.
 
