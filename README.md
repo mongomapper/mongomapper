@@ -52,6 +52,10 @@ Note, if you are using Ruby 3.0+, you'll need Rails 6.
 * Commit, do not mess with Rakefile, version, or history. If you want to have your own version, that is fine but bump version in a commit by itself in another branch so a maintainer can ignore it when your pull request is merged.
 * Send a pull request. Bonus points for topic branches.
 
+## How to release
+
+See `HOW_TO_RELEASE.md`
+
 ## Problems or Questions?
 
 Hit up the Google group: http://groups.google.com/group/mongomapper
