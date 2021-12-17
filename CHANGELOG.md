@@ -5,6 +5,11 @@
 ### Doc Fixes:
 -->
 
+## Unreleased
+### Enhancements:
+
+* PR-687 Masato Ikeda <masato.ikeda@gmail.com> Support Rails 7.0
+
 ## 0.15.4 - 2021-06-18
 ### Enhancements:
 
