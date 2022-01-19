@@ -38,6 +38,7 @@ module MongoMapper
           :nil?,
           :blank?,
           :present?,
+          :hash,
           # Active support in rails 3 beta 4 can override to_json after this is loaded,
           # at least when run in mongomapper tests. The implementation was changed in master
           # some time after this, so not sure whether this is still a problem.
