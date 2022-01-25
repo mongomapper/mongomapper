@@ -251,12 +251,24 @@ module MongoMapper
 
         def remove_validate_callbacks(a_name)
           chain = _validate_callbacks.dup.reject do |callback|
-            f = callback.raw_filter
+            f = callback_filter(callback)
             f.respond_to?(:attributes) && f.attributes == a_name
           end
           reset_callbacks(:validate)
           chain.each do |callback|
-            set_callback 'validate', callback.raw_filter
+            set_callback 'validate', callback_filter(callback)
+          end
+        end
+
+        # The interface to obtain @filter from ActiveSupport::Callbacks::Callback has changed since rails 7.0.
+        # https://github.com/rails/rails/commit/d5ac941ddc3de7ad1aaff80ed67aa04fb626a263#diff-bf79b7ea0085308139af6de0afad9a9f22f13d4563cc56d784994414d88c5dd1
+        if ActiveSupport::VERSION::MAJOR >= 7
+          def callback_filter(callback)
+            callback.filter
+          end
+        else
+          def callback_filter(callback)
+            callback.raw_filter
           end
         end
       end

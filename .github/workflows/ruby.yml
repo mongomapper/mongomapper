@@ -27,11 +27,20 @@ jobs:
           - gemfiles/rails5_2.gemfile
           - gemfiles/rails6_0.gemfile
           - gemfiles/rails6_1.gemfile
+          - gemfiles/rails7_0.gemfile
         exclude:
+          - ruby-version: jruby
+            gemfile: gemfiles/rails7_0.gemfile
+          - ruby-version: 2.4.10
+            gemfile: gemfiles/rails7_0.gemfile
           - ruby-version: 2.4.10
             gemfile: gemfiles/rails6_0.gemfile
           - ruby-version: 2.4.10
             gemfile: gemfiles/rails6_1.gemfile
+          - ruby-version: 2.5.8
+            gemfile: gemfiles/rails7_0.gemfile
+          - ruby-version: 2.6.6
+            gemfile: gemfiles/rails7_0.gemfile
           - ruby-version: 3.0.0
             gemfile: gemfiles/rails5_0.gemfile
           - ruby-version: 3.0.0
