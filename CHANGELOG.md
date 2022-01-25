@@ -9,6 +9,7 @@
 ### Enhancements:
 
 * PR-687 Masato Ikeda <masato.ikeda@gmail.com> Support Rails 7.0
+* PR-688 Masato Ikeda <masato.ikeda@gmail.com> Delegate hash method to proxy target
 
 ## 0.15.4 - 2021-06-18
 ### Enhancements:
