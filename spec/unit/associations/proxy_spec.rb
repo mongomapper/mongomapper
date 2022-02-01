@@ -108,4 +108,17 @@ describe "Proxy" do
       lambda { @proxy.private_foo }.should raise_error(NoMethodError, /private method `private_foo' called/)
     end
   end
+
+  context "hash" do
+    it "should return the same value for the same proxy" do
+      proxy_a = FakeProxy.new(@owner, @association)
+      proxy_b = FakeProxy.new(@owner, @association)
+
+      proxy_a.hash.should == proxy_b.hash
+    end
+
+    it "should return different values for different proxies" do
+      @proxy.hash.should_not == @nil_proxy.hash
+    end
+  end
 end
