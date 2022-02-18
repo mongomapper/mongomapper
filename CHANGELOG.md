@@ -6,6 +6,8 @@
 -->
 
 ## Unreleased
+
+## 0.15.5 - 2022-02-18
 ### Enhancements:
 
 * PR-687 Masato Ikeda <masato.ikeda@gmail.com> Support Rails 7.0
