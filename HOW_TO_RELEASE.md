@@ -2,6 +2,7 @@ How to release:
 
   * `rake update_contributors_and_commit`
   * version bump in `lib/mongo_mapper/version.rb`
+  * update CHANGELOG with current version
   * run `rake`, afterwards, `git push`
   * finally: `rake release` which will build the gem + push to rubygems.org
   * now update release notes:
