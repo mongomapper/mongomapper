@@ -2,7 +2,7 @@ How to release:
 
   * `rake update_contributors_and_commit`
   * version bump in `lib/mongo_mapper/version.rb`
-  * run `rake test`, afterwards, `git push`
+  * run `rake`, afterwards, `git push`
   * finally: `rake release` which will build the gem + push to rubygems.org
   * now update release notes:
     * switch to `gh-pages` branch
