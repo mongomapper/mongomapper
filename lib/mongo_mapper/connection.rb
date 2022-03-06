@@ -81,7 +81,7 @@ module MongoMapper
       # :nocov:
       if defined?(PhusionPassenger)
         PhusionPassenger.on_event(:starting_worker_process) do |forked|
-          connection.connect if forked
+          connection.reconnect if forked
         end
       end
       # :nocov:
