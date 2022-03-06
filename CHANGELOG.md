@@ -7,6 +7,8 @@
 
 ## Unreleased
 
+* PR-690 jamieorc <jamieorc@gmail.com> Update MongoMapper::Connection.handle_passenger_forking for Mongo 2.x
+
 ## 0.15.5 - 2022-02-18
 ### Enhancements:
 
