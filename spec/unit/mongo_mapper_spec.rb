@@ -133,5 +133,10 @@ describe "MongoMapper" do
       MongoMapper.should_receive(:handle_passenger_forking).once
       MongoMapper.setup(config, 'development', :logger => logger)
     end
+
+    it "should use the right reconnect method" do
+      Mongo::Client.instance_methods.should_not include(:connect) # v1
+      Mongo::Client.instance_methods.should include(:reconnect) # v1
+    end
   end
 end
