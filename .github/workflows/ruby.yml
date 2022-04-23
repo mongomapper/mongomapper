@@ -17,9 +17,7 @@ jobs:
           - 2.4.10
           - 2.5.8
           - 2.6.6
-          - 2.7.1
           - 2.7.2
-          - 3.0.0
           - 3.0.1
         gemfile:
           - gemfiles/rails5_0.gemfile
@@ -41,12 +39,6 @@ jobs:
             gemfile: gemfiles/rails7_0.gemfile
           - ruby-version: 2.6.6
             gemfile: gemfiles/rails7_0.gemfile
-          - ruby-version: 3.0.0
-            gemfile: gemfiles/rails5_0.gemfile
-          - ruby-version: 3.0.0
-            gemfile: gemfiles/rails5_1.gemfile
-          - ruby-version: 3.0.0
-            gemfile: gemfiles/rails5_2.gemfile
           - ruby-version: 3.0.1
             gemfile: gemfiles/rails5_0.gemfile
           - ruby-version: 3.0.1
