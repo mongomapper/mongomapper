@@ -45,6 +45,11 @@ jobs:
             gemfile: gemfiles/rails5_1.gemfile
           - ruby-version: 3.0.4
             gemfile: gemfiles/rails5_2.gemfile
+    services:
+      mongo:
+        image: mongo:4.4
+        ports:
+          - 27017:27017
     env:
       JRUBY_OPTS: "--1.9"
       BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
@@ -55,10 +60,6 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: "${{ matrix.ruby-version }}"
-    - name: Start MongoDB
-      uses: supercharge/mongodb-github-action@1.3.0
-      with:
-        mongodb-version: 4.4
     - name: Install dependencies
       run: "bundle install --without development"
     - name: Run tests
