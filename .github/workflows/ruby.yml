@@ -26,33 +26,62 @@ jobs:
           - gemfiles/rails6_0.gemfile
           - gemfiles/rails6_1.gemfile
           - gemfiles/rails7_0.gemfile
+        mongo-image:
+          - mongo:4.4
+        enable-sharding:
+          - "0"
         exclude:
           - ruby-version: jruby
             gemfile: gemfiles/rails7_0.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
           - ruby-version: 2.4.10
             gemfile: gemfiles/rails7_0.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
           - ruby-version: 2.4.10
             gemfile: gemfiles/rails6_0.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
           - ruby-version: 2.4.10
             gemfile: gemfiles/rails6_1.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
           - ruby-version: 2.5.9
             gemfile: gemfiles/rails7_0.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
           - ruby-version: 2.6.10
             gemfile: gemfiles/rails7_0.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
           - ruby-version: 3.0.4
             gemfile: gemfiles/rails5_0.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
           - ruby-version: 3.0.4
             gemfile: gemfiles/rails5_1.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
           - ruby-version: 3.0.4
             gemfile: gemfiles/rails5_2.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
+        include:
+          - { "ruby-version": 3.0.4, "gemfile": "gemfiles/rails7_0.gemfile", "mongo-image": "mongo:4.2",               "enable-sharding": "0" }
+          - { "ruby-version": 3.0.4, "gemfile": "gemfiles/rails7_0.gemfile", "mongo-image": "mongo:5.0",               "enable-sharding": "0" }
+          - { "ruby-version": 3.0.4, "gemfile": "gemfiles/rails7_0.gemfile", "mongo-image": "a2ikm/sharded-mongo:4.2", "enable-sharding": "1" }
+          - { "ruby-version": 3.0.4, "gemfile": "gemfiles/rails7_0.gemfile", "mongo-image": "a2ikm/sharded-mongo:4.4", "enable-sharding": "1" }
+          - { "ruby-version": 3.0.4, "gemfile": "gemfiles/rails7_0.gemfile", "mongo-image": "a2ikm/sharded-mongo:5.0", "enable-sharding": "1" }
     services:
       mongo:
-        image: mongo:4.4
+        image: ${{ matrix.mongo-image }}
         ports:
           - 27017:27017
     env:
       JRUBY_OPTS: "--1.9"
       BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
+      ENABLE_SHARDING: "${{ matrix.enable-sharding }}"
     steps:
     - name: Git checkout
       uses: actions/checkout@v2
