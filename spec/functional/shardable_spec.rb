@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'Shardable' do
   describe 'shard_key_fields' do
     it 'returns declared field names' do
-      ShardedModel.shard_key_fields.should == ['first_name', 'last_name']
+      ShardedModel.shard_key_fields.should == ['first_name']
     end
   end
 
@@ -12,7 +12,7 @@ describe 'Shardable' do
       let(:document) { ShardedModel.new(first_name: 'John', last_name: 'Smith') }
 
       it 'returns current values' do
-        document.shard_key_filter.should == { 'first_name' => 'John', 'last_name' => 'Smith' }
+        document.shard_key_filter.should == { 'first_name' => 'John' }
       end
     end
 
@@ -24,7 +24,7 @@ describe 'Shardable' do
       end
 
       it 'returns persisted values' do
-        document.shard_key_filter.should == { 'first_name' => 'John', 'last_name' => 'Smith' }
+        document.shard_key_filter.should == { 'first_name' => 'John' }
       end
     end
   end
