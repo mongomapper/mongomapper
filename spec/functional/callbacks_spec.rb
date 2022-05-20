@@ -10,9 +10,13 @@ module CallbacksSupport
       :before_save,       :after_save,
       :before_destroy,    :after_destroy
     ].each do |callback|
-      base.send(callback) do
+      base.send(callback, if: :always_true) do
         history << callback.to_sym
       end
+    end
+
+    base.send(:define_method, :always_true) do
+      true
     end
   end
 
