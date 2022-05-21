@@ -9,7 +9,7 @@
 
 * PR-690 jamieorc <jamieorc@gmail.com> Update MongoMapper::Connection.handle_passenger_forking for Mongo 2.x
 * PR-692 Masato Ikeda <masato.ikeda@gmail.com>, Scott Taylor <scott@railsnewbie.com> Support Ruby 3.1
-* PR-698 thinca <thinca@gmail.com>, Masato Ikeda <masato.ikeda@gmail.com> Support Ruby 3.1
+* PR-698 thinca <thinca@gmail.com>, Masato Ikeda <masato.ikeda@gmail.com> Fix positional and keyword arguments for ruby 3.x in embedded doc hooks
 
 ## 0.15.5 - 2022-02-18
 ### Enhancements:
