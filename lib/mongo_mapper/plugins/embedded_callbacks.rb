@@ -49,9 +49,9 @@ module MongoMapper
                 class << self
                   alias_method :__original_#{callback}, :#{callback}
 
-                  def #{callback}(*args, &block)
+                  def #{callback}(*args, **options, &block)
                     embedded_callbacks_on if @embedded_callbacks_status.nil?
-                    __original_#{callback}(*args, &block)
+                    __original_#{callback}(*args, **options, &block)
                   end
                 end
               CALLBACK
