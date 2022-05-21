@@ -220,10 +220,10 @@ describe "EmbeddedDocument" do
         end
 
         it "should be recorded" do
-          Grandparent.direct_descendants.should == [Parent]
-          Grandparent.descendants.to_set.should == [Parent, Child, OtherChild].to_set
+          Grandparent.direct_descendants.should contain_exactly(Parent)
+          Grandparent.descendants.to_set.should contain_exactly(Parent, Child, OtherChild)
 
-          Parent.descendants.should      == [Child, OtherChild]
+          Parent.descendants.should contain_exactly(Child, OtherChild)
         end
       end
     end

@@ -8,6 +8,7 @@
 ## Unreleased
 
 * PR-690 jamieorc <jamieorc@gmail.com> Update MongoMapper::Connection.handle_passenger_forking for Mongo 2.x
+* PR-692 Masato Ikeda <masato.ikeda@gmail.com> Support Ruby 3.1
 
 ## 0.15.5 - 2022-02-18
 ### Enhancements:

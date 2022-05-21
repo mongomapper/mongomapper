@@ -88,7 +88,7 @@ describe "Document" do
     end
 
     it "should be recorded" do
-      Message.descendants.should == [Enter, Exit, Chat]
+      Message.descendants.should contain_exactly(Enter, Exit, Chat)
     end
   end
 
