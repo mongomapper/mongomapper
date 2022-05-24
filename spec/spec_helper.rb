@@ -20,8 +20,15 @@ end
 
 if RUBY_PLATFORM != "java"
   if ENV['GITHUB_ACTIONS']
-    require 'coveralls'
-    Coveralls.wear!
+    require 'simplecov'
+    require 'simplecov-lcov'
+    SimpleCov::Formatter::LcovFormatter.config do |c|
+      c.report_with_single_file = true
+      c.single_report_path = 'coverage/lcov.info'
+    end
+    SimpleCov.start do
+      formatter SimpleCov::Formatter::LcovFormatter
+    end
   elsif ENV['COVERAGE'] && RUBY_VERSION > "1.8"
     require 'simplecov'
     SimpleCov.start do
