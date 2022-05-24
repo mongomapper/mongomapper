@@ -19,7 +19,7 @@ if RUBY_ENGINE == "ruby" && RUBY_VERSION >= '2.3'
 end
 
 if RUBY_PLATFORM != "java"
-  if ENV['TRAVIS']
+  if ENV['GITHUB_ACTIONS']
     require 'coveralls'
     Coveralls.wear!
   elsif ENV['COVERAGE'] && RUBY_VERSION > "1.8"
