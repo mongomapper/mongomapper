@@ -112,6 +112,7 @@ jobs:
         github-token: ${{ secrets.github_token }}
         flag-name: run-${{ matrix.ruby-version }}-${{ matrix.gemfile }}-${{ matrix.mongo-image }}-${{ matrix.enable-sharding }}
         parallel: true
+      if: ${{ matrix.ruby-version != 'jruby' }}
 
   coveralls:
     needs:
