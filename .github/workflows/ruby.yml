@@ -106,21 +106,3 @@ jobs:
       run: "bundle install --without development"
     - name: Run tests
       run: "bundle exec rake"
-    - name: Coveralls Parallel
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.github_token }}
-        flag-name: run-${{ matrix.ruby-version }}-${{ matrix.gemfile }}-${{ matrix.mongo-image }}-${{ matrix.enable-sharding }}
-        parallel: true
-      if: ${{ matrix.ruby-version != 'jruby' }}
-
-  coveralls:
-    needs:
-      - test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Coveralls Finished
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.github_token }}
-          parallel-finished: true
