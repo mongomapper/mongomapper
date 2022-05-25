@@ -71,7 +71,7 @@ describe "MongoMapper" do
         'development' => {'hosts' => ['127.0.0.1:27017'], 'database' => 'test', 'read' => 'primary'}
       }
       logger = double('logger')
-      Mongo::Client.should_receive(:new).with(['127.0.0.1:27017'], :logger => logger, :read => :primary, :database => 'test')
+      Mongo::Client.should_receive(:new).with(['127.0.0.1:27017'], { :logger => logger, :read => :primary, :database => 'test' })
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -80,7 +80,7 @@ describe "MongoMapper" do
         'development' => {'hosts' => ['192.168.1.1:2222'], 'database' => 'test', 'safe' => true}
       }
       logger = double('logger')
-      Mongo::Client.should_receive(:new).with(['192.168.1.1:2222'], :logger => logger, :safe => true, :database => 'test')
+      Mongo::Client.should_receive(:new).with(['192.168.1.1:2222'], { :logger => logger, :safe => true, :database => 'test' })
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -89,7 +89,7 @@ describe "MongoMapper" do
         'development' => {'uri' => 'mongodb://127.0.0.1:27017/test', 'options'=> {:foo => 1}}
       }
       logger = double('logger')
-      Mongo::Client.should_receive(:new).with('mongodb://127.0.0.1:27017/test', :logger => logger, :foo => 1)
+      Mongo::Client.should_receive(:new).with('mongodb://127.0.0.1:27017/test', { :logger => logger, :foo => 1 })
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -97,7 +97,7 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'hosts' => ['127.0.0.1:27017'], 'database' => 'test', 'user' => 'john', 'password' => 'secret'}
       }
-      Mongo::Client.should_receive(:new).with(['127.0.0.1:27017'], :database => 'test', :user => 'john', :password => 'secret')
+      Mongo::Client.should_receive(:new).with(['127.0.0.1:27017'], { :database => 'test', :user => 'john', :password => 'secret' })
       MongoMapper.connect('development')
     end
 
@@ -129,7 +129,7 @@ describe "MongoMapper" do
     it "should work as shortcut for setting config, environment and options" do
       config, logger = double('config'), double('logger')
       MongoMapper.should_receive(:config=).with(config)
-      MongoMapper.should_receive(:connect).with('development', :logger => logger)
+      MongoMapper.should_receive(:connect).with('development',  { :logger => logger })
       MongoMapper.should_receive(:handle_passenger_forking).once
       MongoMapper.setup(config, 'development', :logger => logger)
     end
