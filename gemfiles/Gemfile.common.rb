@@ -4,8 +4,8 @@ gem 'rake'
 gem 'multi_json', '~> 1.2'
 
 if RUBY_PLATFORM != "java"
-  gem 'coveralls', :require => false
   gem 'simplecov', :require => false
+  gem 'simplecov-lcov', :require => false
 end
 
 group :test do

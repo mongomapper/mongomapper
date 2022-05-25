@@ -6,7 +6,7 @@ A Ruby Object Mapper for Mongo.
 
 [<img src="https://github.com/mongomapper/mongomapper/workflows/Ruby/badge.svg?branch=master" alt="Build Status" />](https://github.com/mongomapper/mongomapper/actions?query=workflow%3ARuby+branch%3Amaster)
 
-<!-- [<img src="https://coveralls.io/repos/mongomapper/mongomapper/badge.svg" alt="Coverage Status" />](https://coveralls.io/r/mongomapper/mongomapper) -->
+[<img src="https://coveralls.io/repos/mongomapper/mongomapper/badge.svg" alt="Coverage Status" />](https://coveralls.io/r/mongomapper/mongomapper)
 
 ## Install
 
