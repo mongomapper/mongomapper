@@ -62,7 +62,7 @@ Hit up the Google group: http://groups.google.com/group/mongomapper
 
 ## Copyright
 
-Copyright (c) 2009-2021 MongoMapper. See LICENSE for details.
+Copyright (c) 2009-2022 MongoMapper. See LICENSE for details.
 
 ## Contributors
 
