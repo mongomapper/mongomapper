@@ -30,15 +30,16 @@ work some more on the project, send an email to Scott Taylor
 
 MongoMapper is tested against:
 
-* MRI 2.4 - 3.0.1
-* JRuby (Versions with 1.9 compatibility)
+* MRI 2.4 - 3.1
+* JRuby (Versions with 2.6 compatibility)
 
 Additionally, MongoMapper is tested against:
 
 * Rails 5.0 - 5.2
 * Rails 6.0 - 6.1
+* Rails 7.0
 
-Note, if you are using Ruby 3.0+, you'll need Rails 6.
+Note, if you are using Ruby 3.0+, you'll need Rails 6.0+.
 
 ## Contributing & Development
 

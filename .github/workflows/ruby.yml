@@ -92,7 +92,6 @@ jobs:
         ports:
           - 27017:27017
     env:
-      JRUBY_OPTS: "--1.9"
       BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
       ENABLE_SHARDING: "${{ matrix.enable-sharding }}"
     steps:
