@@ -10,7 +10,7 @@ module MongoMapper
     end
 
     def self.filter_param(name, raw_value)
-      if ActiveSupport.version >= "6.0"
+      if ActiveSupport.version >= Gem::Version.new("6.0")
         @filter ||= begin
           require "active_support/parameter_filter"
           ActiveSupport::ParameterFilter.new(MongoMapper.filter_attributes)
