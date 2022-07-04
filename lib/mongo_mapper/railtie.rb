@@ -41,6 +41,12 @@ module MongoMapper
       end
     end
 
+    initializer "mongo_mapper.filter_attributes=" do |app|
+      ActiveSupport.on_load(:mongo_mapper) do
+        MongoMapper.filter_attributes += app.config.filter_parameters
+      end
+    end
+
     # This sets the database configuration and establishes the connection.
     initializer "mongo_mapper.initialize_database" do |app|
       config_file = Rails.root.join('config/mongo.yml')
