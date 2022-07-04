@@ -70,7 +70,11 @@ describe "Inspect" do
         :card_number => '123'
       )
 
-      doc.inspect.should =~ /_id:.*, age: 29, card_number: \[FILTERED\], email: \[FILTERED\], name: "John"/
+      if ActiveSupport.version >= Gem::Version.new("6.0")
+        doc.inspect.should =~ /_id:.*, age: 29, card_number: \[FILTERED\], email: \[FILTERED\], name: "John"/
+      else
+        doc.inspect.should =~ /_id:.*, age: 29, card_number: "123", email: "mongomapper@example.com", name: "John"/
+      end
     end
 
     it "should filter the fields given by filter_attributes for embedded document" do
@@ -83,7 +87,11 @@ describe "Inspect" do
         :phone_number => '09011110000'
       )
 
-      doc.inspect.should =~ /job: "Software Engineer", phone_number: \[FILTERED\]/
+      if ActiveSupport.version >= Gem::Version.new("6.0")
+        doc.inspect.should =~ /job: "Software Engineer", phone_number: \[FILTERED\]/
+      else
+        doc.inspect.should =~ /job: "Software Engineer", phone_number: "09011110000"/
+      end
     end
   end
 end
