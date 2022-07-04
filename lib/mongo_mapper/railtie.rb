@@ -41,9 +41,11 @@ module MongoMapper
       end
     end
 
-    initializer "mongo_mapper.filter_attributes=" do |app|
-      ActiveSupport.on_load(:mongo_mapper) do
-        MongoMapper.filter_attributes += app.config.filter_parameters
+    if Rails.version >= "6.0"
+      initializer "mongo_mapper.filter_attributes=" do |app|
+        ActiveSupport.on_load(:mongo_mapper) do
+          MongoMapper.filter_attributes += app.config.filter_parameters
+        end
       end
     end
 

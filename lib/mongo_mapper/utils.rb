@@ -1,5 +1,3 @@
-require "active_support/parameter_filter"
-
 module MongoMapper
   module Utils
     def self.get_safe_options(options)
@@ -11,8 +9,16 @@ module MongoMapper
       safe
     end
 
-    def self.filter
-      @filter ||= ActiveSupport::ParameterFilter.new(MongoMapper.filter_attributes)
+    def self.filter_param(name, raw_value)
+      if ActiveSupport.version >= "6.0"
+        @filter ||= begin
+          require "active_support/parameter_filter"
+          ActiveSupport::ParameterFilter.new(MongoMapper.filter_attributes)
+        end
+        @filter.filter_param(name, raw_value)
+      else
+        raw_value
+      end
     end
   end
 end

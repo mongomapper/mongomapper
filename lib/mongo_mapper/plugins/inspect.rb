@@ -8,7 +8,7 @@ module MongoMapper
         keys = include_nil ? key_names : attributes.keys
         attributes_as_nice_string = keys.sort.collect do |name|
           raw_value = self.send(:"#{name}").inspect
-          filtered_value = MongoMapper::Utils.filter.filter_param(name, raw_value)
+          filtered_value = MongoMapper::Utils.filter_param(name, raw_value)
           "#{name}: #{filtered_value}"
         end.join(", ")
         "#<#{self.class} #{attributes_as_nice_string}>"
