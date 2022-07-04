@@ -44,4 +44,46 @@ describe "Inspect" do
       doc.inspect.should =~ /_id:.*, pet: .*_id.*, name: "Kitten".*/
     end
   end
+
+  context "#inspect with filter_attributes" do
+    before do
+      MongoMapper::Utils.remove_instance_variable(:@filter) if MongoMapper::Utils.instance_variable_defined?(:@filter)
+      MongoMapper.filter_attributes = [:email, :card_number, :phone_number]
+    end
+
+    after do
+      MongoMapper.filter_attributes =[]
+      MongoMapper::Utils.remove_instance_variable(:@filter) if MongoMapper::Utils.instance_variable_defined?(:@filter)
+    end
+
+    it "should filter the fields given by filter_attributes" do
+      document = Doc('User') do
+        key :name,  String
+        key :age,   Integer
+        key :email, String
+        key :card_number, String
+      end
+      doc = document.new(
+        :name => 'John',
+        :age => 29,
+        :email => 'mongomapper@example.com',
+        :card_number => '123'
+      )
+
+      doc.inspect.should =~ /_id:.*, age: 29, card_number: \[FILTERED\], email: \[FILTERED\], name: "John"/
+    end
+
+    it "should filter the fields given by filter_attributes for embedded document" do
+      document = EDoc('Profile') do
+        key :job,  String
+        key :phone_number,  String
+      end
+      doc = document.new(
+        :job => 'Software Engineer',
+        :phone_number => '09011110000'
+      )
+
+      doc.inspect.should =~ /job: "Software Engineer", phone_number: \[FILTERED\]/
+    end
+  end
 end
