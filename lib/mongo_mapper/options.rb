@@ -1,11 +1,13 @@
-module Options
-  # @api public
-  def filter_attributes=(attributes)
-    @filter_attributes = attributes
-  end
+module MongoMapper
+  module Options
+    # @api public
+    def filter_attributes=(attributes)
+      @filter_attributes = attributes
+    end
 
-  # @api public
-  def filter_attributes
-    @filter_attributes || []
+    # @api public
+    def filter_attributes
+      @filter_attributes || []
+    end
   end
 end
