@@ -25,6 +25,7 @@ module MongoMapper
   autoload :Translation,            'mongo_mapper/translation'
   autoload :Version,                'mongo_mapper/version'
   autoload :Utils,                  'mongo_mapper/utils'
+  autoload :Options,                'mongo_mapper/options'
 
   module Middleware
     autoload :IdentityMap, 'mongo_mapper/middleware/identity_map'
@@ -96,6 +97,7 @@ module MongoMapper
   end
 
   extend Connection
+  extend Options
 end
 
 Dir[File.join(File.dirname(__FILE__), 'mongo_mapper', 'extensions', '*.rb')].each do |extension|

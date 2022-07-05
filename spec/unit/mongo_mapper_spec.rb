@@ -139,4 +139,13 @@ describe "MongoMapper" do
       Mongo::Client.instance_methods.should include(:reconnect) # v1
     end
   end
+
+  context "options" do
+    it "should sets/returns filtered_attributes correctly" do
+      MongoMapper.filter_attributes.should == []
+      filtered_attributes = [:password, :credit_number]
+      MongoMapper.filter_attributes = filtered_attributes
+      MongoMapper.filter_attributes.should == filtered_attributes
+    end
+  end
 end
