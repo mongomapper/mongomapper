@@ -110,7 +110,7 @@ module MongoMapper
         end
 
         def from_mongo(value)
-          value && (value.instance_of?(self) ? value : load(value))
+          value && (value.is_a?(self) ? value : load(value))
         end
 
         # load is overridden in identity map to ensure same objects are loaded

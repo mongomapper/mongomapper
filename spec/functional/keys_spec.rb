@@ -367,4 +367,20 @@ describe "Keys" do
       instance.a_num.should == 10
     end
   end
+
+  describe "default value is child of embedded class" do
+    class EmbeddedParent
+      include MongoMapper::EmbeddedDocument
+    end
+    class EmbeddedChild < EmbeddedParent
+    end
+    class DocumentWithEmbeddedAndDefaultValue
+      include MongoMapper::Document
+      key :my_embedded, EmbeddedParent, default: -> { EmbeddedChild.new }
+    end
+    it "should work" do
+      instance = DocumentWithEmbeddedAndDefaultValue.new
+      instance.my_embedded.instance_of?(EmbeddedChild)
+    end
+  end
 end
