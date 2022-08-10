@@ -380,7 +380,7 @@ describe "Keys" do
     end
     it "should work" do
       instance = DocumentWithEmbeddedAndDefaultValue.new
-      instance.my_embedded.instance_of?(EmbeddedChild)
+      instance.my_embedded.should be_instance_of(EmbeddedChild)
     end
   end
 end
