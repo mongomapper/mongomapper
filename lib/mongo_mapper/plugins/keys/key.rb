@@ -90,11 +90,11 @@ module MongoMapper
           return unless default?
 
           if default.instance_of? Proc
-            default.call
+            type ? type.to_mongo(default.call) : default.call
           else
             # Using Marshal is easiest way to get a copy of mutable objects
             # without getting an error on immutable objects
-            Marshal.load(Marshal.dump(default))
+            type ? type.to_mongo(Marshal.load(Marshal.dump(default))) : Marshal.load(Marshal.dump(default))
           end
         end
 

@@ -367,4 +367,80 @@ describe "Keys" do
       instance.a_num.should == 10
     end
   end
+
+  describe 'default value is child of embedded class' do
+    class EmbeddedParent
+      include MongoMapper::EmbeddedDocument
+    end
+    class EmbeddedChild < EmbeddedParent
+    end
+
+    context 'with type' do
+      class DocumentWithEmbeddedAndDefaultValue
+        include MongoMapper::Document
+        key :my_embedded, EmbeddedParent, default: -> { EmbeddedChild.new }
+      end
+
+      it "should work" do
+        instance = DocumentWithEmbeddedAndDefaultValue.new
+        instance.my_embedded.should be_instance_of(EmbeddedChild)
+      end
+    end
+
+    context 'without type' do
+      class DocumentWithEmbeddedAndDefaultValueWithoutType
+        include MongoMapper::Document
+        key :my_embedded, EmbeddedParent, default: -> { EmbeddedChild.new }
+      end
+
+      it "should work" do
+        instance = DocumentWithEmbeddedAndDefaultValueWithoutType.new
+        instance.my_embedded.should be_instance_of(EmbeddedChild)
+      end
+    end
+  end
+
+  describe 'default value is a custom class' do
+    class TimeOfDay
+      attr_reader :seconds
+
+      def initialize(seconds)
+        @seconds = seconds
+      end
+
+      def self.from_mongo(value)
+        return nil if value.blank?
+
+        new(value.to_i)
+      end
+
+      def self.to_mongo(value)
+        return nil if value.blank?
+
+        value.seconds
+      end
+    end
+
+    context 'with type' do
+      class DocumentWithCustomClass
+        include MongoMapper::Document
+        key :my_embedded, TimeOfDay, default: -> { TimeOfDay.new(900) }
+      end
+      it "should work" do
+        instance = DocumentWithCustomClass.new
+        instance.my_embedded.should be_instance_of(TimeOfDay)
+      end
+    end
+
+    context 'without type' do
+      class DocumentWithCustomClassWithoutType
+        include MongoMapper::Document
+        key :my_embedded, default: -> { TimeOfDay.new(900) }
+      end
+      it "should work" do
+        instance = DocumentWithCustomClass.new
+        instance.my_embedded.should be_instance_of(TimeOfDay)
+      end
+    end
+  end
 end
