@@ -69,6 +69,18 @@ def EDoc(name='Class', &block)
   klass
 end
 
+def Subclass(super_class, name='Subclass', &block)
+  klass = Class.new(super_class) do
+    if name
+      class_eval "def self.name; '#{name}' end"
+      class_eval "def self.to_s; '#{name}' end"
+    end
+  end
+
+  klass.class_eval(&block) if block_given?
+  klass
+end
+
 def drop_indexes(klass)
   klass.collection.indexes.drop_all if klass.database.collection_names.include?(klass.collection.name)
 end

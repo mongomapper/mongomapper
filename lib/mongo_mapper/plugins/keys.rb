@@ -442,7 +442,7 @@ module MongoMapper
       end
 
       def set_parent_document(key, value)
-        if key.type and value.instance_of?(key.type) && key.embeddable? && value.respond_to?(:_parent_document)
+        if key.type and value.kind_of?(key.type) && key.embeddable? && value.respond_to?(:_parent_document)
           value._parent_document = self
         end
       end
