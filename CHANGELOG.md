@@ -5,6 +5,19 @@
 ### Doc Fixes:
 -->
 
+## Unreleased
+### Enhancements:
+
+* PR-709 mopp <hello@mopp.jp>, mitsubosh <yuya.mitsuboshi@gmail.com> Add MongoMapper.filter_attributes
+
+### Bug Fixes:
+
+* PR-714 Masato Ikeda <masato.ikeda@gmail.com> Set _parent_document and _root_document on subclasses of embedded documents
+
+### Doc Fixes:
+
+* PR-707 Masato Ikeda <masato.ikeda@gmail.com> Update README about supported versions
+
 ## 0.15.6 - 2022-06-09
 
 * PR-690 jamieorc <jamieorc@gmail.com> Update MongoMapper::Connection.handle_passenger_forking for Mongo 2.x
