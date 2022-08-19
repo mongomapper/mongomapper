@@ -369,18 +369,15 @@ describe "Keys" do
   end
 
   describe "default value is child of embedded class" do
-    class EmbeddedParent
-      include MongoMapper::EmbeddedDocument
-    end
-    class EmbeddedChild < EmbeddedParent
-    end
-    class DocumentWithEmbeddedAndDefaultValue
-      include MongoMapper::Document
-      key :my_embedded, EmbeddedParent, default: -> { EmbeddedChild.new }
-    end
     it "should work" do
-      instance = DocumentWithEmbeddedAndDefaultValue.new
-      instance.my_embedded.should be_instance_of(EmbeddedChild)
+      embedded_class = EDoc("Embedded")
+      embedded_subclass = Subclass(embedded_class, embedded_class)
+      doc_class = Doc("Doc") do
+        key :my_embedded, embedded_class, default: -> { embedded_subclass.new }
+      end
+
+      doc = doc_class.new
+      doc.my_embedded.should be_instance_of(embedded_subclass)
     end
   end
 end
