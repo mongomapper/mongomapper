@@ -12,7 +12,9 @@
 
 ### Bug Fixes:
 
+* PR-708 Antony <Antsiscool@users.noreply.github.com> Defaults values for embedded documents with subclasses no longer with on 0.15
 * PR-714 Masato Ikeda <masato.ikeda@gmail.com> Set _parent_document and _root_document on subclasses of embedded documents
+* PR-715 Masato Ikeda <masato.ikeda@gmail.com> Keep type of default_value of embedded documents as declared
 
 ### Doc Fixes:
 
