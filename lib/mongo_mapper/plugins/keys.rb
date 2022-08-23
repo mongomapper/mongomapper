@@ -477,7 +477,9 @@ module MongoMapper
       def initialize_default_values(except = {})
         @__mm_default_keys.each do |key|
           if !(except && except.key?(key.name))
-            internal_write_key key.name, key.default_value, false
+            value = key.default_value
+            value = key.type ? key.type.to_mongo(value) : value
+            internal_write_key key.name, value, false
           end
         end
       end

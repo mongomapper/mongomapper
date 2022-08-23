@@ -276,6 +276,17 @@ describe "Key" do
       it "should work with procs" do
          Key.new(:foo, String, :default => lambda { return 'hello world' }).default_value.should == "hello world"
       end
+
+      it "should work with embedded document" do
+        embedded = EDoc()
+        Key.new(:foo, embedded, :default => lambda { embedded.new }).default_value.should be_instance_of(embedded)
+      end
+
+      it "should work with subclass of embedded document" do
+        embedded = EDoc()
+        subclass = Subclass(embedded)
+        Key.new(:foo, embedded, :default => lambda { subclass.new }).default_value.should be_instance_of(subclass)
+      end
     end
   end
 end # KeyTest
