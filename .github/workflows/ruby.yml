@@ -33,6 +33,18 @@ jobs:
           - "0"
         exclude:
           - ruby-version: jruby
+            gemfile: gemfiles/rails5_0.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
+          - ruby-version: jruby
+            gemfile: gemfiles/rails5_1.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
+          - ruby-version: jruby
+            gemfile: gemfiles/rails5_2.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
+          - ruby-version: jruby
             gemfile: gemfiles/rails7_0.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
