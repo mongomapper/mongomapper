@@ -9,6 +9,7 @@
 ### Enhancements:
 
 * PR-709 mopp <hello@mopp.jp>, mitsubosh <yuya.mitsuboshi@gmail.com> Add MongoMapper.filter_attributes
+* PR-716 shimiwaka <kei_ikeda@r.recruit.co.jp> Add Ruby 3.2 support
 
 ### Bug Fixes:
 
