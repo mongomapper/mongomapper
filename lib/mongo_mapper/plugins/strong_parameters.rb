@@ -6,7 +6,11 @@ module MongoMapper
       included do
         include ::ActiveModel::ForbiddenAttributesProtection
         class << self
-          deprecate :attr_protected, :attr_accessible
+          if ::ActiveSupport.version >= Gem::Version.new("7.1")
+            deprecate :attr_protected, :attr_accessible, deprecator: ::MongoMapper.deprecator
+          else
+            deprecate :attr_protected, :attr_accessible
+          end
         end
       end
 

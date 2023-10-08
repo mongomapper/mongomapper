@@ -49,6 +49,10 @@ module MongoMapper
       end
     end
 
+    initializer "mongo_mapper.deprecator" do |app|
+      app.deprecators[:mongo_mapper] = MongoMapper.deprecator if app.respond_to?(:deprecators)
+    end
+
     # This sets the database configuration and establishes the connection.
     initializer "mongo_mapper.initialize_database" do |app|
       config_file = Rails.root.join('config/mongo.yml')
