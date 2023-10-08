@@ -33,6 +33,7 @@ jobs:
         enable-sharding:
           - "0"
         exclude:
+          # jruby doesn't work with rails <= 5.2
           - ruby-version: jruby
             gemfile: gemfiles/rails5_0.gemfile
             mongo-image: mongo:4.4
@@ -45,10 +46,14 @@ jobs:
             gemfile: gemfiles/rails5_2.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
+
+          # jruby doesn't work with rails >= 7.0
           - ruby-version: jruby
             gemfile: gemfiles/rails7_0.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
+
+          # ruby 2.4 doesn't work with rails >= 6.0
           - ruby-version: 2.4.10
             gemfile: gemfiles/rails6_0.gemfile
             mongo-image: mongo:4.4
@@ -61,14 +66,20 @@ jobs:
             gemfile: gemfiles/rails7_0.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
+
+          # ruby 2.5 doesn't work with rails >= 7.0
           - ruby-version: 2.5.9
             gemfile: gemfiles/rails7_0.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
+
+          # ruby 2.6 doesn't work with rails >= 7.0
           - ruby-version: 2.6.10
             gemfile: gemfiles/rails7_0.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
+
+          # ruby 3.0 doesn't work with rails <= 5.2
           - ruby-version: 3.0.6
             gemfile: gemfiles/rails5_0.gemfile
             mongo-image: mongo:4.4
@@ -81,6 +92,8 @@ jobs:
             gemfile: gemfiles/rails5_2.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
+
+          # ruby 3.1 doesn't work with rails <= 5.2
           - ruby-version: 3.1.4
             gemfile: gemfiles/rails5_0.gemfile
             mongo-image: mongo:4.4
@@ -93,6 +106,8 @@ jobs:
             gemfile: gemfiles/rails5_2.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
+
+          # ruby 3.2 doesn't work with rails <= 5.2
           - ruby-version: 3.2.2
             gemfile: gemfiles/rails5_0.gemfile
             mongo-image: mongo:4.4
