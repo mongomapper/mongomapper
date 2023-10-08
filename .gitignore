@@ -19,3 +19,4 @@ vendor/gems
 *.tmproj
 spec/examples.txt
 .byebug_history
+gemfiles/*.gemfile.lock
