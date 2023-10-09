@@ -10,6 +10,8 @@
 
 * PR-709 mopp <hello@mopp.jp>, mitsubosh <yuya.mitsuboshi@gmail.com> Add MongoMapper.filter_attributes
 * PR-716 shimiwaka <kei_ikeda@r.recruit.co.jp> Add Ruby 3.2 support
+* PR-719 Masato Ikeda <masato.ikeda@gmail.com> Add MongoDB 6.0 and 7.0 to CI matrix
+* PR-720 Masato Ikeda <masato.ikeda@gmail.com> Support Rails 7.1
 
 ### Bug Fixes:
 
