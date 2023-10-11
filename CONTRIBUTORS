@@ -8,11 +8,11 @@ Brandon Keepers <brandon@collectiveidea.com>
 Brian Hempel <bnhempel@mtu.edu>
 James Herdman <james.herdman@gmail.com>
 Steve Richert <steve.richert@gmail.com>
+Masato Ikeda <masato.ikeda@gmail.com>
 Frederick Cheung <frederick.cheung@gmail.com>
 Felipe Coury <felipe.coury@gmail.com>
 Srdjan Grubor <sgnn7@sgnn7.org>
 Durran Jordan <durran@gmail.com>
-Masato Ikeda <masato.ikeda@gmail.com>
 Jamie van Dyke <jamie@fearoffish.com>
 Brian Alexander <balexand@gmail.com>
 Hubert <hubert.lepicki@amberbit.com>
@@ -44,11 +44,13 @@ Vladimir Andrijevik <vladimir@andrijevik.net>
 Stephen Eley <sfeley@gmail.com>
 bearded <z.club.bearded@gmail.com>
 Ryan Glover <ersatzryan@gmail.com>
+mopp <hello@mopp.jp>
 Sandro Turriate <sandro.turriate@gmail.com>
 Aubrey Holland <aubreyholland@gmail.com>
 Michael Pabst and Thomas Shafer <techops+pabst+thomas@change.org>
 Sean Cribbs <seancribbs@gmail.com>
 Steve Sloan <steve@finagle.org>
+Antony <Antsiscool@users.noreply.github.com>
 Chris Hanks <christopher.m.hanks@gmail.com>
 Garry Hill <garry@magnetised.info>
 Nathan Stults <hereiam@sonic.net>
@@ -64,8 +66,8 @@ Jacob Maine & Travis Bell <pair+jacob+travis@pivotallabs.com>
 Christian Murphy <cmurphy@drwholdings.com>
 Matthias Siegel <matthiassiegel@gmail.com>
 Tom Clarke <tom.clarke@u2i.com>
-Kenichi Kamiya <kachick1@gmail.com>
 Christopher Giroir <kelsin@valefor.com>
+Kenichi Kamiya <kachick1@gmail.com>
 Christopher Meiklejohn <christopher.meiklejohn@gmail.com>
 Dave Ott and Sandro Turriate <dev+daveott+sandro@hashrocket.com>
 Daniel Poineau <poineau@nationbuilder.com>
@@ -75,54 +77,56 @@ Joel Junström <joel.junstrom@oktavilla.se>
 Clinton R. Nixon <crnixon@gmail.com>
 Papipo <papipo@gmail.com>
 Pieter Noordhuis <pcnoordhuis@gmail.com>
+mitsubosh <yuya.mitsuboshi@gmail.com>
 Durran Jordan and Sandro Turriate <dev+durran+sandro@hashrocket.com>
 Steve Smith <steve@orderedlist.com>
-Leif Ringstad <leifcr@gmail.com>
 Sho Fukamachi <sho@fukamachi.org>
+Leif Ringstad <leifcr@gmail.com>
 Jean-Philippe Bougie <jp.bougie@gmail.com>
 Seth Ladd <sladd@camber.com>
-jamieorc <jamieorc@gmail.com>
 Jason Staten <jstaten07@gmail.com>
+jamieorc <jamieorc@gmail.com>
 Kamil Kuzma <kamil.kuzma@gmail.com>
+shimiwaka <kei_ikeda@r.recruit.co.jp>
 Kevin Shekleton <kevin.shekleton@gmail.com>
 Sam Pohlenz <sam@sampohlenz.com>
+Ryan Angilly <ryan@angilly.com>
 Steve Cohen <steve@yutdut.com>
 Marc Love <marcslove@gmail.com>
-Ryan Angilly <ryan@angilly.com>
 Rainux Luo <rainux@gmail.com>
 Elijah Miller <elijah.miller@gmail.com>
-Blake Carlson <blc@punchbowlsoftware.com>
 aledalgrande <aledalgrande@gmail.com>
+Blake Carlson <blc@punchbowlsoftware.com>
 Harry Vangberg <harry@vangberg.name>
-Hubert Łępicki <hubert@zorza.(none)>
 Eric Anderson <eric@pixelwareinc.com>
-Jim Garvin <jim@thegarvin.com>
+Hubert Łępicki <hubert@zorza.(none)>
 Jorge H. Cuadrado <kuadrosxx@gmail.com>
+Jim Garvin <jim@thegarvin.com>
 Obie Fernandez and Sandro Turriate <dev+obie+sandro@hashrocket.com>
-Ewout <e@ewout.name>
 Billy Kimble <basslines@gmail.com>
-Michael Dwan <mpdwan@gmail.com>
+Ewout <e@ewout.name>
 Darragh Curran <darragh@peelmeagrape.net>
-Shevaun Coker <shevaun.coker@gmail.com>
+Michael Dwan <mpdwan@gmail.com>
 dgraham <david.malcom.graham@gmail.com>
-Kevin McFadden <kevin@conceptsahead.com>
+Shevaun Coker <shevaun.coker@gmail.com>
 Seth Jeffery <seth@quipper.com>
+Kevin McFadden <kevin@conceptsahead.com>
 Tim Perkins <tjwp@yesware.com>
 Dave Ott and Durran Jordan <dev+daveott+durran@hashrocket.com>
 Michael Groeneman <michael@groeneman.com>
 Thomas Dmytryk <tdmytryk@fanhattan.com>
 Robert Lowe <robert@iblargz.com>
-Daniel Becker <daniel.becker@me.com>
 Brian Hempel <brian@ihswebdesign.com>
-Mike Dillon <mike.dillon@digisynd.com>
-Michael Cohen <michael@planetcohen.com>
+Daniel Becker <daniel.becker@me.com>
 José Valim <jose.valim@plataformatec.com.br>
+Michael Cohen <michael@planetcohen.com>
+Mike Dillon <mike.dillon@digisynd.com>
 Houdini <dmitrii.golub@gmail.com>
-Pavel Forkert <fxposter@gmail.com>
-Bethany Marie Soule <bsoule@gmail.com>
-bhbryant <benjamin@bryantmarkowsky.com>
 Brandon Keepers <bkeepers@github.com>
+bhbryant <benjamin@bryantmarkowsky.com>
+Pavel Forkert <fxposter@gmail.com>
 Kristine Hines <Hines.Kristine@gmail.com>
+Bethany Marie Soule <bsoule@gmail.com>
 Olle Jonsson <olle.jonsson@gmail.com>
 Jack Chen <chendo@chendo.net>
 thinca <thinca@gmail.com>
@@ -130,19 +134,19 @@ Pablo Torres <tn.pablo@gmail.com>
 Marcel Jackwerth <marcel@northdocks.com>
 Alex Heaton <Alex@Heaton.me>
 Michael Wasser <michael.wasser@bluenodes.com>
-Luciano Sousa <ls@lucianosousa.net>
-Tad Hosford <tad.hosford@gmail.com>
-Dima Samodurov <dmitriy.samodurov@sap.com>
-Mike Dillon <mike@embody.org>
-James Bowles <james.l.bowles@gmail.com>
-Kohei Hasegawa <ameutau@gmail.com>
-Nigel Ramsay <nigel.ramsay@abletech.co.nz>
-Ray Krueger <raykrueger@gmail.com>
 Nicolas Viennot <nicolas@viennot.biz>
-Wang Li <foxban@gmail.com>
-Kevin Rood <kevinrood@acceletroncorp.com>
-SteffanPerry <sperry1988@gmail.com>
+Nigel Ramsay <nigel.ramsay@abletech.co.nz>
+Luciano Sousa <ls@lucianosousa.net>
+Kohei Hasegawa <ameutau@gmail.com>
+Mike Dillon <mike@embody.org>
+Tad Hosford <tad.hosford@gmail.com>
+Ray Krueger <raykrueger@gmail.com>
+James Bowles <james.l.bowles@gmail.com>
+Dima Samodurov <dmitriy.samodurov@sap.com>
 jnunemaker <nunemaker@gmail.com>
+Wang Li <foxban@gmail.com>
+SteffanPerry <sperry1988@gmail.com>
+Kevin Rood <kevinrood@acceletroncorp.com>
+Tim Connor & Tim Uruski <pair+tconnor+tim@pivotallabs.com>
 John Nunemaker <john@github.com>
 Joseph Caudle <joseph@josephcaudle.com>
-Tim Connor & Tim Uruski <pair+tconnor+tim@pivotallabs.com>
