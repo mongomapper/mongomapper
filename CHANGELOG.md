@@ -5,7 +5,9 @@
 ### Doc Fixes:
 -->
 
-## Unreleased
+<!-- ## Unreleased -->
+
+## 0.16.0 - 2023-10-10
 
 ### Enhancements:
 

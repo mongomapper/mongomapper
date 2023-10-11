@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mongo_mapper (0.15.6)
+    mongo_mapper (0.16.0)
       activemodel (>= 5.0)
       activemodel-serializers-xml (~> 1.0)
       activesupport (>= 5.0)
@@ -113,8 +113,8 @@ GEM
     mime-types-data (3.2022.0105)
     mini_mime (1.1.2)
     minitest (5.15.0)
-    mongo (2.17.1)
-      bson (>= 4.8.2, < 5.0.0)
+    mongo (2.19.1)
+      bson (>= 4.14.1, < 5.0.0)
     multi_json (1.15.0)
     netrc (0.11.0)
     nio4r (2.5.8)
@@ -161,7 +161,7 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rexml (3.2.5)
+    rexml (3.2.6)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
       rspec-expectations (~> 3.11.0)
