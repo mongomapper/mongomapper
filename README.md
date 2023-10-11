@@ -30,14 +30,14 @@ work some more on the project, send an email to Scott Taylor
 
 MongoMapper is tested against:
 
-* MRI 2.4 - 3.2
-* JRuby (Versions with 3.1 compatibility)
+- MRI 2.4 - 3.2
+- JRuby (Versions with 3.1 compatibility)
 
 Additionally, MongoMapper is tested against:
 
-* Rails 5.0 - 5.2
-* Rails 6.0 - 6.1
-* Rails 7.0 - 7.1
+- Rails 5.0 - 5.2
+- Rails 6.0 - 6.1
+- Rails 7.0 - 7.1
 
 Note, if you are using Ruby 3.0+, you'll need Rails 6.0+.
 
@@ -47,11 +47,11 @@ Note, if you are using Ruby 3.0+, you'll need Rails 6.0+.
     $ bundle install
     $ bundle exec rake
 
-* Fork the project.
-* Make your feature addition or bug fix. All specs should pass.
-* Add specs for your changes. This is important so that it doesn't break in a future version.
-* Commit, do not mess with Rakefile, version, or history. If you want to have your own version, that is fine but bump version in a commit by itself in another branch so a maintainer can ignore it when your pull request is merged.
-* Send a pull request. Bonus points for topic branches.
+- Fork the project.
+- Make your feature addition or bug fix. All specs should pass.
+- Add specs for your changes. This is important so that it doesn't break in a future version.
+- Commit, do not mess with Rakefile, version, or history. If you want to have your own version, that is fine but bump version in a commit by itself in another branch so a maintainer can ignore it when your pull request is merged.
+- Send a pull request. Bonus points for topic branches.
 
 ## How to release
 
@@ -69,9 +69,9 @@ Copyright (c) 2009-2022 MongoMapper. See LICENSE for details.
 
 MongoMapper/Plucky is:
 
-* John Nunemaker
-* Chris Heald
-* Scott Taylor
+- John Nunemaker
+- Chris Heald
+- Scott Taylor
 
 But all open source projects are a team effort and could not happen without
-everyone who has contributed.  See `CONTRIBUTORS` for the full list.  Thank you!
+everyone who has contributed. See `CONTRIBUTORS` for the full list. Thank you!
