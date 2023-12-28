@@ -7,6 +7,19 @@
 
 <!-- ## Unreleased -->
 
+## Unreleased
+
+### Enhancements:
+
+- PR-721 Masato Ikeda <masato.ikeda@gmail.com> Add Ruby 3.3 to CI matrix
+
+### Bug Fixes:
+
+
+### Doc Fixes:
+
+
+
 ## 0.16.0 - 2023-10-10
 
 ### Enhancements:
