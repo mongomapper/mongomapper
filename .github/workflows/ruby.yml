@@ -21,6 +21,7 @@ jobs:
           - 3.0.6
           - 3.1.4
           - 3.2.2
+          - 3.3.0
         gemfile:
           - gemfiles/rails5_0.gemfile
           - gemfiles/rails5_1.gemfile
@@ -137,16 +138,30 @@ jobs:
             gemfile: gemfiles/rails5_2.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
+
+          # ruby 3.3 doesn't work with rails <= 5.2
+          - ruby-version: 3.3.0
+            gemfile: gemfiles/rails5_0.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
+          - ruby-version: 3.3.0
+            gemfile: gemfiles/rails5_1.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
+          - ruby-version: 3.3.0
+            gemfile: gemfiles/rails5_2.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
         include:
-          - { "ruby-version": 3.2.2, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "mongo:4.2",               "enable-sharding": "0" }
-          - { "ruby-version": 3.2.2, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "mongo:5.0",               "enable-sharding": "0" }
-          - { "ruby-version": 3.2.2, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "mongo:6.0",               "enable-sharding": "0" }
-          - { "ruby-version": 3.2.2, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "mongo:7.0",               "enable-sharding": "0" }
-          - { "ruby-version": 3.2.2, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "a2ikm/sharded-mongo:4.2", "enable-sharding": "1" }
-          - { "ruby-version": 3.2.2, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "a2ikm/sharded-mongo:4.4", "enable-sharding": "1" }
-          - { "ruby-version": 3.2.2, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "a2ikm/sharded-mongo:5.0", "enable-sharding": "1" }
-          - { "ruby-version": 3.2.2, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "a2ikm/sharded-mongo:6.0", "enable-sharding": "1" }
-          - { "ruby-version": 3.2.2, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "a2ikm/sharded-mongo:7.0", "enable-sharding": "1" }
+          - { "ruby-version": 3.3.0, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "mongo:4.2",               "enable-sharding": "0" }
+          - { "ruby-version": 3.3.0, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "mongo:5.0",               "enable-sharding": "0" }
+          - { "ruby-version": 3.3.0, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "mongo:6.0",               "enable-sharding": "0" }
+          - { "ruby-version": 3.3.0, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "mongo:7.0",               "enable-sharding": "0" }
+          - { "ruby-version": 3.3.0, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "a2ikm/sharded-mongo:4.2", "enable-sharding": "1" }
+          - { "ruby-version": 3.3.0, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "a2ikm/sharded-mongo:4.4", "enable-sharding": "1" }
+          - { "ruby-version": 3.3.0, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "a2ikm/sharded-mongo:5.0", "enable-sharding": "1" }
+          - { "ruby-version": 3.3.0, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "a2ikm/sharded-mongo:6.0", "enable-sharding": "1" }
+          - { "ruby-version": 3.3.0, "gemfile": "gemfiles/rails7_1.gemfile", "mongo-image": "a2ikm/sharded-mongo:7.0", "enable-sharding": "1" }
     services:
       mongo:
         image: ${{ matrix.mongo-image }}
