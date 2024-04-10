@@ -393,7 +393,12 @@ describe "Support" do
 
       it "should support ruby driver syntax also" do
         id = BSON::ObjectId.new
-        id.original_to_json.should == %Q({"$oid":"#{id}"})
+
+        if Gem::Version.new(BSON::VERSION) >= Gem::Version.new("5.0.0")
+          id.original_to_json.should == %Q("#{id}")
+        else
+          id.original_to_json.should == %Q({"$oid":"#{id}"})
+        end
       end
     end
   end
