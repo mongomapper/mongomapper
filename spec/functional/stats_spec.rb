@@ -83,17 +83,9 @@ describe "Stats" do
       Docs.stats.total_index_size.should == get_stats['totalIndexSize']
     end
 
-    context 'with option' do
-      context 'option[:scale]' do
-        it "should have the correct total index size (with scale)" do
-          Docs.stats({ scale: 1_024 }).total_index_size.should == (get_stats['totalIndexSize'] / 1_024)
-        end
-      end
-
-      context 'not allowed option' do
-        it "should have the correct total index size (ignores invalid option)" do
-          Docs.stats({ invalid: 1 }).total_index_size.should == get_stats['totalIndexSize']
-        end
+    context 'with scale keyword argument' do
+      it "should have the correct total index size (with scale)" do
+        Docs.stats(scale: 1_024).total_index_size.should == (get_stats['totalIndexSize'] / 1_024)
       end
     end
   end
