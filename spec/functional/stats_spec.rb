@@ -82,5 +82,11 @@ describe "Stats" do
     it "should have the correct total index size" do
       Docs.stats.total_index_size.should == get_stats['totalIndexSize']
     end
+
+    context 'with scale keyword argument' do
+      it "should have the correct total index size (with scale)" do
+        Docs.stats(scale: 1_024).total_index_size.should == (get_stats['totalIndexSize'] / 1_024)
+      end
+    end
   end
 end

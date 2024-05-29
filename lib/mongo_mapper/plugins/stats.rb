@@ -5,8 +5,11 @@ module MongoMapper
     module Stats
       extend ActiveSupport::Concern
       module ClassMethods
-        def stats
-          stats = database.command(:collstats => collection.name).documents[0]
+        def stats(scale: nil)
+          query = { :collstats => collection.name }
+          query[:scale] = scale if scale
+
+          stats = database.command(query).documents[0]
           Struct.new(*stats.keys.collect { |key| key.underscore.to_sym }).new(*stats.values)
         rescue
           nil
