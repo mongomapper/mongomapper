@@ -201,7 +201,7 @@ jobs:
       ENABLE_SHARDING: "${{ matrix.enable-sharding }}"
     steps:
     - name: Git checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
