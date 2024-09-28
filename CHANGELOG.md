@@ -13,6 +13,7 @@
 
 - PR-721 Masato Ikeda <masato.ikeda@gmail.com> Add Ruby 3.3 to CI matrix
 - PR-722 mitsubosh <yuya.mitsuboshi@gmail.com> Support scale option for collStats
+- PR-728 Masato Ikeda <masato.ikeda@gmail.com> Add Rails 7.2 to CI matrix
 
 ### Bug Fixes:
 
