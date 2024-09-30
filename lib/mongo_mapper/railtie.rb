@@ -57,7 +57,7 @@ module MongoMapper
     initializer "mongo_mapper.initialize_database" do |app|
       config_file = Rails.root.join('config/mongo.yml')
       if config_file.file?
-        config = YAML.load(ERB.new(config_file.read).result)
+        config = YAML.load(ERB.new(config_file.read).result, aliases: true)
         MongoMapper.setup(config, Rails.env, :logger => Rails.logger)
       end
     end
