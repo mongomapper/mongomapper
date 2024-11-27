@@ -97,6 +97,45 @@ module MongoMapper
     end
   end
 
+  DOCUMENT_MODULES = [
+    MongoMapper::Plugins::Accessible,
+    MongoMapper::Plugins::ActiveModel,
+    MongoMapper::Plugins::Associations,
+    MongoMapper::Plugins::Caching,
+    MongoMapper::Plugins::Callbacks,
+    MongoMapper::Plugins::Clone,
+    MongoMapper::Plugins::CounterCache,
+    MongoMapper::Plugins::Dirty,
+    MongoMapper::Plugins::Document,
+    MongoMapper::Plugins::Dumpable,
+    MongoMapper::Plugins::DynamicQuerying,
+    MongoMapper::Plugins::EmbeddedCallbacks,
+    MongoMapper::Plugins::EmbeddedDocument,
+    MongoMapper::Plugins::Equality,
+    MongoMapper::Plugins::IdentityMap,
+    MongoMapper::Plugins::Indexes,
+    MongoMapper::Plugins::Inspect,
+    MongoMapper::Plugins::Keys,
+    MongoMapper::Plugins::Keys::Static,
+    MongoMapper::Plugins::Logger,
+    MongoMapper::Plugins::Modifiers,
+    MongoMapper::Plugins::Pagination,
+    MongoMapper::Plugins::PartialUpdates,
+    MongoMapper::Plugins::Persistence,
+    MongoMapper::Plugins::Protected,
+    MongoMapper::Plugins::Querying,
+    MongoMapper::Plugins::Rails,
+    MongoMapper::Plugins::Safe,
+    MongoMapper::Plugins::Sci,
+    MongoMapper::Plugins::Scopes,
+    MongoMapper::Plugins::Serialization,
+    MongoMapper::Plugins::Stats,
+    MongoMapper::Plugins::Timestamps,
+    MongoMapper::Plugins::Touch,
+    MongoMapper::Plugins::Userstamps,
+    MongoMapper::Plugins::Validations,
+  ].freeze
+
   extend Connection
   extend Options
 end
