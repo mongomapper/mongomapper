@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mongo_mapper (0.16.0)
+    mongo_mapper (0.17.0)
       activemodel (>= 5.0)
       activemodel-serializers-xml (~> 1.0)
       activesupport (>= 5.0)
