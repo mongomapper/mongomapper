@@ -7,20 +7,22 @@
 
 <!-- ## Unreleased -->
 
-## Unreleased
+<!-- ## Unreleased
+
+### Enhancements:
+
+### Bug Fixes:
+
+### Doc Fixes: -->
+
+## 0.17.0 - 2024-12-10
 
 ### Enhancements:
 
 - PR-721 Masato Ikeda <masato.ikeda@gmail.com> Add Ruby 3.3 to CI matrix
 - PR-722 mitsubosh <yuya.mitsuboshi@gmail.com> Support scale option for collStats
 - PR-728 Masato Ikeda <masato.ikeda@gmail.com> Add Rails 7.2 to CI matrix
-
-### Bug Fixes:
-
-
-### Doc Fixes:
-
-
+- PR-731 Masato Ikeda <masato.ikeda@gmail.com> Support Rails 8.0
 
 ## 0.16.0 - 2023-10-10
 
