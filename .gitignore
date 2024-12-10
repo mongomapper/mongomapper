@@ -6,3 +6,4 @@ gemfiles
 *.gem
 *.tmproj
 tmp
+spec
