@@ -18,7 +18,7 @@ module MongoMapper
       end
 
       def serializable_hash(options = nil)
-        options ||= {}
+        options = options ? options.dup : {}
 
         options[:only]   = Array.wrap(options[:only]).map { |k| k.to_s }
         options[:except] = Array.wrap(options[:except]).map { |k| k.to_s }
