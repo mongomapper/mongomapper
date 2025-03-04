@@ -3,6 +3,11 @@ source 'https://rubygems.org'
 gem 'rake'
 gem 'multi_json', '~> 1.2'
 
+if RUBY_VERSION >= '3.4'
+  # the mongo gem depends on the base64 gem, which has been extracted as a bundled gem since Ruby 3.4.
+  gem 'base64'
+end
+
 if RUBY_PLATFORM != "java"
   gem 'coveralls', :require => false
   gem 'simplecov', :require => false
