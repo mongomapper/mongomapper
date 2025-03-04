@@ -4,6 +4,9 @@ gemspec :path => '../'
 gem 'rails', '~> 5.2.0', :group => :test
 
 if RUBY_VERSION >= '3.4'
+  # activesupport 5.2 depends on the drb gem, which has been extracted as a bundled gem since Ruby 3.4.
+  gem 'drb'
+
   # activesupport 5.2 depends on the mutex_m gem, which has been extracted as a bundled gem since Ruby 3.4.
   gem 'mutex_m'
 end
