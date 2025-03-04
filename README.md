@@ -30,7 +30,7 @@ work some more on the project, send an email to Scott Taylor
 
 MongoMapper is tested against:
 
-- MRI 2.4 - 3.2
+- MRI 2.4 - 3.4
 - JRuby (Versions with 3.1 compatibility)
 
 Additionally, MongoMapper is tested against:
@@ -40,7 +40,11 @@ Additionally, MongoMapper is tested against:
 - Rails 7.0 - 7.2
 - Rails 8.0
 
-Note, if you are using Ruby 3.0+, you'll need Rails 6.0+.
+### Notes
+
+- if you are using Ruby >= 3.0, you'll need Rails >= 6.0.
+- if you are using Ruby >= 3.4 and Rails <= 7.0, you'll need to add the drb gem to your Gemfile
+- if you are using Ruby >= 3.4 and Rails <= 7.1, you'll need to add the mutex_m gem to your Gemfile
 
 ## Contributing & Development
 
