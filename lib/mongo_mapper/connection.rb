@@ -77,6 +77,12 @@ module MongoMapper
       connect(environment, options)
     end
 
+    def setup_with_config_file(path, environment, options={})
+      source = ERB.new(File.read(path)).result
+      config = YAML.load(source, aliases: true)
+      MongoMapper.setup(config, environment, options)
+    end
+
     def handle_passenger_forking
       # :nocov:
       if defined?(PhusionPassenger)
