@@ -79,7 +79,14 @@ module MongoMapper
 
     def setup_with_config_file(path, environment, options={})
       source = ERB.new(File.read(path)).result
-      config = YAML.load(source, aliases: true)
+
+      yaml_major, yaml_minor, _ = Gem::Version.new(YAML::VERSION).segments
+      config = if yaml_major >= 4 || (yaml_major == 3 && yaml_minor >= 1)
+        YAML.safe_load(source, aliases: true)
+      else
+        YAML.safe_load(source, [], [], true)
+      end
+
       MongoMapper.setup(config, environment, options)
     end
 
