@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         ruby-version:
-          - jruby
+          - jruby-9.4
           - 2.4.10
           - 2.5.9
           - 2.6.10
@@ -37,34 +37,34 @@ jobs:
         enable-sharding:
           - "0"
         exclude:
-          # jruby doesn't work with rails <= 5.2
-          - ruby-version: jruby
+          # jruby-9.4 doesn't work with rails <= 5.2
+          - ruby-version: jruby-9.4
             gemfile: gemfiles/rails5_0.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
-          - ruby-version: jruby
+          - ruby-version: jruby-9.4
             gemfile: gemfiles/rails5_1.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
-          - ruby-version: jruby
+          - ruby-version: jruby-9.4
             gemfile: gemfiles/rails5_2.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
 
-          # jruby doesn't work with rails >= 7.0
-          - ruby-version: jruby
+          # jruby-9.4 doesn't work with rails >= 7.0
+          - ruby-version: jruby-9.4
             gemfile: gemfiles/rails7_0.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
-          - ruby-version: jruby
+          - ruby-version: jruby-9.4
             gemfile: gemfiles/rails7_1.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
-          - ruby-version: jruby
+          - ruby-version: jruby-9.4
             gemfile: gemfiles/rails7_2.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
-          - ruby-version: jruby
+          - ruby-version: jruby-9.4
             gemfile: gemfiles/rails8_0.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
