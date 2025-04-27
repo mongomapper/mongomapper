@@ -50,6 +50,11 @@ module MongoMapper
       config[environment.to_s]
     end
 
+    MONGOMAPPER_WRAPPING_LIBRARY = {
+      name: 'MongoMapper',
+      version: Version,
+    }.freeze
+
     def connect(environment, options={})
       raise 'Set config before connecting. MongoMapper.config = {...}' if config.blank?
       env = config_for_environment(environment).dup
@@ -68,6 +73,8 @@ module MongoMapper
       end
 
       options[:read] = options[:read].to_sym if options[:read].is_a? String
+      options[:wrapping_libraries] = [MONGOMAPPER_WRAPPING_LIBRARY]
+
       MongoMapper.connection = Mongo::Client.new(addresses_or_uri, options)
     end
 
