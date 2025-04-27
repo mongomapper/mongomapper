@@ -17,6 +17,10 @@
 
 ## Unreleased
 
+### Enhancements:
+
+- PR-734 Alex Bevilacqua <alex@alexbevi.com> Include MongoMapper version details in MongoDB handshake
+
 ### Bug Fixes:
 
 - PR-726 Bruno Arueira <contato@brunoarueira.com> Fix the load of default config file with alias based on latest psych
