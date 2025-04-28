@@ -20,6 +20,7 @@
 ### Enhancements:
 
 - PR-734 Alex Bevilacqua <alex@alexbevi.com> Include MongoMapper version details in MongoDB handshake
+- PR-739 Masato Ikeda <masato.ikeda@gmail.com> Add MongoDB 8.0 to CI matrix
 
 ### Bug Fixes:
 
