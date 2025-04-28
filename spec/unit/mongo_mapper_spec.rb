@@ -46,7 +46,7 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'uri' => 'mongodb://127.0.0.1:27017/test'}
       }
-      Mongo::Client.should_receive(:new).with('mongodb://127.0.0.1:27017/test', {})
+      Mongo::Client.should_receive(:new).with('mongodb://127.0.0.1:27017/test', { :wrapping_libraries=>[{:name=>"MongoMapper", :version=>::MongoMapper::Version}] })
       MongoMapper.connect('development')
     end
 
@@ -54,7 +54,7 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'hosts' => ['127.0.0.1:27017']}
       }
-      Mongo::Client.should_receive(:new).with(['127.0.0.1:27017'], {})
+      Mongo::Client.should_receive(:new).with(['127.0.0.1:27017'], { :wrapping_libraries=>[{:name=>"MongoMapper", :version=>::MongoMapper::Version}] })
       MongoMapper.connect('development')
     end
 
@@ -62,7 +62,7 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'host' => '127.0.0.1:27017'}
       }
-      Mongo::Client.should_receive(:new).with(['127.0.0.1:27017'], {})
+      Mongo::Client.should_receive(:new).with(['127.0.0.1:27017'], { :wrapping_libraries=>[{:name=>"MongoMapper", :version=>::MongoMapper::Version}] })
       MongoMapper.connect('development')
     end
 
@@ -71,7 +71,7 @@ describe "MongoMapper" do
         'development' => {'hosts' => ['127.0.0.1:27017'], 'database' => 'test', 'read' => 'primary'}
       }
       logger = double('logger')
-      Mongo::Client.should_receive(:new).with(['127.0.0.1:27017'], { :logger => logger, :read => :primary, :database => 'test' })
+      Mongo::Client.should_receive(:new).with(['127.0.0.1:27017'], { :logger => logger, :read => :primary, :database => 'test', :wrapping_libraries=>[{:name=>"MongoMapper", :version=>::MongoMapper::Version}] })
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -80,7 +80,7 @@ describe "MongoMapper" do
         'development' => {'hosts' => ['192.168.1.1:2222'], 'database' => 'test', 'safe' => true}
       }
       logger = double('logger')
-      Mongo::Client.should_receive(:new).with(['192.168.1.1:2222'], { :logger => logger, :safe => true, :database => 'test' })
+      Mongo::Client.should_receive(:new).with(['192.168.1.1:2222'], { :logger => logger, :safe => true, :database => 'test', :wrapping_libraries=>[{:name=>"MongoMapper", :version=>::MongoMapper::Version}] })
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -89,7 +89,7 @@ describe "MongoMapper" do
         'development' => {'uri' => 'mongodb://127.0.0.1:27017/test', 'options'=> {:foo => 1}}
       }
       logger = double('logger')
-      Mongo::Client.should_receive(:new).with('mongodb://127.0.0.1:27017/test', { :logger => logger, :foo => 1 })
+      Mongo::Client.should_receive(:new).with('mongodb://127.0.0.1:27017/test', { :logger => logger, :foo => 1, :wrapping_libraries=>[{:name=>"MongoMapper", :version=>::MongoMapper::Version}] })
       MongoMapper.connect('development', :logger => logger)
     end
 
@@ -97,7 +97,7 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'hosts' => ['127.0.0.1:27017'], 'database' => 'test', 'user' => 'john', 'password' => 'secret'}
       }
-      Mongo::Client.should_receive(:new).with(['127.0.0.1:27017'], { :database => 'test', :user => 'john', :password => 'secret' })
+      Mongo::Client.should_receive(:new).with(['127.0.0.1:27017'], { :database => 'test', :user => 'john', :password => 'secret', :wrapping_libraries=>[{:name=>"MongoMapper", :version=>::MongoMapper::Version}] })
       MongoMapper.connect('development')
     end
 
@@ -105,7 +105,7 @@ describe "MongoMapper" do
       MongoMapper.config = {
         'development' => {'uri' => 'mongodb://john:secret@127.0.0.1:27017/test'}
       }
-      Mongo::Client.should_receive(:new).with('mongodb://john:secret@127.0.0.1:27017/test', {})
+      Mongo::Client.should_receive(:new).with('mongodb://john:secret@127.0.0.1:27017/test', { :wrapping_libraries=>[{:name=>"MongoMapper", :version=>::MongoMapper::Version}]})
       MongoMapper.connect('development')
     end
 
