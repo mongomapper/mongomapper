@@ -167,6 +167,25 @@ describe "MongoMapper" do
       MongoMapper.should_receive(:handle_passenger_forking).once
       MongoMapper.setup_with_config_file(path, 'development', :logger => logger)
     end
+
+    it "should work with config/erb.yml" do
+      begin
+        old_mongodb_uri, ENV["MONGODB_URI"] = ENV["MONGODB_URI"], "mongodb://127.0.0.1:21017/production"
+
+        logger = double('logger')
+        path = File.expand_path('../../config/erb.yml', __FILE__)
+        MongoMapper.should_receive(:config=).with({
+          "production" => { "uri" => "mongodb://127.0.0.1:21017/production" },
+          "development" => { "host" => "127.0.0.1:21017", "database" => "development" },
+          "test" => { "host" => "127.0.0.1:21017", "database" => "test" },
+        })
+        MongoMapper.should_receive(:connect).with('development',  { :logger => logger })
+        MongoMapper.should_receive(:handle_passenger_forking).once
+        MongoMapper.setup_with_config_file(path, 'development', :logger => logger)
+      ensure
+        ENV["MONGODB_URI"] = old_mongodb_uri
+      end
+    end
   end
 
   context "options" do
