@@ -1,4 +1,4 @@
-eval File.read(File.expand_path('../Gemfile.common.rb', __FILE__)), nil, 'Gemfile.common.rb'
+eval_gemfile 'Gemfile.common.rb'
 gemspec :path => '../'
 
 gem 'rails', '~> 7.2.0', group: :test
