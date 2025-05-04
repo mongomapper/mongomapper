@@ -21,3 +21,4 @@ spec/examples.txt
 .byebug_history
 gemfiles/*.gemfile.lock
 Gemfile.lock
+.ruby-version
