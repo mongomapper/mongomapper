@@ -156,6 +156,8 @@ GEM
       racc (~> 1.4)
     nokogiri (1.17.1-x86_64-darwin)
       racc (~> 1.4)
+    nokogiri (1.17.1-x86_64-linux)
+      racc (~> 1.4)
     plucky (0.8.0)
       mongo (~> 2.0)
     power_assert (2.0.4)
@@ -163,7 +165,7 @@ GEM
       date
       stringio
     racc (1.8.1)
-    rack (2.2.10)
+    rack (2.2.14)
     rack-session (1.0.2)
       rack (< 3)
     rack-test (0.8.3)
@@ -258,6 +260,7 @@ PLATFORMS
   arm64-darwin-22
   arm64-darwin-23
   x86_64-darwin-20
+  x86_64-linux
 
 DEPENDENCIES
   byebug
