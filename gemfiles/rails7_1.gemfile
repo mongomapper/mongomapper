@@ -2,3 +2,8 @@ eval_gemfile 'Gemfile.common.rb'
 gemspec :path => '../'
 
 gem 'rails', '~> 7.1.0', group: :test
+
+if RUBY_VERSION >= '3.4'
+  # activesupport 7.1 depends on the mutex_m gem, which has been extracted as a bundled gem since Ruby 3.4.
+  gem 'mutex_m'
+end

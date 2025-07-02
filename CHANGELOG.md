@@ -25,6 +25,7 @@
 ### Bug Fixes:
 
 - PR-726 Bruno Arueira <contato@brunoarueira.com> Fix the load of default config file with alias based on latest psych
+- PR-732 Masato Ikeda <masato.ikeda@gmail.com> Add Ruby 3.4 to CI matrix
 
 ## 0.17.0 - 2024-12-10
 
