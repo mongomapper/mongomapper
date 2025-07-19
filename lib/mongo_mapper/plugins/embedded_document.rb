@@ -27,12 +27,16 @@ module MongoMapper
       end
 
       def save(options={})
+        ensure_root_document
+
         _root_document.try(:save, options).tap do |result|
           persist(options) if result
         end
       end
 
       def save!(options={})
+        ensure_root_document
+
         valid? || raise(DocumentNotValid.new(self))
         _root_document.try(:save!, options).tap do |result|
           persist(options) if result
@@ -47,6 +51,12 @@ module MongoMapper
 
       def _root_document
         _parent_document.try(:_root_document)
+      end
+
+      private
+
+      def ensure_root_document
+        raise NoRootDocument.new(self.class.name) unless _root_document
       end
     end
   end

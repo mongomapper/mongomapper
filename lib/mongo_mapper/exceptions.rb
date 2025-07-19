@@ -30,4 +30,10 @@ module MongoMapper
       super("Declare either attr_protected or attr_accessible for #{name}, but not both.")
     end
   end
+
+  class NoRootDocument < Error
+    def initialize(name)
+      super("Can not save embedded document #{name} without a root document.")
+    end
+  end
 end
