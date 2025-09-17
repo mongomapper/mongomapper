@@ -156,6 +156,8 @@ GEM
       racc (~> 1.4)
     nokogiri (1.17.1-x86_64-darwin)
       racc (~> 1.4)
+    nokogiri (1.17.1-x86_64-linux)
+      racc (~> 1.4)
     plucky (0.8.0)
       mongo (~> 2.0)
     power_assert (2.0.4)
@@ -210,7 +212,7 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rexml (3.3.9)
+    rexml (3.4.2)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -258,6 +260,7 @@ PLATFORMS
   arm64-darwin-22
   arm64-darwin-23
   x86_64-darwin-20
+  x86_64-linux
 
 DEPENDENCIES
   byebug
