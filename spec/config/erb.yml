@@ -1,0 +1,10 @@
+production:
+  uri: <%= ENV["MONGODB_URI"] %>
+
+development:
+  host: 127.0.0.1:21017
+  database: development
+
+test:
+  host: 127.0.0.1:21017
+  database: test
