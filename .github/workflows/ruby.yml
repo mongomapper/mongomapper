@@ -69,6 +69,10 @@ jobs:
             gemfile: gemfiles/rails8_0.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
+          - ruby-version: jruby-9.4
+            gemfile: gemfiles/rails8_1.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
 
           # ruby 2.4 doesn't work with rails >= 6.0
           - ruby-version: 2.4.10
@@ -113,6 +117,10 @@ jobs:
             gemfile: gemfiles/rails8_0.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
+          - ruby-version: 2.5.9
+            gemfile: gemfiles/rails8_1.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
 
           # ruby 2.6 doesn't work with rails >= 7.0
           - ruby-version: 2.6.10
@@ -129,6 +137,10 @@ jobs:
             enable-sharding: "0"
           - ruby-version: 2.6.10
             gemfile: gemfiles/rails8_0.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
+          - ruby-version: 2.6.10
+            gemfile: gemfiles/rails8_1.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
 
@@ -149,6 +161,10 @@ jobs:
             enable-sharding: "0"
           - ruby-version: 3.0.6
             gemfile: gemfiles/rails8_0.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
+          - ruby-version: 3.0.6
+            gemfile: gemfiles/rails8_1.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
 
@@ -183,6 +199,10 @@ jobs:
           # ruby 3.1 doesn't work with rails >= 8.0
           - ruby-version: 3.1.4
             gemfile: gemfiles/rails8_0.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
+          - ruby-version: 3.1.4
+            gemfile: gemfiles/rails8_1.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
 
