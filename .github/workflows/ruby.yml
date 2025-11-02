@@ -252,11 +252,13 @@ jobs:
           - { "ruby-version": 3.4.1, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "mongo:5.0",               "enable-sharding": "0" }
           - { "ruby-version": 3.4.1, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "mongo:6.0",               "enable-sharding": "0" }
           - { "ruby-version": 3.4.1, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "mongo:7.0",               "enable-sharding": "0" }
+          - { "ruby-version": 3.4.1, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "mongo:8.0",               "enable-sharding": "0" }
           - { "ruby-version": 3.4.1, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "a2ikm/sharded-mongo:4.2", "enable-sharding": "1" }
           - { "ruby-version": 3.4.1, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "a2ikm/sharded-mongo:4.4", "enable-sharding": "1" }
           - { "ruby-version": 3.4.1, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "a2ikm/sharded-mongo:5.0", "enable-sharding": "1" }
           - { "ruby-version": 3.4.1, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "a2ikm/sharded-mongo:6.0", "enable-sharding": "1" }
           - { "ruby-version": 3.4.1, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "a2ikm/sharded-mongo:7.0", "enable-sharding": "1" }
+          - { "ruby-version": 3.4.1, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "a2ikm/sharded-mongo:8.0", "enable-sharding": "1" }
     services:
       mongo:
         image: ${{ matrix.mongo-image }}
