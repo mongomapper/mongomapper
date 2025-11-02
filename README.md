@@ -38,7 +38,7 @@ Additionally, MongoMapper is tested against:
 - Rails 5.0 - 5.2
 - Rails 6.0 - 6.1
 - Rails 7.0 - 7.2
-- Rails 8.0
+- Rails 8.0 - 8.1
 
 ### Notes
 
