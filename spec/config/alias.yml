@@ -1,0 +1,14 @@
+default: &default
+  host: 127.0.0.1:21017
+
+production:
+  <<: *default
+  database: production
+
+development:
+  <<: *default
+  database: development
+
+test:
+  <<: *default
+  database: test
