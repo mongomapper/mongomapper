@@ -139,6 +139,17 @@ describe "Scopes" do
         docs.first.age.should == 50
       end
 
+      it "should work with scoped queries swapped" do
+        u1 = @document.create(:name => 'John', :age => 60)
+        u2 = @document.create(:name => 'John', :age => 50)
+        u3 = @document.create(:name => 'Bill', :age => 50)
+
+        q1 = @document.by_name('John')
+        q2 = @document.by_age(50)
+        q1.all.should == [u1, u2]
+        q2.all.should == [u2, u3]
+      end
+
       context "with model methods" do
         it "should work if method returns a query" do
           @document.create(:name => 'John', :age => 10)
@@ -251,6 +262,84 @@ describe "Scopes" do
 
         @klass.all.should include(u1)
         @klass.all.should include(u2)
+      end
+
+      it "should work in nested" do
+        u1 = @klass.create!(:first_name => "Scott", :age => 10)
+        u2 = @klass.create!(:first_name => "Scott", :age => 20)
+        u3 = @klass.create!(:first_name => "Andrew", :age => 20)
+
+        run = false
+
+        @klass.with_scope(:first_name => "Scott") do
+          @klass.with_scope(:age => 20) do
+            run = true
+            @klass.all.should == [u2]
+          end
+
+          @klass.all.should == [u1, u2]
+        end
+
+        run.should == true
+
+        @klass.all.should == [u1, u2, u3]
+      end
+
+      it "should work with nested two class scopes" do
+        other = Doc("Other") do
+        end
+
+        u1 = @klass.create!(:first_name => "Scott")
+        u2 = @klass.create!(:first_name => "Andrew")
+
+        a1 = other.create!(:first_name => "Scott")
+        a2 = other.create!(:first_name => "Andrew")
+
+        run = false
+
+        @klass.with_scope(:first_name => "Scott") do
+          other.with_scope(:first_name => "Andrew") do
+            run = true
+            @klass.all.should == [u1]
+            other.all.should == [a2]
+          end
+
+          @klass.all.should == [u1]
+          other.all.should == [a1, a2]
+        end
+
+        run.should == true
+
+        @klass.all.should == [u1, u2]
+        other.all.should == [a1, a2]
+      end
+
+      it "should work with default scope" do
+        u1 = @klass.create!(:first_name => "Scott", :age => 10)
+        u2 = @klass.create!(:first_name => "Scott", :age => 20)
+        u3 = @klass.create!(:first_name => "Andrew", :age => 20)
+
+        @klass.default_scope { where(age: 20) }
+
+        result = @klass.with_scope(:first_name => "Scott") do
+          @klass.all
+        end
+
+        result.should == [u2]
+      end
+
+      it "should work with scope chain" do
+        u1 = @klass.create!(:first_name => "Scott", :age => 10)
+        u2 = @klass.create!(:first_name => "Scott", :age => 20)
+        u3 = @klass.create!(:first_name => "Andrew", :age => 20)
+
+        @klass.scope :by_age, lambda { |age| where(age: age) }
+
+        result = @klass.by_age(20).with_scope(:first_name => "Scott") do
+          @klass.all
+        end
+
+        result.should == [u2]
       end
 
       it "should be able to use an unscoped query" do
@@ -368,6 +457,19 @@ describe "Scopes" do
         @subclass.default_scopes.length.should == 2
         @klass.default_scopes.length.should == 1
       end
+
+      it "should be cleared in unscoped" do
+        @klass.key :active, Boolean, default: true
+
+        normal = @klass.create!
+        inactive = @klass.create!(active: false)
+
+        @klass.default_scope { where(active: true) }
+
+        @klass.unscoped do
+          @klass.all.should == [normal, inactive]
+        end
+      end
     end
   end
 
@@ -473,8 +575,8 @@ describe "Scopes" do
       @threads.each { |t| t.join }
     end
 
-    it "should not taint another thread's active scopes" do
-      count_active_scopes = nil
+    it "should not taint another thread's current_context" do
+      is_current_context_nil = nil
       second_thread_run = false
 
       make_thread do
@@ -487,13 +589,13 @@ describe "Scopes" do
       end
 
       make_thread do
-        count_active_scopes = @klass.active_scopes.length
+        is_current_context_nil = @klass.send(:current_context).nil?
         second_thread_run = true
       end
 
       wait_for_threads!
 
-      count_active_scopes.should == 0
+      is_current_context_nil.should == true
     end
 
     it "should not taint another thread's count method" do
@@ -520,6 +622,31 @@ describe "Scopes" do
       wait_for_threads!
 
       klass_count.should == 2
+    end
+
+    it "should not taint another thread's default_scopes" do
+      @klass.default_scope { where }
+
+      count_default_scopes = nil
+      second_thread_run = false
+
+      make_thread do
+        @klass.unscoped do
+          loop do
+            sleep Float::EPSILON
+            break if second_thread_run
+          end
+        end
+      end
+
+      make_thread do
+        count_default_scopes = @klass.default_scopes.length
+        second_thread_run = true
+      end
+
+      wait_for_threads!
+
+      count_default_scopes.should == 1
     end
   end
 end
