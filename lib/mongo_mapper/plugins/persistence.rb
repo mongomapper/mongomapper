@@ -16,11 +16,13 @@ module MongoMapper
 
         def connection(mongo_connection=nil)
           assert_supported
-          if mongo_connection.nil? && MongoMapper.connection?
-            @connection ||= MongoMapper.connection
+
+          if mongo_connection.nil?
+            @connection = MongoMapper.connection if @connection.nil?
           else
             @connection = mongo_connection
           end
+
           @connection
         end
 
