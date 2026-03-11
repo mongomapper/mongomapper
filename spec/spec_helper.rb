@@ -37,6 +37,8 @@ end
 
 require 'mongo_mapper'
 
+GlobalID.app = 'MongoMapper'
+
 def Doc(name='Class', &block)
   klass = Class.new
   klass.class_eval do

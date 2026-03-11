@@ -6,6 +6,7 @@ require 'active_model'
 require 'activemodel-serializers-xml'
 require 'mongo_mapper/deprecator'
 require "mongo_mapper/railtie" if defined?(Rails)
+require 'globalid'
 
 I18n.load_path << File.expand_path('../mongo_mapper/locale/en.yml', __FILE__)
 
@@ -70,6 +71,7 @@ module MongoMapper
     autoload :Userstamps,         'mongo_mapper/plugins/userstamps'
     autoload :Validations,        'mongo_mapper/plugins/validations'
     autoload :Touch,              'mongo_mapper/plugins/touch'
+    autoload :GlobalID,            'mongo_mapper/plugins/global_id'
 
     module Associations
       autoload :Base,                         'mongo_mapper/plugins/associations/base'
