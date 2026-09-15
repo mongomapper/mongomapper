@@ -103,6 +103,10 @@ end
 
 **Note:** the two associations have different defaults when `:dependent` is not set. A `many` association leaves its documents untouched when the owner is destroyed, and nullifies the documents that drop out of the association when it is reassigned. A `one` association nullifies in both cases: destroying an `Employee` whose `one :desk` has no `:dependent` option keeps the `Desk` in its collection with `employee_id` set to `nil`. This is intentional and differs from ActiveRecord's `has_one`, which leaves the child untouched when the parent is destroyed. Any other value falls back to these defaults.
 
+On a polymorphic `one` (`one :schema, :as => :schemable`), nullify clears both `schemable_type` and `schemable_id`, so a document left behind keeps no trace of its former owner and cannot be found by looking for owners that no longer exist.
+
+`belongs_to` accepts `:dependent` but never reads it, so `belongs_to :schema, :dependent => :destroy` is a silent no-op. Destroy the other side from a `before_destroy` callback instead.
+
 Embedded associations ignore `:dependent`, since embedded documents are stored inside, and removed with, their parent.
 
 Embedded Documents
