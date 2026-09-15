@@ -9,6 +9,7 @@ MongoMapper allows you to define the relationship between your models. When you 
     -   [One-to-Many](#one-to-many)
     -   [Many-to-Many](#many-to-many)
     -   [One-to-One](#one-to-one)
+-   [Dependent Documents](#dependent-documents)
 -   [Embedded Documents](#embedded)
 -   [Polymorphic Associations](#polymorphic)
     -   [Basic Polymorphism](#basic-polymorphism)
@@ -82,6 +83,27 @@ end
 {% endhighlight %}
 
 In this one-to-one relations, an employee can only use one desk, and each desk can only be used by one employee.
+
+Dependent Documents
+-------------------
+
+The `:dependent` option on [`one`](#one) and [`many`](#many) controls what happens to the associated documents when the owner is destroyed, and to the documents being replaced when the association is reassigned.
+
+{% highlight ruby %}
+class Employee
+  include MongoMapper::Document
+  one :desk, :dependent => :destroy
+  many :reports, :dependent => :nullify
+end
+{% endhighlight %}
+
+-   `:destroy` - destroys the associated documents, running their callbacks.
+-   `:delete` (`one`) or `:delete_all` (`many`) - removes the associated documents without running callbacks.
+-   `:nullify` - keeps the associated documents and sets their foreign key to `nil`.
+
+**Note:** the two associations have different defaults when `:dependent` is not set. A `many` association leaves its documents untouched when the owner is destroyed, and nullifies the documents that drop out of the association when it is reassigned. A `one` association nullifies in both cases: destroying an `Employee` whose `one :desk` has no `:dependent` option keeps the `Desk` in its collection with `employee_id` set to `nil`. This is intentional and differs from ActiveRecord's `has_one`, which leaves the child untouched when the parent is destroyed. Any other value falls back to these defaults.
+
+Embedded associations ignore `:dependent`, since embedded documents are stored inside, and removed with, their parent.
 
 Embedded Documents
 ------------------
