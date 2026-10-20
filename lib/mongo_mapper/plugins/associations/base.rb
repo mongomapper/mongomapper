@@ -3,7 +3,7 @@ module MongoMapper
   module Plugins
     module Associations
       class Base
-        attr_reader :name, :options, :query_options
+        attr_reader :name, :options, :query_options, :foreign_key, :ivar
 
         # Options that should not be considered MongoDB query options/criteria
         AssociationOptions = [:as, :class, :class_name, :dependent, :extend, :foreign_key, :in, :from, :polymorphic, :autosave, :touch, :counter_cache, :ordered]
@@ -13,6 +13,8 @@ module MongoMapper
           options.symbolize_keys!
           options[:extend] = modularized_extensions(extension, options[:extend])
           separate_options_and_conditions
+          @foreign_key = (options[:foreign_key] || "#{name}_id").freeze
+          @ivar = "@_#{name}".freeze
         end
 
         def class_name
@@ -61,14 +63,6 @@ module MongoMapper
 
         def as
           @options[:as] || self.name
-        end
-
-        def foreign_key
-          @options[:foreign_key] || "#{name}_id"
-        end
-
-        def ivar
-          @ivar ||= "@_#{name}"
         end
 
         # :nocov:
