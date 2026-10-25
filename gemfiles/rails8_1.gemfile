@@ -1,0 +1,4 @@
+eval_gemfile 'Gemfile.common.rb'
+gemspec :path => '../'
+
+gem 'rails', '~> 8.1.0', group: :test

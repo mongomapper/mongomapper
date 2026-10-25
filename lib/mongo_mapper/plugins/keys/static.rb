@@ -35,7 +35,8 @@ module MongoMapper
         def load_from_database(attrs, with_cast = false)
           return super if !self.class.static_keys || !attrs.respond_to?(:each)
 
-          attrs = attrs.select { |key, _| self.class.key?(key) }
+          embedded_keys = self.class.embedded_associations.map(&:name).map(&:to_s)
+          attrs = attrs.select { |key, _| self.class.key?(key) || key.in?(embedded_keys) }
 
           super(attrs, with_cast)
         end

@@ -18,6 +18,10 @@ describe MongoMapper::Plugins::Keys::Static do
 
   describe "a class with static keys" do
     before do
+      @other_klass = EDoc('Other') do
+        key :key, String
+      end
+
       @klass = Class.new do
         include MongoMapper::Document
 
@@ -27,6 +31,8 @@ describe MongoMapper::Plugins::Keys::Static do
 
         key "valid_key", String
       end
+
+      @klass.many :other, class: @other_klass
 
       @obj = @klass.new
     end
@@ -99,6 +105,24 @@ describe MongoMapper::Plugins::Keys::Static do
       lambda {
         @obj.foo
       }.should raise_error(NoMethodError)
+    end
+
+    it "should allow saving embedded documents" do
+      @obj.other.build(key: "foo")
+      @obj.save!
+
+      db_obj = @klass.collection.find(_id: @obj.id).first
+      db_obj["other"].should be_present
+      db_obj["other"][0]["key"].should == "foo"
+    end
+
+    it "should allow loading embedded documents" do
+      @obj.other.build(key: "foo")
+      @obj.save!
+
+      @obj.reload
+      @obj.other.count.should == 1
+      @obj.other.first.key.should == "foo"
     end
   end
 

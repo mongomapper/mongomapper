@@ -21,7 +21,11 @@ Gem::Specification.new do |s|
     "source_code_uri"   => "https://github.com/mongomapper/mongomapper/tree/v#{s.version}"
   }
 
-  s.add_dependency 'mongo',         '~> 2.0'
+  # The latest Mongo driver doesn't support MongoDB 4.2.
+  mongo_version = ENV['MONGO_DRIVER_VERSION'].to_s
+  mongo_version = '~> 2.0' if mongo_version == ''
+
+  s.add_dependency 'mongo',         mongo_version
   s.add_dependency 'plucky',        '~> 0.8.0'
 
   s.add_dependency 'activesupport', '>= 5.0'

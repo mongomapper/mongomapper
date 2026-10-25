@@ -105,7 +105,7 @@ describe "Proxy" do
           end
       end)
 
-      lambda { @proxy.private_foo }.should raise_error(NoMethodError, /private method `private_foo' called/)
+      lambda { @proxy.private_foo }.should raise_error(NoMethodError, /private method ['`]private_foo' called/)
     end
   end
 

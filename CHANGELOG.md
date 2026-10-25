@@ -17,9 +17,18 @@
 
 ## Unreleased
 
+### Enhancements:
+
+- PR-732 Masato Ikeda <masato.ikeda@gmail.com> Add Ruby 3.4 to CI matrix
+- PR-734 Alex Bevilacqua <alex@alexbevi.com> Include MongoMapper version details in MongoDB handshake
+- PR-739 Masato Ikeda <masato.ikeda@gmail.com> Add MongoDB 8.0 to CI matrix
+- PR-755 Masato Ikeda <masato.ikeda@gmail.com> Add Rails 8.1 to CI matrix
+- PR-759 Masato Ikeda <masato.ikeda@gmail.com> Add Ruby 4.0 to CI matrix
+
 ### Bug Fixes:
 
 - PR-726 Bruno Arueira <contato@brunoarueira.com> Fix the load of default config file with alias based on latest psych
+- PR-758 João Ferreira <joao.ferreira@fullfabric.com> Fix static_keys breaking embedded docs
 
 ## 0.17.0 - 2024-12-10
 
