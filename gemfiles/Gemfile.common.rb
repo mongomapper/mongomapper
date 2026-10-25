@@ -14,6 +14,7 @@ group :test do
   gem 'timecop',        '>= 0.9.4'
   gem 'rack-test',      '~> 0.5'
   gem 'generator_spec', '~> 0.9'
+  gem 'globalid'
 
   if RUBY_ENGINE == "ruby" && RUBY_VERSION >= '2.3'
     platforms :mri do
