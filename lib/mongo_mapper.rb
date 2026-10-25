@@ -74,7 +74,7 @@ module MongoMapper
     autoload :Userstamps,         'mongo_mapper/plugins/userstamps'
     autoload :Validations,        'mongo_mapper/plugins/validations'
     autoload :Touch,              'mongo_mapper/plugins/touch'
-    autoload :GlobalID,            'mongo_mapper/plugins/global_id'
+    autoload :GlobalID,           'mongo_mapper/plugins/global_id'
 
     module Associations
       autoload :Base,                         'mongo_mapper/plugins/associations/base'

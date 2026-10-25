@@ -1,7 +1,6 @@
 require "spec_helper"
 
 describe "GlobalID" do
-
   before do
     @document = stub_const("TestDocument", Doc("TestDocument") do
       key :name, String
