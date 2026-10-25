@@ -263,12 +263,12 @@ jobs:
             mongo-image: mongo:4.4
             enable-sharding: "0"
         include:
-          - { "ruby-version": 4.0, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "mongo:4.2",               "enable-sharding": "0" }
+          - { "ruby-version": 4.0, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "mongo:4.2",               "enable-sharding": "0", "mongo-driver-version": "~> 2.25.0" }
           - { "ruby-version": 4.0, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "mongo:5.0",               "enable-sharding": "0" }
           - { "ruby-version": 4.0, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "mongo:6.0",               "enable-sharding": "0" }
           - { "ruby-version": 4.0, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "mongo:7.0",               "enable-sharding": "0" }
           - { "ruby-version": 4.0, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "mongo:8.0",               "enable-sharding": "0" }
-          - { "ruby-version": 4.0, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "a2ikm/sharded-mongo:4.2", "enable-sharding": "1" }
+          - { "ruby-version": 4.0, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "a2ikm/sharded-mongo:4.2", "enable-sharding": "1", "mongo-driver-version": "~> 2.25.0" }
           - { "ruby-version": 4.0, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "a2ikm/sharded-mongo:4.4", "enable-sharding": "1" }
           - { "ruby-version": 4.0, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "a2ikm/sharded-mongo:5.0", "enable-sharding": "1" }
           - { "ruby-version": 4.0, "gemfile": "gemfiles/rails8_0.gemfile", "mongo-image": "a2ikm/sharded-mongo:6.0", "enable-sharding": "1" }
@@ -282,6 +282,7 @@ jobs:
     env:
       BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
       ENABLE_SHARDING: "${{ matrix.enable-sharding }}"
+      MONGO_DRIVER_VERSION: "${{ matrix.mongo-driver-version }}"
     steps:
     - name: Git checkout
       uses: actions/checkout@v4
