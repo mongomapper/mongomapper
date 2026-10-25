@@ -6,7 +6,10 @@ require 'active_model'
 require 'activemodel-serializers-xml'
 require 'mongo_mapper/deprecator'
 require "mongo_mapper/railtie" if defined?(Rails)
-require 'globalid'
+begin
+  require 'globalid'
+rescue LoadError
+end
 
 I18n.load_path << File.expand_path('../mongo_mapper/locale/en.yml', __FILE__)
 

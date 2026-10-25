@@ -40,7 +40,7 @@ module MongoMapper
     include Plugins::IdentityMap
     include Plugins::CounterCache
     include Plugins::Shardable
-    include Plugins::GlobalID
+    include Plugins::GlobalID if defined?(::GlobalID)
 
     included do
       extend Plugins
