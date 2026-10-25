@@ -15,15 +15,19 @@
 
 ### Doc Fixes: -->
 
-## Unreleased
+## 0.18.0 - 2026-10-25
 
 ### Enhancements:
 
 - PR-732 Masato Ikeda <masato.ikeda@gmail.com> Add Ruby 3.4 to CI matrix
 - PR-734 Alex Bevilacqua <alex@alexbevi.com> Include MongoMapper version details in MongoDB handshake
+- PR-735 Masato Ikeda <masato.ikeda@gmail.com> Add MongoMapper.setup_with_config_file
 - PR-739 Masato Ikeda <masato.ikeda@gmail.com> Add MongoDB 8.0 to CI matrix
 - PR-755 Masato Ikeda <masato.ikeda@gmail.com> Add Rails 8.1 to CI matrix
 - PR-759 Masato Ikeda <masato.ikeda@gmail.com> Add Ruby 4.0 to CI matrix
+- PR-760 Antony <Antsiscool@users.noreply.github.com> Add GlobalID support (optional dependency)
+- PR-762 Antony <Antsiscool@users.noreply.github.com> Reduce allocations in Associations::Base
+- PR-763 Antony <Antsiscool@users.noreply.github.com> Allow test suite to run with MongoDB 4.2
 
 ### Bug Fixes:
 
