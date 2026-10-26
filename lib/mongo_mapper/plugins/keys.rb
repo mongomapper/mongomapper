@@ -374,40 +374,19 @@ module MongoMapper
         self.class.keys
       end
 
-      # Ruby 3.0 Symbols can return an interned frozen string reducing allocations.
-      # This defines duplicate methods to maintain support for Ruby 2.7 and earlier.
-      # This can be removed when support for Ruby 2.7 and earlier is dropped.
-      if :symbol.respond_to?(:name)
-        def read_key(key_name)
-          key_name_sym = key_name.to_sym
-          if @_dynamic_attributes && @_dynamic_attributes.key?(key_name_sym)
-            @_dynamic_attributes[key_name_sym]
-          elsif key = keys[key_name.name]
-            if key.ivar && instance_variable_defined?(key.ivar)
-              value = instance_variable_get(key.ivar)
+      def read_key(key_name)
+        key_name_sym = key_name.to_sym
+        if @_dynamic_attributes && @_dynamic_attributes.key?(key_name_sym)
+          @_dynamic_attributes[key_name_sym]
+        elsif key = keys[key_name_sym.name]
+          ivar = key.ivar
+          if ivar && instance_variable_defined?(ivar)
+            value = instance_variable_get(ivar)
+          else
+            if ivar
+              instance_variable_set ivar, key.get(nil)
             else
-              if key.ivar
-                instance_variable_set key.ivar, key.get(nil)
-              else
-                @_dynamic_attributes[key_name_sym] = key.get(nil)
-              end
-            end
-          end
-        end
-      else
-        def read_key(key_name)
-          key_name_sym = key_name.to_sym
-          if @_dynamic_attributes && @_dynamic_attributes.key?(key_name_sym)
-            @_dynamic_attributes[key_name_sym]
-          elsif key = keys[key_name.to_s]
-            if key.ivar && instance_variable_defined?(key.ivar)
-              value = instance_variable_get(key.ivar)
-            else
-              if key.ivar
-                instance_variable_set key.ivar, key.get(nil)
-              else
-                @_dynamic_attributes[key_name_sym] = key.get(nil)
-              end
+              @_dynamic_attributes[key_name_sym] = key.get(nil)
             end
           end
         end
