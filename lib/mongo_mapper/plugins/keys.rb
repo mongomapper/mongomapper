@@ -378,12 +378,13 @@ module MongoMapper
         key_name_sym = key_name.to_sym
         if @_dynamic_attributes && @_dynamic_attributes.key?(key_name_sym)
           @_dynamic_attributes[key_name_sym]
-        elsif key = keys[key_name.to_s]
-          if key.ivar && instance_variable_defined?(key.ivar)
-            value = instance_variable_get(key.ivar)
+        elsif key = keys[key_name_sym.name]
+          ivar = key.ivar
+          if ivar && instance_variable_defined?(ivar)
+            value = instance_variable_get(ivar)
           else
-            if key.ivar
-              instance_variable_set key.ivar, key.get(nil)
+            if ivar
+              instance_variable_set ivar, key.get(nil)
             else
               @_dynamic_attributes[key_name_sym] = key.get(nil)
             end
