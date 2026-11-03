@@ -279,6 +279,11 @@ jobs:
         image: ${{ matrix.mongo-image }}
         ports:
           - 27017:27017
+        # MongoDB 8.0 refuses to start on Linux 6.19+ (SERVER-121912 /
+        # tcmalloc rseq). ubuntu-latest runners now ship that kernel.
+        # This glibc tunable restores rseq and bypasses the startup gate.
+        env:
+          GLIBC_TUNABLES: glibc.pthread.rseq=1
     env:
       BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
       ENABLE_SHARDING: "${{ matrix.enable-sharding }}"
