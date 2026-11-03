@@ -34,6 +34,7 @@ jobs:
           - gemfiles/rails7_1.gemfile
           - gemfiles/rails7_2.gemfile
           - gemfiles/rails8_0.gemfile
+          - gemfiles/rails8_1.gemfile
         mongo-image:
           - mongo:4.4
         enable-sharding:
@@ -100,6 +101,10 @@ jobs:
             gemfile: gemfiles/rails8_0.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
+          - ruby-version: 2.4
+            gemfile: gemfiles/rails8_1.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
 
           # ruby 2.5 doesn't work with rails >= 7.0
           - ruby-version: 2.5
@@ -152,6 +157,10 @@ jobs:
             enable-sharding: "0"
           - ruby-version: 2.7
             gemfile: gemfiles/rails8_0.gemfile
+            mongo-image: mongo:4.4
+            enable-sharding: "0"
+          - ruby-version: 2.7
+            gemfile: gemfiles/rails8_1.gemfile
             mongo-image: mongo:4.4
             enable-sharding: "0"
 
