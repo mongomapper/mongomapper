@@ -342,6 +342,31 @@ describe "Scopes" do
         result.should == [u2]
       end
 
+      it "should keep query options on the query inside with_scope" do
+        younger = @klass.create!(:first_name => "Scott", :age => 10)
+        @klass.create!(:first_name => "Scott", :age => 20)
+        @klass.create!(:first_name => "Andrew", :age => 30)
+
+        @klass.with_scope(:first_name => "Scott") do
+          scoped = @klass.query(:age => 10, :limit => 1, :sort => :age)
+          scoped.criteria_hash[:first_name].should == "Scott"
+          scoped.criteria_hash[:age].should == 10
+          scoped.criteria_hash.key?(:limit).should be_falsey
+          scoped.criteria_hash.key?(:sort).should be_falsey
+          scoped.options_hash[:limit].should == 1
+          scoped.all.should == [younger]
+
+          # A later query in the same scope must not inherit that limit.
+          @klass.all.map(&:age).sort.should == [10, 20]
+        end
+      end
+
+      it "should not mutate the hash passed to query" do
+        options = {:first_name => "Scott", :unscoped => true}
+        @klass.query(options)
+        options.should == {:first_name => "Scott", :unscoped => true}
+      end
+
       it "should be able to use an unscoped query" do
         u1 = @klass.create!(:first_name => "Scott")
         u2 = @klass.create!(:first_name => "Andrew")
@@ -469,6 +494,20 @@ describe "Scopes" do
         @klass.unscoped do
           @klass.all.should == [normal, inactive]
         end
+      end
+
+      it "should allow a default scope proc that queries the class" do
+        @klass.key :active, Boolean, :default => true
+
+        normal = @klass.create!
+        @klass.create!(:active => false)
+
+        # The proc is instance_exec'd on the query, so it must close over the
+        # model. Calling where on the class re-enters query and must not recurse.
+        model = @klass
+        @klass.default_scope -> { model.where(:active => true) }
+
+        @klass.all.should == [normal]
       end
     end
   end

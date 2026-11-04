@@ -41,23 +41,27 @@ module MongoMapper
         # @param Hash options
         # @options options [Boolean] :unscoped Specify to return plain query object
         def query(options = {})
+          # Dup so :unscoped can be removed without mutating a hash the caller
+          # still holds, and so a frozen hash does not raise.
+          options = options.dup
+
           if options.delete(:unscoped)
-            context = super(options)
+            super(options)
+          elsif (context = current_context)
+            # with_scope / unscoped already captured default and active criteria
+            # on this query. amend applies both criteria and query options
+            # (limit, sort, ...) the same way Querying#query does. where()
+            # would fold those options into the criteria hash.
+            context.clone.amend(options)
+          elsif applying_default_scopes?
+            # A default scope is running and called back into query. Applying
+            # default scopes again recurses. Skip them for this call only.
+            # The previous implementation cleared the shared @default_scopes
+            # array to get the same effect, which other threads could observe.
+            super(options)
           else
-            context = current_context
-
-            if context
-              context = process_scope(context, options)
-            else
-              context = super(options)
-
-              default_scopes.flatten.each do |scope|
-                context = process_scope(context, scope)
-              end
-            end
+            apply_default_scopes(super(options))
           end
-
-          context
         end
 
         def default_scope(*args, &block)
@@ -94,6 +98,28 @@ module MongoMapper
 
         def current_context=(context)
           Thread.current["mongo_mapper_#{name}_current_context"] = context
+        end
+
+        def applying_default_scopes_key
+          "mongo_mapper_#{name}_applying_default_scopes"
+        end
+
+        def applying_default_scopes?
+          Thread.current[applying_default_scopes_key]
+        end
+
+        def apply_default_scopes(context)
+          key = applying_default_scopes_key
+          previous = Thread.current[key]
+          Thread.current[key] = true
+
+          default_scopes.flatten.each do |scope|
+            context = process_scope(context, scope)
+          end
+
+          context
+        ensure
+          Thread.current[key] = previous
         end
 
         def process_scope(context, scope, *args)
