@@ -61,15 +61,31 @@ describe "Key" do
 
     it "should not permit reserved names" do
       lambda { Key.new(:id) }.should raise_error(/reserved/)
-      lambda { Key.new(:valid) }.should raise_error(/reserved/)
+    end
+
+    it "should warn when a key name clashes with an internal method" do
+      Kernel.should_receive(:warn).with(/\[DEPRECATION\] Key name `valid` clashes with an internal MongoMapper method \(valid\?\) and will raise in a future release/)
+      lambda { Key.new(:valid) }.should_not raise_error
+    end
+
+    it "should warn when a predicate accessor clashes with an internal method" do
+      Kernel.should_receive(:warn).with(/\[DEPRECATION\].*`valid`.*\(valid\?\).*will raise in a future release/)
+      lambda { Key.new(:valid, Boolean, :accessors => :predicate) }.should_not raise_error
+    end
+
+    it "should not warn when the clashing accessor is not created" do
+      Kernel.should_not_receive(:warn)
+      lambda { Key.new(:valid, :accessors => :read) }.should_not raise_error
     end
 
     it "should permit reserved names if __dynamic" do
+      Kernel.should_not_receive(:warn)
       lambda { Key.new(:id, :__dynamic => true) }.should_not raise_error
       lambda { Key.new(:valid, :__dynamic => true) }.should_not raise_error
     end
 
     it "should permit reserved names if it is not to create accessors" do
+      Kernel.should_not_receive(:warn)
       lambda { Key.new(:id, :accessors => :skip) }.should_not raise_error
       lambda { Key.new(:valid, :accessors => :skip) }.should_not raise_error
     end

@@ -188,6 +188,20 @@ describe "Keys" do
       doc.new.good_name.should be_nil
       lambda { doc.new.method("good_name") }.should_not raise_error
     end
+
+    it "should warn but keep working when a key clashes with an internal method" do
+      doc = Doc {}
+      Kernel.should_receive(:warn).with(/\[DEPRECATION\] Key name `valid` clashes with an internal MongoMapper method \(valid\?\) and will raise in a future release/)
+      doc.class_eval do
+        key :valid, Boolean
+      end
+
+      instance = doc.new(:valid => false)
+      instance.valid.should == false
+      # Validations#valid? is included later and still answers validation, which is
+      # why a key named `valid` is confusing enough to deprecate.
+      instance.valid?.should be_truthy
+    end
   end
 
   it "should handle loading dynamic fields from the database that have bad names" do

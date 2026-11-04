@@ -140,7 +140,11 @@ module MongoMapper
     MongoMapper::Plugins::Touch,
     MongoMapper::Plugins::Userstamps,
     MongoMapper::Plugins::Validations,
-  ].freeze
+    MongoMapper::Plugins::Shardable,
+  ]
+  # GlobalID is an optional dependency, loaded from the top of this file.
+  DOCUMENT_MODULES << MongoMapper::Plugins::GlobalID if defined?(::GlobalID)
+  DOCUMENT_MODULES.freeze
 
   extend Connection
   extend Options
