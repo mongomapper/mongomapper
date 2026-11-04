@@ -346,4 +346,14 @@ describe "EmbeddedDocument" do
        person.pets.first.flag.should be_falsey
     end
   end
+
+  it "should raise an error when no root" do
+    lambda {
+      @pet_klass.new.save
+    }.should raise_error(MongoMapper::NoRootDocument, "Can not save embedded document Pet without a root document.")
+
+    lambda {
+      @pet_klass.new.save!
+    }.should raise_error(MongoMapper::NoRootDocument, "Can not save embedded document Pet without a root document.")
+  end
 end
