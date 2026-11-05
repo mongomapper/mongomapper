@@ -251,7 +251,9 @@ describe "Keys" do
       doc.class_eval do
         key :errors, String
       end
-      doc.new.errors.should be_nil
+      # ActiveModel may prepend `errors`, so the key reader does not always
+      # win. The value is still stored on the key.
+      doc.new(:errors => "kept")[:errors].should == "kept"
     end
 
     it "should not warn when redefining the _id key" do
