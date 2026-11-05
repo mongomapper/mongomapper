@@ -15,6 +15,12 @@
 
 ### Doc Fixes: -->
 
+## Unreleased
+
+### Enhancements:
+
+- PR-773 Masato Ikeda <masato.ikeda@gmail.com> Add MongoDB 9.0 to CI matrix
+
 ## 0.18.0 - 2026-10-25
 
 ### Enhancements:
