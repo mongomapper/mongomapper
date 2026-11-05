@@ -202,6 +202,70 @@ describe "Keys" do
       # why a key named `valid` is confusing enough to deprecate.
       instance.valid?.should be_truthy
     end
+
+    it "should warn when only the predicate accessor clashes" do
+      doc = Doc {}
+      Kernel.should_receive(:warn).with(/\[DEPRECATION\] Key name `valid` clashes with an internal MongoMapper method \(valid\?\) and will raise in a future release/)
+      doc.class_eval do
+        key :valid, Boolean, :accessors => :predicate
+      end
+    end
+
+    it "should not warn when the clashing accessor is not created" do
+      doc = Doc {}
+      Kernel.should_not_receive(:warn)
+      doc.class_eval do
+        key :valid, Boolean, :accessors => :read
+      end
+      doc.new(:valid => false).valid.should == false
+      doc.new.valid?.should be_truthy
+    end
+
+    it "should not warn for a __dynamic key that clashes" do
+      doc = Doc {}
+      Kernel.should_not_receive(:warn)
+      doc.class_eval do
+        key :valid, Boolean, :__dynamic => true
+      end
+    end
+
+    it "should not warn when accessors are skipped" do
+      doc = Doc {}
+      Kernel.should_not_receive(:warn)
+      doc.class_eval do
+        key :valid, Boolean, :accessors => :skip
+        key :errors, String, :accessors => :none
+      end
+    end
+
+    it "should still raise for reserved key names" do
+      doc = Doc {}
+      lambda {
+        doc.class_eval { key :id, String }
+      }.should raise_error(MongoMapper::InvalidKey, /reserved/)
+    end
+
+    it "should warn when a key clashes with an ActiveModel method" do
+      doc = Doc {}
+      Kernel.should_receive(:warn).with(/\[DEPRECATION\] Key name `errors` clashes with an internal MongoMapper method \(errors\) and will raise in a future release/)
+      doc.class_eval do
+        key :errors, String
+      end
+      doc.new.errors.should be_nil
+    end
+
+    it "should not warn when redefining the _id key" do
+      Kernel.should_not_receive(:warn)
+      Doc() do
+        key :_id, Integer
+      end
+    end
+
+    it "should not warn when a subclass receives the _type key" do
+      Kernel.should_not_receive(:warn)
+      parent = Doc("ParentType")
+      Subclass(parent, "ChildType")
+    end
   end
 
   it "should handle loading dynamic fields from the database that have bad names" do

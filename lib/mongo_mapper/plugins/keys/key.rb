@@ -8,16 +8,6 @@ module MongoMapper
 
         attr_accessor :name, :type, :options, :default, :ivar, :abbr, :accessors
 
-        # Instance methods defined directly on MongoMapper plugin modules.
-        # A key whose generated accessor matches one of these still works, but
-        # warns: defining it will raise in a future release. RESERVED_KEYS
-        # continue to raise immediately and are not part of this set.
-        def self.internal_method_names
-          @internal_method_names ||= MongoMapper::DOCUMENT_MODULES.flat_map { |mod|
-            mod.instance_methods.map(&:to_s)
-          }.uniq
-        end
-
         def initialize(*args)
           options_from_args = args.extract_options!
           @name, @type = args.shift.to_s, args.shift
@@ -41,7 +31,6 @@ module MongoMapper
           end
           @ivar = :"@#{name}" if valid_ruby_name?
           validate_key_name! unless dynamic? or !any_accessor?
-          warn_on_internal_method_clash!
         end
 
         def persisted_name
@@ -117,10 +106,9 @@ module MongoMapper
           RESERVED_KEYS.include?(@name)
         end
 
-        # Accessor names this key will define. Only these are checked against
-        # internal methods, so `accessors: :skip` / `:none` and `__dynamic`
-        # keys (which define no accessors) are exempt. The reader also defines
-        # `name_before_type_cast`.
+        # Names of the accessor methods this key will define. Empty when
+        # accessors are :skip or :none. The reader also defines
+        # name_before_type_cast.
         def accessor_method_names
           names = []
           if read_accessor?
@@ -130,12 +118,6 @@ module MongoMapper
           names << "#{@name}=" if write_accessor?
           names << "#{@name}?" if predicate_accessor?
           names
-        end
-
-        def clashing_internal_methods
-          accessor_method_names.select { |method_name|
-            self.class.internal_method_names.include?(method_name)
-          }
         end
 
         def read_accessor?
@@ -168,14 +150,6 @@ module MongoMapper
           elsif !valid_ruby_name?
             raise MongoMapper::InvalidKey.new("`#{@name}` is not a valid key name. Keys must match [a-z][a-z0-9_]*")
           end
-        end
-
-        def warn_on_internal_method_clash!
-          return if dynamic? || reserved_name?
-          clashes = clashing_internal_methods
-          return if clashes.empty?
-
-          Kernel.warn "[DEPRECATION] Key name `#{@name}` clashes with an internal MongoMapper method (#{clashes.join(', ')}) and will raise in a future release."
         end
       end
     end
