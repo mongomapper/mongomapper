@@ -159,9 +159,9 @@ module MongoMapper
         def warn_on_internal_method_clash(key)
           return if key.dynamic?
 
-          clashes = key.accessor_method_names.select { |method_name|
+          clashes = key.accessor_method_names.select do |method_name|
             clashes_with_existing_method?(method_name)
-          }
+          end
           return if clashes.empty?
 
           Kernel.warn "[DEPRECATION] Key name `#{key.name}` clashes with an internal MongoMapper method (#{clashes.join(', ')}) and will raise in a future release."
@@ -169,15 +169,17 @@ module MongoMapper
 
         def clashes_with_existing_method?(method_name)
           name = method_name.to_sym
-          return false unless method_defined?(name) || private_method_defined?(name)
+          if method_defined?(name) || private_method_defined?(name)
+            owner = instance_method(name).owner
+            return false if owner.respond_to?(:key_accessor_module?) && owner.key_accessor_module?
+            return false if attribute_method_module?(owner)
+            return false if name.to_s.end_with?("_before_type_cast") &&
+              owner.is_a?(Class) && ancestors.include?(owner)
 
-          owner = instance_method(name).owner
-          return false if owner.respond_to?(:key_accessor_module?) && owner.key_accessor_module?
-          return false if attribute_method_module?(owner)
-          return false if name.to_s.end_with?("_before_type_cast") &&
-            owner.is_a?(Class) && ancestors.include?(owner)
+            return true
+          end
 
-          true
+          false
         end
 
         # ActiveModel#define_attribute_methods stores its reader module in this
@@ -185,10 +187,10 @@ module MongoMapper
         # it up without touching it. The ivar lives on the class that defined
         # the key, which may be an ancestor.
         def attribute_method_module?(owner)
-          ancestors.any? { |ancestor|
+          ancestors.any? do |ancestor|
             ancestor.instance_variable_defined?(:@generated_attribute_methods) &&
               owner.equal?(ancestor.instance_variable_get(:@generated_attribute_methods))
-          }
+          end
         end
 
         def create_accessors_for(key)
