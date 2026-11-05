@@ -171,7 +171,7 @@ module MongoMapper
           name = method_name.to_sym
           if method_defined?(name) || private_method_defined?(name)
             owner = instance_method(name).owner
-            return false if owner.respond_to?(:key_accessor_module?) && owner.key_accessor_module?
+            return false if owner.respond_to?(:key_accessor_module?) && owner&.key_accessor_module?
             return false if attribute_method_module?(owner)
             return false if name.to_s.end_with?("_before_type_cast") &&
               owner.is_a?(Class) && ancestors.include?(owner)
