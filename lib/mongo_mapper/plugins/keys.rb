@@ -58,7 +58,10 @@ module MongoMapper
           Key.new(*args).tap do |key|
             keys[key.name] = key
             keys[key.abbr] = key if key.abbr
-            create_accessors_for(key) if key.valid_ruby_name? && !key.reserved_name?
+            if key.valid_ruby_name? && !key.reserved_name?
+              warn_on_internal_method_clash(key)
+              create_accessors_for(key)
+            end
             create_key_in_descendants(*args)
             create_indexes_for(key)
             create_validations_for(key)
@@ -139,7 +142,54 @@ module MongoMapper
           if key_accessors_module_defined?
             const_get 'MongoMapperKeys'
           else
-            const_set 'MongoMapperKeys', Module.new
+            mod = Module.new
+            # Mark accessor modules so a later key (an _id override, or _type
+            # copied onto a subclass) is not treated as a clash with itself.
+            mod.define_singleton_method(:key_accessor_module?) { true }
+            const_set 'MongoMapperKeys', mod
+          end
+        end
+
+        # Warn when an accessor this key will define is already a method on
+        # this model. Reserved names still raise from Key. __dynamic keys and
+        # keys with accessors :skip / :none define nothing, so they do not
+        # warn. Methods created by an earlier key (accessor module, ActiveModel
+        # attribute methods, or name_before_type_cast on the model class) are
+        # not clashes. This will raise in a future release.
+        def warn_on_internal_method_clash(key)
+          return if key.dynamic?
+
+          clashes = key.accessor_method_names.select do |method_name|
+            clashes_with_existing_method?(method_name)
+          end
+          return if clashes.empty?
+
+          Kernel.warn "[DEPRECATION] Key name `#{key.name}` clashes with an internal MongoMapper method (#{clashes.join(', ')}) and will raise in a future release."
+        end
+
+        def clashes_with_existing_method?(method_name)
+          name = method_name.to_sym
+          if method_defined?(name) || private_method_defined?(name)
+            owner = instance_method(name).owner
+            return false if owner.respond_to?(:key_accessor_module?) && owner&.key_accessor_module?
+            return false if attribute_method_module?(owner)
+            return false if name.to_s.end_with?("_before_type_cast") &&
+              owner.is_a?(Class) && ancestors.include?(owner)
+
+            return true
+          end
+
+          false
+        end
+
+        # ActiveModel#define_attribute_methods stores its reader module in this
+        # ivar. Calling generated_attribute_methods would create one, so look
+        # it up without touching it. The ivar lives on the class that defined
+        # the key, which may be an ancestor.
+        def attribute_method_module?(owner)
+          ancestors.any? do |ancestor|
+            ancestor.instance_variable_defined?(:@generated_attribute_methods) &&
+              owner.equal?(ancestor.instance_variable_get(:@generated_attribute_methods))
           end
         end
 

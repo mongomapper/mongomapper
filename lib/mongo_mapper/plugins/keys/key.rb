@@ -106,6 +106,20 @@ module MongoMapper
           RESERVED_KEYS.include?(@name)
         end
 
+        # Names of the accessor methods this key will define. Empty when
+        # accessors are :skip or :none. The reader also defines
+        # name_before_type_cast.
+        def accessor_method_names
+          names = []
+          if read_accessor?
+            names << @name
+            names << "#{@name}_before_type_cast"
+          end
+          names << "#{@name}=" if write_accessor?
+          names << "#{@name}?" if predicate_accessor?
+          names
+        end
+
         def read_accessor?
           any_accessor? ["read"]
         end
