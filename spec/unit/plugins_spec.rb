@@ -14,6 +14,18 @@ describe "Plugins" do
       mod.direct_descendants.map(&:object_id) & ids
     end
 
+    # Ruby 3.1 and 3.2 keep a fixed-size global method call cache (1023 slots)
+    # that the GC treats as a root. It pins the most recently defined model
+    # classes through their singleton classes, so they can't be collected even
+    # though nothing else references them. Defining singleton methods on lots of
+    # throwaway classes evicts those entries. Ruby 3.3+ no longer marks the
+    # cache, so this is skipped there.
+    def flush_global_method_cache
+      return unless RUBY_ENGINE == "ruby" && RUBY_VERSION >= "3.1" && RUBY_VERSION < "3.3"
+
+      10_000.times { Class.new.define_singleton_method(:flush) {} }
+    end
+
     [
       ["Document",         MongoMapper::Document,         lambda { Doc() }],
       ["EmbeddedDocument", MongoMapper::EmbeddedDocument, lambda { EDoc() }],
@@ -22,6 +34,8 @@ describe "Plugins" do
         skip "GC is not deterministic on JRuby" if RUBY_ENGINE == "jruby"
 
         ids = build_and_forget(20) { builder.call }
+
+        flush_global_method_cache
 
         3.times { GC.start(full_mark: true, immediate_sweep: true) }
 
