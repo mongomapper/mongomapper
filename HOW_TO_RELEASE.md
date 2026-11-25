@@ -19,16 +19,7 @@ git checkout -b prepare-X.Y.Z-release
 
 Check: `git status` is clean and `git log -1 origin/master` matches `git log -1`.
 
-## 2. (Optional) Update contributors
-
-```sh
-rake update_contributors_and_commit
-```
-
-Check: `git log -1` shows the "Updating Contributors" commit (or nothing to
-commit if `CONTRIBUTORS` was already up to date).
-
-## 3. Bump the version
+## 2. Bump the version
 
 Edit `lib/mongo_mapper/version.rb` and set `MongoMapper::Version`:
 
@@ -41,7 +32,7 @@ end
 Check: `ruby -r./lib/mongo_mapper/version -e 'puts MongoMapper::Version'`
 prints `X.Y.Z`.
 
-## 4. Update CHANGELOG.md
+## 3. Update CHANGELOG.md
 
 Add a section for the new version above the previous release, in the existing
 style. Use only the headings that have entries:
@@ -66,7 +57,7 @@ To find merged PRs since the last release: `git log --merges --oneline vPREVIOUS
 
 Check: `grep -n '^## X.Y.Z - ' CHANGELOG.md` finds exactly one line.
 
-## 5. Run the tests locally
+## 4. Run the tests locally
 
 ```sh
 rake
@@ -74,18 +65,29 @@ rake
 
 Check: the run ends with `0 failures`.
 
-## 6. Open a PR
+## 5. Update contributors
 
 ```sh
 git add lib/mongo_mapper/version.rb CHANGELOG.md
 git commit -m "Prepare X.Y.Z release"
+rake update_contributors_and_commit
+rake contributors && git diff --exit-code CONTRIBUTORS
+```
+
+This is required: `rake release` fails if `CONTRIBUTORS` is stale. The commits
+themselves count towards the ranking, so if the last command shows a diff,
+run `rake update_contributors_and_commit` again until it shows none.
+
+## 6. Open a PR
+
+```sh
 git push origin prepare-X.Y.Z-release
 ```
 
 Open a PR against `master` titled "Prepare X.Y.Z release".
 
 Check: the PR diff only touches `lib/mongo_mapper/version.rb`,
-`CHANGELOG.md` (and `CONTRIBUTORS` if step 2 was done).
+`CHANGELOG.md` and `CONTRIBUTORS`.
 
 ## 7. Wait for CI to be green
 
@@ -123,54 +125,45 @@ rake release
 `rake release` runs, in order:
 
 ```sh
+rake release_checks                # CHANGELOG has "## X.Y.Z - YYYY-MM-DD"; CONTRIBUTORS is up to date
 rake spec                          # tests
 gem build mongo_mapper.gemspec     # builds mongo_mapper-X.Y.Z.gem
 git tag vX.Y.Z                     # lightweight tag
 git push origin master
 git push origin vX.Y.Z
 gem push mongo_mapper-X.Y.Z.gem    # prompts for RubyGems OTP
+rake website_post                  # mongomapper.com release post (step 11)
 ```
 
-If `rake release` stops partway (e.g. the OTP was wrong), run the remaining
-commands from the list above by hand instead of re-running the whole task
-(re-running would fail on `git tag` because the tag already exists).
+If `rake release_checks` fails, nothing has been tagged or pushed: fix it with
+a new PR to `master` and start again from step 9.
+
+If `rake release` stops after the checks (e.g. the OTP was wrong), run the
+remaining commands from the list above by hand instead of re-running the whole
+task (re-running would fail on `git tag` because the tag already exists).
 
 Check:
 - `git ls-remote --tags origin vX.Y.Z` shows the tag.
 - `gem list -r mongo_mapper` (or https://rubygems.org/gems/mongo_mapper) shows `X.Y.Z`.
 
-## 11. (Optional) Publish release notes on mongomapper.com
+## 11. Release post on mongomapper.com
+
+`rake release` does this after `gem push`. To do it on its own (e.g. `rake
+release` stopped earlier), preview it first, then publish:
 
 ```sh
-git checkout gh-pages
-git pull --ff-only origin gh-pages
+DRY_RUN=1 rake website_post        # prints the post, commits/pushes nothing
+rake website_post
 ```
 
-Create `_posts/YYYY-MM-DD-release-X-Y-Z.md`, for example
-`_posts/2021-01-31-release-0-15-2.md`:
+`rake website_post` builds `_posts/YYYY-MM-DD-release-X-Y-Z.md` (date from
+the CHANGELOG heading) with a summary paragraph generated from the CHANGELOG
+entries, commits it to `gh-pages` in a temporary git worktree (your checkout
+is untouched) and runs `git push origin gh-pages`. It refuses to overwrite an
+existing post. To reword the summary, edit the file on `gh-pages` afterwards.
 
-```markdown
----
-title: MongoMapper X.Y.Z Release
-layout: post
-author: Scott Taylor
----
+The changelog link anchor is the heading with dots removed and spaces turned
+into hyphens, e.g. `## 0.18.1 - 2026-11-24` becomes `#0181---2026-11-24`.
 
-MongoMapper X.Y.Z has been released.
-
-Thanks to the many contributors!
-
-See the [changelog](https://github.com/mongomapper/mongomapper/blob/master/CHANGELOG.md#xyz---yyyy-mm-dd) for full details.
-```
-
-The changelog anchor is the heading with dots and spaces removed, e.g.
-`## 0.15.2 - 2021-01-31` becomes `#0152---2021-01-31`.
-
-```sh
-git add _posts/YYYY-MM-DD-release-X-Y-Z.md
-git commit -m "Release X.Y.Z"
-git push origin gh-pages
-git checkout master
-```
-
-Check: within a minute or so the post appears on https://mongomapper.com.
+Check: within a minute or so the post is live at
+`https://mongomapper.com/blog/YYYY/MM/DD/release-X-Y-Z`.
