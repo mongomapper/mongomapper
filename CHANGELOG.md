@@ -15,29 +15,11 @@
 
 ### Doc Fixes: -->
 
-<!-- ## Unreleased
+## Unreleased
 
 ### Enhancements:
 
-### Bug Fixes:
-
-### Doc Fixes: -->
-
-## 0.19.0 - 2026-11-24
-
-### Enhancements:
-
-- PR-766 Antony <Antsiscool@users.noreply.github.com> Reduce allocations in Keys#read_key
-- PR-769 João Ferreira <joao.ferreira@fullfabric.com> Add rails8_1.gemfile to the main CI matrix
-- PR-771 Masato Ikeda <masato.ikeda@gmail.com> Warn instead of raising when a key clashes with an internal method
-- PR-772 Masato Ikeda <masato.ikeda@gmail.com> Refactor scoping and make default_scopes thread-safe
 - PR-773 Masato Ikeda <masato.ikeda@gmail.com> Add MongoDB 9.0 to CI matrix
-
-### Bug Fixes:
-
-- PR-768 Scott Taylor <scott@railsnewbie.com> Fix flaky stats spec size comparisons and MongoDB 8.0 CI startup on Linux 6.19+
-- PR-770 Fumiaki MATSUSHIMA <mtsmfm@gmail.com> Raise MongoMapper::NoRootDocument when saving an embedded document without a root document
-- PR-774 Antony <Antsiscool@users.noreply.github.com> Fix memory leak in the descendants tracker for modern Rails
 
 ## 0.18.0 - 2026-10-25
 

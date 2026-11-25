@@ -34,10 +34,10 @@ task update_contributors_and_commit: [:update_contributors] do
   sh "git commit -m 'Updating Contributors'"
 end
 
-# Releasing is done by script/release (see HOW_TO_RELEASE.md). This task only
-# wraps it; flags after `--` are passed through, e.g. `rake release -- --dry-run`.
-desc 'Release via script/release (pass flags after --, e.g. rake release -- --dry-run)'
-task :release do
-  args = ARGV.drop_while { |a| a != '--' }.drop(1)
-  exec File.expand_path('script/release', __dir__), *args
+desc 'Tags version, pushes to remote, and pushes gem'
+task :release => [:spec, :build] do
+  sh "git tag v#{MongoMapper::Version}"
+  sh "git push origin master"
+  sh "git push origin v#{MongoMapper::Version}"
+  sh "gem push mongo_mapper-#{MongoMapper::Version}.gem"
 end
