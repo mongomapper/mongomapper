@@ -26,9 +26,11 @@ The first line of output shows the choice, e.g.
 To pick the version yourself, use `rake release VERSION=X.Y.Z` instead
 (not together with `BUMP`). Below, `X.Y.Z` means the version being released.
 
-Steps marked **HUMAN** need the maintainer at the keyboard. Publishing the gem
-needs a RubyGems owner of `mongo_mapper` (e.g. Scott Taylor) with 2FA, and
-`gh` logged in with rights to merge PRs and push tags/`gh-pages`.
+Steps marked **HUMAN** need the maintainer at the keyboard. Releasing needs
+`gh` logged in with rights to merge PRs and push tags/`gh-pages`. No RubyGems
+credentials are needed: pushing the `vX.Y.Z` tag runs the Release workflow
+(`.github/workflows/release.yml`), which publishes the gem with RubyGems
+trusted publishing.
 
 Never put credentials (RubyGems API keys, OTP codes, GitHub tokens) in this
 file, in commits, or in command lines that get logged.
@@ -60,11 +62,10 @@ file, in commits, or in command lines that get logged.
    against `master`, wait for CI (`gh pr checks --watch`, the "Ruby"
    workflow), and merge it (merge commit, pinned to the pushed head) only if
    every check passes. Then `git checkout master && git pull --ff-only`.
-5. **Publish:** `gem build mongo_mapper.gemspec`, `git tag vX.Y.Z`,
-   `git push origin vX.Y.Z`, then `gem push mongo_mapper-X.Y.Z.gem`.
-   **HUMAN:** `gem push` asks for your RubyGems OTP; or run with
-   `GEM_HOST_OTP_CODE=123456 rake release BUMP=tiny`, which only makes
-   sense right before the push is reached, because codes expire.
+5. **Publish:** `git tag vX.Y.Z` and `git push origin vX.Y.Z`. The tag runs
+   the Release workflow, which builds the gem, checks the tag matches the
+   gem version, pushes it to RubyGems and creates a GitHub Release. The task
+   waits (up to 15 minutes) until the version shows up on RubyGems.
 6. **Website post:** adds `_posts/YYYY-MM-DD-release-X-Y-Z.md` to `gh-pages`
    from a temporary worktree (your checkout is untouched) and pushes it. It
    never overwrites an existing post.
@@ -94,10 +95,11 @@ Typical cases:
   and rerun from that branch.
 - **Merge refused** (e.g. the PR needs an approval): get it approved, then
   rerun.
-- **Wrong or expired OTP:** rerun with `VERSION=X.Y.Z` (the tag now exists,
-  so `BUMP` stops and tells you this); the tag is kept and only `gem push`
+- **Release workflow failed:** fix it, then re-run the workflow
+  (`gh run rerun <id>`) and rerun with `VERSION=X.Y.Z` (the tag now exists,
+  so `BUMP` stops and tells you this); the tag is kept and only the wait
   and the later steps run.
-- **Website post failed after `gem push`:** rerun with `VERSION=X.Y.Z`, or
+- **Website post failed after publishing:** rerun with `VERSION=X.Y.Z`, or
   just `rake website_post`. Don't use `BUMP` here: the release is already on
   RubyGems, so `BUMP` would start the next one (it stops only if nothing was
   merged since the tag).

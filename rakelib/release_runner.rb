@@ -194,18 +194,12 @@ class ReleaseRunner
     exec_cmd 'git pull --ff-only origin master'
   end
 
-  # 5. Build, tag, push tag, gem push
+  # 5. Tag, push tag; GitHub Actions (.github/workflows/release.yml) builds
+  # the gem and publishes it to RubyGems via trusted publishing.
   def publish_gem
     step 'Publish the gem'
     unless @dry_run || File.read(VERSION_FILE).include?("'#{version}'")
       abort "#{VERSION_FILE} on master is not #{version}"
-    end
-
-    published = published?
-    if published
-      skip "#{version} is already on RubyGems"
-    else
-      exec_cmd 'gem build mongo_mapper.gemspec'
     end
 
     if remote_tag_sha
@@ -215,10 +209,20 @@ class ReleaseRunner
       exec_cmd "git push origin #{tag}"
     end
 
-    return if published
+    wait_for_publish
+  end
 
-    puts 'HUMAN: gem push asks for your RubyGems OTP unless GEM_HOST_OTP_CODE is set.'
-    exec_cmd "gem push mongo_mapper-#{version}.gem"
+  def wait_for_publish
+    return skip("#{version} is already on RubyGems") if published?
+    return puts("[dry run] wait for the Release workflow to publish #{version} to RubyGems") if @dry_run
+
+    puts "Waiting for the Release workflow to publish #{version} (gh run list --workflow release.yml)..."
+    60.times do
+      return puts("    ok: #{version} is on RubyGems") if published?
+
+      sleep 15
+    end
+    abort "#{version} is not on RubyGems after 15 minutes. Check `gh run list --workflow release.yml`, then rerun `rake release VERSION=#{version}`."
   end
 
   # 7. Verify
