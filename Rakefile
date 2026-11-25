@@ -49,9 +49,23 @@ task :website_post do
   ReleaseRunner.website_post(MongoMapper::Version, File.read('CHANGELOG.md'), dry_run?)
 end
 
-desc 'Release VERSION=X.Y.Z end to end: prep PR, CI, merge, tag, gem push, website post (DRY_RUN=1 to preview)'
+desc 'Release BUMP=tiny|minor|major (or VERSION=X.Y.Z) end to end: prep PR, CI, merge, tag, gem push, website post (DRY_RUN=1 to preview)'
 task :release do
-  version = ENV['VERSION'].to_s
-  abort 'Usage: rake release VERSION=X.Y.Z   (DRY_RUN=1 rake release VERSION=X.Y.Z to preview)' unless version =~ /\A\d+\.\d+\.\d+\z/
+  begin
+    kind, value = ReleaseHelper.release_args(ENV['VERSION'], ENV['BUMP'])
+  rescue ArgumentError => e
+    abort "#{e.message}\n#{ReleaseHelper::RELEASE_USAGE}"
+  end
+  version = kind == :bump ? ReleaseRunner.version_for_bump(value) : value
   ReleaseRunner.new(version, dry_run?).run
+end
+
+namespace :release do
+  %w[tiny patch minor major].each do |bump|
+    desc "Same as rake release BUMP=#{bump}"
+    task bump do
+      ENV['BUMP'] = bump
+      Rake::Task[:release].invoke
+    end
+  end
 end

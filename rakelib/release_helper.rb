@@ -79,6 +79,60 @@ module ReleaseHelper
     source.sub(/Version = '[^']*'/, "Version = '#{version}'")
   end
 
+  # "Version = '0.18.1'" source => "0.18.1" (nil if not found).
+  def version_in(source)
+    source.to_s[/Version = '([^']*)'/, 1]
+  end
+
+  RELEASE_USAGE = "Usage: rake release BUMP=tiny|minor|major   (patch = tiny)\n" \
+                  "   or: rake release VERSION=X.Y.Z\n" \
+                  "Prefix with DRY_RUN=1 to preview.".freeze
+  # Index of the X.Y.Z part each bump increments.
+  BUMPS = { 'major' => 0, 'minor' => 1, 'tiny' => 2, 'patch' => 2 }.freeze
+
+  # Validates the VERSION / BUMP arguments of `rake release`.
+  # Returns [:version, 'X.Y.Z'] or [:bump, 'tiny'], or raises ArgumentError.
+  def release_args(version, bump)
+    version = version.to_s.strip
+    bump = bump.to_s.strip.downcase
+    raise ArgumentError, 'Pass either VERSION or BUMP, not both.' unless version.empty? || bump.empty?
+    raise ArgumentError, 'Pass VERSION or BUMP.' if version.empty? && bump.empty?
+    return [:version, version] if version =~ /\A\d+\.\d+\.\d+\z/
+    raise ArgumentError, "VERSION must look like X.Y.Z (got #{version})." unless version.empty?
+    raise ArgumentError, "BUMP must be major, minor, tiny or patch (got #{bump})." unless BUMPS.key?(bump)
+
+    [:bump, bump]
+  end
+
+  # bump_version('0.18.1', 'minor') => '0.19.0'
+  def bump_version(version, bump)
+    index = BUMPS.fetch(bump.to_s.downcase) { raise ArgumentError, "unknown BUMP #{bump}" }
+    parts = version.split('.').map(&:to_i)
+    parts[index] += 1
+    parts.fill(0, index + 1).join('.')
+  end
+
+  # Highest version among tag names like "v1.2.3" (others ignored), or nil.
+  def latest_version(tags)
+    versions = tags.map { |t| t[/\Av(\d+\.\d+\.\d+)\z/, 1] }.compact
+    versions.max_by { |v| v.split('.').map(&:to_i) }
+  end
+
+  # The version a BUMP release should use, without bumping twice: `current`
+  # are the versions version.rb has now (checkout, origin/master, prep branch).
+  # Returns [next_version, in_progress], or raises ArgumentError when
+  # version.rb says something that is neither `last` nor the bumped version.
+  def next_release(last, bump, current)
+    target = bump_version(last, bump)
+    others = current.compact.uniq - [last, target]
+    unless others.empty?
+      raise ArgumentError, "version.rb says #{others.join(', ')}, which is neither the last release " \
+                           "(#{last}) nor #{last} + #{bump} (#{target}). Pass VERSION=X.Y.Z instead."
+    end
+
+    [target, current.include?(target)]
+  end
+
   # PRs like "Prepare 0.18.1 release" / "Release 0.18.0" are not changelog entries.
   def release_pr?(title)
     !!(title =~ /\A(prepare|release)\s+v?\d+\.\d+\.\d+/i)

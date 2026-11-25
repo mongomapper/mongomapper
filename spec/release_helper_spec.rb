@@ -83,6 +83,73 @@ describe ReleaseHelper do
       .should eq("module MongoMapper\n  Version = '0.19.0'\nend\n")
   end
 
+  it 'reads the version from version.rb source' do
+    ReleaseHelper.version_in("module MongoMapper\n  Version = '0.18.1'\nend\n").should eq('0.18.1')
+    ReleaseHelper.version_in('').should be_nil
+  end
+
+  describe 'version bumps' do
+    it 'bumps tiny, minor and major, resetting lower numbers' do
+      ReleaseHelper.bump_version('0.18.1', 'tiny').should eq('0.18.2')
+      ReleaseHelper.bump_version('0.18.1', 'minor').should eq('0.19.0')
+      ReleaseHelper.bump_version('0.18.1', 'major').should eq('1.0.0')
+      ReleaseHelper.bump_version('1.9.9', 'minor').should eq('1.10.0')
+      ReleaseHelper.bump_version('2.3.4', 'major').should eq('3.0.0')
+    end
+
+    it 'treats patch as tiny and ignores case' do
+      ReleaseHelper.bump_version('0.18.1', 'patch').should eq('0.18.2')
+      ReleaseHelper.bump_version('0.18.1', 'MINOR').should eq('0.19.0')
+    end
+
+    it 'rejects unknown bumps' do
+      expect { ReleaseHelper.bump_version('0.18.1', 'huge') }.to raise_error(ArgumentError)
+    end
+
+    it 'picks the highest vX.Y.Z tag numerically' do
+      ReleaseHelper.latest_version(%w[v0.9.2 v0.18.1 v0.10.0 v1.0.0.beta1 release-2 v0.18.0]).should eq('0.18.1')
+      ReleaseHelper.latest_version(%w[foo]).should be_nil
+    end
+  end
+
+  describe 'release arguments' do
+    def args(version, bump)
+      ReleaseHelper.release_args(version, bump)
+    end
+
+    it 'accepts BUMP (any case) or VERSION' do
+      args(nil, 'tiny').should eq([:bump, 'tiny'])
+      args('', 'Patch').should eq([:bump, 'patch'])
+      args(nil, 'MAJOR').should eq([:bump, 'major'])
+      args('0.19.0', nil).should eq([:version, '0.19.0'])
+    end
+
+    it 'rejects both, neither, a bad bump, or a bad version' do
+      expect { args('0.19.0', 'tiny') }.to raise_error(ArgumentError, /not both/)
+      expect { args(nil, nil) }.to raise_error(ArgumentError, /VERSION or BUMP/)
+      expect { args('', ' ') }.to raise_error(ArgumentError, /VERSION or BUMP/)
+      expect { args(nil, 'huge') }.to raise_error(ArgumentError, /BUMP must be/)
+      expect { args('0.19', nil) }.to raise_error(ArgumentError, /X\.Y\.Z/)
+    end
+  end
+
+  describe 'next release for a bump' do
+    it 'bumps from the last release when nothing is in progress' do
+      ReleaseHelper.next_release('0.18.1', 'tiny', ['0.18.1', '0.18.1', nil, nil]).should eq(['0.18.2', false])
+      ReleaseHelper.next_release('0.18.1', 'major', []).should eq(['1.0.0', false])
+    end
+
+    it 'resumes instead of bumping again when version.rb already has the next version' do
+      ReleaseHelper.next_release('0.18.1', 'minor', ['0.19.0', '0.18.1', '0.19.0', nil]).should eq(['0.19.0', true])
+      ReleaseHelper.next_release('0.18.1', 'patch', [nil, '0.18.2', nil, nil]).should eq(['0.18.2', true])
+    end
+
+    it 'refuses when version.rb has some other version' do
+      expect { ReleaseHelper.next_release('0.18.1', 'tiny', ['0.19.0', '0.18.1']) }
+        .to raise_error(ArgumentError, /0\.19\.0.*VERSION=/)
+    end
+  end
+
   describe 'changelog draft' do
     it 'groups PR titles' do
       ReleaseHelper.changelog_group('Fix memory leak').should eq('Bug Fixes')

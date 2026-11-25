@@ -5,7 +5,7 @@ require 'tempfile'
 require 'rake'
 require File.expand_path('release_helper', __dir__)
 
-# `rake release VERSION=X.Y.Z`: the whole release, one step after another.
+# `rake release BUMP=tiny` (or VERSION=X.Y.Z): the whole release, one step after another.
 # Each step first checks whether it is already done, so rerunning the same
 # command after a failure skips finished work and continues where it stopped.
 # With dry_run nothing is changed: commands are printed instead of run (only
@@ -230,6 +230,43 @@ class ReleaseRunner
     puts "Post: #{ReleaseHelper.post_url(version, section[:date])}" if section
   end
 
+  # `rake release BUMP=tiny|minor|major`: the version after the last vX.Y.Z tag
+  # (local or on origin; version.rb on origin/master if there are no tags).
+  # If version.rb already has that version (checkout, origin/master, or the
+  # prep branch) the release is in progress and is resumed, not bumped again.
+  def self.version_for_bump(bump)
+    sh 'git fetch origin +refs/heads/master:refs/remotes/origin/master'
+    show = ->(ref) { ReleaseHelper.version_in(`git show #{ref}:#{VERSION_FILE} 2>/dev/null`) }
+    tags = `git tag -l 'v*'`.split +
+           `git ls-remote --tags --refs origin 'v*'`.scan(%r{refs/tags/(\S+)}).flatten
+    last = ReleaseHelper.latest_version(tags)
+    if last
+      # A tagged but unfinished release must be finished, not bumped past.
+      unless published?(last)
+        abort "v#{last} is tagged but not on RubyGems yet. Finish it with `rake release VERSION=#{last}`."
+      end
+      if `git rev-list --count v#{last}..origin/master 2>/dev/null`.strip == '0'
+        abort "Nothing merged since v#{last}. If you are finishing #{last}, use `rake release VERSION=#{last}`."
+      end
+    end
+    last ||= show.call('origin/master') || ReleaseHelper.version_in(File.read(VERSION_FILE))
+
+    target = ReleaseHelper.bump_version(last, bump)
+    branch = "prepare-#{target}-release"
+    current = [ReleaseHelper.version_in(File.read(VERSION_FILE)), show.call('origin/master'),
+               show.call("refs/heads/#{branch}"), show.call("refs/remotes/origin/#{branch}")]
+    version, in_progress = ReleaseHelper.next_release(last, bump, current)
+    puts "Releasing #{last} -> #{version} (BUMP=#{bump})#{' - already in progress, resuming' if in_progress}"
+    version
+  rescue ArgumentError => e
+    abort e.message
+  end
+
+  def self.published?(version)
+    url = "https://rubygems.org/api/v2/rubygems/mongo_mapper/versions/#{version}.json"
+    Net::HTTP.get_response(URI(url)).is_a?(Net::HTTPSuccess)
+  end
+
   # Writes the release post and commits/pushes it to gh-pages from a temporary
   # worktree, so the current checkout is untouched. Never overwrites a post.
   def self.website_post(version, changelog, dry_run)
@@ -279,8 +316,7 @@ class ReleaseRunner
   end
 
   def published?
-    url = "https://rubygems.org/api/v2/rubygems/mongo_mapper/versions/#{version}.json"
-    Net::HTTP.get_response(URI(url)).is_a?(Net::HTTPSuccess)
+    self.class.published?(version)
   end
 
   private

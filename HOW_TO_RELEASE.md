@@ -1,12 +1,30 @@
 # How to release MongoMapper
 
-Replace `X.Y.Z` with the new version (e.g. `0.19.0`). Run from the repository
-root, on an up-to-date `master` with a clean working tree.
+Run from the repository root, on an up-to-date `master` with a clean working
+tree. Pick how much to bump the version:
 
 ```sh
-DRY_RUN=1 rake release VERSION=X.Y.Z   # optional preview: changes nothing
-rake release VERSION=X.Y.Z
+DRY_RUN=1 rake release BUMP=tiny   # optional preview: changes nothing
+rake release BUMP=tiny             # bug-fix release
+rake release BUMP=minor            # new features
+rake release BUMP=major            # breaking changes
 ```
+
+`BUMP` counts from the last released version (the highest `vX.Y.Z` tag;
+`lib/mongo_mapper/version.rb` if there are no tags). From 0.18.1:
+
+| Command | Releases |
+| --- | --- |
+| `rake release BUMP=tiny` (or `BUMP=patch`) | 0.18.2 |
+| `rake release BUMP=minor` | 0.19.0 |
+| `rake release BUMP=major` | 1.0.0 |
+
+The first line of output shows the choice, e.g.
+`Releasing 0.18.1 -> 0.18.2 (BUMP=tiny)`. `rake release:tiny`,
+`rake release:minor` and `rake release:major` are shorthands for the same.
+
+To pick the version yourself, use `rake release VERSION=X.Y.Z` instead
+(not together with `BUMP`). Below, `X.Y.Z` means the version being released.
 
 Steps marked **HUMAN** need the maintainer at the keyboard. Publishing the gem
 needs a RubyGems owner of `mongo_mapper` (e.g. Scott Taylor) with 2FA, and
@@ -15,8 +33,14 @@ needs a RubyGems owner of `mongo_mapper` (e.g. Scott Taylor) with 2FA, and
 Never put credentials (RubyGems API keys, OTP codes, GitHub tokens) in this
 file, in commits, or in command lines that get logged.
 
-## What `rake release VERSION=X.Y.Z` does
+## What `rake release BUMP=tiny` does
 
+0. **Pick the version** (`BUMP` only) and print it. If `version.rb` already
+   has the bumped version (in your checkout, on `origin/master`, or on the
+   prep branch), that release is already in progress, so it continues with
+   that version and does not bump again. It stops and asks for `VERSION=...`
+   if `version.rb` says anything else. It also stops if the last tag is not
+   on RubyGems yet, or if nothing was merged since the last tag.
 1. **Preflight.** Fails unless: the working tree is clean; you are on `master`
    (or on `prepare-X.Y.Z-release` when resuming); after `git fetch`, the branch
    is up to date with origin; `gh auth status` succeeds; tag `vX.Y.Z` does
@@ -39,7 +63,7 @@ file, in commits, or in command lines that get logged.
 5. **Publish:** `gem build mongo_mapper.gemspec`, `git tag vX.Y.Z`,
    `git push origin vX.Y.Z`, then `gem push mongo_mapper-X.Y.Z.gem`.
    **HUMAN:** `gem push` asks for your RubyGems OTP; or run with
-   `GEM_HOST_OTP_CODE=123456 rake release VERSION=X.Y.Z`, which only makes
+   `GEM_HOST_OTP_CODE=123456 rake release BUMP=tiny`, which only makes
    sense right before the push is reached, because codes expire.
 6. **Website post:** adds `_posts/YYYY-MM-DD-release-X-Y-Z.md` to `gh-pages`
    from a temporary worktree (your checkout is untouched) and pushes it. It
@@ -55,7 +79,9 @@ command it would run. Failed preflight checks are reported as
 
 ## If it stops partway
 
-Fix the cause and rerun the same `rake release VERSION=X.Y.Z`. Every step
+Fix the cause and rerun the same command (`rake release BUMP=tiny`, or
+`rake release VERSION=X.Y.Z`; either works while `version.rb` has the new
+version and it is not tagged yet). Every step
 first checks whether it is already done and skips it: version already set,
 changelog heading present, nothing to commit, branch already pushed, PR
 already open or merged, tag already local or on origin, version already on
@@ -68,8 +94,13 @@ Typical cases:
   and rerun from that branch.
 - **Merge refused** (e.g. the PR needs an approval): get it approved, then
   rerun.
-- **Wrong or expired OTP:** rerun; the tag is kept and only `gem push` and
-  the later steps run.
+- **Wrong or expired OTP:** rerun with `VERSION=X.Y.Z` (the tag now exists,
+  so `BUMP` stops and tells you this); the tag is kept and only `gem push`
+  and the later steps run.
+- **Website post failed after `gem push`:** rerun with `VERSION=X.Y.Z`, or
+  just `rake website_post`. Don't use `BUMP` here: the release is already on
+  RubyGems, so `BUMP` would start the next one (it stops only if nothing was
+  merged since the tag).
 
 ## Smaller tasks
 
