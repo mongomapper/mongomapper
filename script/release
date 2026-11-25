@@ -1,0 +1,428 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+#
+# script/release -- the official MongoMapper release path.
+#
+# Run from an up-to-date, clean master after the release prep PR (version bump +
+# CHANGELOG) has been merged. See HOW_TO_RELEASE.md.
+#
+# Steps:
+#   1. Preconditions: clean tree, on master, master == origin/master,
+#      version.rb matches the top dated CHANGELOG heading, tag vX.Y.Z is unused.
+#   2. CI ("Ruby" workflow, .github/workflows/ruby.yml) is green for HEAD.
+#   3. gem build mongo_mapper.gemspec
+#   4. git tag vX.Y.Z            (confirmed)
+#   5. git push origin vX.Y.Z    (confirmed)
+#   6. gem push mongo_mapper-X.Y.Z.gem (confirmed; RubyGems 2FA/OTP required)
+#   7. gh release create vX.Y.Z  (optional, confirmed)
+#
+# Use --dry-run first. It only reads state (plus `git fetch origin`) and prints
+# what would happen; it never builds a release artifact, tags, pushes, or publishes.
+
+require 'optparse'
+require 'open3'
+require 'tempfile'
+require 'shellwords'
+
+ROOT          = File.expand_path('..', __dir__)
+VERSION_FILE  = 'lib/mongo_mapper/version.rb'
+CHANGELOG     = 'CHANGELOG.md'
+GEMSPEC       = 'mongo_mapper.gemspec'
+GEM_NAME      = 'mongo_mapper'
+RELEASE_BRANCH = 'master'
+REMOTE        = 'origin'
+CI_WORKFLOW   = 'ruby.yml' # workflow name: "Ruby"
+
+class ReleaseAborted < StandardError; end
+
+class Release
+  def initialize(options)
+    @dry_run        = options[:dry_run]
+    @github_release = options[:github_release] # true / false / nil (ask)
+    @problems       = []
+  end
+
+  def run
+    Dir.chdir(ROOT)
+    banner
+
+    check_preconditions
+    check_ci
+    finish_preconditions!
+
+    build_gem
+    create_tag
+    push_tag
+    push_gem
+    github_release
+    farewell
+  end
+
+  private
+
+  # ---------------------------------------------------------------- steps
+
+  def banner
+    say "MongoMapper release#{' (DRY RUN: nothing will be tagged, pushed, or published)' if @dry_run}"
+    say ''
+  end
+
+  def check_preconditions
+    step 'Checking preconditions'
+
+    status = capture('git', 'status', '--porcelain')
+    if status.empty?
+      ok 'working tree is clean'
+    else
+      problem "working tree is not clean:\n#{indent(status)}"
+    end
+
+    branch = capture('git', 'rev-parse', '--abbrev-ref', 'HEAD')
+    if branch == RELEASE_BRANCH
+      ok "on #{RELEASE_BRANCH}"
+    else
+      problem "current branch is #{branch.inspect}, expected #{RELEASE_BRANCH.inspect}"
+    end
+
+    run_cmd!('git', 'fetch', REMOTE, '--quiet')
+    @head = capture('git', 'rev-parse', 'HEAD')
+    remote_ref = "#{REMOTE}/#{RELEASE_BRANCH}"
+    remote_sha = capture('git', 'rev-parse', '--verify', '--quiet', remote_ref, allow_failure: true)
+    if remote_sha.empty?
+      problem "cannot resolve #{remote_ref}"
+    else
+      ahead, behind = capture('git', 'rev-list', '--left-right', '--count', "HEAD...#{remote_ref}").split.map(&:to_i)
+      if ahead.zero? && behind.zero?
+        ok "HEAD (#{short(@head)}) is up to date with #{remote_ref}"
+      else
+        problem "HEAD is #{ahead} commit(s) ahead and #{behind} behind #{remote_ref}; " \
+                "run `git checkout #{RELEASE_BRANCH} && git pull --ff-only` (and do not release unmerged commits)"
+      end
+    end
+
+    @version = read_version
+    @tag     = "v#{@version}"
+    @gem_file = "#{GEM_NAME}-#{@version}.gem"
+    heading_version, heading_date, @notes = read_changelog
+    if heading_version.nil?
+      problem "no dated `## X.Y.Z - YYYY-MM-DD` heading found in #{CHANGELOG}"
+    elsif heading_version != @version
+      problem "#{VERSION_FILE} says #{@version} but the top #{CHANGELOG} heading is #{heading_version} (#{heading_date})"
+    else
+      ok "#{VERSION_FILE} (#{@version}) matches #{CHANGELOG} heading `## #{heading_version} - #{heading_date}`"
+    end
+
+    local_tag = capture('git', 'tag', '--list', @tag)
+    remote_tag = capture('git', 'ls-remote', '--tags', REMOTE, "refs/tags/#{@tag}")
+    if !local_tag.empty?
+      problem "tag #{@tag} already exists locally"
+    elsif !remote_tag.empty?
+      problem "tag #{@tag} already exists on #{REMOTE}"
+    else
+      ok "tag #{@tag} does not exist locally or on #{REMOTE}"
+    end
+  end
+
+  def check_ci
+    step "Checking CI (workflow #{CI_WORKFLOW}) for #{short(@head)}"
+
+    unless command?('gh')
+      warn_ci_unverified('`gh` is not installed, so CI status cannot be verified')
+      return
+    end
+
+    repo = github_repo
+    if repo.nil?
+      warn_ci_unverified("cannot determine GitHub repo from `git remote get-url #{REMOTE}`")
+      return
+    end
+
+    out, err, st = Open3.capture3(
+      'gh', 'api', "repos/#{repo}/actions/workflows/#{CI_WORKFLOW}/runs?head_sha=#{@head}&per_page=50",
+      '--jq', '.workflow_runs[] | [.status, (.conclusion // ""), .event, .html_url] | @tsv'
+    )
+    unless st.success?
+      warn_ci_unverified("`gh api` failed (#{err.strip}); is `gh auth login` done?")
+      return
+    end
+
+    runs = out.lines.map { |l| l.chomp.split("\t", 4) }
+    if runs.empty?
+      problem "no CI run found for #{@head}; wait for the push build on #{RELEASE_BRANCH} to start"
+    elsif (green = runs.find { |s, c, _, _| s == 'completed' && c == 'success' })
+      ok "CI passed: #{green[3]}"
+    elsif (pending = runs.find { |s, _, _, _| s != 'completed' })
+      problem "CI is still #{pending[0]} for #{short(@head)}: #{pending[3]} -- wait for it to finish"
+    else
+      problem "CI did not pass for #{short(@head)}:\n" +
+              indent(runs.map { |_, c, e, u| "#{c} (#{e}) #{u}" }.join("\n"))
+    end
+  end
+
+  def warn_ci_unverified(reason)
+    say "  WARNING: #{reason}."
+    if @dry_run
+      say '  [dry-run] a real run would require you to confirm that CI is green before continuing'
+    elsif !confirm("Have you verified that the \"Ruby\" workflow is green for #{@head}?")
+      raise ReleaseAborted, 'CI not confirmed'
+    end
+  end
+
+  def finish_preconditions!
+    return if @problems.empty?
+
+    say ''
+    say "#{@problems.size} precondition(s) failed:"
+    @problems.each { |p| say "  - #{p.lines.first.chomp.chomp(':')}" }
+    if @dry_run
+      say ''
+      say '[dry-run] a real run would ABORT here. Continuing to describe the remaining steps.'
+    else
+      raise ReleaseAborted, 'preconditions failed; nothing was changed'
+    end
+  end
+
+  def build_gem
+    step "Building #{@gem_file}"
+    if @dry_run
+      say "  [dry-run] would run: gem build #{GEMSPEC}"
+      say "  [dry-run] would produce: #{@gem_file} (not built in dry-run)"
+      return
+    end
+    run_cmd!('gem', 'build', GEMSPEC)
+    raise ReleaseAborted, "expected #{@gem_file} after gem build" unless File.exist?(@gem_file)
+    ok "built #{@gem_file}"
+  end
+
+  def create_tag
+    step "Creating tag #{@tag}"
+    irreversible("Create git tag #{@tag} at #{short(@head)}?", ['git', 'tag', @tag, @head])
+  end
+
+  def push_tag
+    step "Pushing tag #{@tag} to #{REMOTE}"
+    irreversible("Push tag #{@tag} to #{REMOTE}?", ['git', 'push', REMOTE, @tag])
+  end
+
+  def push_gem
+    step "Pushing #{@gem_file} to RubyGems"
+    say '  HUMAN STEP: requires a RubyGems owner account for mongo_mapper with 2FA.'
+    if ENV['GEM_HOST_OTP_CODE'] && !ENV['GEM_HOST_OTP_CODE'].empty?
+      say '  GEM_HOST_OTP_CODE is set and will be used by `gem push`.'
+    else
+      say '  GEM_HOST_OTP_CODE is not set; `gem push` will prompt for your OTP.'
+    end
+    @gem_pushed = irreversible("Push #{@gem_file} to rubygems.org? (cannot be undone; yanking is not a do-over)",
+                               ['gem', 'push', @gem_file])
+  end
+
+  def github_release
+    step "GitHub release for #{@tag}"
+    cmd = ['gh', 'release', 'create', @tag, '--verify-tag',
+           '--title', "MongoMapper #{@version}", '--notes-file', '<CHANGELOG section>']
+
+    want = @github_release
+    if want.nil?
+      if @dry_run
+        say '  [dry-run] would ask: Create GitHub release? [y/N] (use --github-release / --no-github-release to decide up front)'
+        want = true # describe it
+      else
+        want = confirm('Create GitHub release?')
+      end
+    end
+
+    unless want
+      say '  skipped'
+      return
+    end
+
+    unless command?('gh')
+      say '  WARNING: `gh` is not installed; create the release manually at ' \
+          "https://github.com/mongomapper/mongomapper/releases/new?tag=#{@tag}"
+      return
+    end
+
+    if @dry_run
+      say "  [dry-run] would run: #{cmd.shelljoin}"
+      say '  [dry-run] release notes:'
+      say indent(@notes.to_s.empty? ? '(empty)' : @notes, '    | ')
+      return
+    end
+
+    Tempfile.create(['mongomapper-release-notes', '.md']) do |f|
+      f.write(@notes)
+      f.flush
+      cmd[-1] = f.path
+      irreversible("Create GitHub release #{@tag}?", cmd)
+    end
+  end
+
+  def farewell
+    say ''
+    if @dry_run
+      say 'Dry run complete. Nothing was tagged, pushed, or published.'
+      if @problems.empty?
+        say "Run `script/release` (optionally with --github-release) to release for real."
+      else
+        raise ReleaseAborted, "dry run found #{@problems.size} failed precondition(s); a real run would refuse"
+      end
+      return
+    end
+
+    say "Done releasing #{@tag}."
+    if @gem_pushed
+      say '  - The RubyGems 2FA/OTP confirmation was the human step for publishing the gem.'
+      say "  - Verify: git ls-remote --tags #{REMOTE} #{@tag}; gem info #{GEM_NAME} --remote"
+    end
+    say '  - Optional leftover from the old process: if mongomapper.com still needs a post, add'
+    say "    _posts/#{Time.now.strftime('%Y-%m-%d')}-release-#{@version.tr('.', '-')}.md on the gh-pages branch (manual)."
+  end
+
+  # ---------------------------------------------------------------- parsing
+
+  def read_version
+    src = File.read(VERSION_FILE)
+    m = src.match(/Version\s*=\s*['"]([^'"]+)['"]/)
+    raise ReleaseAborted, "could not find MongoMapper::Version in #{VERSION_FILE}" unless m
+    m[1]
+  end
+
+  # Returns [version, date, notes] for the first dated heading outside HTML comments.
+  def read_changelog
+    text = File.read(CHANGELOG, encoding: 'UTF-8').gsub(/<!--.*?-->/m, '')
+    lines = text.lines
+    idx = lines.index { |l| l =~ /\A##\s+\d+\.\d+\.\d+\s+-\s+\d{4}-\d{2}-\d{2}\s*\z/ }
+    return [nil, nil, nil] unless idx
+
+    m = lines[idx].match(/\A##\s+(\d+\.\d+\.\d+)\s+-\s+(\d{4}-\d{2}-\d{2})/)
+    body = []
+    lines[(idx + 1)..-1].each do |l|
+      break if l =~ /\A##\s/
+      body << l
+    end
+    [m[1], m[2], body.join.strip + "\n"]
+  end
+
+  def github_repo
+    url = capture('git', 'remote', 'get-url', REMOTE, allow_failure: true)
+    m = url.match(%r{github\.com[:/]([^/]+/[^/]+?)(?:\.git)?/?\z})
+    m && m[1]
+  end
+
+  # ---------------------------------------------------------------- helpers
+
+  # Confirm, then run an irreversible command. In dry-run, only describe it.
+  # Returns true if the command ran.
+  def irreversible(question, cmd)
+    if @dry_run
+      say "  [dry-run] would ask: #{question} [y/N]"
+      say "  [dry-run] would run: #{cmd.shelljoin}"
+      return false
+    end
+    raise ReleaseAborted, "declined: #{question}" unless confirm(question)
+    run_cmd!(*cmd)
+    true
+  end
+
+  def confirm(question)
+    unless $stdin.tty?
+      raise ReleaseAborted, "no TTY to confirm \"#{question}\"; refusing to assume yes"
+    end
+    print "  #{question} [y/N] "
+    answer = $stdin.gets.to_s.strip.downcase
+    %w[y yes].include?(answer)
+  end
+
+  def run_cmd!(*cmd)
+    say "  $ #{cmd.shelljoin}"
+    system(*cmd) or raise ReleaseAborted, "command failed: #{cmd.join(' ')}"
+  end
+
+  def capture(*cmd, allow_failure: false)
+    out, err, st = Open3.capture3(*cmd)
+    if !st.success? && !allow_failure
+      raise ReleaseAborted, "command failed: #{cmd.join(' ')}\n#{err}"
+    end
+    out.rstrip
+  end
+
+  def command?(name)
+    ENV['PATH'].to_s.split(File::PATH_SEPARATOR).any? do |dir|
+      path = File.join(dir, name)
+      File.file?(path) && File.executable?(path)
+    end
+  end
+
+  def problem(msg)
+    @problems << msg
+    say "  FAIL: #{msg}"
+    raise ReleaseAborted, msg unless @dry_run
+  end
+
+  def step(title)
+    say ''
+    say "==> #{title}"
+  end
+
+  def ok(msg)
+    say "  ok: #{msg}"
+  end
+
+  def short(sha)
+    sha.to_s[0, 12]
+  end
+
+  def indent(text, prefix = '    ')
+    text.to_s.lines.map { |l| "#{prefix}#{l}" }.join.chomp
+  end
+
+  def say(msg)
+    $stdout.puts(msg)
+    $stdout.flush
+  end
+end
+
+options = { dry_run: false, github_release: nil }
+parser = OptionParser.new do |o|
+  o.banner = 'Usage: script/release [--dry-run] [--github-release | --no-github-release]'
+  o.separator ''
+  o.separator 'Releases the version in lib/mongo_mapper/version.rb from an up-to-date, clean master:'
+  o.separator 'checks preconditions and CI, builds the gem, then (each step confirmed interactively)'
+  o.separator 'creates and pushes tag vX.Y.Z, runs `gem push`, and optionally creates a GitHub Release.'
+  o.separator 'It never pushes master. See HOW_TO_RELEASE.md.'
+  o.separator ''
+  o.on('-n', '--dry-run', 'Describe every step; do not build, tag, push, or publish') { options[:dry_run] = true }
+  o.on('--[no-]github-release', 'Create (or skip) a GitHub Release without asking') { |v| options[:github_release] = v }
+  o.on('-h', '--help', 'Show this help') do
+    puts o
+    puts
+    puts 'Environment:'
+    puts '  GEM_HOST_OTP_CODE  RubyGems OTP passed through to `gem push`; if unset, `gem push` prompts.'
+    exit 0
+  end
+end
+
+begin
+  parser.parse!(ARGV)
+rescue OptionParser::ParseError => e
+  warn "script/release: #{e.message}"
+  warn parser.banner
+  exit 2
+end
+
+unless ARGV.empty?
+  warn "script/release: unexpected arguments: #{ARGV.join(' ')}"
+  exit 2
+end
+
+begin
+  Release.new(options).run
+rescue ReleaseAborted => e
+  warn ''
+  warn "ABORTED: #{e.message}"
+  exit 1
+rescue Interrupt
+  warn ''
+  warn 'ABORTED: interrupted'
+  exit 130
+end
