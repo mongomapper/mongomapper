@@ -103,7 +103,7 @@ describe ReleaseHelper do
     end
 
     it 'rejects unknown bumps' do
-      expect { ReleaseHelper.bump_version('0.18.1', 'huge') }.to raise_error(ArgumentError)
+      lambda { ReleaseHelper.bump_version('0.18.1', 'huge') }.should raise_error(ArgumentError)
     end
 
     it 'picks the highest vX.Y.Z tag numerically' do
@@ -125,11 +125,11 @@ describe ReleaseHelper do
     end
 
     it 'rejects both, neither, a bad bump, or a bad version' do
-      expect { args('0.19.0', 'tiny') }.to raise_error(ArgumentError, /not both/)
-      expect { args(nil, nil) }.to raise_error(ArgumentError, /VERSION or BUMP/)
-      expect { args('', ' ') }.to raise_error(ArgumentError, /VERSION or BUMP/)
-      expect { args(nil, 'huge') }.to raise_error(ArgumentError, /BUMP must be/)
-      expect { args('0.19', nil) }.to raise_error(ArgumentError, /X\.Y\.Z/)
+      lambda { args('0.19.0', 'tiny') }.should raise_error(ArgumentError, /not both/)
+      lambda { args(nil, nil) }.should raise_error(ArgumentError, /VERSION or BUMP/)
+      lambda { args('', ' ') }.should raise_error(ArgumentError, /VERSION or BUMP/)
+      lambda { args(nil, 'huge') }.should raise_error(ArgumentError, /BUMP must be/)
+      lambda { args('0.19', nil) }.should raise_error(ArgumentError, /X\.Y\.Z/)
     end
   end
 
@@ -145,8 +145,8 @@ describe ReleaseHelper do
     end
 
     it 'refuses when version.rb has some other version' do
-      expect { ReleaseHelper.next_release('0.18.1', 'tiny', ['0.19.0', '0.18.1']) }
-        .to raise_error(ArgumentError, /0\.19\.0.*VERSION=/)
+      lambda { ReleaseHelper.next_release('0.18.1', 'tiny', ['0.19.0', '0.18.1']) }
+        .should raise_error(ArgumentError, /0\.19\.0.*VERSION=/)
     end
   end
 
@@ -215,8 +215,8 @@ describe ReleaseRunner do
   let(:changelog) { "## 1.2.3 - 2030-01-02\n\n- PR-1 A <a@example.com> Add x\n" }
 
   def origin_master(version_rb, changelog_md)
-    allow(runner).to receive(:file_at).with('origin/master', ReleaseRunner::VERSION_FILE).and_return(version_rb)
-    allow(runner).to receive(:file_at).with('origin/master', 'CHANGELOG.md').and_return(changelog_md)
+    runner.stub(:file_at).with('origin/master', ReleaseRunner::VERSION_FILE).and_return(version_rb)
+    runner.stub(:file_at).with('origin/master', 'CHANGELOG.md').and_return(changelog_md)
   end
 
   it 'names the prep branch and tag' do
